@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 
 export interface AuthJWTPayload extends JWTPayload {
-  userId: number;
+  userId: string;
   email: string;
   username: string;
   role: string;
