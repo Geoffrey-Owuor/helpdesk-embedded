@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 
 export interface AuthJWTPayload extends JWTPayload {
-  userId: string;
+  userId: number;
   email: string;
   username: string;
   role: string;
@@ -15,10 +15,15 @@ const REFRESH_SECRET = new TextEncoder().encode(
   process.env.REFRESH_TOKEN_SECRET,
 );
 
-// Function for hashing passwords
+// Function for hashing the refresh token
 export async function hashRefreshToken(token: string) {
   const signature = token.split(".")[2];
   return await bcrypt.hash(signature, 10);
+}
+
+// Function for hashing a password
+export async function hashPassword(password: string) {
+  return await bcrypt.hash(password, 10);
 }
 
 // Function for verifying hashes
@@ -43,14 +48,14 @@ export async function signRefreshToken(payload: AuthJWTPayload) {
 }
 
 // Verifying the access token quick check
-export async function verifyAccessTokenJWT() {
+export async function verifyAccessTokenJWT(): Promise<AuthJWTPayload | null> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
   if (!accessToken) return null;
 
   try {
     const { payload } = await jwtVerify(accessToken, ACCESS_SECRET);
-    return payload;
+    return payload as AuthJWTPayload;
   } catch (error) {
     console.error("Session verification failed:", error);
     return null;
@@ -58,11 +63,13 @@ export async function verifyAccessTokenJWT() {
 }
 
 // Verifying the refresh token quick check
-export async function verifyRefreshTokenJWT(refreshToken: string) {
+export async function verifyRefreshTokenJWT(
+  refreshToken: string,
+): Promise<AuthJWTPayload | null> {
   try {
     const { payload } = await jwtVerify(refreshToken, REFRESH_SECRET);
 
-    return payload;
+    return payload as AuthJWTPayload;
   } catch (error) {
     console.error("Session verification failed:", error);
     return null;
@@ -70,7 +77,7 @@ export async function verifyRefreshTokenJWT(refreshToken: string) {
 }
 
 // Require session to get a valid session - A simpler version which is quicker
-export async function requireSession() {
+export async function requireSession(): Promise<AuthJWTPayload | null> {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get("refreshToken")?.value;
 
@@ -78,7 +85,7 @@ export async function requireSession() {
 
   try {
     const payload = await verifyRefreshTokenJWT(refreshToken);
-    return payload;
+    return payload as AuthJWTPayload;
   } catch (error) {
     console.error("Session verification failed:", error);
     return null;
