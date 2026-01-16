@@ -3,6 +3,10 @@
 /* Variant that works with next-themes */
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
+@theme {
+  --breakpoint-custom: 1200px;
+}
+
 @layer base {
   .custom-blur {
     -webkit-backdrop-filter: blur(8px);

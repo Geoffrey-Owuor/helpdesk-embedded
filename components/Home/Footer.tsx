@@ -1,0 +1,113 @@
+import Image from "next/image";
+import Link from "next/link";
+import { assets } from "@/public/assets";
+
+const footerLinks = {
+  product: [
+    { name: "Features", href: "/features" },
+    { name: "Changelog", href: "/changelog" },
+    { name: "Manual", href: "/manual" },
+  ],
+  support: [
+    { name: "Contact Us", href: "/contact" },
+    { name: "Report a Bug", href: "/report" },
+  ],
+};
+
+const Footer = () => {
+  const currentYear = new Date().getFullYear();
+
+  return (
+    <footer className="border-t border-neutral-100 bg-white dark:border-neutral-900 dark:bg-neutral-950">
+      <div className="custom:px-8 mx-auto max-w-6xl px-6 py-12">
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-4 lg:gap-8">
+          {/* Brand Column */}
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-2">
+              <Link href="/" className="relative h-8 w-8">
+                <Image
+                  src={assets.issue_desk_image}
+                  alt="Issue Desk Logo"
+                  className="object-contain dark:invert"
+                  fill
+                />
+              </Link>
+              <span className="text-xl font-bold text-neutral-900 dark:text-white">
+                Issue Desk
+              </span>
+            </div>
+            <p className="text-base leading-7 text-neutral-600 dark:text-neutral-400">
+              The centralized internal tool for managing user reports, assigning
+              ownership, and closing the loop on issues.
+            </p>
+          </div>
+
+          {/* Product Links */}
+          <div>
+            <h3 className="text-base leading-6 font-semibold text-neutral-900 dark:text-white">
+              Product
+            </h3>
+            <ul role="list" className="mt-4 space-y-3">
+              {footerLinks.product.map((item) => (
+                <li key={item.name}>
+                  <Link
+                    href={item.href}
+                    className="text-base text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Support Links */}
+          <div>
+            <h3 className="text-base leading-6 font-semibold text-neutral-900 dark:text-white">
+              Support
+            </h3>
+            <ul role="list" className="mt-4 space-y-3">
+              {footerLinks.support.map((item) => (
+                <li key={item.name}>
+                  <Link
+                    href={item.href}
+                    className="text-base text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact Column */}
+          <div>
+            <h3 className="text-base leading-6 font-semibold text-neutral-900 dark:text-white">
+              Connect with Us
+            </h3>
+            <p className="mt-4 text-base leading-7 text-neutral-600 dark:text-neutral-400">
+              Got questions or feedback? Reach out to{" "}
+              <a
+                href="mailto:helpdesk@example.com"
+                className="text-blue-500 transition-colors hover:text-blue-400"
+              >
+                helpdesk@example.com
+              </a>{" "}
+              anytime.
+            </p>
+          </div>
+        </div>
+
+        {/* Bottom Bar - Centered */}
+        <div className="mt-16 border-t border-neutral-100 pt-8 text-center dark:border-neutral-900">
+          <p className="text-base leading-5 text-neutral-500 dark:text-neutral-500">
+            &copy; {currentYear} Issue Desk. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;
