@@ -2,9 +2,11 @@ import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
 import { query } from "@/lib/Db";
 import { redirect } from "next/navigation";
+import VerifyCode from "@/components/AuthPages/Register/VerifyCode";
+
 const page = async () => {
   const cookieStore = await cookies();
-  const cookie = cookieStore.get("verify-email")?.value;
+  const cookie = cookieStore.get("verify_email")?.value;
 
   if (!cookie) redirect("/register");
 
@@ -26,7 +28,7 @@ const page = async () => {
       redirect("/register");
     }
 
-    return <div>This is the verify code page</div>;
+    return <VerifyCode />;
   } catch (error) {
     console.error("Error viewing verify code page", error);
     redirect("/register");

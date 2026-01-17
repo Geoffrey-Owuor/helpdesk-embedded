@@ -3,6 +3,7 @@ import { useState } from "react";
 import AuthShell from "../AuthShell";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { validateHotpointEmail } from "@/utils/Validators";
 import { Mail, Loader2, ArrowRight } from "lucide-react";
 
 const Register = () => {
@@ -15,6 +16,13 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    // The email validation check
+    if (!validateHotpointEmail(email)) {
+      setError("Access restricted. Please use a valid @example.com email.");
+      setLoading(false);
+      return; // Stop execution
+    }
 
     try {
       const response = await fetch("/api/register", {

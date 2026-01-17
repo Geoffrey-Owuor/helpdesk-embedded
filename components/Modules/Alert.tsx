@@ -37,12 +37,12 @@ const Alert = ({ message, type, onClose }: AlertTypes) => {
 
   return (
     <div
-      className={`fixed top-4 left-1/2 z-9999 -translate-x-1/2 ${
+      className={`fixed top-0 left-1/2 z-9999 -translate-x-1/2 ${
         isClosing ? "animate-slideUp" : "animate-slideDown"
       }`}
     >
       <div
-        className={`mt-4 flex w-auto items-center justify-between rounded-xl bg-black px-3 py-4.5 text-white shadow-md dark:bg-white dark:text-black`}
+        className={`mt-4 flex w-auto items-center justify-between rounded-full bg-black px-3 py-4.5 text-white shadow-md dark:bg-white dark:text-black`}
       >
         <div className="flex items-center gap-2">
           {/* Render the appropriate icon */}
