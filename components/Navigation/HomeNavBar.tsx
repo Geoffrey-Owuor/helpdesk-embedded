@@ -26,7 +26,7 @@ const HomeNavBar = () => {
 
   return (
     <div
-      className={`fixed top-0 right-0 left-0 z-50 transition-all duration-200 ${scrolledUp ? "translate-y-0" : "-translate-y-full"} ${isScrolled ? "custom-blur bg-white/70 shadow-sm dark:bg-neutral-950/70" : "bg-transparent"}`}
+      className={`fixed top-0 right-0 left-0 z-50 transition-all duration-200 ${scrolledUp ? "translate-y-0" : "-translate-y-full"} ${isScrolled ? "custom-blur bg-white/70 dark:bg-neutral-950/70" : "bg-transparent"}`}
     >
       <nav className="custom:px-8 mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
@@ -46,13 +46,13 @@ const HomeNavBar = () => {
           <div className="flex items-center gap-2">
             <Link
               href="/login"
-              className="rounded-full px-4 py-2 text-black hover:bg-gray-200 dark:text-white dark:hover:bg-neutral-800"
+              className="rounded-full px-4 py-1.5 text-black hover:bg-gray-200 dark:text-white dark:hover:bg-neutral-800"
             >
               Login
             </Link>
             <Link
               href="/register"
-              className="rounded-full bg-neutral-950 px-4 py-2 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+              className="rounded-full bg-neutral-950 px-4 py-1.5 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
             >
               Register
             </Link>

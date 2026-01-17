@@ -21,9 +21,9 @@ const Footer = () => {
     <footer className="border-t border-neutral-100 bg-white dark:border-neutral-900 dark:bg-neutral-950">
       <div className="custom:px-8 mx-auto max-w-6xl px-6 py-12">
         {/* Main Grid */}
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-4 lg:gap-8">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-0">
           {/* Brand Column */}
-          <div className="flex flex-col gap-4">
+          <div className="flex max-w-sm flex-col gap-4">
             <div className="flex items-center gap-2">
               <Link href="/" className="relative h-8 w-8">
                 <Image
@@ -37,65 +37,68 @@ const Footer = () => {
                 Issue Desk
               </span>
             </div>
-            <p className="text-base leading-7 text-neutral-600 dark:text-neutral-400">
+            <p className="px-2 text-base leading-7 text-neutral-600 dark:text-neutral-400">
               The centralized internal tool for managing user reports, assigning
               ownership, and closing the loop on issues.
             </p>
           </div>
 
-          {/* Product Links */}
-          <div>
-            <h3 className="text-base leading-6 font-semibold text-neutral-900 dark:text-white">
-              Product
-            </h3>
-            <ul role="list" className="mt-4 space-y-3">
-              {footerLinks.product.map((item) => (
-                <li key={item.name}>
-                  <Link
-                    href={item.href}
-                    className="text-base text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
-                  >
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Footer Links */}
+          <div className="mt-2 grid grid-cols-1 gap-12 lg:grid-cols-3 lg:gap-8">
+            {/* Product Links */}
+            <div>
+              <h3 className="text-base leading-6 font-semibold text-neutral-900 dark:text-white">
+                Product
+              </h3>
+              <ul role="list" className="mt-4 space-y-3">
+                {footerLinks.product.map((item) => (
+                  <li key={item.name}>
+                    <Link
+                      href={item.href}
+                      className="text-base text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Support Links */}
-          <div>
-            <h3 className="text-base leading-6 font-semibold text-neutral-900 dark:text-white">
-              Support
-            </h3>
-            <ul role="list" className="mt-4 space-y-3">
-              {footerLinks.support.map((item) => (
-                <li key={item.name}>
-                  <Link
-                    href={item.href}
-                    className="text-base text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
-                  >
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+            {/* Support Links */}
+            <div>
+              <h3 className="text-base leading-6 font-semibold text-neutral-900 dark:text-white">
+                Support
+              </h3>
+              <ul role="list" className="mt-4 space-y-3">
+                {footerLinks.support.map((item) => (
+                  <li key={item.name}>
+                    <Link
+                      href={item.href}
+                      className="text-base text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Contact Column */}
-          <div>
-            <h3 className="text-base leading-6 font-semibold text-neutral-900 dark:text-white">
-              Connect with Us
-            </h3>
-            <p className="mt-4 text-base leading-7 text-neutral-600 dark:text-neutral-400">
-              Got questions or feedback? Reach out to{" "}
-              <a
-                href="mailto:helpdesk@example.com"
-                className="text-blue-500 transition-colors hover:text-blue-400"
-              >
-                helpdesk@example.com
-              </a>{" "}
-              anytime.
-            </p>
+            {/* Contact Column */}
+            <div>
+              <h3 className="text-base leading-6 font-semibold text-neutral-900 dark:text-white">
+                Connect with Us
+              </h3>
+              <p className="mt-4 text-base leading-7 text-neutral-600 dark:text-neutral-400">
+                Got questions or feedback? Reach out to{" "}
+                <a
+                  href="mailto:helpdesk@example.com"
+                  className="text-blue-500 transition-colors hover:text-blue-400"
+                >
+                  us
+                </a>{" "}
+                anytime.
+              </p>
+            </div>
           </div>
         </div>
 

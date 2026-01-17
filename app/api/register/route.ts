@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     const { email } = await request.json();
 
     // Checking if the email is already registered
-    const baseQuery = `SELECT id FROM users WHERE email = $1`;
+    const baseQuery = `SELECT user_id FROM users WHERE email = $1`;
     const queryParams = [email];
 
     const result = await query(baseQuery, queryParams);
