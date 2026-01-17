@@ -121,6 +121,10 @@ const VerifyCode = ({ email }: { email: string }) => {
   const resendCode = async () => {
     if (coolDown > 0) return;
     setCoolDown(60);
+    // Clear the previous code and reset focus on clicking code resend
+    setOtp(new Array(6).fill("")); //Clear otp on error
+    inputRefs.current[0]?.focus();
+
     try {
       await ApiHandler("/api/register", "POST", { email });
 

@@ -11,7 +11,7 @@ const AuthShell = ({ children }: { children: React.ReactNode }) => {
     <div className="flex min-h-screen flex-col items-center">
       {/* Logo */}
       <div className="custom:left-8 fixed top-4 left-4">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-0.5">
           <div className="h-8 w-8">
             <Image
               src={assets.issue_desk_image}

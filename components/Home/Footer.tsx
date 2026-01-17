@@ -24,7 +24,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-0">
           {/* Brand Column */}
           <div className="flex max-w-sm flex-col gap-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-0.5">
               <Link href="/" className="relative h-8 w-8">
                 <Image
                   src={assets.issue_desk_image}
