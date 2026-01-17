@@ -34,7 +34,8 @@ const Register = () => {
       const data = await response.json();
 
       if (response.ok) {
-        router.push("/register/verify-code");
+        // Adding sent=true to the url to control if the alert notification should be sent
+        router.push("/register/verify-code?sent=true");
         router.refresh();
       } else {
         setError(data.message || "Email verification failed");

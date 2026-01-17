@@ -1,13 +1,30 @@
 "use client";
 import Alert from "@/components/Modules/Alert";
-import { useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import AuthShell from "../AuthShell";
+import { useState, useEffect } from "react";
 
 const VerifyCode = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Alert info state
   const [alertInfo, setAlertInfo] = useState({
-    showAlert: true,
+    showAlert: searchParams.get("sent") === "true",
     alertType: "success",
-    alertMessage: "Verifcation Code Sent",
+    alertMessage: "Verification code sent!",
   });
+
+  //UseEffect for cleaning the url after alert is shown
+  useEffect(() => {
+    // Check if we were redirected with success
+    if (searchParams.get("sent") === "true") {
+      // clean url so that a refresh does not show the url again
+      const newUrl = window.location.pathname;
+      window.history.replaceState(null, "", newUrl);
+    }
+  }, [searchParams]);
+
   return (
     <>
       {alertInfo.showAlert && (
