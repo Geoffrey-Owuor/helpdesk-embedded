@@ -45,7 +45,7 @@ const VerifyCode = ({ email }: { email: string }) => {
       setError("");
 
       try {
-        const response = await ApiHandler("/api/verify-code", "POST", {
+        const response = await ApiHandler("/api/register/verify-code", "POST", {
           email,
           code: codeToSubmit,
         });
