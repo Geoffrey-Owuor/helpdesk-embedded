@@ -1,12 +1,25 @@
 "use client";
 import Alert from "@/components/Modules/Alert";
 import { useSearchParams, useRouter } from "next/navigation";
+import { ApiHandler } from "@/utils/ApiHandler";
 import AuthShell from "../AuthShell";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
-const VerifyCode = () => {
+const VerifyCode = ({ email }: { email: string }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  // code states
+  const [otp, setOtp] = useState(new Array(6).fill(""));
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [coolDown, setCoolDown] = useState(0);
+
+  // Refs to control focus
+  const inputRefs = useRef([]);
+
+  // Derived state to check if the code is full
+  const isCodeFull = otp.join("").length === 6;
 
   // Alert info state
   const [alertInfo, setAlertInfo] = useState({
@@ -25,6 +38,19 @@ const VerifyCode = () => {
     }
   }, [searchParams]);
 
+  // Memoize the submitcode function so that it does not run every time
+  const submitCode = useCallback(async (codeToSubmit: string) => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await ApiHandler("/api/verify-code", "POST", {
+        email,
+        code: codeToSubmit,
+      });
+    } catch (error) {}
+  }, []);
+
   return (
     <>
       {alertInfo.showAlert && (
@@ -37,7 +63,9 @@ const VerifyCode = () => {
         />
       )}
 
-      <div>This is the verify code component</div>
+      <AuthShell>
+        <div></div>
+      </AuthShell>
     </>
   );
 };

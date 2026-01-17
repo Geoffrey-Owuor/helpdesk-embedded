@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { ApiHandler } from "@/utils/ApiHandler";
 import AuthShell from "./AuthShell";
 import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
 
@@ -20,10 +21,9 @@ export default function LoginPage() {
 
     try {
       // Standard fetch for login
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const response = await ApiHandler("/api/login", "POST", {
+        email,
+        password,
       });
 
       const data = await response.json();

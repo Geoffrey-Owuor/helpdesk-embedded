@@ -3,6 +3,7 @@ import { useState } from "react";
 import AuthShell from "../AuthShell";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { ApiHandler } from "@/utils/ApiHandler";
 import { validateHotpointEmail } from "@/utils/Validators";
 import { Mail, Loader2, ArrowRight } from "lucide-react";
 
@@ -25,16 +26,12 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const response = await ApiHandler("/api/register", "POST", { email });
 
       const data = await response.json();
 
       if (response.ok) {
-        // Adding sent=true to the url to control if the alert notification should be sent
+        // Adding sent=true to the url to control if the alert notification should be shown
         router.push("/register/verify-code?sent=true");
         router.refresh();
       } else {
