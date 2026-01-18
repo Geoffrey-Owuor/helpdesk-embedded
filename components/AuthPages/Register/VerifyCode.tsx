@@ -191,7 +191,7 @@ const VerifyCode = ({ email }: { email: string }) => {
 
             {/* Global Error Message */}
             {error && (
-              <div className="rounded-full bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+              <div className="rounded-full bg-red-50 p-3 text-center text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
                 {error}
               </div>
             )}

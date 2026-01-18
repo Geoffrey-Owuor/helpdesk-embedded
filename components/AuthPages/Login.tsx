@@ -57,7 +57,7 @@ export default function LoginPage() {
         {/* Login Fields */}
         <form onSubmit={handleSubmit} autoComplete="off" className="space-y-6">
           {error && (
-            <div className="flex justify-center rounded-full bg-red-50 px-4 py-3 text-sm text-red-500 dark:bg-red-900/20 dark:text-red-400">
+            <div className="rounded-full bg-red-50 px-4 py-3 text-center text-sm text-red-500 dark:bg-red-900/20 dark:text-red-400">
               {error}
             </div>
           )}

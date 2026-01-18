@@ -39,12 +39,13 @@ export async function POST(request: Request) {
 
     // Store or update the verification code
     const verificationCodeQuery = `
-           INSERT INTO verification_codes (email, code, expires_at)
-           VALUES ($1, $2, NOW() + INTERVAL '10 minutes')
+           INSERT INTO verification_codes (email, code, expires_at, verified)
+           VALUES ($1, $2, NOW() + INTERVAL '10 minutes', FALSE)
            ON CONFLICT (email)
            DO UPDATE SET
             code = excluded.code,
-            expires_at = excluded.expires_at
+            expires_at = excluded.expires_at,
+            verified = excluded.verified
            `;
     const verificationCodeParams = [email, code];
 

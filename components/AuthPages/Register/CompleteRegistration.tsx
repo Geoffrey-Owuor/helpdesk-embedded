@@ -324,6 +324,11 @@ const CompleteRegistration = ({ email }: { email: string }) => {
                 Sign in
               </Link>
             </div>
+            <div className="flex items-center justify-center text-sm text-neutral-700 dark:text-neutral-300">
+              <Link href="/register" className="hover:underline">
+                Start over
+              </Link>
+            </div>
           </form>
         </div>
       </AuthShell>
