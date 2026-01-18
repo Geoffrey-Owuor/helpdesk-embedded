@@ -5,3 +5,8 @@ export const assets = {
   issue_desk_logo,
   issue_desk_image,
 };
+
+// get current year value and export it
+const currentYear = new Date().getFullYear();
+
+export { currentYear };

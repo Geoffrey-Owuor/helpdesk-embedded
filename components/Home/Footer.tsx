@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { assets } from "@/public/assets";
+import { currentYear } from "@/public/assets";
 
 const footerLinks = {
   product: [
@@ -15,8 +16,6 @@ const footerLinks = {
 };
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
-
   return (
     <footer className="border-t border-neutral-100 bg-white dark:border-neutral-900 dark:bg-neutral-950">
       <div className="custom:px-8 mx-auto max-w-6xl px-6 py-12">

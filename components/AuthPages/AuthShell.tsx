@@ -2,9 +2,7 @@ import Image from "next/image";
 import { assets } from "@/public/assets";
 import ThemeToggle from "../Themes/ThemeToggle";
 import Link from "next/link";
-
-// Get current year
-const currentYear = new Date().getFullYear();
+import { currentYear } from "@/public/assets";
 
 const AuthShell = ({ children }: { children: React.ReactNode }) => {
   return (

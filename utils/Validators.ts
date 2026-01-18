@@ -4,3 +4,5 @@ export const validateHotpointEmail = (email: string) => {
   const hotpointRegex = /^[a-zA-Z0-9._%+-]+@example\.com$/i;
   return hotpointRegex.test(email);
 };
+
+// Name Validator

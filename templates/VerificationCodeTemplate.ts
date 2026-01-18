@@ -1,6 +1,6 @@
-const VerificationCodeTemplate = (verificationCode: string): string => {
-  const currentYear = new Date().getFullYear();
+import { currentYear } from "@/public/assets";
 
+const VerificationCodeTemplate = (verificationCode: string): string => {
   return `
 <!DOCTYPE html>
 <html lang="en">
