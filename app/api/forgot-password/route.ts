@@ -2,7 +2,7 @@ import { query } from "@/lib/Db";
 import { validateHotpointEmail } from "@/utils/Validators";
 import crypto from "crypto";
 import { sendEmail } from "@/services/EmailService";
-import ResendLinkTemplate from "@/templates/ResendLinkTemplate";
+import ResetLinkTemplate from "@/templates/ResetLinkTemplate";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
 
     //Send the reset link email
     const resetLink = `${process.env.NEXT_PUBLIC_BASE_URL}/reset-password?token=${token}`;
-    const emailHtml = ResendLinkTemplate(resetLink);
+    const emailHtml = ResetLinkTemplate(resetLink);
 
     await sendEmail({
       to: email,
