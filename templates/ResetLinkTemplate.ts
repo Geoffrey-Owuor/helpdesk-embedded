@@ -26,7 +26,8 @@ const ResetLinkTemplate = (resetLink: string): string => {
         
         /* Button Style */
         .btn-container { text-align: center; margin: 30px 0; }
-        .btn { display: inline-block; background-color: #2c3e50; color: #ffffff; font-size: 16px; font-weight: bold; text-decoration: none; padding: 14px 30px; border-radius: 6px; }
+        .btn-container a { color: #ffffff; text-decoration: none; }
+        .btn { display: inline-block; background-color: #2c3e50; font-size: 16px; font-weight: bold; padding: 14px 30px; border-radius: 6px; }
         
         /* Link Fallback */
         .link-fallback { font-size: 12px; color: #999999; word-break: break-all; margin-top: 20px; }

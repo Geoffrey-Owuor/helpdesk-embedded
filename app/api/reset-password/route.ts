@@ -45,9 +45,9 @@ export async function POST(request: Request) {
       `
         UPDATE users
         SET password = $1,
-        reset_token = NULL
+        reset_token = NULL,
         reset_token_expiry = NULL
-        WHERE id = $2
+        WHERE user_id = $2
         `,
       [hashedPassword, userId],
     );
