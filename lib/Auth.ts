@@ -31,6 +31,7 @@ export async function verifyPassword(password: string, hashedPassword: string) {
   return await bcrypt.compare(password, hashedPassword);
 }
 
+// Getting an access token
 export async function signAccessToken(payload: AuthJWTPayload) {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
@@ -39,12 +40,35 @@ export async function signAccessToken(payload: AuthJWTPayload) {
     .sign(ACCESS_SECRET);
 }
 
+// Getting a refresh token
 export async function signRefreshToken(payload: AuthJWTPayload) {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
     .sign(REFRESH_SECRET);
+}
+
+// Creating a session with the tokens
+export async function createSession(accessToken: string, refreshToken: string) {
+  // Set cookies
+  const cookieStore = await cookies();
+
+  // set access token
+  cookieStore.set("accessToken", accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 15 * 60, //15 minutes
+  });
+
+  // set refresh token
+  cookieStore.set("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60, //7 days
+  });
 }
 
 // Verifying the access token quick check

@@ -5,7 +5,7 @@ import {
   signRefreshToken,
   hashRefreshToken,
 } from "@/lib/Auth";
-import { cookies } from "next/headers";
+import { createSession } from "@/lib/Auth";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -61,24 +61,8 @@ export async function POST(request: Request) {
 
     await query(query2, params2);
 
-    // Set cookies
-    const cookieStore = await cookies();
-
-    // set access token
-    cookieStore.set("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 15 * 60, //15 minutes
-    });
-
-    // set refresh token
-    cookieStore.set("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60, //7 days
-    });
+    // Create a session with the tokens
+    await createSession(accessToken, refreshToken);
 
     return NextResponse.json({ success: true });
   } catch (error) {

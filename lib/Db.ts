@@ -29,6 +29,9 @@ if (process.env.NODE_ENV === "production") {
   pool = global.postgresPool;
 }
 
+// 2. Export the pool instance directly (for manual advanced usage)
+export { pool };
+
 // 1. Define a strict type for valid SQL parameters
 type SQLPrimitive = string | number | boolean | null | undefined | Date;
 
@@ -44,3 +47,5 @@ export async function query<T extends QueryResultRow>(
     client.release();
   }
 }
+
+//export pool for transactions

@@ -30,7 +30,6 @@ const CompleteRegistration = ({ email }: { email: string }) => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const [alertInfo, setAlertInfo] = useState({
@@ -67,10 +66,13 @@ const CompleteRegistration = ({ email }: { email: string }) => {
   // Handle user information submission
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError("");
 
     if (!passwordsMatch) {
-      setError("Passwords do not match");
+      setAlertInfo({
+        showAlert: true,
+        alertType: "error",
+        alertMessage: "Passwords do not match",
+      });
       return;
     }
 
@@ -96,7 +98,12 @@ const CompleteRegistration = ({ email }: { email: string }) => {
       // Push to protected dashboard
       router.push("/testroute");
     } catch (error) {
-      if (error instanceof Error) setError(error.message);
+      if (error instanceof Error)
+        setAlertInfo({
+          showAlert: true,
+          alertType: "error",
+          alertMessage: error.message,
+        });
       setLoading(false);
       console.error("Failed to register the user:", error);
     }
@@ -135,13 +142,6 @@ const CompleteRegistration = ({ email }: { email: string }) => {
             autoComplete="off"
             className="space-y-6"
           >
-            {/* Global Error */}
-            {error && (
-              <div className="flex justify-center rounded-full bg-red-50 px-4 py-3 text-sm text-red-500 dark:bg-red-900/20 dark:text-red-400">
-                {error}
-              </div>
-            )}
-
             {/* Name Input */}
             <div>
               <label
@@ -305,7 +305,7 @@ const CompleteRegistration = ({ email }: { email: string }) => {
             <button
               type="submit"
               disabled={loading || passwordsMismatch}
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-neutral-900 px-4 py-3 font-semibold text-white ring-offset-2 hover:bg-neutral-800 focus:ring-1 focus:ring-neutral-600 focus:outline-none disabled:opacity-50 dark:bg-white dark:text-neutral-950 dark:ring-offset-neutral-950 dark:hover:bg-neutral-200 dark:focus:ring-neutral-300"
+              className={`flex w-full items-center ${alertInfo.alertType === "error" ? "bg-red-500 text-white hover:bg-red-400 focus:ring-red-500 dark:ring-offset-neutral-950" : "bg-neutral-900 text-white hover:bg-neutral-800 focus:ring-neutral-600 dark:bg-white dark:text-neutral-950 dark:ring-offset-neutral-950 dark:hover:bg-neutral-200 dark:focus:ring-neutral-300"} justify-center gap-2 rounded-full px-4 py-3 font-semibold ring-offset-2 focus:ring-1 focus:outline-none disabled:opacity-50`}
             >
               {loading ? (
                 <>
