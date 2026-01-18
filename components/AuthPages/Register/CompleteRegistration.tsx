@@ -17,10 +17,21 @@ import AuthShell from "../AuthShell";
 import Alert from "@/components/Modules/Alert";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ApiHandler } from "@/utils/ApiHandler";
+import NameRulesCard from "@/components/Modules/NameRulesCard";
+import { NameValidator, NameValidationResult } from "@/utils/Validators";
 
 const CompleteRegistration = ({ email }: { email: string }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  //   Name Validation States
+  const [isNameFocused, setIsNameFocused] = useState(false);
+  const [nameValidation, setNameValidation] = useState<NameValidationResult>({
+    hasTwoNames: false,
+    isCapitalized: false,
+    singleSpace: true,
+    isValid: false,
+  });
 
   const [formData, setFormData] = useState({
     name: "",
@@ -60,12 +71,28 @@ const CompleteRegistration = ({ email }: { email: string }) => {
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
+
+    //If the input changing is name, run the validator
+    if (name === "name") {
+      const validationResult = NameValidator(value);
+      setNameValidation(validationResult);
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   // Handle user information submission
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    // Add Name Validation Guard
+    if (!nameValidation.isValid) {
+      setAlertInfo({
+        showAlert: true,
+        alertType: "error",
+        alertMessage: "Please fix the name format errors.",
+      });
+      return;
+    }
 
     if (!passwordsMatch) {
       setAlertInfo({
@@ -143,7 +170,12 @@ const CompleteRegistration = ({ email }: { email: string }) => {
             className="space-y-6"
           >
             {/* Name Input */}
-            <div>
+            <div className="relative">
+              {/* Name rules card component */}
+              <NameRulesCard
+                validation={nameValidation}
+                isVisible={isNameFocused}
+              />
               <label
                 htmlFor="name"
                 className="mb-2 block text-sm font-semibold text-neutral-700 dark:text-neutral-300"
@@ -152,7 +184,11 @@ const CompleteRegistration = ({ email }: { email: string }) => {
               </label>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-6">
-                  <User className="h-5 w-5 text-neutral-400" />
+                  {nameValidation.isValid ? (
+                    <CheckCircle2 className="h-5 w-5 text-green-500" />
+                  ) : (
+                    <User className="h-5 w-5 text-neutral-400" />
+                  )}
                 </div>
                 <input
                   id="name"
@@ -160,8 +196,17 @@ const CompleteRegistration = ({ email }: { email: string }) => {
                   type="text"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full rounded-full border border-neutral-400 bg-white py-3 pr-3 pl-14 text-neutral-900 placeholder-neutral-400 focus:border-neutral-600 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900/50 dark:text-white dark:focus:border-neutral-500"
-                  placeholder="Your Name"
+                  // 3. ADD FOCUS HANDLERS
+                  onFocus={() => setIsNameFocused(true)}
+                  onBlur={() => setIsNameFocused(false)}
+                  className={`w-full rounded-full border bg-white py-3 pr-3 pl-14 text-neutral-900 placeholder-neutral-400 focus:outline-none dark:bg-neutral-900/50 dark:text-white ${
+                    !nameValidation.isValid &&
+                    formData.name.length > 0 &&
+                    !isNameFocused
+                      ? "border-red-500 focus:border-red-500"
+                      : "border-neutral-400 focus:border-neutral-600 dark:border-neutral-700 dark:focus:border-neutral-500"
+                  }`}
+                  placeholder="e.g. Jimmy Warthog"
                   required
                 />
               </div>
@@ -304,7 +349,7 @@ const CompleteRegistration = ({ email }: { email: string }) => {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={loading || passwordsMismatch}
+              disabled={loading || passwordsMismatch || !nameValidation.isValid}
               className={`flex w-full items-center ${alertInfo.alertType === "error" ? "bg-red-500 text-white hover:bg-red-400 focus:ring-red-500 dark:ring-offset-neutral-950" : "bg-neutral-900 text-white hover:bg-neutral-800 focus:ring-neutral-600 dark:bg-white dark:text-neutral-950 dark:ring-offset-neutral-950 dark:hover:bg-neutral-200 dark:focus:ring-neutral-300"} justify-center gap-2 rounded-full px-4 py-3 font-semibold ring-offset-2 focus:ring-1 focus:outline-none disabled:opacity-50`}
             >
               {loading ? (
