@@ -15,15 +15,16 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
 
     // The email validation check
     if (!validateHotpointEmail(email)) {
       setError("Access restricted. Please use a valid @example.com email.");
-      setLoading(false);
       return; // Stop execution
     }
+
+    // Start the loader
+    setLoading(true);
 
     try {
       const response = await ApiHandler("/api/register", "POST", { email });
