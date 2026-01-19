@@ -1,5 +1,6 @@
 import { requireSession } from "@/lib/Auth";
 import { redirect } from "next/navigation";
+import { UserProvider } from "@/contexts/UserContext";
 
 type dashboardParams = {
   children: React.ReactNode;
@@ -18,7 +19,7 @@ const layout = async ({ children, params }: dashboardParams) => {
   // Check if session username matches the url params username
   if (user.username !== username) redirect("/login");
 
-  return <div>{children}</div>;
+  return <UserProvider user={user}>{children}</UserProvider>;
 };
 
 export default layout;

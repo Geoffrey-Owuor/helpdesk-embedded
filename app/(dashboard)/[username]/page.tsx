@@ -1,14 +1,7 @@
-import LogOutButton from "@/components/Modules/LogOutButton";
+import DashboardLayoutShell from "@/components/Navigation/DashboardLayoutShell";
 // Test logout page
 const page = () => {
-  return (
-    <div>
-      This is a protected page
-      <div className="h-4 w-40">
-        <LogOutButton />
-      </div>
-    </div>
-  );
+  return <DashboardLayoutShell />;
 };
 
 export default page;
