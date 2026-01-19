@@ -37,12 +37,12 @@ const NameRulesCard = ({ validation, isVisible }: NameRulesCardProps) => {
           passed={validation.singleSpace}
         />
         <RuleItem
-          label="Both start with capital letters"
+          label="First letter of each name is capital(the rest should be small letters)"
           passed={validation.isCapitalized}
         />
       </div>
       {/* Decorative Arrow pointing down */}
-      <div className="absolute -bottom-2 left-6 h-4 w-4 rotate-45 border-r border-b border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800"></div>
+      <div className="absolute -bottom-1.5 left-6 h-4 w-4 rotate-45 border-r border-b border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800"></div>
     </div>
   );
 };
