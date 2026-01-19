@@ -91,7 +91,7 @@ const ResetPassword = ({ isValid }: { isValid: boolean }) => {
   if (!isValid) {
     return (
       <AuthShell>
-        <div className="w-full max-w-90 text-center">
+        <div className="w-full max-w-90 px-2 text-center">
           <div className="mb-6 flex justify-center">
             <XCircle className="h-16 w-16 text-red-500" />
           </div>

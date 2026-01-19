@@ -118,7 +118,7 @@ const ForgotPassword = () => {
         />
       )}
       <AuthShell>
-        <div className="w-full max-w-90">
+        <div className="w-full max-w-90 px-2">
           {/* Header */}
           <div className="mb-8">
             <h1 className="mb-2 text-center text-3xl font-semibold text-neutral-900 dark:text-white">
