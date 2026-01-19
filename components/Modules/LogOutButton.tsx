@@ -4,6 +4,7 @@ import { useState } from "react";
 import apiClient from "@/lib/AxiosClient";
 import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
+import { LogoutOverlay } from "./Overlays";
 
 export default function LogOutButton() {
   const router = useRouter();
@@ -24,6 +25,7 @@ export default function LogOutButton() {
 
   return (
     <>
+      {isLoggingOut && <LogoutOverlay />}
       <button
         onClick={handleLogout}
         disabled={isLoggingOut}

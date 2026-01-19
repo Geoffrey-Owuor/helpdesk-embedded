@@ -10,7 +10,9 @@ const DashboardLayoutShell = () => {
         Welcome, {user?.userId} {user?.email} {user?.department} {user?.role}{" "}
         {user?.username}
       </div>
-      <LogOutButton />
+      <div className="w-14">
+        <LogOutButton />
+      </div>
     </div>
   );
 };
