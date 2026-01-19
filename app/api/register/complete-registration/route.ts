@@ -102,7 +102,7 @@ export async function POST(request: Request) {
     cookieStore.delete("verify_email");
 
     return NextResponse.json(
-      { message: "Registration completed successfully" },
+      { message: "Registration completed successfully", username: name },
       { status: 200 },
     );
   } catch (error) {

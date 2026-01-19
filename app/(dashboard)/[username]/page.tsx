@@ -1,5 +1,5 @@
 import DashboardLayoutShell from "@/components/Navigation/DashboardLayoutShell";
-// Test logout page
+// Test dashboard page
 const page = () => {
   return <DashboardLayoutShell />;
 };

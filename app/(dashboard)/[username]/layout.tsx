@@ -1,5 +1,6 @@
 import { requireSession } from "@/lib/Auth";
 import { redirect } from "next/navigation";
+import { generateUserRoute } from "@/utils/Validators";
 import { UserProvider } from "@/contexts/UserContext";
 
 type dashboardParams = {
@@ -16,8 +17,11 @@ const layout = async ({ children, params }: dashboardParams) => {
 
   if (!username) redirect("/login");
 
+  // Generate user route name from user object
+  const userRouteName = generateUserRoute(user.username);
+
   // Check if session username matches the url params username
-  if (user.username !== username) redirect("/login");
+  if (username !== userRouteName) redirect("/login");
 
   return <UserProvider user={user}>{children}</UserProvider>;
 };

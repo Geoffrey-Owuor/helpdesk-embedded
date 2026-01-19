@@ -42,5 +42,6 @@ export const NameValidator = (name: string): NameValidationResult => {
 
 //User Name Route Helper
 export const generateUserRoute = (username: string) => {
-  return username.replace(" ", "-");
+  if (!username) return null;
+  return username.replace(" ", "-").toLowerCase();
 };
