@@ -47,9 +47,9 @@ const DashboardHeader = () => {
             <div className="relative">
               <button
                 onClick={() => setIsUserCardOpen(true)}
-                className="relative cursor-pointer rounded-full bg-neutral-200 p-1.5 hover:bg-neutral-300 dark:bg-neutral-800 dark:hover:bg-neutral-900"
+                className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-800 dark:hover:bg-neutral-900"
               >
-                <span className="font-semibold">
+                <span className="text-sm font-semibold">
                   {abbreviateUserName(user?.username)}
                 </span>
               </button>
