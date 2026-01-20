@@ -1,4 +1,3 @@
-"use client";
 import DashboardHeader from "./DashboardHeader";
 
 const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {

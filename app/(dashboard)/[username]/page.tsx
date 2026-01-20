@@ -1,7 +1,7 @@
-import DashboardLayoutShell from "@/components/Navigation/DashboardLayoutShell";
-// Test dashboard page
+// The currently viewed dashboard homepage
+import IssueCards from "@/components/Modules/IssueCards/IssueCards";
 const page = () => {
-  return <DashboardLayoutShell />;
+  return <IssueCards />;
 };
 
 export default page;

@@ -2,6 +2,7 @@ import { requireSession } from "@/lib/Auth";
 import { redirect } from "next/navigation";
 import { generateUserRoute } from "@/utils/Validators";
 import { UserProvider } from "@/contexts/UserContext";
+import DashboardLayoutShell from "@/components/Navigation/DashboardLayoutShell";
 
 type dashboardParams = {
   children: React.ReactNode;
@@ -23,7 +24,11 @@ const layout = async ({ children, params }: dashboardParams) => {
   // Check if session username matches the url params username
   if (username !== userRouteName) redirect("/login");
 
-  return <UserProvider user={user}>{children}</UserProvider>;
+  return (
+    <UserProvider user={user}>
+      <DashboardLayoutShell>{children}</DashboardLayoutShell>
+    </UserProvider>
+  );
 };
 
 export default layout;
