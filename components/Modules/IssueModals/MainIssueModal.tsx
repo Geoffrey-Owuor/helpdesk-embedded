@@ -1,8 +1,10 @@
 "use client";
 
-import { Dispatch, SetStateAction } from "react";
+import { ChangeEvent, Dispatch, SetStateAction } from "react";
 import ClientPortal from "../ClientPortal";
+import { useState } from "react";
 import { X, ChevronDown } from "lucide-react";
+import DynamicIssueTypes from "./DynamicIssueTypes";
 
 type MainIssueModalProps = {
   isOpen: boolean;
@@ -10,6 +12,24 @@ type MainIssueModalProps = {
 };
 
 const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
+  const [formData, setFormData] = useState({
+    target_department: "",
+    issue_type: "",
+    issue_title: "",
+    issue_description: "",
+  });
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -31,23 +51,29 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
             </button>
           </div>
 
-          {/* Form */}
+          {/* Issue Form */}
           <form className="space-y-4">
             {/* Row: Department & Target Department */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400">
+                <label
+                  htmlFor="target_department"
+                  className="text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
+                >
                   Target Department
                 </label>
                 <div className="relative">
                   <select
-                    defaultValue=""
+                    id="target_department"
+                    name="target_department"
+                    value={formData.target_department}
+                    onChange={handleChange}
+                    required
                     className="w-full appearance-none rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
                   >
                     <option value="" disabled>
                       Direct this issue to...
                     </option>
-                    <option value="Commercial">Commercial</option>
                     <option value="IT & Projects">IT & Projects</option>
                     <option value="Finance">Finance</option>
                   </select>
@@ -57,38 +83,30 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400">
-                  Issue Type
-                </label>
-                <div className="relative">
-                  <select
-                    defaultValue=""
-                    className="w-full appearance-none rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
-                  >
-                    <option value="" disabled>
-                      Select a type...
-                    </option>
-                    <option value="bug">Bug / Error</option>
-                    <option value="feature">Feature Request</option>
-                    <option value="access">Access Request</option>
-                    <option value="hardware">Hardware Issue</option>
-                  </select>
-                  {/* Lucide Chevron Icon */}
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-neutral-500">
-                    <ChevronDown size={16} />
-                  </div>
-                </div>
-              </div>
+
+              {/* Dynamic Issue Types */}
+              <DynamicIssueTypes
+                value={formData.issue_type}
+                handleChange={handleChange}
+                department={formData.target_department}
+              />
             </div>
 
             {/* Issue Title */}
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400">
+              <label
+                htmlFor="issue_title"
+                className="text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
+              >
                 Issue Title
               </label>
               <input
                 type="text"
+                name="issue_title"
+                id="issue_title"
+                value={formData.issue_title}
+                onChange={handleChange}
+                required
                 maxLength={50}
                 placeholder="Brief summary of the issue (50 characters maximum)"
                 className="rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
@@ -97,10 +115,18 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
 
             {/* Issue Description */}
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400">
+              <label
+                htmlFor="issue_description"
+                className="text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
+              >
                 Description
               </label>
               <textarea
+                id="issue_description"
+                name="issue_description"
+                value={formData.issue_description}
+                onChange={handleChange}
+                required
                 rows={4}
                 placeholder="Please describe the issue in detail..."
                 className="resize-none rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
