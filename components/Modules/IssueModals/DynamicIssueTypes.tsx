@@ -8,6 +8,7 @@ const iTIssues = [
   { value: "POS", label: "POS" },
   { value: "Tech Support", label: "Tech Support" },
   { value: "Wi-Fi", label: "Wi-Fi" },
+  { value: "Automation", label: "Automation" },
   { value: "Accessories", label: "Accessories" },
 ];
 

@@ -4,7 +4,7 @@ import { AuthJWTPayload } from "@/lib/Auth";
 import { Settings, LogOut, Shield } from "lucide-react";
 import apiClient from "@/lib/AxiosClient";
 import { useRouter } from "next/navigation";
-import { LogoutOverlay } from "./Overlays";
+import { PromiseOverlay } from "./Overlays";
 import { useState, useEffect, useRef } from "react";
 
 type UserCardProps = {
@@ -56,7 +56,7 @@ const UserInfoCard = ({
 
   return (
     <>
-      {isLoggingOut && <LogoutOverlay />}
+      {isLoggingOut && <PromiseOverlay overlaytext="Logging out" />}
       <div
         ref={userCardRef}
         className="absolute top-full right-0 z-50 mt-2 w-45 origin-top-right rounded-xl border border-neutral-200 bg-white shadow-lg dark:border-neutral-800 dark:bg-neutral-900"

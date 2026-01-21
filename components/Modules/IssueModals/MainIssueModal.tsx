@@ -4,6 +4,7 @@ import { ChangeEvent, Dispatch, SetStateAction } from "react";
 import ClientPortal from "../ClientPortal";
 import { useState } from "react";
 import { X, ChevronDown } from "lucide-react";
+import Alert from "../Alert";
 import DynamicIssueTypes from "./DynamicIssueTypes";
 
 type MainIssueModalProps = {
@@ -17,6 +18,12 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     issue_type: "",
     issue_title: "",
     issue_description: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [alertInfo, setAlertInfo] = useState({
+    showAlert: false,
+    alertType: "",
+    alertMessage: "",
   });
 
   const handleChange = (
