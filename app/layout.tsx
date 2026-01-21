@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../css/globals.css";
+import { AlertProvider } from "@/contexts/AlertContext";
+import Alert from "@/components/Modules/Alert";
 import { ThemeProvider } from "next-themes";
 
 const geistSans = Geist({
@@ -32,7 +34,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} bg-white antialiased dark:bg-neutral-950`}
       >
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <AlertProvider>
+            <Alert />
+            {children}
+          </AlertProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

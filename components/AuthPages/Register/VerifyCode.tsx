@@ -1,8 +1,8 @@
 "use client";
-import Alert from "@/components/Modules/Alert";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ApiHandler } from "@/utils/ApiHandler";
 import AuthShell from "../AuthShell";
+import { useAlert } from "@/contexts/AlertContext";
 import { useState, useEffect, useRef, useCallback, ChangeEvent } from "react";
 
 const VerifyCode = ({ email }: { email: string }) => {
@@ -14,6 +14,7 @@ const VerifyCode = ({ email }: { email: string }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [coolDown, setCoolDown] = useState(0);
+  const { setAlertInfo } = useAlert();
 
   // Refs to control focus
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -21,22 +22,21 @@ const VerifyCode = ({ email }: { email: string }) => {
   // Derived state to check if the code is full
   const isCodeFull = otp.join("").length === 6;
 
-  // Alert info state
-  const [alertInfo, setAlertInfo] = useState({
-    showAlert: searchParams.get("sent") === "true",
-    alertType: "success",
-    alertMessage: "Verification code sent!",
-  });
-
-  //UseEffect for cleaning the url after alert is shown
+  //UseEffect for showing alert popup and cleaning the url after alert is shown
   useEffect(() => {
+    setAlertInfo({
+      showAlert: searchParams.get("sent") === "true",
+      alertType: "success",
+      alertMessage: "Verification code sent!",
+    });
+
     // Check if we were redirected with success
     if (searchParams.get("sent") === "true") {
       // clean url so that a refresh does not show the url again
       const newUrl = window.location.pathname;
       window.history.replaceState(null, "", newUrl);
     }
-  }, [searchParams]);
+  }, [searchParams, setAlertInfo]);
 
   // Memoize the submitcode function so that it does not run every time
   const submitCode = useCallback(
@@ -161,85 +161,70 @@ const VerifyCode = ({ email }: { email: string }) => {
   }, [coolDown]);
 
   return (
-    <>
-      {alertInfo.showAlert && (
-        <Alert
-          message={alertInfo.alertMessage}
-          type={alertInfo.alertType}
-          onClose={() =>
-            setAlertInfo({ showAlert: false, alertType: "", alertMessage: "" })
-          }
-        />
-      )}
-
-      <AuthShell>
-        <div className="w-full max-w-sm space-y-6">
-          {/* Title and Subtitle Section */}
-          <div className="space-y-2 text-center">
-            <h1 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-white">
-              Verification Code
-            </h1>
-            <p className="text-sm text-neutral-500 dark:text-neutral-400">
-              If the email exists, a 6-digit verification code has been sent to{" "}
-              <span className="font-medium text-neutral-900 dark:text-white">
-                {email}
-              </span>
-            </p>
-          </div>
-
-          {/* Global Error Message */}
-          {error && (
-            <div className="rounded-full bg-red-50 p-3 text-center text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
-              {error}
-            </div>
-          )}
-
-          {/* Form Section */}
-          <form className="space-y-6" autoComplete="off">
-            {/* 6 box input layout */}
-            <div
-              className="flex justify-center space-x-3"
-              onPaste={handlePaste}
-            >
-              {otp.map((digit, index) => (
-                <input
-                  key={index}
-                  type="text"
-                  onClick={() => handleInputClick(index)}
-                  inputMode="numeric"
-                  pattern="\d{1}"
-                  maxLength={1}
-                  value={digit}
-                  onChange={(e) => handleChange(e, index)}
-                  onKeyDown={(e) => handleKeyDown(e, index)}
-                  ref={(el) => {
-                    inputRefs.current[index] = el;
-                  }}
-                  required
-                  disabled={loading}
-                  // Styling updated to match input fields and use focus rings
-                  className={`h-15 w-14 rounded-lg text-neutral-900 dark:text-white ${error ? "border-red-500 focus:ring-red-500" : "border-neutral-400 focus:ring-neutral-400 dark:border-neutral-700 dark:focus:ring-neutral-700"} border bg-white text-center text-xl font-semibold focus:ring-1 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-950`}
-                />
-              ))}
-            </div>
-          </form>
-
-          {/* Resend Code Link */}
-          <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
-            Didn&apos;t receive a code?{" "}
-            <button
-              type="button"
-              onClick={resendCode}
-              // Updated resend button styling for consistency
-              className={`${coolDown > 0 ? "cursor-default" : "cursor-pointer hover:underline"} font-semibold text-neutral-900 dark:text-white`}
-              disabled={coolDown > 0}
-            >
-              {coolDown > 0 ? `Resend code in ${coolDown}s` : "Resend code"}
-            </button>
-          </div>
+    <AuthShell>
+      <div className="w-full max-w-90 space-y-6 px-2">
+        {/* Title and Subtitle Section */}
+        <div className="space-y-2 text-center">
+          <h1 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-white">
+            Verification Code
+          </h1>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            If the email exists, a 6-digit verification code has been sent to{" "}
+            <span className="font-medium text-neutral-900 dark:text-white">
+              {email}
+            </span>
+          </p>
         </div>
-      </AuthShell>
-    </>
+
+        {/* Global Error Message */}
+        {error && (
+          <div className="rounded-full bg-red-50 p-3 text-center text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+            {error}
+          </div>
+        )}
+
+        {/* Form Section */}
+        <form className="space-y-6" autoComplete="off">
+          {/* 6 box input layout */}
+          <div className="flex justify-center space-x-3" onPaste={handlePaste}>
+            {otp.map((digit, index) => (
+              <input
+                key={index}
+                type="text"
+                onClick={() => handleInputClick(index)}
+                inputMode="numeric"
+                pattern="\d{1}"
+                maxLength={1}
+                value={digit}
+                onChange={(e) => handleChange(e, index)}
+                onKeyDown={(e) => handleKeyDown(e, index)}
+                ref={(el) => {
+                  inputRefs.current[index] = el;
+                }}
+                required
+                disabled={loading}
+                // Styling updated to match input fields and use focus rings
+                className={`h-12 w-11 rounded-lg text-neutral-900 sm:h-15 sm:w-14 dark:text-white ${error ? "border-red-500 focus:ring-red-500" : "border-neutral-400 focus:ring-neutral-400 dark:border-neutral-700 dark:focus:ring-neutral-700"} border bg-white text-center text-xl font-semibold focus:ring-1 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-950`}
+              />
+            ))}
+          </div>
+        </form>
+
+        {/* Resend Code Link */}
+        <div className="text-center text-sm text-neutral-600 dark:text-neutral-400">
+          Didn&apos;t receive a code?{" "}
+          <button
+            type="button"
+            onClick={resendCode}
+            // Updated resend button styling for consistency
+            className={`${coolDown > 0 ? "cursor-default" : "cursor-pointer hover:underline"} font-semibold text-neutral-900 dark:text-white`}
+            disabled={coolDown > 0}
+          >
+            {coolDown > 0 ? `Resend code in ${coolDown}s` : "Resend code"}
+          </button>
+        </div>
+      </div>
+    </AuthShell>
   );
 };
 

@@ -9,30 +9,21 @@ import { PromiseOverlay } from "../Overlays";
 import ConfirmationDialog from "../Overlays";
 import DynamicIssueTypes from "./DynamicIssueTypes";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
+import { useAlert } from "@/contexts/AlertContext";
 
 type MainIssueModalProps = {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
-  setAlertInfo: Dispatch<
-    SetStateAction<{
-      showAlert: boolean;
-      alertType: string;
-      alertMessage: string;
-    }>
-  >;
 };
 
-const MainIssueModal = ({
-  isOpen,
-  setIsOpen,
-  setAlertInfo,
-}: MainIssueModalProps) => {
+const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   const [formData, setFormData] = useState({
     target_department: "",
     issue_type: "",
     issue_title: "",
     issue_description: "",
   });
+  const { setAlertInfo } = useAlert();
   const [loading, setLoading] = useState(false);
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
 
@@ -76,7 +67,7 @@ const MainIssueModal = ({
         issue_description: "",
       });
 
-      // Close issue modaL
+      // Close issue modal
       setIsOpen(false);
     } catch (error) {
       // Call the error helper

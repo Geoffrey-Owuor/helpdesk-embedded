@@ -22,7 +22,7 @@ export const useUser = () => {
   const context = useContext(UserContext);
 
   // Optional: Throw error if used outside provider to ensure type safety
-  if (context === undefined) {
+  if (!context) {
     throw new Error("useUser must be used within a UserProvider");
   }
 
