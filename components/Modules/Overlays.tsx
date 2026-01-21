@@ -7,7 +7,7 @@ import { Loader2, X } from "lucide-react";
 type ConfirmationDialogProps = {
   message: string;
   title: string;
-  onConfirm: () => void;
+  onConfirm: () => Promise<void>;
   onCancel: () => void;
 };
 
@@ -35,7 +35,7 @@ export const PromiseOverlay = ({ overlaytext }: { overlaytext: string }) => {
   return <ClientPortal>{content}</ClientPortal>;
 };
 
-// The Confirmation Dialogue
+// The Confirmation Dialogue Overlay
 const ConfirmationDialog = ({
   message,
   onConfirm,

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { abbreviateUserName } from "@/public/assets";
 import { useUser } from "@/contexts/UserContext";
 import UserInfoCard from "../Modules/UserInfoCard";
+import Alert from "../Modules/Alert";
 import MobileSideBar from "./MobileSideBar";
 import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
 import { DashBoardLogo } from "../Modules/DashBoardLogo";
@@ -16,8 +17,24 @@ const DashboardHeader = () => {
   const [isUserCardOpen, setIsUserCardOpen] = useState(false);
   const [sideBarOpen, setSideBarOpen] = useState(false);
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
+  const [alertInfo, setAlertInfo] = useState({
+    showAlert: false,
+    alertType: "",
+    alertMessage: "",
+  });
+
   return (
     <>
+      {alertInfo.showAlert && (
+        <Alert
+          message={alertInfo.alertMessage}
+          type={alertInfo.alertType}
+          onClose={() =>
+            setAlertInfo({ showAlert: false, alertType: "", alertMessage: "" })
+          }
+        />
+      )}
+
       <MobileSideBar
         sideBarOpen={sideBarOpen}
         setSideBarOpen={setSideBarOpen}
@@ -25,6 +42,7 @@ const DashboardHeader = () => {
       <MainIssueModal
         isOpen={isIssueModalOpen}
         setIsOpen={setIsIssueModalOpen}
+        setAlertInfo={setAlertInfo}
       />
       <div className={`fixed top-0 right-0 left-0 z-50`}>
         <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">

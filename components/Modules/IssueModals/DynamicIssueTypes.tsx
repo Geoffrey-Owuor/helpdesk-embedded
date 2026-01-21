@@ -1,5 +1,5 @@
 "use client";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Asterisk } from "lucide-react";
 import { ChangeEvent } from "react";
 
 // Example of issue mapping
@@ -37,9 +37,10 @@ const DynamicIssueTypes = ({
     <div className="flex flex-col gap-1">
       <label
         htmlFor="issue_type"
-        className="text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
+        className="flex items-center gap-1 text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
       >
         Issue Type
+        <Asterisk className="h-3 w-3 text-red-500" />
       </label>
       <div className="relative">
         <select
