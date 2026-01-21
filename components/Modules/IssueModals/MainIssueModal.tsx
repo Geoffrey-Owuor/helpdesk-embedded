@@ -35,7 +35,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   return (
     <ClientPortal>
       {/* Backdrop */}
-      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 dark:bg-black/60">
         {/* Modal Container */}
         <div className="w-full max-w-lg rounded-2xl border border-neutral-200 bg-neutral-50 p-6 shadow-2xl dark:border-neutral-800 dark:bg-neutral-900">
           {/* Header */}
