@@ -2,7 +2,7 @@
 import { Menu, CirclePlus, Bot } from "lucide-react";
 import Link from "next/link";
 import ThemeToggle from "../Themes/ThemeToggle";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { abbreviateUserName } from "@/public/assets";
 import { useUser } from "@/contexts/UserContext";
 import UserInfoCard from "../Modules/UserInfoCard";
@@ -12,10 +12,11 @@ import { DashBoardLogo } from "../Modules/DashBoardLogo";
 
 const DashboardHeader = () => {
   // Get the user information
-  const user = useUser();
+  const { username } = useUser();
   const [isUserCardOpen, setIsUserCardOpen] = useState(false);
   const [sideBarOpen, setSideBarOpen] = useState(false);
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
+  const userButtonRef = useRef<HTMLButtonElement>(null);
 
   return (
     <>
@@ -56,18 +57,19 @@ const DashboardHeader = () => {
             <ThemeToggle />
             <div className="relative">
               <button
-                onClick={() => setIsUserCardOpen(true)}
+                ref={userButtonRef}
+                onClick={() => setIsUserCardOpen((prev) => !prev)}
                 className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-800 dark:hover:bg-neutral-900"
               >
                 <span className="text-sm font-semibold">
-                  {abbreviateUserName(user?.username)}
+                  {abbreviateUserName(username)}
                 </span>
               </button>
               {/* Show the user info card */}
               <UserInfoCard
-                user={user}
                 isUserCardOpen={isUserCardOpen}
                 closeUserCard={() => setIsUserCardOpen(false)}
+                triggerRef={userButtonRef} //passing the ref to the child
               />
             </div>
           </div>

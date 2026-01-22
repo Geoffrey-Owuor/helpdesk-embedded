@@ -3,9 +3,11 @@ import { useIssuesData } from "@/contexts/IssuesDataContext";
 import { titleHelper } from "@/public/assets";
 import IssueStatusFormatter from "./IssueStatusFormatter";
 import { dateFormatter } from "@/public/assets";
+import { useUser } from "@/contexts/UserContext";
 
 const IssuesData = () => {
   const { issuesData } = useIssuesData();
+  const { role, department } = useUser();
 
   // Define column widths here to ensure header and data align perfectly
   // shrink-0 prevents the columns from squishing if screen is small
@@ -21,11 +23,25 @@ const IssuesData = () => {
     desc: "w-80 shrink-0", // Larger width for description
   };
 
+  // Determine the text to display in title based on the current user role
+  const textRoleMapping: Record<string, string> = {
+    user: "you have submitted",
+    admin: `submitted by users to ${department}`,
+    agent: "assigned to you",
+  };
+
   return (
     // Parent div handles the horizontal overflow
     <div className="w-full overflow-x-auto pb-4">
       {/* Container with min-w-max ensures the children don't wrap/squish */}
       <div className="min-w-max space-y-2">
+        {/* Title Area */}
+        <div className="mb-6 flex flex-col px-2">
+          <span className="text-xl font-semibold">Issues Data</span>
+          <span className="text-sm text-neutral-600 dark:text-neutral-400">
+            Issues {textRoleMapping[role]}
+          </span>
+        </div>
         {/* --- HEADER ROW --- */}
         <div className="flex items-center gap-4 px-4 pb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
           <div className={colWidths.ref}>#Reference</div>

@@ -54,7 +54,7 @@ const Footer = () => {
                   <li key={item.name}>
                     <Link
                       href={item.href}
-                      className="text-base text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+                      className="text-base text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
                     >
                       {item.name}
                     </Link>
@@ -73,7 +73,7 @@ const Footer = () => {
                   <li key={item.name}>
                     <Link
                       href={item.href}
-                      className="text-base text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+                      className="text-base text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
                     >
                       {item.name}
                     </Link>
@@ -91,7 +91,7 @@ const Footer = () => {
                 Got questions or feedback? Reach out to{" "}
                 <a
                   href="mailto:helpdesk@example.com"
-                  className="text-blue-500 underline transition-colors hover:text-blue-400"
+                  className="text-blue-500 underline hover:text-blue-400"
                 >
                   us
                 </a>{" "}

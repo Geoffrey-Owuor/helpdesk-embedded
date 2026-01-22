@@ -31,13 +31,13 @@ const Hero = () => {
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href="/register"
-              className="w-full rounded-full bg-neutral-950 px-8 py-3.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-neutral-800 sm:w-auto dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200"
+              className="w-full rounded-full bg-neutral-950 px-8 py-3.5 text-sm font-semibold text-white shadow-sm hover:bg-neutral-800 sm:w-auto dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200"
             >
               Get Started
             </Link>
             <Link
               href="/manual"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-neutral-200 px-8 py-3.5 text-sm font-medium text-neutral-950 transition-colors hover:bg-neutral-50 sm:w-auto dark:border-neutral-800 dark:text-white dark:hover:bg-neutral-900"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-neutral-200 px-8 py-3.5 text-sm font-medium text-neutral-950 hover:bg-neutral-50 sm:w-auto dark:border-neutral-800 dark:text-white dark:hover:bg-neutral-900"
             >
               View Manual <ArrowRight className="h-4 w-4" />
             </Link>

@@ -14,7 +14,14 @@ type UserProviderProps = {
 const UserContext = createContext<UserContextValue>(null);
 
 export const UserProvider = ({ children, user }: UserProviderProps) => {
-  return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
+  const value = {
+    userId: user.userId,
+    email: user.email,
+    username: user.username,
+    role: user.role,
+    department: user.department,
+  };
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
 
 // 3. Export a custom hook to make consuming easy
