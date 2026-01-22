@@ -1,11 +1,10 @@
 // The currently viewed dashboard homepage
-import IssueCards from "@/components/Modules/IssuesCards/IssueCards";
+import IssuesCards from "@/components/Modules/IssueCards/IssueCards";
 import IssuesData from "@/components/Modules/IssuesData/IssuesData";
-
 const page = () => {
   return (
     <>
-      <IssueCards />
+      <IssuesCards />
       <IssuesData />
     </>
   );

@@ -10,7 +10,7 @@ import {
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 
-type issueValueTypes = string | number | null;
+export type issueValueTypes = string | number;
 
 type IssuesDataValues = {
   issuesData: Record<string, issueValueTypes>[];

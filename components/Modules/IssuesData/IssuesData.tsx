@@ -1,5 +1,7 @@
 "use client";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
+import { titleHelper } from "@/public/assets";
+import IssueStatusFormatter from "./IssueStatusFormatter";
 
 const IssuesData = () => {
   const { issuesData } = useIssuesData();
@@ -13,7 +15,7 @@ const IssuesData = () => {
     submitter: "w-32 shrink-0",
     dept: "w-32 shrink-0",
     agent: "w-32 shrink-0",
-    title: "w-64 shrink-0",
+    title: "w-50 shrink-0",
     desc: "w-80 shrink-0", // Larger width for description
   };
 
@@ -41,49 +43,73 @@ const IssuesData = () => {
               key={issueData.issue_uuid}
               className="flex items-center gap-4 rounded-lg bg-neutral-50 p-4 shadow hover:bg-neutral-100 dark:bg-neutral-800/50 dark:hover:bg-neutral-700/50"
             >
-              <div className={colWidths.ref}>
+              <div
+                title={titleHelper(issueData.issue_reference_id)}
+                className={colWidths.ref}
+              >
                 <span className="font-semibold text-blue-500 dark:text-blue-400">
                   {issueData.issue_reference_id}
                 </span>
               </div>
 
-              <div className={colWidths.status}>
-                <span className="font-semibold text-gray-900 dark:text-white">
-                  {issueData.issue_status}
-                </span>
+              <div
+                title={titleHelper(issueData.issue_status)}
+                className={colWidths.status}
+              >
+                <IssueStatusFormatter status={issueData.issue_status} />
               </div>
 
-              <div className={colWidths.type}>
+              <div
+                title={titleHelper(issueData.issue_type)}
+                className={colWidths.type}
+              >
                 <span className="truncate text-gray-900 dark:text-white">
                   {issueData.issue_type}
                 </span>
               </div>
 
-              <div className={colWidths.submitter}>
+              <div
+                title={titleHelper(issueData.issue_submitter_name)}
+                className={colWidths.submitter}
+              >
                 <span className="truncate text-gray-900 dark:text-white">
                   {issueData.issue_submitter_name}
                 </span>
               </div>
 
-              <div className={colWidths.dept}>
+              <div
+                title={titleHelper(issueData.issue_submitter_department)}
+                className={colWidths.dept}
+              >
                 <span className="truncate text-gray-900 dark:text-white">
                   {issueData.issue_submitter_department}
                 </span>
               </div>
 
-              <div className={colWidths.agent}>
-                <span className="truncate text-gray-900 dark:text-white">
-                  {issueData.issue_agent || "Unassigned"}
+              <div
+                title={titleHelper(issueData.issue_agent_name)}
+                className={colWidths.agent}
+              >
+                <span
+                  className={`truncate ${issueData.issue_agent_name === "Not Assigned" ? "text-amber-500" : "text-green-500"}`}
+                >
+                  {issueData.issue_agent_name}
                 </span>
               </div>
 
-              <div className={colWidths.title}>
+              <div
+                title={titleHelper(issueData.issue_title)}
+                className={colWidths.title}
+              >
                 <p className="truncate font-semibold text-gray-900 dark:text-white">
                   {issueData.issue_title}
                 </p>
               </div>
 
-              <div className={colWidths.desc}>
+              <div
+                title={titleHelper(issueData.issue_description)}
+                className={colWidths.desc}
+              >
                 <p className="truncate text-gray-900 dark:text-white">
                   {issueData.issue_description}
                 </p>
