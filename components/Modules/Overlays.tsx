@@ -44,7 +44,7 @@ const ConfirmationDialog = ({
 }: ConfirmationDialogProps) => {
   const content = (
     <div
-      className={`custom-blur fixed inset-0 z-9999 flex items-center justify-center bg-white/50 dark:bg-black/60`}
+      className={`fixed inset-0 z-9999 flex items-center justify-center bg-black/50 dark:bg-black/60`}
     >
       <div className="mx-auto max-w-90 rounded-2xl border border-neutral-200 bg-neutral-50 p-4 shadow-2xl md:max-w-md dark:border-neutral-700 dark:bg-neutral-950">
         <div className="relative mb-4 flex items-start justify-between">

@@ -42,7 +42,7 @@ const DashboardHeader = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsIssueModalOpen(true)}
-              className="hidden items-center gap-2 rounded-full bg-blue-600 px-2 py-2 text-white hover:bg-blue-700 sm:flex md:rounded-xl md:py-1.5"
+              className="hidden items-center gap-2 rounded-full bg-blue-900 px-2 py-2 text-white hover:bg-blue-800 sm:flex md:rounded-xl md:py-1.5"
             >
               <CirclePlus />
               <span className="hidden md:flex">New Issue</span>
@@ -59,7 +59,7 @@ const DashboardHeader = () => {
               <button
                 ref={userButtonRef}
                 onClick={() => setIsUserCardOpen((prev) => !prev)}
-                className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-800 dark:hover:bg-neutral-900"
+                className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
               >
                 <span className="text-sm font-semibold">
                   {abbreviateUserName(username)}

@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../css/globals.css";
 import { AlertProvider } from "@/contexts/AlertContext";
 import Alert from "@/components/Modules/Alert";
-import { ThemeProvider } from "next-themes";
+import Provider from "@/components/Themes/Provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,12 +34,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} bg-white antialiased dark:bg-neutral-950`}
       >
-        <ThemeProvider>
+        <Provider>
           <AlertProvider>
             <Alert />
             {children}
           </AlertProvider>
-        </ThemeProvider>
+        </Provider>
       </body>
     </html>
   );
