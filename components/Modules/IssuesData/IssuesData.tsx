@@ -2,6 +2,7 @@
 import { useIssuesData } from "@/contexts/IssuesDataContext";
 import { titleHelper } from "@/public/assets";
 import IssueStatusFormatter from "./IssueStatusFormatter";
+import { dateFormatter } from "@/public/assets";
 
 const IssuesData = () => {
   const { issuesData } = useIssuesData();
@@ -13,6 +14,7 @@ const IssuesData = () => {
     status: "w-24 shrink-0",
     type: "w-24 shrink-0",
     submitter: "w-32 shrink-0",
+    date: "w-32 shrink-0",
     dept: "w-32 shrink-0",
     agent: "w-32 shrink-0",
     title: "w-50 shrink-0",
@@ -30,6 +32,7 @@ const IssuesData = () => {
           <div className={colWidths.status}>Status</div>
           <div className={colWidths.type}>Type</div>
           <div className={colWidths.submitter}>Submitter</div>
+          <div className={colWidths.date}>Date Submitted</div>
           <div className={colWidths.dept}>Department</div>
           <div className={colWidths.agent}>Agent</div>
           <div className={colWidths.title}>Title</div>
@@ -47,7 +50,7 @@ const IssuesData = () => {
                 title={titleHelper(issueData.issue_reference_id)}
                 className={colWidths.ref}
               >
-                <span className="font-semibold text-blue-500 dark:text-blue-400">
+                <span className="font-semibold text-neutral-500 dark:text-neutral-300">
                   {issueData.issue_reference_id}
                 </span>
               </div>
@@ -74,6 +77,15 @@ const IssuesData = () => {
               >
                 <span className="truncate text-gray-900 dark:text-white">
                   {issueData.issue_submitter_name}
+                </span>
+              </div>
+
+              <div
+                title={dateFormatter(issueData.issue_created_at)}
+                className={colWidths.submitter}
+              >
+                <span className="truncate text-gray-900 dark:text-white">
+                  {dateFormatter(issueData.issue_created_at)}
                 </span>
               </div>
 

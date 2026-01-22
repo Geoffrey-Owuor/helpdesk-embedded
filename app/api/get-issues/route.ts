@@ -12,18 +12,41 @@ export async function GET() {
       { status: 401 },
     );
 
+  // destructure user details
+  const { userId, username, role, department } = user;
+
   try {
     // Simple testing version to see the nature of the api response
-    const baseQuery = `
-    SELECT issue_id, issue_uuid, issue_reference_id, issue_submitter_name, issue_submitter_department,
+    let baseQuery = `
+    SELECT issue_uuid, issue_reference_id, issue_submitter_name, issue_submitter_department,
     issue_target_department, issue_type, issue_title, issue_description, issue_created_at, issue_status,
     issue_agent_name
     FROM issues_table
-    ORDER BY issue_created_at DESC
     `;
 
+    const whereClauses = [];
+    const params = [];
+
+    //construct clauses based on role
+    if (role === "user") {
+      whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
+      params.push(userId);
+    } else if (role === "admin") {
+      whereClauses.push(`issue_target_department = $${params.length + 1}`);
+      params.push(department);
+    } else if (role === "agent") {
+      whereClauses.push(`issue_agent_name = $${params.length + 1}`);
+      params.push(username);
+    }
+
+    if (whereClauses.length > 0) {
+      baseQuery += ` WHERE ${whereClauses.join(" AND ")}`;
+    }
+
+    baseQuery += ` ORDER BY issue_created_at DESC`;
+
     // Execute the query
-    const issuesData = await query(baseQuery);
+    const issuesData = await query(baseQuery, params);
 
     // return a response
     return NextResponse.json(issuesData, { status: 200 });

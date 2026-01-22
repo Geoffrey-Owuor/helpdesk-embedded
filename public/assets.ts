@@ -26,3 +26,15 @@ export const titleHelper = (value: issueValueTypes) => {
 
   return value.toString();
 };
+
+// Date formatter to format date for the ui
+export const dateFormatter = (dateString: issueValueTypes) => {
+  if (!dateString) return "dd/mm/yy";
+  const date = new Date(dateString);
+
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
