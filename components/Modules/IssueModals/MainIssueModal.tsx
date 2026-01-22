@@ -10,6 +10,7 @@ import ConfirmationDialog from "../Overlays";
 import DynamicIssueTypes from "./DynamicIssueTypes";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlert } from "@/contexts/AlertContext";
+import { useIssuesData } from "@/contexts/IssuesDataContext";
 
 type MainIssueModalProps = {
   isOpen: boolean;
@@ -26,6 +27,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   const { setAlertInfo } = useAlert();
   const [loading, setLoading] = useState(false);
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
+  const { refetchIssues } = useIssuesData();
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
@@ -66,6 +68,9 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
         issue_title: "",
         issue_description: "",
       });
+
+      // refetch issues
+      refetchIssues();
 
       // Close issue modal
       setIsOpen(false);

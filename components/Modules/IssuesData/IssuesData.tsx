@@ -1,0 +1,99 @@
+"use client";
+import { useIssuesData } from "@/contexts/IssuesDataContext";
+
+const IssuesData = () => {
+  const { issuesData } = useIssuesData();
+
+  // Define column widths here to ensure header and data align perfectly
+  // shrink-0 prevents the columns from squishing if screen is small
+  const colWidths = {
+    ref: "w-24 shrink-0",
+    status: "w-24 shrink-0",
+    type: "w-24 shrink-0",
+    submitter: "w-32 shrink-0",
+    dept: "w-32 shrink-0",
+    agent: "w-32 shrink-0",
+    title: "w-64 shrink-0",
+    desc: "w-80 shrink-0", // Larger width for description
+  };
+
+  return (
+    // Parent div handles the horizontal overflow
+    <div className="w-full overflow-x-auto pb-4">
+      {/* Container with min-w-max ensures the children don't wrap/squish */}
+      <div className="min-w-max space-y-2">
+        {/* --- HEADER ROW --- */}
+        <div className="flex items-center gap-4 px-4 pb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+          <div className={colWidths.ref}>#Reference</div>
+          <div className={colWidths.status}>Status</div>
+          <div className={colWidths.type}>Type</div>
+          <div className={colWidths.submitter}>Submitter</div>
+          <div className={colWidths.dept}>Department</div>
+          <div className={colWidths.agent}>Agent</div>
+          <div className={colWidths.title}>Title</div>
+          <div className={colWidths.desc}>Description</div>
+        </div>
+
+        {/* --- DATA MAPPING --- */}
+        <div className="space-y-3">
+          {issuesData.map((issueData) => (
+            <div
+              key={issueData.issue_uuid}
+              className="flex items-center gap-4 rounded-lg bg-neutral-50 p-4 shadow hover:bg-neutral-100 dark:bg-neutral-800/50 dark:hover:bg-neutral-700/50"
+            >
+              <div className={colWidths.ref}>
+                <span className="font-semibold text-blue-500 dark:text-blue-400">
+                  {issueData.issue_reference_id}
+                </span>
+              </div>
+
+              <div className={colWidths.status}>
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  {issueData.issue_status}
+                </span>
+              </div>
+
+              <div className={colWidths.type}>
+                <span className="truncate text-gray-900 dark:text-white">
+                  {issueData.issue_type}
+                </span>
+              </div>
+
+              <div className={colWidths.submitter}>
+                <span className="truncate text-gray-900 dark:text-white">
+                  {issueData.issue_submitter_name}
+                </span>
+              </div>
+
+              <div className={colWidths.dept}>
+                <span className="truncate text-gray-900 dark:text-white">
+                  {issueData.issue_submitter_department}
+                </span>
+              </div>
+
+              <div className={colWidths.agent}>
+                <span className="truncate text-gray-900 dark:text-white">
+                  {issueData.issue_agent || "Unassigned"}
+                </span>
+              </div>
+
+              <div className={colWidths.title}>
+                <p className="truncate font-semibold text-gray-900 dark:text-white">
+                  {issueData.issue_title}
+                </p>
+              </div>
+
+              <div className={colWidths.desc}>
+                <p className="truncate text-gray-900 dark:text-white">
+                  {issueData.issue_description}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default IssuesData;

@@ -1,6 +1,6 @@
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
-import { requireSession } from "@/lib/Auth";
+import { verifyAccessTokenJWT } from "@/lib/Auth";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -8,7 +8,7 @@ export async function POST(request: Request) {
 
   let client: PoolClient | undefined;
   // First, check if the user is authenticated
-  const user = await requireSession();
+  const user = await verifyAccessTokenJWT();
 
   if (!user) {
     return NextResponse.json(
