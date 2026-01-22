@@ -1,12 +1,13 @@
 "use client";
 
 import { XIcon, AlertCircle, CheckCircle } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
+import ClientPortal from "./ClientPortal";
 import { useAlert } from "@/contexts/AlertContext";
 
 const Alert = () => {
-  const [isClosing, setIsClosing] = useState(false);
   const { alertInfo, setAlertInfo } = useAlert();
+  const [isClosing, setIsClosing] = useState(false);
 
   const handleClose = useCallback(() => {
     setIsClosing(true);
@@ -16,14 +17,20 @@ const Alert = () => {
     ); // Match this with animation duration
   }, [setAlertInfo]);
 
-  //Auto close after 6 seconds
   useEffect(() => {
-    const timer = setTimeout(() => {
-      handleClose();
-    }, 6000);
+    // FIX 1: Reset 'isClosing' whenever the alert becomes active again
+    if (alertInfo.showAlert) {
+      Promise.resolve().then(() => setIsClosing(false));
+    }
+
+    // FIX 2: Reset timer whenever alertInfo changes (e.g., new message comes in)
+    let timer: NodeJS.Timeout;
+    if (alertInfo.showAlert) {
+      timer = setTimeout(handleClose, 6000);
+    }
 
     return () => clearTimeout(timer);
-  }, [handleClose]);
+  }, [alertInfo.showAlert, handleClose]);
 
   // Determine which icon to display based on type
   const IconComponent =
@@ -36,28 +43,32 @@ const Alert = () => {
       : "text-red-500 dark:text-red-700";
 
   return (
-    <div
-      className={`fixed top-0 left-1/2 z-9999 -translate-x-1/2 ${
-        isClosing ? "animate-slideUp" : "animate-slideDown"
-      }`}
-    >
-      <div
-        className={`mt-4 flex w-auto items-center justify-between rounded-full bg-black px-4 py-4.5 text-white shadow-md dark:bg-white dark:text-black`}
-      >
-        <div className="flex items-center gap-2">
-          {/* Render the appropriate icon */}
-          <IconComponent className={`h-5 w-5 shrink-0 ${iconColorClass}`} />
-          <p className="text-sm">{alertInfo.alertMessage}</p>
-        </div>
-        <button
-          onClick={handleClose}
-          className="ml-4 cursor-pointer text-gray-200 hover:text-gray-300 dark:text-gray-600 dark:hover:text-gray-700"
-          aria-label="Close alert"
+    <ClientPortal>
+      {alertInfo.showAlert && (
+        <div
+          className={`fixed top-0 left-1/2 z-9999 -translate-x-1/2 ${
+            isClosing ? "animate-slideUp" : "animate-slideDown"
+          }`}
         >
-          <XIcon className="h-5 w-5 shrink-0" />
-        </button>
-      </div>
-    </div>
+          <div
+            className={`mt-4 flex w-auto items-center justify-between rounded-full bg-black px-4 py-4.5 text-white shadow-md dark:bg-white dark:text-black`}
+          >
+            <div className="flex items-center gap-2">
+              {/* Render the appropriate icon */}
+              <IconComponent className={`h-5 w-5 shrink-0 ${iconColorClass}`} />
+              <p className="text-sm">{alertInfo.alertMessage}</p>
+            </div>
+            <button
+              onClick={handleClose}
+              className="ml-4 cursor-pointer text-gray-200 hover:text-gray-300 dark:text-gray-600 dark:hover:text-gray-700"
+              aria-label="Close alert"
+            >
+              <XIcon className="h-5 w-5 shrink-0" />
+            </button>
+          </div>
+        </div>
+      )}
+    </ClientPortal>
   );
 };
 

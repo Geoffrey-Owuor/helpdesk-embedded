@@ -54,17 +54,22 @@ const CompleteRegistration = ({ email }: { email: string }) => {
     Boolean(formData.confirmPassword) &&
     formData.password !== formData.confirmPassword;
 
-  // UseEffect for showing the popup and cleaning the url after alert is shown
   useEffect(() => {
-    setAlertInfo({
-      showAlert: searchParams.get("sent") === "true",
-      alertType: "success",
-      alertMessage: "Email verified successfully",
-    });
+    // Only trigger logic if the specific param exists
     if (searchParams.get("sent") === "true") {
+      setAlertInfo({
+        showAlert: true, // Hardcode true, don't rely on the param comparison anymore
+        alertType: "success",
+        alertMessage: "Your password has been reset successfully",
+      });
+
+      // Now clean the URL
       const newUrl = window.location.pathname;
       window.history.replaceState(null, "", newUrl);
     }
+    // If the param is NOT 'success', we do nothing.
+    // This leaves the alert visible until the user manually closes it
+    // or the AlertContext handles the timeout.
   }, [searchParams, setAlertInfo]);
 
   // Handle input changes

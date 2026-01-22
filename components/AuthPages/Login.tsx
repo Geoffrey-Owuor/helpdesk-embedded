@@ -46,17 +46,22 @@ export default function LoginPage() {
     }
   };
 
-  // UseEffect for setting the alert popup and cleaning the url after alert is shown
   useEffect(() => {
-    setAlertInfo({
-      showAlert: searchParams.get("reset") === "success",
-      alertType: "success",
-      alertMessage: "Your password has been reset successfully",
-    });
+    // Only trigger logic if the specific param exists
     if (searchParams.get("reset") === "success") {
+      setAlertInfo({
+        showAlert: true, // Hardcode true, don't rely on the param comparison anymore
+        alertType: "success",
+        alertMessage: "Your password has been reset successfully",
+      });
+
+      // Now clean the URL
       const newUrl = window.location.pathname;
       window.history.replaceState(null, "", newUrl);
     }
+    // If the param is NOT 'success', we do nothing.
+    // This leaves the alert visible until the user manually closes it
+    // or the AlertContext handles the timeout.
   }, [searchParams, setAlertInfo]);
 
   return (
