@@ -8,7 +8,7 @@ import { useUser } from "@/contexts/UserContext";
 import ShowHideColumnsLogic from "./ShowHideColumnsLogic";
 import SearchFilterLogic from "./SearchFilterLogic";
 import SearchInputFields from "./SearchInputFields";
-import { RefreshCcw, XCircle } from "lucide-react";
+import { RefreshCcw, Search, XCircle } from "lucide-react";
 
 // Define column widths here to ensure header and data align perfectly
 // shrink-0 prevents the columns from squishing if screen is small
@@ -31,16 +31,16 @@ const IssuesData = () => {
   // Determine the text to display in title based on the current user role
   const textRoleMapping: Record<string, string> = {
     user: "you have submitted",
-    admin: `submitted by users to ${department}`,
+    admin: `submitted to ${department}`,
     agent: "assigned to you",
   };
 
   return (
     <>
-      {/* Title Area and Issue Data filtering and other functionalities */}
+      {/* Title Area Refresh Button, show/hide columns and Clear filters functionalities */}
       <div className="mb-4 flex flex-col gap-6 md:flex-row md:justify-between">
         {/* The title  */}
-        <div className="flex items-center justify-between gap-8 md:justify-start">
+        <div className="flex items-center justify-between gap-10 md:justify-start">
           <div className="flex flex-col px-2">
             <span className="text-xl font-semibold">Issues Data</span>
             <span className="text-sm text-neutral-600 dark:text-neutral-400">
@@ -57,7 +57,8 @@ const IssuesData = () => {
             className="flex h-9.5 items-center gap-1.5 rounded-xl bg-blue-900 px-4 text-white hover:bg-blue-800"
           >
             <XCircle className="h-4.5 w-4.5" />
-            Clear
+            <span>Clear</span>
+            <span className="hidden md:flex"> filters</span>
           </button>
         </div>
 
@@ -67,7 +68,7 @@ const IssuesData = () => {
             onClick={refetchIssues}
             className="flex h-9.5 cursor-pointer items-center gap-2 rounded-xl bg-neutral-900 px-3 text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
           >
-            <RefreshCcw strokeWidth={1} className="h-4.5 w-4.5" />
+            <RefreshCcw className="h-4.5 w-4.5" />
             <span>Refresh</span>
           </button>
 
@@ -77,13 +78,19 @@ const IssuesData = () => {
       </div>
 
       {/* The filtering logic and search input fields */}
-      <div className="mb-8 flex flex-col items-center justify-center gap-4 md:flex-row">
+      <div className="mb-4 flex flex-col items-center justify-center gap-4 md:flex-row">
         <SearchFilterLogic />
-        <SearchInputFields />
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <SearchInputFields />
+          <button className="flex h-9.5 items-center gap-1.5 rounded-xl bg-neutral-900 px-3 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200">
+            <Search className="h-4 w-4" />
+            Search
+          </button>
+        </div>
       </div>
 
       {/* The data div that shows the issues */}
-      <div className="w-full overflow-x-auto pb-4">
+      <div className="mb-6 w-full overflow-x-auto rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
         {/* Container with min-w-max ensures the children don't wrap/squish */}
         <div className="min-w-max space-y-2">
           {/* --- HEADER ROW --- */}

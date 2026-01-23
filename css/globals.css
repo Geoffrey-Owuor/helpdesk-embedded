@@ -44,3 +44,12 @@
 .animate-slideUp {
   animation: slideUp 0.2s ease-out forwards;
 }
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-color: #a3a3a3 transparent;
+}
+
+html[data-theme="dark"] {
+  scrollbar-color: #525252 transparent;
+}

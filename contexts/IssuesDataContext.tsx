@@ -12,6 +12,18 @@ import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 
 export type issueValueTypes = string | number;
 
+interface Options {
+  selectedFilter?: string;
+  fromDate?: string;
+  toDate?: string;
+  status?: string;
+  reference?: string;
+  department?: string;
+  agent?: string;
+  issueType?: string;
+  submitter?: string;
+}
+
 type IssuesDataValues = {
   issuesData: Record<string, issueValueTypes>[];
   loading: boolean;
@@ -29,7 +41,7 @@ export const IssuesDataProvider = ({
   const [issuesData, setIssuesData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchIssues = useCallback(async () => {
+  const fetchIssues = useCallback(async (options: Options) => {
     setLoading(true);
 
     try {
