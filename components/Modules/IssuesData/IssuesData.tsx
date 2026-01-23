@@ -7,7 +7,8 @@ import IssuesDataSkeleton from "@/components/Skeletons/IssuesDataSkeleton";
 import { useUser } from "@/contexts/UserContext";
 import ShowHideColumnsLogic from "./ShowHideColumnsLogic";
 import SearchFilterLogic from "./SearchFilterLogic";
-import { RefreshCcw } from "lucide-react";
+import SearchInputFields from "./SearchInputFields";
+import { RefreshCcw, XCircle } from "lucide-react";
 
 // Define column widths here to ensure header and data align perfectly
 // shrink-0 prevents the columns from squishing if screen is small
@@ -37,9 +38,9 @@ const IssuesData = () => {
   return (
     <>
       {/* Title Area and Issue Data filtering and other functionalities */}
-      <div className="mb-8 flex flex-col gap-6 md:flex-row md:justify-between">
-        {/* The title and search functionality */}
-        <div className="flex flex-col gap-6 md:flex-row md:items-center">
+      <div className="mb-4 flex flex-col gap-6 md:flex-row md:justify-between">
+        {/* The title  */}
+        <div className="flex items-center justify-between gap-8 md:justify-start">
           <div className="flex flex-col px-2">
             <span className="text-xl font-semibold">Issues Data</span>
             <span className="text-sm text-neutral-600 dark:text-neutral-400">
@@ -51,8 +52,13 @@ const IssuesData = () => {
             </span>
           </div>
 
-          {/* The filtering logic */}
-          <SearchFilterLogic />
+          <button
+            title="Clear filters"
+            className="flex h-9.5 items-center gap-1.5 rounded-xl bg-blue-900 px-4 text-white hover:bg-blue-800"
+          >
+            <XCircle className="h-4.5 w-4.5" />
+            Clear
+          </button>
         </div>
 
         {/* The refresh button */}
@@ -61,13 +67,19 @@ const IssuesData = () => {
             onClick={refetchIssues}
             className="flex h-9.5 cursor-pointer items-center gap-2 rounded-xl bg-neutral-900 px-3 text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
           >
-            <RefreshCcw strokeWidth={1} className="h-5 w-5" />
+            <RefreshCcw strokeWidth={1} className="h-4.5 w-4.5" />
             <span>Refresh</span>
           </button>
 
           {/* Show/Hide Columns Logic */}
           <ShowHideColumnsLogic />
         </div>
+      </div>
+
+      {/* The filtering logic and search input fields */}
+      <div className="mb-8 flex flex-col items-center justify-center gap-4 md:flex-row">
+        <SearchFilterLogic />
+        <SearchInputFields />
       </div>
 
       {/* The data div that shows the issues */}

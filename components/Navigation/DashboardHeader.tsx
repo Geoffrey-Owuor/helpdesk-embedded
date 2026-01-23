@@ -44,14 +44,14 @@ const DashboardHeader = () => {
               onClick={() => setIsIssueModalOpen(true)}
               className="hidden items-center gap-2 rounded-full bg-blue-900 px-2 py-2 text-white hover:bg-blue-800 sm:flex md:rounded-xl md:py-1.5"
             >
-              <CirclePlus />
+              <CirclePlus className="h-4.5 w-4.5" />
               <span className="hidden md:flex">New Issue</span>
             </button>
             <Link
               href="/automations"
               className="hidden items-center gap-2 rounded-full px-2 py-2 hover:bg-neutral-200 sm:flex md:rounded-xl md:py-1.5 dark:hover:bg-neutral-800"
             >
-              <Bot />
+              <Bot className="h-5 w-5" />
               <span className="hidden md:flex">Automations</span>
             </Link>
             <ThemeToggle />
@@ -59,7 +59,7 @@ const DashboardHeader = () => {
               <button
                 ref={userButtonRef}
                 onClick={() => setIsUserCardOpen((prev) => !prev)}
-                className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
               >
                 <span className="text-sm font-semibold">
                   {abbreviateUserName(username)}

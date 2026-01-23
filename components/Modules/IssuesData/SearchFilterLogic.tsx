@@ -1,14 +1,15 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { Check, ChevronDown, Filter } from "lucide-react";
+import { useSearchLogic } from "@/contexts/SearchLogicContext";
 
 // Define options outside component to keep it clean
 const filterOptions = [
   { label: "Status", value: "status" },
-  { label: "Issue Reference", value: "reference" },
+  { label: "Reference", value: "reference" },
   { label: "Date", value: "date" },
   { label: "Department", value: "department" },
-  { label: "Assigned Agent", value: "agent" },
+  { label: "Agent", value: "agent" },
   { label: "Issue Type", value: "type" },
   { label: "Submitter", value: "submitter" },
 ];
@@ -16,7 +17,7 @@ const filterOptions = [
 const SearchFilterLogic = () => {
   // State for the filter dropdown
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState("status");
+  const { selectedFilter, setSelectedFilter } = useSearchLogic();
   const filterRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
