@@ -8,8 +8,9 @@ import { useUser } from "@/contexts/UserContext";
 import ShowHideColumnsLogic from "./ShowHideColumnsLogic";
 import SearchFilterLogic from "./SearchFilterLogic";
 import SearchInputFields from "./SearchInputFields";
-import { RefreshCcw, Search, XCircle } from "lucide-react";
-import { useSearchLogic } from "@/contexts/SearchLogicContext";
+import { RefreshCcw } from "lucide-react";
+import ClearFilters from "./ClearFilters";
+import SearchFilters from "./SearchFilters";
 
 // Define column widths here to ensure header and data align perfectly
 // shrink-0 prevents the columns from squishing if screen is small
@@ -26,40 +27,8 @@ const colWidths = {
 };
 
 const IssuesData = () => {
-  const { issuesData, fetchIssues, loading, refetchIssues } = useIssuesData();
+  const { issuesData, loading, refetchIssues } = useIssuesData();
   const { role, department } = useUser();
-
-  // Get the filter data
-  const {
-    selectedFilter,
-    // Getters
-    status,
-    reference,
-    fromDate,
-    toDate,
-    department: searchDepartment,
-    agent,
-    issueType,
-    submitter,
-  } = useSearchLogic();
-
-  // Compile options into one object
-  const filterOptions = {
-    selectedFilter,
-    status,
-    reference,
-    fromDate,
-    toDate,
-    searchDepartment,
-    agent,
-    issueType,
-    submitter,
-  };
-
-  // Handling the search logic
-  const handleFilterSearch = () => {
-    fetchIssues(filterOptions);
-  };
 
   // Determine the text to display in title based on the current user role
   const textRoleMapping: Record<string, string> = {
@@ -85,14 +54,8 @@ const IssuesData = () => {
             </span>
           </div>
 
-          <button
-            title="Clear filters"
-            className="flex h-9.5 items-center gap-1.5 rounded-xl bg-blue-900 px-4 text-white hover:bg-blue-800"
-          >
-            <XCircle className="h-4.5 w-4.5" />
-            <span>Clear</span>
-            <span className="hidden md:flex"> filters</span>
-          </button>
+          {/* Clearing filters */}
+          <ClearFilters />
         </div>
 
         {/* The refresh button */}
@@ -115,13 +78,8 @@ const IssuesData = () => {
         <SearchFilterLogic />
         <div className="flex flex-wrap items-center justify-center gap-4">
           <SearchInputFields />
-          <button
-            onClick={handleFilterSearch}
-            className="flex h-9.5 items-center gap-1.5 rounded-xl bg-neutral-900 px-3 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
-          >
-            <Search className="h-4 w-4" />
-            Search
-          </button>
+          {/* The search button */}
+          <SearchFilters />
         </div>
       </div>
 
