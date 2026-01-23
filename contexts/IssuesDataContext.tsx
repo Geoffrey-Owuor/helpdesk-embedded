@@ -40,6 +40,7 @@ export const IssuesDataProvider = ({
     } catch (error) {
       const errorMessage = getApiErrorMessage(error);
       console.error(errorMessage);
+      setIssuesData([]);
     } finally {
       setLoading(false);
     }

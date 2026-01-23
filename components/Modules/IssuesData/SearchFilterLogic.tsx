@@ -6,7 +6,7 @@ import { Check, ChevronDown, Filter } from "lucide-react";
 const filterOptions = [
   { label: "Status", value: "status" },
   { label: "Issue Reference", value: "reference" },
-  { label: "Date Created", value: "date" },
+  { label: "Date", value: "date" },
   { label: "Department", value: "department" },
   { label: "Assigned Agent", value: "agent" },
   { label: "Issue Type", value: "type" },

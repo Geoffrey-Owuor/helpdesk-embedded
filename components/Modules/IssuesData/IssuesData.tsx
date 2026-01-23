@@ -93,94 +93,112 @@ const IssuesData = () => {
           ) : (
             <div>
               <div className="space-y-3">
-                {issuesData.map((issueData) => (
-                  <div
-                    key={issueData.issue_uuid}
-                    className="flex items-center gap-4 rounded-xl bg-neutral-50 p-4 shadow transition-colors duration-200 hover:bg-neutral-100 dark:bg-neutral-800/50 dark:hover:bg-neutral-700/50"
-                  >
-                    <div
-                      title={titleHelper(issueData.issue_reference_id)}
-                      className={colWidths.ref}
-                    >
-                      <span className="font-semibold text-neutral-500 dark:text-neutral-300">
-                        {issueData.issue_reference_id}
-                      </span>
-                    </div>
-
-                    <div
-                      title={titleHelper(issueData.issue_status)}
-                      className={colWidths.status}
-                    >
-                      <IssueStatusFormatter status={issueData.issue_status} />
-                    </div>
-
-                    <div
-                      title={titleHelper(issueData.issue_type)}
-                      className={colWidths.type}
-                    >
-                      <span className="truncate text-gray-900 dark:text-white">
-                        {issueData.issue_type}
-                      </span>
-                    </div>
-
-                    <div
-                      title={titleHelper(issueData.issue_submitter_name)}
-                      className={colWidths.submitter}
-                    >
-                      <span className="truncate text-gray-900 dark:text-white">
-                        {issueData.issue_submitter_name}
-                      </span>
-                    </div>
-
-                    <div
-                      title={dateFormatter(issueData.issue_created_at)}
-                      className={colWidths.submitter}
-                    >
-                      <span className="truncate text-gray-900 dark:text-white">
-                        {dateFormatter(issueData.issue_created_at)}
-                      </span>
-                    </div>
-
-                    <div
-                      title={titleHelper(issueData.issue_submitter_department)}
-                      className={colWidths.dept}
-                    >
-                      <span className="truncate text-gray-900 dark:text-white">
-                        {issueData.issue_submitter_department}
-                      </span>
-                    </div>
-
-                    <div
-                      title={titleHelper(issueData.issue_agent_name)}
-                      className={colWidths.agent}
-                    >
-                      <span
-                        className={`truncate ${issueData.issue_agent_name === "Not Assigned" ? "text-amber-500" : "text-green-500"}`}
-                      >
-                        {issueData.issue_agent_name}
-                      </span>
-                    </div>
-
-                    <div
-                      title={titleHelper(issueData.issue_title)}
-                      className={colWidths.title}
-                    >
-                      <p className="truncate font-semibold text-gray-900 dark:text-white">
-                        {issueData.issue_title}
-                      </p>
-                    </div>
-
-                    <div
-                      title={titleHelper(issueData.issue_description)}
-                      className={colWidths.desc}
-                    >
-                      <p className="truncate text-gray-900 dark:text-white">
-                        {issueData.issue_description}
-                      </p>
-                    </div>
+                {issuesData.length === 0 ? (
+                  /* --- FALLBACK MESSAGE --- */
+                  <div className="flex h-32 w-full items-center justify-center rounded-xl border border-dashed border-neutral-300 bg-neutral-50 shadow-sm dark:border-neutral-700 dark:bg-neutral-800/50">
+                    <p className="text-neutral-500 dark:text-neutral-400">
+                      No issues found.
+                    </p>
                   </div>
-                ))}
+                ) : (
+                  /* --- EXISTING LIST MAPPING --- */
+                  issuesData.map((issueData) => (
+                    <div
+                      key={issueData.issue_uuid}
+                      className="flex items-center gap-4 rounded-xl bg-neutral-50 p-4 shadow transition-colors duration-200 hover:bg-neutral-100 dark:bg-neutral-800/50 dark:hover:bg-neutral-700/50"
+                    >
+                      <div
+                        title={titleHelper(issueData.issue_reference_id)}
+                        className={colWidths.ref}
+                      >
+                        <span className="font-semibold text-neutral-500 dark:text-neutral-300">
+                          {issueData.issue_reference_id}
+                        </span>
+                      </div>
+
+                      <div
+                        title={titleHelper(issueData.issue_status)}
+                        className={colWidths.status}
+                      >
+                        <IssueStatusFormatter status={issueData.issue_status} />
+                      </div>
+
+                      <div
+                        title={titleHelper(issueData.issue_type)}
+                        className={colWidths.type}
+                      >
+                        <span className="truncate text-gray-900 dark:text-white">
+                          {issueData.issue_type}
+                        </span>
+                      </div>
+
+                      <div
+                        title={titleHelper(issueData.issue_submitter_name)}
+                        className={colWidths.submitter}
+                      >
+                        <span className="truncate text-gray-900 dark:text-white">
+                          {issueData.issue_submitter_name}
+                        </span>
+                      </div>
+
+                      <div
+                        title={dateFormatter(issueData.issue_created_at)}
+                        className={colWidths.submitter}
+                      >
+                        <span className="truncate text-gray-900 dark:text-white">
+                          {dateFormatter(issueData.issue_created_at)}
+                        </span>
+                      </div>
+
+                      <div
+                        title={titleHelper(
+                          issueData.issue_submitter_department,
+                        )}
+                        className={colWidths.dept}
+                      >
+                        <span className="truncate text-gray-900 dark:text-white">
+                          {issueData.issue_submitter_department}
+                        </span>
+                      </div>
+
+                      <div
+                        title={titleHelper(issueData.issue_agent_name)}
+                        className={colWidths.agent}
+                      >
+                        <span
+                          className={`truncate ${
+                            issueData.issue_agent_name === "Not Assigned"
+                              ? "text-amber-500"
+                              : "text-green-500"
+                          }`}
+                        >
+                          {issueData.issue_agent_name}
+                        </span>
+                      </div>
+
+                      <div
+                        title={titleHelper(issueData.issue_title)}
+                        className={colWidths.title}
+                      >
+                        <p className="truncate font-semibold text-gray-900 dark:text-white">
+                          {issueData.issue_title}
+                        </p>
+                      </div>
+
+                      <div
+                        title={titleHelper(issueData.issue_description)}
+                        className={colWidths.desc}
+                      >
+                        <p className="truncate text-gray-900 dark:text-white">
+                          {issueData.issue_description}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
+
+              {/* This is where we will put our pagination */}
             </div>
           )}
         </div>
