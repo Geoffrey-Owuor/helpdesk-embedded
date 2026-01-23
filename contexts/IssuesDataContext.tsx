@@ -10,6 +10,9 @@ import {
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 
+// Default fetch options
+const DEFAULT_FETCH_OPTIONS = { selectedFilter: "status", status: "" };
+
 export type issueValueTypes = string | number;
 
 interface Options {
@@ -27,7 +30,7 @@ interface Options {
 type IssuesDataValues = {
   issuesData: Record<string, issueValueTypes>[];
   loading: boolean;
-  fetchIssues: () => Promise<void>;
+  fetchIssues: (val: Options) => Promise<void>;
   refetchIssues: () => void;
 };
 
@@ -42,10 +45,51 @@ export const IssuesDataProvider = ({
   const [loading, setLoading] = useState(false);
 
   const fetchIssues = useCallback(async (options: Options) => {
+    // Use provided options or fall back to the default options
+    const queryOptions = options || DEFAULT_FETCH_OPTIONS;
+
     setLoading(true);
 
     try {
-      const response = await apiClient.get("/get-issues");
+      let url = `/get-issues/?selectedFilter=${queryOptions.selectedFilter}`;
+
+      if (queryOptions.selectedFilter === "status" && queryOptions.status) {
+        url += `&status=${queryOptions.status}`;
+      } else if (
+        queryOptions.selectedFilter === "reference" &&
+        queryOptions.reference
+      ) {
+        url += `&reference=${encodeURIComponent(queryOptions.reference.trim())}`;
+      } else if (
+        queryOptions.selectedFilter === "date" &&
+        queryOptions.fromDate &&
+        queryOptions.toDate
+      ) {
+        url += `&fromDate=${queryOptions.fromDate}&toDate=${queryOptions.toDate}`;
+      } else if (
+        queryOptions.selectedFilter === "department" &&
+        queryOptions.department
+      ) {
+        url += `&department=${queryOptions.department}`;
+      } else if (
+        queryOptions.selectedFilter === "agent" &&
+        queryOptions.agent
+      ) {
+        url += `&agent=${encodeURIComponent(queryOptions.agent.trim())}`;
+      } else if (
+        queryOptions.selectedFilter === "type" &&
+        queryOptions.issueType
+      ) {
+        url += `&type=${queryOptions.issueType}`;
+      } else if (
+        queryOptions.selectedFilter === "submitter" &&
+        queryOptions.submitter
+      ) {
+        url += `&submitter=${queryOptions.submitter}`;
+      }
+
+      // Fetch a response with the built url
+      const response = await apiClient.get(url);
 
       // set response to issuesData
       setIssuesData(response.data);
@@ -58,14 +102,14 @@ export const IssuesDataProvider = ({
     }
   }, []);
 
-  //   UseEffect for initial fetch when provider mounts
+  //   UseEffect for initial fetch when provider mounts with default fetch options
   useEffect(() => {
-    fetchIssues();
+    fetchIssues(DEFAULT_FETCH_OPTIONS);
   }, [fetchIssues]);
 
   //   function for refetching the issues
   const refetchIssues = useCallback(() => {
-    fetchIssues();
+    fetchIssues(DEFAULT_FETCH_OPTIONS);
   }, [fetchIssues]);
 
   // Prepare the values

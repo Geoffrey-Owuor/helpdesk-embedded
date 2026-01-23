@@ -9,6 +9,7 @@ import ShowHideColumnsLogic from "./ShowHideColumnsLogic";
 import SearchFilterLogic from "./SearchFilterLogic";
 import SearchInputFields from "./SearchInputFields";
 import { RefreshCcw, Search, XCircle } from "lucide-react";
+import { useSearchLogic } from "@/contexts/SearchLogicContext";
 
 // Define column widths here to ensure header and data align perfectly
 // shrink-0 prevents the columns from squishing if screen is small
@@ -25,8 +26,40 @@ const colWidths = {
 };
 
 const IssuesData = () => {
-  const { issuesData, loading, refetchIssues } = useIssuesData();
+  const { issuesData, fetchIssues, loading, refetchIssues } = useIssuesData();
   const { role, department } = useUser();
+
+  // Get the filter data
+  const {
+    selectedFilter,
+    // Getters
+    status,
+    reference,
+    fromDate,
+    toDate,
+    department: searchDepartment,
+    agent,
+    issueType,
+    submitter,
+  } = useSearchLogic();
+
+  // Compile options into one object
+  const filterOptions = {
+    selectedFilter,
+    status,
+    reference,
+    fromDate,
+    toDate,
+    searchDepartment,
+    agent,
+    issueType,
+    submitter,
+  };
+
+  // Handling the search logic
+  const handleFilterSearch = () => {
+    fetchIssues(filterOptions);
+  };
 
   // Determine the text to display in title based on the current user role
   const textRoleMapping: Record<string, string> = {
@@ -82,7 +115,10 @@ const IssuesData = () => {
         <SearchFilterLogic />
         <div className="flex flex-wrap items-center justify-center gap-4">
           <SearchInputFields />
-          <button className="flex h-9.5 items-center gap-1.5 rounded-xl bg-neutral-900 px-3 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200">
+          <button
+            onClick={handleFilterSearch}
+            className="flex h-9.5 items-center gap-1.5 rounded-xl bg-neutral-900 px-3 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+          >
             <Search className="h-4 w-4" />
             Search
           </button>
