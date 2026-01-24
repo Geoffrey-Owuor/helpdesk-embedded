@@ -17,7 +17,7 @@ import SearchFilters from "./SearchFilters";
 const colWidths = {
   ref: "w-24 shrink-0",
   status: "w-24 shrink-0",
-  type: "w-24 shrink-0",
+  type: "w-26 shrink-0",
   submitter: "w-32 shrink-0",
   date: "w-32 shrink-0",
   dept: "w-32 shrink-0",
@@ -42,24 +42,21 @@ const IssuesData = () => {
       {/* Title Area Refresh Button, show/hide columns and Clear filters functionalities */}
       <div className="mb-4 flex flex-col gap-6 md:flex-row md:justify-between">
         {/* The title  */}
-        <div className="flex items-center justify-between gap-10 md:justify-start">
-          <div className="flex flex-col px-2">
-            <span className="text-xl font-semibold">Issues Data</span>
-            <span className="text-sm text-neutral-600 dark:text-neutral-400">
-              Issues {textRoleMapping[role]}
-            </span>
+        <div className="flex flex-col">
+          <span className="text-xl font-semibold">Issues Data</span>
+          <span className="text-sm text-neutral-600 dark:text-neutral-400">
+            Issues {textRoleMapping[role]}
+          </span>
 
-            <span className="text-xs text-neutral-500">
-              Total issues displayed: {issuesData.length}
-            </span>
-          </div>
-
-          {/* Clearing filters */}
-          <ClearFilters />
+          <span className="text-xs text-neutral-500">
+            Total issues displayed: {issuesData.length}
+          </span>
         </div>
 
-        {/* The refresh button */}
-        <div className="flex items-center justify-between md:justify-center md:gap-4">
+        {/* The refresh button, clear filters, hide columns */}
+        <div className="flex items-center justify-start gap-4 md:justify-center">
+          {/* Clearing filters */}
+          <ClearFilters />
           <button
             onClick={refetchIssues}
             className="flex h-9.5 cursor-pointer items-center gap-2 rounded-xl bg-neutral-900 px-3 text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
@@ -74,13 +71,12 @@ const IssuesData = () => {
       </div>
 
       {/* The filtering logic and search input fields */}
-      <div className="mb-4 flex flex-col items-center justify-center gap-4 md:flex-row">
+
+      <div className="mb-6 flex flex-wrap items-center justify-start gap-4 md:justify-center">
         <SearchFilterLogic />
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          <SearchInputFields />
-          {/* The search button */}
-          <SearchFilters />
-        </div>
+        <SearchInputFields />
+        {/* The search button */}
+        <SearchFilters />
       </div>
 
       {/* The data div that shows the issues */}
@@ -129,12 +125,15 @@ const IssuesData = () => {
                         title={titleHelper(issueData.issue_reference_id)}
                         className={colWidths.ref}
                       >
-                        <span className="truncate font-semibold text-neutral-900 dark:text-neutral-100">
+                        <p className="truncate font-semibold text-neutral-900 dark:text-neutral-100">
                           {issueData.issue_reference_id}
-                        </span>
+                        </p>
                       </div>
 
-                      <div title={titleHelper(issueData.issue_status)}>
+                      <div
+                        className={colWidths.status}
+                        title={titleHelper(issueData.issue_status)}
+                      >
                         <IssueStatusFormatter status={issueData.issue_status} />
                       </div>
 
@@ -142,27 +141,27 @@ const IssuesData = () => {
                         title={titleHelper(issueData.issue_type)}
                         className={colWidths.type}
                       >
-                        <span className="truncate text-gray-900 dark:text-white">
+                        <p className="truncate text-gray-900 dark:text-white">
                           {issueData.issue_type}
-                        </span>
+                        </p>
                       </div>
 
                       <div
                         title={titleHelper(issueData.issue_submitter_name)}
                         className={colWidths.submitter}
                       >
-                        <span className="truncate text-gray-900 dark:text-white">
+                        <p className="truncate text-gray-900 dark:text-white">
                           {issueData.issue_submitter_name}
-                        </span>
+                        </p>
                       </div>
 
                       <div
                         title={dateFormatter(issueData.issue_created_at)}
-                        className={colWidths.submitter}
+                        className={colWidths.date}
                       >
-                        <span className="truncate text-gray-900 dark:text-white">
+                        <p className="truncate text-gray-900 dark:text-white">
                           {dateFormatter(issueData.issue_created_at)}
-                        </span>
+                        </p>
                       </div>
 
                       <div
@@ -171,25 +170,25 @@ const IssuesData = () => {
                         )}
                         className={colWidths.dept}
                       >
-                        <span className="truncate text-gray-900 dark:text-white">
+                        <p className="truncate text-gray-900 dark:text-white">
                           {issueData.issue_submitter_department}
-                        </span>
+                        </p>
                       </div>
 
                       <div
                         title={titleHelper(issueData.issue_target_department)}
                         className={colWidths.dept}
                       >
-                        <span className="truncate text-gray-900 dark:text-white">
+                        <p className="truncate text-gray-900 dark:text-white">
                           {issueData.issue_target_department}
-                        </span>
+                        </p>
                       </div>
 
                       <div
                         title={titleHelper(issueData.issue_agent_name)}
                         className={colWidths.agent}
                       >
-                        <span
+                        <p
                           className={`truncate ${
                             issueData.issue_agent_name === "Not Assigned"
                               ? "text-amber-500"
@@ -197,7 +196,7 @@ const IssuesData = () => {
                           }`}
                         >
                           {issueData.issue_agent_name}
-                        </span>
+                        </p>
                       </div>
 
                       <div

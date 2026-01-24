@@ -69,8 +69,9 @@ const SearchFilterLogic = () => {
         <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300">
           <Filter className="h-4 w-4" />
           <span>Filter by:</span>
-          <span className="text-neutral-900 dark:text-white">
-            {filterOptions.find((f) => f.value === selectedFilter)?.label}
+          <span className="text-neutral-500">
+            {filterOptions.find((f) => f.value === selectedFilter)?.label ||
+              "none selected"}
           </span>
         </div>
         <ChevronDown

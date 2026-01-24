@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Search, ChevronDown, Check, X } from "lucide-react";
 import { useSearchLogic } from "@/contexts/SearchLogicContext";
+import { baseDepartments } from "@/public/assets";
 
 // --- Mock Data Options ---
 const statusOptions = [
@@ -10,11 +11,10 @@ const statusOptions = [
   { label: "Resolved", value: "resolved" },
 ];
 
-const departmentOptions = [
-  { label: "Finance", value: "Finance" },
-  { label: "IT & Projects", value: "IT & Projects" },
-  { label: "Marketing", value: "Marketing" },
-];
+const departmentOptions = baseDepartments.map((department) => ({
+  label: department.option,
+  value: department.value,
+}));
 
 const issueTypeOptions = [
   { label: "Automation", value: "Automation" },

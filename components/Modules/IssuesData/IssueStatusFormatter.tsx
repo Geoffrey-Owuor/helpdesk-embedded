@@ -62,7 +62,7 @@ const IssueStatusFormatter = ({ status }: IssueStatusProps) => {
 
   return (
     <div
-      className={`inline-flex w-24 items-center rounded-lg border px-2 py-1 text-xs font-semibold ${config.bg} ${config.text} ${config.border} `}
+      className={`inline-flex w-22 items-center rounded-lg border px-2 py-1 text-xs font-semibold ${config.bg} ${config.text} ${config.border} `}
     >
       <Icon
         size={14}

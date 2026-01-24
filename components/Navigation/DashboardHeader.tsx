@@ -42,7 +42,7 @@ const DashboardHeader = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsIssueModalOpen(true)}
-              className="hidden items-center gap-2 rounded-full bg-blue-900 px-2 py-2 text-white hover:bg-blue-800 sm:flex md:rounded-xl md:py-1.5"
+              className="hidden items-center gap-2 rounded-full bg-blue-900 px-3 py-2 text-white hover:bg-blue-800 sm:flex md:rounded-xl md:py-1.5"
             >
               <CirclePlus className="h-4.5 w-4.5" />
               <span className="hidden md:flex">New Issue</span>
