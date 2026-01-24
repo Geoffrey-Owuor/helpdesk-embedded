@@ -17,6 +17,7 @@ interface OptionsDropDownProps {
   onChange: (value: string) => void;
   error?: boolean;
   loading?: boolean;
+  disabled?: boolean;
 }
 
 const OptionsDropDown = ({
@@ -26,6 +27,7 @@ const OptionsDropDown = ({
   dropDownType,
   error,
   loading,
+  disabled = false,
 }: OptionsDropDownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -59,7 +61,8 @@ const OptionsDropDown = ({
       <button
         type="button" // Important: prevents form submission
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-sm transition-all focus:ring-1 focus:ring-blue-500 focus:outline-none ${
+        disabled={disabled}
+        className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-sm transition-all focus:ring-1 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
           isOpen
             ? "border-blue-500 bg-white ring-1 ring-blue-500/20 dark:bg-neutral-800"
             : "bg-white hover:bg-neutral-50 dark:bg-neutral-800 dark:hover:bg-neutral-700/50"
@@ -100,14 +103,12 @@ const OptionsDropDown = ({
             Select {dropDownType === "department" ? "Department" : "Issue Type"}
           </div>
 
-          {loading && (
+          {loading ? (
             <div className="flex items-center gap-1 px-3 py-6 text-sm text-neutral-400 dark:text-neutral-500">
               <Loader2 className="h-4 w-4 animate-spin" />
               <span>Loading...</span>
             </div>
-          )}
-
-          {options.length > 0 ? (
+          ) : options.length > 0 ? (
             options.map((option) => (
               <button
                 key={option.value}

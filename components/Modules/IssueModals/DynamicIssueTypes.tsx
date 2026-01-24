@@ -9,7 +9,6 @@ type DynamicTypeProps = {
   value: string;
   onChange: (value: string) => void;
   department: string;
-  dropDownType: string;
   error: boolean;
 };
 
@@ -17,7 +16,6 @@ const DynamicIssueTypes = ({
   value,
   onChange,
   department,
-  dropDownType,
   error,
 }: DynamicTypeProps) => {
   const [options, setOptions] = useState<IssueOption[]>([]);
@@ -26,18 +24,27 @@ const DynamicIssueTypes = ({
   // UseEffect for fetching issue types
   useEffect(() => {
     const fetchOptions = async () => {
+      // Don't fetch if no department selected
+      if (!department) {
+        setOptions([]);
+        return;
+      }
       try {
         setLoading(true);
         const result = await fetchedIssueTypes(department);
         setOptions(result);
       } catch (error) {
         console.error("Failed to fetch issue types", error);
+        setOptions([]);
       } finally {
         setLoading(false);
       }
     };
     fetchOptions();
   }, [department]);
+
+  // Disable dropdown if no department is selected
+  const isDisabled = !department;
 
   return (
     <div className="flex flex-col gap-1">
@@ -51,10 +58,11 @@ const DynamicIssueTypes = ({
       <OptionsDropDown
         value={value}
         onChange={onChange}
-        dropDownType={dropDownType}
+        dropDownType="Issue Types"
         options={options}
         error={error}
         loading={loading}
+        disabled={isDisabled}
       />
     </div>
   );

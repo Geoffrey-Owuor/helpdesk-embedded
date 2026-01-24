@@ -26,13 +26,13 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     issue_title: "",
     issue_description: "",
   });
-  const { setAlertInfo } = useAlert();
+  const { setAlertInfo, alertInfo } = useAlert();
   const [loading, setLoading] = useState(false);
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
   const { refetchIssues } = useIssuesData();
 
-  // Variable to check if a department value has been selected
-  let optionsError = false;
+  // set options error
+  const optionsError = alertInfo.alertType === "error";
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
@@ -50,6 +50,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     setFormData((prev) => ({
       ...prev,
       target_department: value,
+      issue_type: "",
     }));
   };
 
@@ -66,14 +67,14 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     e.preventDefault();
 
     if (!formData.target_department || !formData.issue_type) {
-      optionsError = true;
       setAlertInfo({
         showAlert: true,
         alertType: "error",
-        alertMessage: "Department is required",
+        alertMessage: "Missing some required fields",
       });
+    } else {
+      setShowConfirmationDialog(true);
     }
-    setShowConfirmationDialog(true);
   };
 
   // Function for handling issue submission
@@ -180,7 +181,6 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                   value={formData.issue_type}
                   onChange={handleIssueChange}
                   department={formData.target_department}
-                  dropDownType="issue type"
                   error={optionsError}
                 />
               </div>

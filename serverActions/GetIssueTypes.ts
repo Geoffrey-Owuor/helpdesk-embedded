@@ -25,6 +25,8 @@ const getIssueTypes = async (department: string) => {
 
 export const fetchedIssueTypes = unstable_cache(
   async (department: string): Promise<IssueOption[]> => {
+    // Return empty immediately if no department to save DB calls
+    if (!department) return [];
     const data = await getIssueTypes(department);
 
     // Transform the data into our desired format
@@ -33,9 +35,9 @@ export const fetchedIssueTypes = unstable_cache(
       value: item.issue_type,
     }));
   },
-  ["issue_types_key"],
+  ["issue_types_by_dept"],
   {
-    revalidate: 3600,
+    revalidate: 10800,
     tags: ["Issue_Types"],
   },
 );
