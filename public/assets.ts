@@ -46,4 +46,11 @@ export const baseDepartments = [
   { option: "Marketing", value: "Marketing" },
   { option: "Operations", value: "Operations" },
   { option: "Commercial", value: "Commercial" },
+  { option: "HR & Admin", value: "HR & Admin" },
+  { option: "Modern Trade", value: "Modern Trade" },
+  { option: "Retail", value: "Retail" },
+  { option: "B2B", value: "B2B" },
+  { option: "Internal Audit", value: "Internal Audit" },
+  { option: "Security", value: "Security" },
+  { option: "Directorate", value: "Directorate" },
 ];

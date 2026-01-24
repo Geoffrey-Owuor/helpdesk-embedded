@@ -70,7 +70,7 @@ export const IssuesDataProvider = ({
         queryOptions.selectedFilter === "department" &&
         queryOptions.department
       ) {
-        url += `&department=${queryOptions.department}`;
+        url += `&department=${encodeURIComponent(queryOptions.department)}`;
       } else if (
         queryOptions.selectedFilter === "agent" &&
         queryOptions.agent

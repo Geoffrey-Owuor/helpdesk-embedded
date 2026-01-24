@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     );
 
   // destructure user details
-  const { userId, username, role, department } = user;
+  const { userId, email, role, department } = user;
 
   // Extract query parameters from the request url
   const searchParams = request.nextUrl.searchParams;
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     let baseQuery = `
     SELECT issue_uuid, issue_reference_id, issue_submitter_name, issue_submitter_department,
     issue_target_department, issue_type, issue_title, issue_description, issue_created_at, issue_status,
-    issue_agent_name
+    issue_agent_name, issue_agent_email
     FROM issues_table
     `;
 
@@ -48,8 +48,8 @@ export async function GET(request: NextRequest) {
       whereClauses.push(`issue_target_department = $${params.length + 1}`);
       params.push(department);
     } else if (role === "agent") {
-      whereClauses.push(`issue_agent_name = $${params.length + 1}`);
-      params.push(username);
+      whereClauses.push(`issue_agent_email = $${params.length + 1}`);
+      params.push(email);
     }
 
     // Dynamic filtering based on client params

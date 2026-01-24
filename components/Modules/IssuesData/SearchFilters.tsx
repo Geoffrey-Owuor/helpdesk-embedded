@@ -2,8 +2,12 @@
 import { useSearchLogic } from "@/contexts/SearchLogicContext";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
 import { Search } from "lucide-react";
+import { Dispatch, SetStateAction } from "react";
 
-const SearchFilters = () => {
+export type FilterProps = {
+  setCurrentPage: Dispatch<SetStateAction<number>>;
+};
+const SearchFilters = ({ setCurrentPage }: FilterProps) => {
   // The the fetch issues function
   const { fetchIssues } = useIssuesData();
 
@@ -37,6 +41,7 @@ const SearchFilters = () => {
   // Handling the search logic
   const handleFilterSearch = () => {
     fetchIssues(filterOptions);
+    setCurrentPage(1);
   };
   return (
     <button
