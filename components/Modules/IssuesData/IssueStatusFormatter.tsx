@@ -62,13 +62,13 @@ const IssueStatusFormatter = ({ status }: IssueStatusProps) => {
 
   return (
     <div
-      className={`inline-flex w-fit items-center rounded-lg border px-2 py-1 text-xs font-semibold ${config.bg} ${config.text} ${config.border} `}
+      className={`inline-flex w-24 items-center rounded-lg border px-2 py-1 text-xs font-semibold ${config.bg} ${config.text} ${config.border} `}
     >
       <Icon
         size={14}
         className={`mr-1.5 ${status === "in progress" ? "animate-spin" : ""}`}
       />
-      <span>{status}</span>
+      <span className="truncate">{status}</span>
     </div>
   );
 };

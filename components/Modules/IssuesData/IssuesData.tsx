@@ -50,7 +50,7 @@ const IssuesData = () => {
             </span>
 
             <span className="text-xs text-neutral-500">
-              Total Issues: {issuesData.length}
+              Total issues displayed: {issuesData.length}
             </span>
           </div>
 
@@ -94,7 +94,12 @@ const IssuesData = () => {
             <div className={colWidths.type}>Type</div>
             <div className={colWidths.submitter}>Submitter</div>
             <div className={colWidths.date}>Date Submitted</div>
-            <div className={colWidths.dept}>Department</div>
+            <div className={`${colWidths.dept} truncate`}>
+              Submitter Department
+            </div>
+            <div className={`${colWidths.dept} truncate`}>
+              Target Department
+            </div>
             <div className={colWidths.agent}>Agent</div>
             <div className={colWidths.title}>Title</div>
             <div className={colWidths.desc}>Description</div>
@@ -124,15 +129,12 @@ const IssuesData = () => {
                         title={titleHelper(issueData.issue_reference_id)}
                         className={colWidths.ref}
                       >
-                        <span className="font-semibold text-neutral-500 dark:text-neutral-300">
+                        <span className="truncate font-semibold text-neutral-900 dark:text-neutral-100">
                           {issueData.issue_reference_id}
                         </span>
                       </div>
 
-                      <div
-                        title={titleHelper(issueData.issue_status)}
-                        className={colWidths.status}
-                      >
+                      <div title={titleHelper(issueData.issue_status)}>
                         <IssueStatusFormatter status={issueData.issue_status} />
                       </div>
 
@@ -171,6 +173,15 @@ const IssuesData = () => {
                       >
                         <span className="truncate text-gray-900 dark:text-white">
                           {issueData.issue_submitter_department}
+                        </span>
+                      </div>
+
+                      <div
+                        title={titleHelper(issueData.issue_target_department)}
+                        className={colWidths.dept}
+                      >
+                        <span className="truncate text-gray-900 dark:text-white">
+                          {issueData.issue_target_department}
                         </span>
                       </div>
 

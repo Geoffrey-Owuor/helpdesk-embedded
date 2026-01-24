@@ -38,3 +38,12 @@ export const dateFormatter = (dateString: issueValueTypes) => {
     day: "numeric",
   });
 };
+
+// export our departments
+export const baseDepartments = [
+  { option: "IT & Projects", value: "IT & Projects" },
+  { option: "Finance", value: "Finance" },
+  { option: "Marketing", value: "Marketing" },
+  { option: "Operations", value: "Operations" },
+  { option: "Commercial", value: "Commercial" },
+];

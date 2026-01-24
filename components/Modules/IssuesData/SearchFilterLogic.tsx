@@ -1,7 +1,8 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Check, ChevronDown, Filter } from "lucide-react";
 import { useSearchLogic } from "@/contexts/SearchLogicContext";
+import { useUser } from "@/contexts/UserContext";
 
 // Define options outside component to keep it clean
 const filterOptions = [
@@ -19,6 +20,22 @@ const SearchFilterLogic = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const { selectedFilter, setSelectedFilter } = useSearchLogic();
   const filterRef = useRef<HTMLDivElement>(null);
+
+  // Get the user's role
+  const { role } = useUser();
+
+  const visibleOptions = useMemo(() => {
+    return filterOptions.filter((option) => {
+      // Hide agent filter if user is an agent
+      if (role === "agent" && option.value === "agent") return false;
+
+      // Hide the submitter filter if user is a standard user
+      if (role === "user" && option.value === "submitter") return false;
+
+      // Otherwise return true for the remaining ones
+      return true;
+    });
+  }, [role]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -65,9 +82,9 @@ const SearchFilterLogic = () => {
       {isFilterOpen && (
         <div className="absolute top-full left-0 z-20 mt-2 w-full origin-top-left rounded-xl border border-neutral-200 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-none">
           <div className="px-2 py-2 text-xs font-semibold text-neutral-500 uppercase">
-            Sort Options
+            Filter Options
           </div>
-          {filterOptions.map((option) => (
+          {visibleOptions.map((option) => (
             <button
               key={option.value}
               onClick={() => handleSelectFilter(option.value)}

@@ -3,7 +3,7 @@
 import { ChangeEvent, Dispatch, FormEvent, SetStateAction } from "react";
 import ClientPortal from "../ClientPortal";
 import { useState } from "react";
-import { X, ChevronDown, Asterisk } from "lucide-react";
+import { X, Asterisk } from "lucide-react";
 import apiClient from "@/lib/AxiosClient";
 import { PromiseOverlay } from "../Overlays";
 import ConfirmationDialog from "../Overlays";
@@ -11,6 +11,8 @@ import DynamicIssueTypes from "./DynamicIssueTypes";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlert } from "@/contexts/AlertContext";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
+import OptionsDropDown from "./OptionsDropDown";
+import { baseDepartments } from "@/public/assets";
 
 type MainIssueModalProps = {
   isOpen: boolean;
@@ -29,6 +31,9 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
   const { refetchIssues } = useIssuesData();
 
+  // Variable to check if a department value has been selected
+  let optionsError = false;
+
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
@@ -40,9 +45,34 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     }));
   };
 
+  // Specific handler for department
+  const handleDepartmentChange = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      target_department: value,
+    }));
+  };
+
+  // Handler for issue types
+  const handleIssueChange = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      issue_type: value,
+    }));
+  };
+
   // Function to show the confirmation dialog
   const handleConfirmSubmit = (e: FormEvent) => {
     e.preventDefault();
+
+    if (!formData.target_department || !formData.issue_type) {
+      optionsError = true;
+      setAlertInfo({
+        showAlert: true,
+        alertType: "error",
+        alertMessage: "Department is required",
+      });
+    }
     setShowConfirmationDialog(true);
   };
 
@@ -134,33 +164,24 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                     Target Department{" "}
                     <Asterisk className="h-3 w-3 text-red-500" />
                   </label>
-                  <div className="relative">
-                    <select
-                      id="target_department"
-                      name="target_department"
-                      value={formData.target_department}
-                      onChange={handleChange}
-                      required
-                      className="w-full appearance-none rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
-                    >
-                      <option value="" disabled>
-                        Direct this issue to...
-                      </option>
-                      <option value="IT & Projects">IT & Projects</option>
-                      <option value="Finance">Finance</option>
-                    </select>
-                    {/* Lucide Chevron Icon */}
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-neutral-500">
-                      <ChevronDown size={16} />
-                    </div>
-                  </div>
+
+                  {/* Options Dropdown */}
+                  <OptionsDropDown
+                    value={formData.target_department}
+                    onChange={handleDepartmentChange}
+                    options={baseDepartments}
+                    dropDownType="department"
+                    error={optionsError}
+                  />
                 </div>
 
                 {/* Dynamic Issue Types */}
                 <DynamicIssueTypes
                   value={formData.issue_type}
-                  handleChange={handleChange}
+                  onChange={handleIssueChange}
                   department={formData.target_department}
+                  dropDownType="issue type"
+                  error={optionsError}
                 />
               </div>
 
