@@ -42,7 +42,7 @@ const ClearFilters = ({ setCurrentPage }: FilterProps) => {
     <button
       onClick={clearFilters}
       title="Clear filters"
-      className="flex h-9.5 items-center gap-1.5 rounded-xl bg-blue-700 px-3 text-white hover:bg-blue-800"
+      className="flex h-9.5 items-center gap-1.5 rounded-xl bg-blue-700 px-3 text-sm text-white hover:bg-blue-800"
     >
       <XCircle className="h-4.5 w-4.5" />
       <span>Clear filters</span>

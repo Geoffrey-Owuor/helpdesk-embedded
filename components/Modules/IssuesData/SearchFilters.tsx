@@ -46,7 +46,7 @@ const SearchFilters = ({ setCurrentPage }: FilterProps) => {
   return (
     <button
       onClick={handleFilterSearch}
-      className="flex h-9.5 items-center gap-1.5 rounded-xl bg-neutral-900 px-3 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+      className="flex h-9.5 items-center gap-1.5 rounded-xl bg-neutral-900 px-3 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
     >
       <Search className="h-4 w-4" />
       Search
