@@ -19,6 +19,7 @@ type SearchLogicContextTypes = {
   agent: string;
   issueType: string;
   submitter: string;
+  agentAdminFilter: string;
   setSelectedFilter: Dispatch<SetStateAction<string>>;
   setFromDate: Dispatch<SetStateAction<string>>;
   setToDate: Dispatch<SetStateAction<string>>;
@@ -28,6 +29,7 @@ type SearchLogicContextTypes = {
   setAgent: Dispatch<SetStateAction<string>>;
   setIssueType: Dispatch<SetStateAction<string>>;
   setSubmitter: Dispatch<SetStateAction<string>>;
+  setAgentAdminFilter: Dispatch<SetStateAction<string>>;
 };
 
 const SearchLogicContext = createContext<SearchLogicContextTypes | null>(null);
@@ -47,6 +49,7 @@ export const SearchLogicProvider = ({
   const [agent, setAgent] = useState("");
   const [issueType, setIssueType] = useState("");
   const [submitter, setSubmitter] = useState("");
+  const [agentAdminFilter, setAgentAdminFilter] = useState("");
 
   const values = useMemo(
     () => ({
@@ -59,6 +62,7 @@ export const SearchLogicProvider = ({
       agent,
       issueType,
       submitter,
+      agentAdminFilter,
       setSelectedFilter,
       setFromDate,
       setToDate,
@@ -68,6 +72,7 @@ export const SearchLogicProvider = ({
       setAgent,
       setIssueType,
       setSubmitter,
+      setAgentAdminFilter,
     }),
     [
       selectedFilter,
@@ -76,6 +81,7 @@ export const SearchLogicProvider = ({
       status,
       reference,
       department,
+      agentAdminFilter,
       agent,
       issueType,
       submitter,

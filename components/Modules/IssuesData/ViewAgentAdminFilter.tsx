@@ -2,7 +2,7 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { useSearchLogic } from "@/contexts/SearchLogicContext";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
-import { Inbox, Send } from "lucide-react";
+import { Building2, Send } from "lucide-react";
 
 type AgentAdminFilterProps = {
   setCurrentPage: Dispatch<SetStateAction<number>>;
@@ -14,6 +14,7 @@ const ViewAgentAdminFilter = ({ setCurrentPage }: AgentAdminFilterProps) => {
 
   const {
     setSelectedFilter,
+    setAgentAdminFilter,
     setStatus,
     setReference,
     setFromDate,
@@ -30,6 +31,10 @@ const ViewAgentAdminFilter = ({ setCurrentPage }: AgentAdminFilterProps) => {
 
     setIsFilterActive(false);
 
+    // Reset the agentAdmin filter and the default selected filter
+    setAgentAdminFilter("");
+    setSelectedFilter("status");
+
     // Refetch using the context's default behavior
     // Refetches using the default selected filter
     refetchIssues();
@@ -43,7 +48,8 @@ const ViewAgentAdminFilter = ({ setCurrentPage }: AgentAdminFilterProps) => {
     setIsFilterActive(true);
 
     // 1. Update the UI Context state (so search bars clear visually)
-    setSelectedFilter("agentAdminFilter");
+    setAgentAdminFilter("agentAdminFilter");
+    setSelectedFilter("status");
     setStatus("");
     setReference("");
     setFromDate("");
@@ -57,7 +63,8 @@ const ViewAgentAdminFilter = ({ setCurrentPage }: AgentAdminFilterProps) => {
     // We cannot use the state variables here because setX() is async.
     // We must pass the intended values directly.
     const cleanOptions = {
-      selectedFilter: "agentAdminFilter",
+      agentAdminFilter: "agentAdminFilter",
+      selectedFilter: "status",
       status: "",
       reference: "",
       fromDate: "",
@@ -86,8 +93,8 @@ const ViewAgentAdminFilter = ({ setCurrentPage }: AgentAdminFilterProps) => {
               : "text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
           }`}
         >
-          <Inbox className="h-4 w-4" />
-          <span className="hidden sm:inline-flex">Incoming</span>
+          <Building2 className="h-4 w-4" />
+          <span className="custom:inline-flex hidden">Incoming</span>
         </button>
 
         {/* Button 2: Agent/Admin Submitted View */}
@@ -101,7 +108,7 @@ const ViewAgentAdminFilter = ({ setCurrentPage }: AgentAdminFilterProps) => {
           }`}
         >
           <Send className="h-4 w-4" />
-          <span className="hidden sm:inline-flex">My Submissions</span>
+          <span className="custom:inline-flex hidden">My Submissions</span>
         </button>
       </div>
     </div>

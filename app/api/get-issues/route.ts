@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
   // Extract query parameters from the request url
   const searchParams = request.nextUrl.searchParams;
   const selectedFilter = searchParams.get("selectedFilter");
+  const agentAdminFilter = searchParams.get("agentAdminFilter");
   const status = searchParams.get("status");
   const reference = searchParams.get("reference");
   const departmentParams = searchParams.get("department");
@@ -45,11 +46,21 @@ export async function GET(request: NextRequest) {
       whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
       params.push(userId);
     } else if (role === "admin") {
-      whereClauses.push(`issue_target_department = $${params.length + 1}`);
-      params.push(department);
+      if (agentAdminFilter === "agentAdminFilter") {
+        whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
+        params.push(userId);
+      } else {
+        whereClauses.push(`issue_target_department = $${params.length + 1}`);
+        params.push(department);
+      }
     } else if (role === "agent") {
-      whereClauses.push(`issue_agent_email = $${params.length + 1}`);
-      params.push(email);
+      if (agentAdminFilter === "agentAdminFilter") {
+        whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
+        params.push(userId);
+      } else {
+        whereClauses.push(`issue_agent_email = $${params.length + 1}`);
+        params.push(email);
+      }
     }
 
     // Dynamic filtering based on client params

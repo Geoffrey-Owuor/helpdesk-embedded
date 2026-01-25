@@ -13,6 +13,7 @@ import ClearFilters from "./ClearFilters";
 import SearchFilters from "./SearchFilters";
 import { useColumnVisibility } from "@/contexts/ColumnVisibilityContext";
 import { useState } from "react";
+import { useSearchLogic } from "@/contexts/SearchLogicContext";
 import ViewAgentAdminFilter from "./ViewAgentAdminFilter";
 import Pagination from "./Pagination";
 
@@ -20,6 +21,7 @@ const IssuesData = () => {
   const { issuesData, loading, refetchIssues } = useIssuesData();
   const { role, department } = useUser();
   const { visibleColumns } = useColumnVisibility();
+  const { agentAdminFilter } = useSearchLogic();
 
   // Pagination states and logic
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,11 +39,24 @@ const IssuesData = () => {
     refetchIssues();
     setCurrentPage(1);
   };
-  // Determine the text to display in title based on the current user role
-  const textRoleMapping: Record<string, string> = {
-    user: "you have submitted",
-    admin: `submitted to ${department}`,
-    agent: "assigned to you",
+
+  // default subtitle
+  const defaultSubtitle = `you have submitted`;
+  const generatedSubtitle = () => {
+    // Determine the text to display in title based on the current user role
+    const textRoleMapping: Record<string, string> = {
+      user: defaultSubtitle,
+      admin:
+        agentAdminFilter === "agentAdminFilter"
+          ? defaultSubtitle
+          : `Incoming for ${department}`,
+      agent:
+        agentAdminFilter === "agentAdminFilter"
+          ? defaultSubtitle
+          : "Assigned to You",
+    };
+
+    return textRoleMapping[role];
   };
 
   return (
@@ -52,15 +67,17 @@ const IssuesData = () => {
         <div className="flex items-center justify-between md:justify-center md:gap-10">
           <div className="inline-flex flex-col">
             <span className="text-xl font-semibold">Issues Data</span>
-            <span className="text-sm text-neutral-600 dark:text-neutral-400">
-              Issues {textRoleMapping[role]}
+            <span className="text-sm text-neutral-800 dark:text-neutral-400">
+              Issues {generatedSubtitle()}
             </span>
 
             <span className="text-xs text-neutral-500">
               Total issues displayed: {issuesData.length || "none"}
             </span>
           </div>
-          <ViewAgentAdminFilter setCurrentPage={setCurrentPage} />
+          {role !== "user" && (
+            <ViewAgentAdminFilter setCurrentPage={setCurrentPage} />
+          )}
         </div>
 
         {/* The refresh button, clear filters, hide columns */}
