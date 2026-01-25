@@ -60,20 +60,20 @@ const ConfirmationDialog = ({
             <X className="h-6 w-6" />
           </button>
         </div>
-        <p className="mb-4 text-center text-neutral-700 dark:text-neutral-400">
+        <p className="mb-4 text-center text-sm text-neutral-700 dark:text-neutral-400">
           {message}
         </p>
         <div className="flex justify-center space-x-4">
           <button
             onClick={onCancel}
             type="button"
-            className="rounded-xl border border-neutral-300 bg-white px-4 py-1.5 text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700"
+            className="rounded-xl border border-neutral-300 bg-white px-4 py-1.5 text-sm text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="rounded-xl bg-neutral-900 px-4 py-1.5 text-white hover:bg-neutral-700 dark:bg-neutral-200 dark:text-neutral-900 dark:hover:bg-neutral-300"
+            className="rounded-xl bg-neutral-900 px-4 py-1.5 text-sm text-white hover:bg-neutral-700 dark:bg-neutral-200 dark:text-neutral-900 dark:hover:bg-neutral-300"
           >
             Proceed
           </button>

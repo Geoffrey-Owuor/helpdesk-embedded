@@ -13,6 +13,7 @@ import ClearFilters from "./ClearFilters";
 import SearchFilters from "./SearchFilters";
 import { useColumnVisibility } from "@/contexts/ColumnVisibilityContext";
 import { useState } from "react";
+import ViewAgentAdminFilter from "./ViewAgentAdminFilter";
 import Pagination from "./Pagination";
 
 const IssuesData = () => {
@@ -47,16 +48,19 @@ const IssuesData = () => {
     <>
       {/* Title Area Refresh Button, show/hide columns and Clear filters functionalities */}
       <div className="mb-4 flex flex-col gap-6 md:flex-row md:justify-between">
-        {/* The title  */}
-        <div className="flex flex-col">
-          <span className="text-xl font-semibold">Issues Data</span>
-          <span className="text-sm text-neutral-600 dark:text-neutral-400">
-            Issues {textRoleMapping[role]}
-          </span>
+        {/* The title and toggle */}
+        <div className="flex items-center justify-between md:justify-center md:gap-10">
+          <div className="inline-flex flex-col">
+            <span className="text-xl font-semibold">Issues Data</span>
+            <span className="text-sm text-neutral-600 dark:text-neutral-400">
+              Issues {textRoleMapping[role]}
+            </span>
 
-          <span className="text-xs text-neutral-500">
-            Total issues displayed: {issuesData.length || "none"}
-          </span>
+            <span className="text-xs text-neutral-500">
+              Total issues displayed: {issuesData.length || "none"}
+            </span>
+          </div>
+          <ViewAgentAdminFilter setCurrentPage={setCurrentPage} />
         </div>
 
         {/* The refresh button, clear filters, hide columns */}
@@ -174,7 +178,7 @@ const IssuesData = () => {
 
                       {visibleColumns.ref && (
                         <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-800/50 dark:group-hover:bg-neutral-700/50">
-                          <p className="font-semibold text-neutral-900 dark:text-neutral-100">
+                          <p className="max-w-30 truncate text-sm font-semibold text-neutral-900 dark:text-neutral-100">
                             {issueData.issue_reference_id}
                           </p>
                         </td>

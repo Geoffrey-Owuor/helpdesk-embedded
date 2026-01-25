@@ -1,7 +1,6 @@
 "use client";
 import { useSearchLogic } from "@/contexts/SearchLogicContext";
 import { XCircle } from "lucide-react";
-import { useIssuesData } from "@/contexts/IssuesDataContext";
 import { FilterProps } from "./SearchFilters";
 
 const ClearFilters = ({ setCurrentPage }: FilterProps) => {
@@ -18,11 +17,8 @@ const ClearFilters = ({ setCurrentPage }: FilterProps) => {
     setSubmitter,
   } = useSearchLogic();
 
-  //    Get the refetch issues logic
-  const { refetchIssues } = useIssuesData();
-
   const clearFilters = () => {
-    // clear the values in each setter
+    // clear the values in each setter - we clear filters without refetching the data
     setSelectedFilter("");
     setStatus("");
     setReference("");
@@ -32,10 +28,7 @@ const ClearFilters = ({ setCurrentPage }: FilterProps) => {
     setAgent("");
     setIssueType("");
     setSubmitter("");
-
-    // refetch issues with not filters
-    refetchIssues();
-
+    // reset page
     setCurrentPage(1);
   };
   return (
