@@ -130,7 +130,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       {showConfirmationDialog && (
         <ConfirmationDialog
           title="Submit Issue"
-          message="Are you sure you want to submit this issue? (You cannot edit after submitting)"
+          message="Are you sure you want to submit this issue?"
           onCancel={() => setShowConfirmationDialog(false)}
           onConfirm={handleFormSubmit}
         />

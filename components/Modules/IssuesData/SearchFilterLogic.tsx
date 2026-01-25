@@ -18,7 +18,8 @@ const filterOptions = [
 const SearchFilterLogic = () => {
   // State for the filter dropdown
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const { selectedFilter, setSelectedFilter } = useSearchLogic();
+  const { selectedFilter, agentAdminFilter, setSelectedFilter } =
+    useSearchLogic();
   const filterRef = useRef<HTMLDivElement>(null);
 
   // Get the user's role
@@ -26,8 +27,13 @@ const SearchFilterLogic = () => {
 
   const visibleOptions = useMemo(() => {
     return filterOptions.filter((option) => {
-      // Hide agent filter if user is an agent
-      if (role === "agent" && option.value === "agent") return false;
+      // Hide agent filter if user is an agent and the agentAdminFilter is not enabled
+      if (
+        role === "agent" &&
+        agentAdminFilter !== "agentAdminFilter" &&
+        option.value === "agent"
+      )
+        return false;
 
       // Hide the submitter filter if user is a standard user
       if (role === "user" && option.value === "submitter") return false;
@@ -35,7 +41,7 @@ const SearchFilterLogic = () => {
       // Otherwise return true for the remaining ones
       return true;
     });
-  }, [role]);
+  }, [role, agentAdminFilter]);
 
   // Close dropdown when clicking outside
   useEffect(() => {

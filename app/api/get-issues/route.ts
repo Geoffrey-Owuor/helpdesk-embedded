@@ -81,8 +81,14 @@ export async function GET(request: NextRequest) {
     else if (selectedFilter === "department" && departmentParams) {
       if (role === "user") {
         whereClauses.push(`issue_target_department = $${params.length + 1}`);
-      } else {
-        whereClauses.push(`issue_submitter_department = $${params.length + 1}`);
+      } else if (role === "admin" || role === "agent") {
+        if (agentAdminFilter === "agentAdminFilter") {
+          whereClauses.push(`issue_target_department = $${params.length + 1}`);
+        } else {
+          whereClauses.push(
+            `issue_submitter_department = $${params.length + 1}`,
+          );
+        }
       }
 
       params.push(departmentParams);

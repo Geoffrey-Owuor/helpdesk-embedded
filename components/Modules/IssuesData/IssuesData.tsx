@@ -86,7 +86,7 @@ const IssuesData = () => {
           <ClearFilters setCurrentPage={setCurrentPage} />
           <button
             onClick={handleRefetchIssues}
-            className="flex h-9.5 cursor-pointer items-center gap-2 rounded-xl bg-neutral-900 px-3 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+            className="flex h-9.5 items-center gap-2 rounded-xl bg-neutral-900 px-3 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
           >
             <RefreshCcw className="h-4.5 w-4.5" />
             <span>Refresh</span>
