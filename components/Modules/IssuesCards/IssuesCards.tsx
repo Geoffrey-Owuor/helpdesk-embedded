@@ -1,11 +1,20 @@
 "use client";
 
-import SkeletonBox from "@/components/Skeletons/SkeletonBox";
+import IssuesCardsSkeleton from "@/components/Skeletons/IssuesCardsSkeleton";
 import { useIssuesCards } from "@/contexts/IssuesCardsContext";
-import { Clock, Activity, CheckCircle2, XCircle } from "lucide-react";
+import {
+  Clock,
+  Activity,
+  CheckCircle2,
+  XCircle,
+  RefreshCw,
+  TrendingUp,
+} from "lucide-react";
+import { useUser } from "@/contexts/UserContext";
 
 const IssuesCards = () => {
-  const { issuesCounts, loading } = useIssuesCards();
+  const { issuesCounts, refetchIssuesCounts, loading } = useIssuesCards();
+  const { role, department } = useUser();
 
   // Configuration for the cards to keep the JSX clean
   // We map specific colors to each status to make them distinct but cohesive
@@ -44,52 +53,72 @@ const IssuesCards = () => {
     },
   ];
 
-  // Dummy Loading State (Placeholder for Skeleton)
-  if (loading) {
-    return (
-      <div className="my-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[...Array(4)].map((_, index) => (
-          <SkeletonBox
-            key={index}
-            className="h-32 w-full bg-gray-100 dark:bg-neutral-900"
-          />
-        ))}
-      </div>
-    );
-  }
+  // subtitle role mapping
+  const subtitleMapping: Record<string, string> = {
+    user: "Submitted",
+    agent: "Assigned",
+    admin: department,
+  };
 
   return (
-    <section className="my-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {statItems.map((item, index) => (
-        <div
-          key={index}
-          className="group relative flex flex-col justify-between rounded-xl bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:bg-neutral-900/50"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
-                {item.label}
-              </p>
-              <h3 className="mt-2 text-3xl font-bold text-neutral-900 dark:text-neutral-100">
-                {item.count}
-              </h3>
-            </div>
-
-            {/* Icon Container with dynamic colors */}
-            <div
-              className={`flex h-12 w-12 items-center justify-center rounded-xl border ${item.bgColor} ${item.borderColor} ${item.color}`}
-            >
-              <item.icon className="h-6 w-6" strokeWidth={2} />
-            </div>
-          </div>
-
-          {/* Optional: Subtle decorative element or "View details" link could go here */}
-          <div className="mt-4 flex items-center gap-1 text-xs text-neutral-400 dark:text-neutral-500">
-            <span className="font-medium">Total {item.label} issues</span>
+    <div className="my-6">
+      <div className="mb-4 flex items-center justify-between">
+        <div className="inline-flex flex-col">
+          <span className="text-xl font-semibold">Issues Summary</span>
+          <span className="text-sm text-neutral-800 dark:text-neutral-400">
+            {subtitleMapping[role]} Issues Overview
+          </span>
+        </div>
+        <div className="items-center gap-4 md:flex">
+          <button
+            onClick={refetchIssuesCounts}
+            className="rounded-full bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+          >
+            <RefreshCw />
+          </button>
+          <div className="hidden items-center gap-2 rounded-xl bg-gray-100 px-3 py-2 md:flex dark:bg-gray-900">
+            <TrendingUp className="text-blue-600" />
+            <span className="text-lg font-semibold">45</span>
           </div>
         </div>
-      ))}
-    </section>
+      </div>
+
+      {loading ? (
+        <IssuesCardsSkeleton />
+      ) : (
+        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {statItems.map((item, index) => (
+            <div
+              key={index}
+              className="group relative flex flex-col justify-between rounded-xl bg-slate-50 p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:bg-neutral-900/50"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-neutral-500 dark:text-neutral-400">
+                    {item.label}
+                  </p>
+                  <h3 className="mt-2 text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+                    {item.count}
+                  </h3>
+                </div>
+
+                {/* Icon Container with dynamic colors */}
+                <div
+                  className={`flex h-12 w-12 items-center justify-center rounded-xl border ${item.bgColor} ${item.borderColor} ${item.color}`}
+                >
+                  <item.icon className="h-6 w-6" strokeWidth={2} />
+                </div>
+              </div>
+
+              {/* Optional: Subtle decorative element or "View details" link could go here */}
+              <div className="mt-4 flex items-center gap-1 text-xs text-neutral-400 dark:text-neutral-500">
+                <span className="font-semibold">Total {item.label} issues</span>
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
+    </div>
   );
 };
 
