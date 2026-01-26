@@ -7,10 +7,11 @@ import {
   Activity,
   CheckCircle2,
   XCircle,
-  RefreshCw,
   TrendingUp,
+  RotateCcw,
 } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
+import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 
 const IssuesCards = () => {
   const { issuesCounts, refetchIssuesCounts, loading } = useIssuesCards();
@@ -74,12 +75,16 @@ const IssuesCards = () => {
             onClick={refetchIssuesCounts}
             className="rounded-full bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
           >
-            <RefreshCw />
+            <RotateCcw />
           </button>
-          <div className="hidden items-center gap-2 rounded-xl bg-gray-100 px-3 py-2 md:flex dark:bg-gray-900">
-            <TrendingUp className="text-blue-600" />
-            <span className="text-lg font-semibold">45</span>
-          </div>
+          {loading ? (
+            <SkeletonBox className="h-11 w-20" />
+          ) : (
+            <div className="hidden items-center gap-2 rounded-xl bg-gray-100 px-3 py-2 md:flex dark:bg-gray-900">
+              <TrendingUp className="text-blue-600" />
+              <span className="text-lg font-semibold">45</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -90,7 +95,7 @@ const IssuesCards = () => {
           {statItems.map((item, index) => (
             <div
               key={index}
-              className="group relative flex flex-col justify-between rounded-xl bg-slate-50 p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:bg-neutral-900/50"
+              className="group relative flex flex-col justify-between rounded-xl border border-neutral-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:border-neutral-900 dark:bg-neutral-950"
             >
               <div className="flex items-center justify-between">
                 <div>
