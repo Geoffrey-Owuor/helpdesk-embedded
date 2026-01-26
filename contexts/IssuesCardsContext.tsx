@@ -12,14 +12,14 @@ import {
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 
-interface issuesCounts {
+interface IssuesCounts {
   pending: number;
   inProgress: number;
   resolved: number;
   unfeasible: number;
 }
 
-const defaultCounts = {
+const defaultCounts: IssuesCounts = {
   pending: 0,
   inProgress: 0,
   resolved: 0,
@@ -28,7 +28,7 @@ const defaultCounts = {
 
 type IssuesCardsProviderValues = {
   loading: boolean;
-  issuesCounts: issuesCounts;
+  issuesCounts: IssuesCounts;
   refetchIssuesCounts: () => Promise<void>;
 };
 
@@ -38,7 +38,7 @@ const IssuesCardsContext = createContext<IssuesCardsProviderValues | null>(
 
 export const IssuesCardsProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
-  const [issuesCounts, setIssuesCounts] = useState<issuesCounts>(defaultCounts);
+  const [issuesCounts, setIssuesCounts] = useState<IssuesCounts>(defaultCounts);
 
   const fetchIssuesCounts = useCallback(async () => {
     setLoading(true);

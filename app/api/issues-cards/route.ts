@@ -40,10 +40,10 @@ export const GET = withAuth(async ({ user }) => {
     // 3. Fire all 4 requests in parallel
     // We get an array of results: [ [row1], [row2], ... ]
     const results = await Promise.all([
-      runStatusQuery("Pending"),
-      runStatusQuery("In Progress"),
-      runStatusQuery("Resolved"),
-      runStatusQuery("Unfeasible"),
+      runStatusQuery("pending"),
+      runStatusQuery("in progress"),
+      runStatusQuery("resolved"),
+      runStatusQuery("unfeasible"),
     ]);
 
     // 4. Extract data safely
