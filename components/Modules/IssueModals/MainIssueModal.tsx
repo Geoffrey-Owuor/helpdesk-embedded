@@ -3,7 +3,9 @@
 import { ChangeEvent, Dispatch, FormEvent, SetStateAction } from "react";
 import ClientPortal from "../ClientPortal";
 import { useState } from "react";
-import { X, Asterisk } from "lucide-react";
+import { X, Asterisk, Bot, UserCog, UserRoundCog } from "lucide-react";
+import { fetchedIssueAgentsMapping } from "@/serverActions/GetIssueTypes";
+import { IssueAgentMapping } from "@/serverActions/GetIssueTypes";
 import apiClient from "@/lib/AxiosClient";
 import { PromiseOverlay } from "../Overlays";
 import ConfirmationDialog from "../Overlays";
@@ -26,6 +28,12 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     issue_title: "",
     issue_description: "",
   });
+
+  // State for the Assignment Bot Card
+  const [assignmentInfo, setAssignmentInfo] =
+    useState<IssueAgentMapping | null>(null);
+  const [isFetchingAssignment, setIsFetchingAssignment] = useState(false);
+
   const { setAlertInfo, alertInfo } = useAlert();
   const [loading, setLoading] = useState(false);
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
@@ -52,14 +60,30 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       target_department: value,
       issue_type: "",
     }));
+    setAssignmentInfo(null); //clear previously set assignment info
   };
 
   // Handler for issue types
-  const handleIssueChange = (value: string) => {
+  const handleIssueChange = async (value: string) => {
     setFormData((prev) => ({
       ...prev,
       issue_type: value,
     }));
+
+    // 2. Fetch Assignment Info
+    if (value) {
+      setIsFetchingAssignment(true);
+      try {
+        const info = await fetchedIssueAgentsMapping(value);
+        setAssignmentInfo(info);
+      } catch (error) {
+        console.error("Failed to fetch assignment info", error);
+      } finally {
+        setIsFetchingAssignment(false);
+      }
+    } else {
+      setAssignmentInfo(null);
+    }
   };
 
   // Function to show the confirmation dialog
@@ -99,6 +123,8 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
         issue_title: "",
         issue_description: "",
       });
+
+      setAssignmentInfo(null); // Clear assignment info
 
       // refetch issues
       refetchIssues();
@@ -184,6 +210,57 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                   error={optionsError}
                 />
               </div>
+
+              {/* --- NEW: Auto-Assignment Bot Card --- */}
+              {(assignmentInfo || isFetchingAssignment) && (
+                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="relative overflow-hidden rounded-lg border border-blue-100 bg-blue-50/50 p-3 dark:border-blue-900/30 dark:bg-blue-900/10">
+                    <div className="flex gap-3">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-800 dark:text-blue-200">
+                        {isFetchingAssignment ? (
+                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+                        ) : (
+                          <Bot size={18} />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+                          Auto-Assignment Bot
+                        </h4>
+
+                        {isFetchingAssignment ? (
+                          <p className="text-xs text-blue-700 dark:text-blue-300">
+                            Finding the best agent for this issue...
+                          </p>
+                        ) : (
+                          <div className="mt-1 flex flex-col gap-1 text-xs text-blue-700 dark:text-blue-300">
+                            <p>
+                              Based on your selection, this ticket may be
+                              assigned to:
+                            </p>
+                            <div className="mt-1 flex items-center gap-4">
+                              <div className="flex items-center gap-1.5 font-semibold">
+                                <UserRoundCog size={14} />
+                                <span>Agent: {assignmentInfo?.agent_name}</span>
+                              </div>
+
+                              <div className="flex items-center gap-1.5 opacity-75">
+                                <span>
+                                  (
+                                  <span className="font-semibold">
+                                    Dept Admin
+                                  </span>
+                                  : {assignmentInfo?.admin_name})
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Issue Title */}
               <div className="flex flex-col gap-1">

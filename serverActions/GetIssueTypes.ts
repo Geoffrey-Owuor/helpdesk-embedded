@@ -8,6 +8,11 @@ export interface IssueOption {
   value: string;
 }
 
+export interface IssueAgentMapping {
+  agent_name: string;
+  admin_name: string;
+}
+
 const getIssueTypes = async (department: string) => {
   // Draft the query
   const baseQuery = `SELECT issue_type FROM issues_mapping
@@ -19,6 +24,18 @@ const getIssueTypes = async (department: string) => {
     return result;
   } catch (error) {
     console.error("Error fetching issue types", error);
+    return [];
+  }
+};
+
+const getIssueAgentsMapping = async (issueType: string) => {
+  const baseQuery = `SELECT agent_name, admin_name FROM issues_mapping
+              WHERE issue_type = $1 LIMIT 1`;
+  try {
+    const result = await query(baseQuery, [issueType]);
+    return result;
+  } catch (error) {
+    console.error("Error fetching agent name and admin name:", error);
     return [];
   }
 };
@@ -37,7 +54,24 @@ export const fetchedIssueTypes = unstable_cache(
   },
   ["issue_types_by_dept"],
   {
-    revalidate: 10800,
+    revalidate: 3600,
     tags: ["Issue_Types"],
+  },
+);
+
+export const fetchedIssueAgentsMapping = unstable_cache(
+  async (issueType: string): Promise<IssueAgentMapping | null> => {
+    if (!issueType) return null;
+
+    const data = (await getIssueAgentsMapping(
+      issueType,
+    )) as IssueAgentMapping[];
+
+    return data.length > 0 ? data[0] : null;
+  },
+  ["issue_agents_mapping"],
+  {
+    revalidate: 3600,
+    tags: ["Issue_Agents_Mapping"],
   },
 );
