@@ -40,7 +40,7 @@ const issueColorFormatting: Record<
     border: "border-emerald-200 dark:border-emerald-800",
     icon: CheckCircle2,
   },
-  unfeasable: {
+  unfeasible: {
     text: "text-red-700 dark:text-red-400",
     bg: "bg-red-50 dark:bg-red-900/30",
     border: "border-red-200 dark:border-red-800",

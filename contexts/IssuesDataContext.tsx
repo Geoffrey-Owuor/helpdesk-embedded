@@ -134,12 +134,15 @@ export const IssuesDataProvider = ({
   }, [fetchIssues, DEFAULT_FETCH_OPTIONS]);
 
   // Prepare the values
-  const values = {
-    issuesData,
-    loading,
-    fetchIssues,
-    refetchIssues,
-  };
+  const values = useMemo(
+    () => ({
+      issuesData,
+      loading,
+      fetchIssues,
+      refetchIssues,
+    }),
+    [fetchIssues, issuesData, loading, refetchIssues],
+  );
 
   return (
     <IssuesDataContext.Provider value={values}>
