@@ -1,17 +1,8 @@
 import { query } from "@/lib/Db";
-import { NextResponse, NextRequest } from "next/server";
-import { verifyAccessTokenJWT } from "@/lib/Auth";
+import { NextResponse } from "next/server";
+import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 
-export async function GET(request: NextRequest) {
-  // First, check if we have a user
-  const user = await verifyAccessTokenJWT();
-
-  if (!user)
-    return NextResponse.json(
-      { message: "User is not authenticated" },
-      { status: 401 },
-    );
-
+export const GET = withAuth(async ({ user, request }) => {
   // destructure user details
   const { userId, email, role, department } = user;
 
@@ -143,4 +134,4 @@ export async function GET(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+});

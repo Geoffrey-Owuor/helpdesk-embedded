@@ -1,21 +1,11 @@
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
-import { verifyAccessTokenJWT } from "@/lib/Auth";
 import { NextResponse } from "next/server";
+import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 
-export async function POST(request: Request) {
+export const POST = withAuth(async ({ request, user }) => {
   // initialze the pool client variable
-
   let client: PoolClient | undefined;
-  // First, check if the user is authenticated
-  const user = await verifyAccessTokenJWT();
-
-  if (!user) {
-    return NextResponse.json(
-      { message: "User not authenticated" },
-      { status: 401 },
-    );
-  }
 
   try {
     const { target_department, issue_type, issue_title, issue_description } =
@@ -95,5 +85,7 @@ export async function POST(request: Request) {
       { message: "Error while trying to submit your issue" },
       { status: 500 },
     );
+  } finally {
+    if (client) client.release();
   }
-}
+});

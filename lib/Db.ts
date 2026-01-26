@@ -47,5 +47,3 @@ export async function query<T extends QueryResultRow>(
     client.release();
   }
 }
-
-//export pool for transactions

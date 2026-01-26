@@ -3,7 +3,7 @@
 import { ChangeEvent, Dispatch, FormEvent, SetStateAction } from "react";
 import ClientPortal from "../ClientPortal";
 import { useState } from "react";
-import { X, Asterisk, Bot, UserCog, UserRoundCog } from "lucide-react";
+import { X, Asterisk, Bot, UserRoundCog } from "lucide-react";
 import { fetchedIssueAgentsMapping } from "@/serverActions/GetIssueTypes";
 import { IssueAgentMapping } from "@/serverActions/GetIssueTypes";
 import apiClient from "@/lib/AxiosClient";
@@ -235,7 +235,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                         ) : (
                           <div className="mt-1 flex flex-col gap-1 text-xs text-blue-700 dark:text-blue-300">
                             <p>
-                              Based on your selection, this ticket may be
+                              Based on your selection, this issue may be
                               assigned to:
                             </p>
                             <div className="mt-1 flex items-center gap-4">

@@ -34,7 +34,7 @@ const issueColorFormatting: Record<
     border: "border-blue-200 dark:border-blue-800",
     icon: Loader2, // We can animate this icon
   },
-  completed: {
+  resolved: {
     text: "text-emerald-700 dark:text-emerald-400",
     bg: "bg-emerald-50 dark:bg-emerald-900/30",
     border: "border-emerald-200 dark:border-emerald-800",

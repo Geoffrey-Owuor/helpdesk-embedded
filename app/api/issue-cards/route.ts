@@ -1,0 +1,75 @@
+import { query } from "@/lib/Db";
+import { NextResponse } from "next/server";
+import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
+
+export const GET = withAuth(async ({ user }) => {
+  const { userId, role, email, department } = user;
+
+  // 1. Determine the Dynamic Column & Value
+  let filterColumn = "";
+  let filterValue = "";
+
+  switch (role) {
+    case "admin":
+      filterColumn = "issue_target_department";
+      filterValue = department;
+      break;
+    case "agent":
+      filterColumn = "issue_agent_email";
+      filterValue = email;
+      break;
+    default:
+      filterColumn = "issue_submitter_id";
+      filterValue = userId;
+      break;
+  }
+
+  // 2. Helper to run a Safe, Parameterized Query
+  const runStatusQuery = (status: string) => {
+    const sql = `
+      SELECT COUNT(*) AS count 
+      FROM issues_table 
+      WHERE issue_status = $1 AND ${filterColumn} = $2
+    `;
+
+    // We pass the actual values here. Postgres handles quotes and security.
+    return query(sql, [status, filterValue]);
+  };
+
+  try {
+    // 3. Fire all 4 requests in parallel
+    // We get an array of results: [ [row1], [row2], ... ]
+    const results = await Promise.all([
+      runStatusQuery("Pending"),
+      runStatusQuery("In Progress"),
+      runStatusQuery("Resolved"),
+      runStatusQuery("Unfeasible"),
+    ]);
+
+    // 4. Extract data safely
+    // Assuming 'query' returns an array of rows.
+    const [pendingRows, progressRows, resolvedRows, unfeasibleRows] = results;
+
+    return NextResponse.json(
+      {
+        // Postgres COUNT returns a string (e.g. "5"), so we parse it to a number
+        pending: parseInt(pendingRows[0]?.count || "0"),
+        inProgress: parseInt(progressRows[0]?.count || "0"),
+        resolved: parseInt(resolvedRows[0]?.count || "0"),
+        unfeasible: parseInt(unfeasibleRows[0]?.count || "0"),
+      },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error("Error retrieving status counts", error);
+    return NextResponse.json(
+      {
+        pending: 0,
+        inProgress: 0,
+        resolved: 0,
+        unfeasible: 0,
+      },
+      { status: 500 },
+    );
+  }
+});
