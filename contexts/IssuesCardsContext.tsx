@@ -13,6 +13,7 @@ import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 
 interface IssuesCounts {
+  totals: number;
   pending: number;
   inProgress: number;
   resolved: number;
@@ -20,6 +21,7 @@ interface IssuesCounts {
 }
 
 const defaultCounts: IssuesCounts = {
+  totals: 0,
   pending: 0,
   inProgress: 0,
   resolved: 0,

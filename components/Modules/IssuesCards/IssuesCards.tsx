@@ -82,7 +82,9 @@ const IssuesCards = () => {
           ) : (
             <div className="hidden items-center gap-2 rounded-xl bg-gray-100 px-3 py-2 md:flex dark:bg-gray-900">
               <TrendingUp />
-              <span className="text-lg font-semibold">45</span>
+              <span className="text-lg font-semibold">
+                {issuesCounts.totals}
+              </span>
             </div>
           )}
         </div>

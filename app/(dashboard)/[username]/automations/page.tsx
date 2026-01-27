@@ -1,5 +1,7 @@
+import AutomationsPage from "@/components/Modules/AutomationsPage/AutomationsPage";
+
 const page = () => {
-  return <div>This is the automations page</div>;
+  return <AutomationsPage />;
 };
 
 export default page;
