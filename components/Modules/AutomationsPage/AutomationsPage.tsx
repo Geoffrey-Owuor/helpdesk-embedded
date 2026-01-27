@@ -2,12 +2,13 @@
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import IssuesCards from "../IssuesCards/IssuesCards";
+import DepartmentsDropDown from "./DepartmentsDropDown";
 
 const AutomationsPage = () => {
   const router = useRouter();
   return (
-    <>
-      <div>The AutomationsPage</div>
+    <div className="mt-6">
+      <DepartmentsDropDown />
       <IssuesCards type="automations" />
       <button
         onClick={() => router.back()}
@@ -16,7 +17,7 @@ const AutomationsPage = () => {
         <ArrowLeft className="h-4 w-4" />
         <span>back</span>
       </button>
-    </>
+    </div>
   );
 };
 

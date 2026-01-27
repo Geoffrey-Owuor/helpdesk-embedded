@@ -100,7 +100,7 @@ const IssuesCards = ({ type }: { type: string }) => {
         </div>
         <div className="items-center gap-4 md:flex">
           <button
-            onClick={refetchCardCounts}
+            onClick={() => refetchCardCounts()}
             className="rounded-full bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
           >
             <RotateCcw />
@@ -145,7 +145,10 @@ const IssuesCards = ({ type }: { type: string }) => {
 
               {/* Optional: Subtle decorative element or "View details" link could go here */}
               <div className="mt-4 flex items-center gap-1 text-xs text-neutral-400 dark:text-neutral-500">
-                <span className="font-semibold">Total {item.label} issues</span>
+                <span className="font-semibold">
+                  Total {item.label}{" "}
+                  {type === "automations" ? "Automations" : "Issues"}
+                </span>
               </div>
             </div>
           ))}

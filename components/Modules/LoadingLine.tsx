@@ -49,7 +49,7 @@ const LoadingLine = () => {
   if (!loadingLine) return null;
 
   return (
-    <div className="fixed top-0 left-0 z-100 h-0.75 w-full bg-transparent">
+    <div className="fixed top-0 left-0 z-100 h-0.5 w-full bg-transparent">
       <div
         className="h-full bg-linear-to-r from-blue-300 via-blue-500 to-blue-600 shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-all duration-300 ease-out dark:from-blue-500 dark:via-blue-400 dark:to-blue-300"
         style={{ width: `${progress}%` }}

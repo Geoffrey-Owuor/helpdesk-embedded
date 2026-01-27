@@ -31,7 +31,7 @@ const defaultCounts: AutomationCounts = {
 type AutomationCardsProviderValues = {
   loading: boolean;
   automationCounts: AutomationCounts;
-  refetchAutomationCounts: () => Promise<void>;
+  refetchAutomationCounts: (val?: string) => Promise<void>;
 };
 
 const AutomationCardsContext =
@@ -51,7 +51,8 @@ export const AutomationCardsProvider = ({
     //create a url variable
     let apiUrl = `/automation-cards`;
     try {
-      if (department) apiUrl += `?department=${department}`;
+      if (department && typeof department === "string")
+        apiUrl += `?department=${encodeURIComponent(department)}`;
       const response = await apiClient.get(apiUrl);
       setAutomationCounts(response.data);
     } catch (error) {

@@ -14,7 +14,7 @@ export const GET = withAuth(async ({ request }) => {
     const params = [status];
 
     if (department) {
-      sql += ` AND department = $2`;
+      sql += ` AND issue_target_department = $2`;
       params.push(department);
     }
 
@@ -29,7 +29,7 @@ export const GET = withAuth(async ({ request }) => {
     const params = [];
 
     if (department) {
-      sql += ` AND department = $1`;
+      sql += ` AND issue_target_department = $1`;
       params.push(department);
     }
 
