@@ -16,13 +16,6 @@ const departmentOptions = baseDepartments.map((department) => ({
   value: department.value,
 }));
 
-const issueTypeOptions = [
-  { label: "Automation", value: "Automation" },
-  { label: "Petty Cash", value: "Petty Cash" },
-  { label: "Wi-Fi", value: "Wi-Fi" },
-  { label: "Reports", value: "Reports" },
-];
-
 // --- Reusable Custom Dropdown Component ---
 interface DropdownOption {
   label: string;

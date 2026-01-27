@@ -2,6 +2,7 @@
 
 import IssuesCardsSkeleton from "@/components/Skeletons/IssuesCardsSkeleton";
 import { useIssuesCards } from "@/contexts/IssuesCardsContext";
+import { useAutomations } from "@/contexts/AutomationCardsContext";
 import {
   Clock,
   Activity,
@@ -9,20 +10,46 @@ import {
   XCircle,
   TrendingUp,
   RotateCcw,
+  ArrowLeft,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useUser } from "@/contexts/UserContext";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
+import DepartmentsDropDown from "../AutomationsPage/DepartmentsDropDown";
 
-const IssuesCards = () => {
+const IssuesCards = ({ type }: { type: string }) => {
   const { issuesCounts, refetchIssuesCounts, loading } = useIssuesCards();
+  const {
+    automationCounts,
+    refetchAutomationCounts,
+    loading: automationLoading,
+  } = useAutomations();
   const { role, department } = useUser();
+  const router = useRouter();
+
+  // Defining our card variables
+  let cardCounts;
+  let refetchCardCounts;
+  let cardLoading;
+
+  switch (type) {
+    case "automations":
+      cardCounts = automationCounts;
+      refetchCardCounts = refetchAutomationCounts;
+      cardLoading = automationLoading;
+      break;
+    default:
+      cardCounts = issuesCounts;
+      refetchCardCounts = refetchIssuesCounts;
+      cardLoading = loading;
+  }
 
   // Configuration for the cards to keep the JSX clean
   // We map specific colors to each status to make them distinct but cohesive
   const statItems = [
     {
       label: "Pending",
-      count: issuesCounts.pending,
+      count: cardCounts.pending,
       icon: Clock,
       color: "text-amber-600 dark:text-amber-500",
       bgColor: "bg-amber-100 dark:bg-amber-900/30",
@@ -30,7 +57,7 @@ const IssuesCards = () => {
     },
     {
       label: "In Progress",
-      count: issuesCounts.inProgress,
+      count: cardCounts.inProgress,
       icon: Activity,
       color: "text-blue-600 dark:text-blue-500",
       bgColor: "bg-blue-100 dark:bg-blue-900/30",
@@ -38,7 +65,7 @@ const IssuesCards = () => {
     },
     {
       label: "Resolved",
-      count: issuesCounts.resolved,
+      count: cardCounts.resolved,
       icon: CheckCircle2,
       color: "text-emerald-600 dark:text-emerald-500",
       bgColor: "bg-emerald-100 dark:bg-emerald-900/30",
@@ -46,7 +73,7 @@ const IssuesCards = () => {
     },
     {
       label: "Unfeasible",
-      count: issuesCounts.unfeasible,
+      count: cardCounts.unfeasible,
       icon: XCircle,
       color: "text-rose-600 dark:text-rose-500",
       bgColor: "bg-rose-100 dark:bg-rose-900/30",
@@ -65,30 +92,45 @@ const IssuesCards = () => {
     <div className="my-6">
       <div className="mb-4 flex items-center justify-between">
         <div className="inline-flex flex-col">
-          <span className="text-xl font-semibold">Issues Summary</span>
-          <span className="text-sm text-neutral-800 dark:text-neutral-400">
-            {subtitleMapping[role]} Issues Overview
+          <span className="text-xl font-semibold">
+            {type === "automations" ? "Automations" : "Issues"} Summary
           </span>
+          <span className="text-sm text-neutral-800 dark:text-neutral-400">
+            {type === "automations"
+              ? "Department Automations"
+              : `${subtitleMapping[role]} Issues`}{" "}
+            Overview
+          </span>
+          {type === "automations" && <DepartmentsDropDown />}
         </div>
         <div className="items-center gap-4 md:flex">
+          {type === "automations" && (
+            <button
+              onClick={() => router.back()}
+              className="flex items-center gap-2 rounded-xl bg-black px-3 py-2 text-white transition-colors duration-200 hover:bg-neutral-900 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>back</span>
+            </button>
+          )}
           <button
-            onClick={refetchIssuesCounts}
+            onClick={() => refetchCardCounts()}
             className="rounded-full bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
           >
             <RotateCcw />
           </button>
-          {loading ? (
-            <SkeletonBox className="h-11 w-20" />
+          {cardLoading ? (
+            <SkeletonBox className="hidden h-11 w-20 md:inline-flex" />
           ) : (
             <div className="hidden items-center gap-2 rounded-xl bg-gray-100 px-3 py-2 md:flex dark:bg-gray-900">
-              <TrendingUp className="text-blue-600" />
-              <span className="text-lg font-semibold">45</span>
+              <TrendingUp />
+              <span className="text-lg font-semibold">{cardCounts.totals}</span>
             </div>
           )}
         </div>
       </div>
 
-      {loading ? (
+      {cardLoading ? (
         <IssuesCardsSkeleton />
       ) : (
         <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -117,7 +159,10 @@ const IssuesCards = () => {
 
               {/* Optional: Subtle decorative element or "View details" link could go here */}
               <div className="mt-4 flex items-center gap-1 text-xs text-neutral-400 dark:text-neutral-500">
-                <span className="font-semibold">Total {item.label} issues</span>
+                <span className="font-semibold">
+                  Total {item.label}{" "}
+                  {type === "automations" ? "Automations" : "Issues"}
+                </span>
               </div>
             </div>
           ))}

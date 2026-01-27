@@ -1,40 +1,59 @@
-import axios from "axios";
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
-// Create a custom instance
+// 1. The Type Definition
+let refreshPromise: Promise<unknown> | null = null;
+
 const apiClient = axios.create({
-  baseURL: "/api", // base url for the api
+  baseURL: "/api",
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true, // Important for cookies
+  withCredentials: true,
 });
 
-// Response Interceptor
 apiClient.interceptors.response.use(
   (response) => {
     return response;
   },
-  async (error) => {
-    const originalRequest = error.config;
+  async (error: AxiosError) => {
+    // 2. Type Assertion for the config
+    // We cast to InternalAxiosRequestConfig and add the custom _retry flag
+    const originalRequest = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
 
-    // Check if error is 401 (Unauthorized) and we haven't tried refreshing yet
     if (
       error.response?.status === 401 &&
+      originalRequest &&
       !originalRequest._retry &&
+      originalRequest.url &&
       !originalRequest.url.includes("refresh-token")
     ) {
       originalRequest._retry = true;
 
-      try {
-        // Attempt to refresh the token
-        await axios.post("/api/refresh-token");
+      // 3. Logic using the type
+      if (!refreshPromise) {
+        refreshPromise = axios
+          .post("/api/refresh-token", {}, { withCredentials: true })
+          .then((res) => res.data) // This returns Promise<any>
+          .catch((err) => {
+            throw err;
+          })
+          .finally(() => {
+            refreshPromise = null;
+          });
+      }
 
-        // If refresh successful, retry the original request
+      try {
+        // We await the generic promise
+        await refreshPromise;
+
+        // Retry the original request
         return apiClient(originalRequest);
       } catch (refreshError) {
-        // If refresh fails (token expired/invalid), redirect to login
         console.error("Session expired, redirecting to login");
-        window.location.replace("/login");
+        // Optional: Use window.location.href or a Next.js router if available
+        window.location.href = "/login";
         return Promise.reject(refreshError);
       }
     }

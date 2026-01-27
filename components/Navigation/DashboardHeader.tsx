@@ -4,11 +4,14 @@ import Link from "next/link";
 import ThemeToggle from "../Themes/ThemeToggle";
 import { useState, useRef } from "react";
 import { abbreviateUserName } from "@/public/assets";
+import { generateUserRoute } from "@/utils/Validators";
 import { useUser } from "@/contexts/UserContext";
 import UserInfoCard from "../Modules/UserInfoCard";
 import MobileSideBar from "./MobileSideBar";
 import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
 import { DashBoardLogo } from "../Modules/DashBoardLogo";
+import { usePathname } from "next/navigation";
+import { useLoadingLine } from "@/contexts/LoadingLineContext";
 
 const DashboardHeader = () => {
   // Get the user information
@@ -17,10 +20,23 @@ const DashboardHeader = () => {
   const [sideBarOpen, setSideBarOpen] = useState(false);
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
   const userButtonRef = useRef<HTMLButtonElement>(null);
+  const { setLoadingLine } = useLoadingLine();
+  const pathname = usePathname();
+
+  // Get the user generated name route
+  const userRouteName = generateUserRoute(username);
+  const automationsRoute = `/${userRouteName}/automations`;
+
+  const handleRouteChange = (route: string) => {
+    if (route === pathname) return;
+    setLoadingLine(true);
+  };
 
   return (
     <>
       <MobileSideBar
+        automationsRoute={automationsRoute}
+        handleRouteChange={handleRouteChange}
         sideBarOpen={sideBarOpen}
         setSideBarOpen={setSideBarOpen}
       />
@@ -48,7 +64,8 @@ const DashboardHeader = () => {
               <span className="hidden md:flex">New Issue</span>
             </button>
             <Link
-              href="/automations"
+              href={automationsRoute}
+              onClick={() => handleRouteChange(automationsRoute)}
               className="hidden items-center gap-2 rounded-full px-2 py-2 text-sm hover:bg-neutral-200 sm:flex md:rounded-xl dark:hover:bg-neutral-800"
             >
               <Bot className="h-5 w-5" />

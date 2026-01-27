@@ -2,17 +2,14 @@
 import IssuesCards from "@/components/Modules/IssuesCards/IssuesCards";
 import IssuesData from "@/components/Modules/IssuesData/IssuesData";
 import { ColumnVisibilityProvider } from "@/contexts/ColumnVisibilityContext";
-import { IssuesCardsProvider } from "@/contexts/IssuesCardsContext";
 
 const page = () => {
   return (
-    <IssuesCardsProvider>
-      <ColumnVisibilityProvider>
-        <IssuesCards />
+    <ColumnVisibilityProvider>
+      <IssuesCards type="issues" />
 
-        <IssuesData />
-      </ColumnVisibilityProvider>
-    </IssuesCardsProvider>
+      <IssuesData />
+    </ColumnVisibilityProvider>
   );
 };
 

@@ -21,15 +21,15 @@
 }
 
 [data-theme="dark"] {
-  /* Matches Tailwind neutral-800 for dark mode base */
-  --shimmer-background: #262626;
+  /* Matches Tailwind neutral-900 for dark mode base */
+  --shimmer-background: #171717;
 
-  /* Soft lighter gray shine for dark mode (instead of harsh white) */
+  /* Subtle lighter shine derived from neutral-900 */
   --shimmer-gradient: linear-gradient(
     90deg,
-    rgba(38, 38, 38, 0) 0%,
-    rgba(255, 255, 255, 0.05) 50%,
-    rgba(38, 38, 38, 0) 100%
+    rgba(23, 23, 23, 0) 0%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(23, 23, 23, 0) 100%
   );
 }
 

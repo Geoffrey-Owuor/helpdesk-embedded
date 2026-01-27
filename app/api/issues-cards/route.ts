@@ -36,10 +36,20 @@ export const GET = withAuth(async ({ user }) => {
     return query(sql, [status, filterValue]);
   };
 
+  // running the total's query
+  const runTotalsQuery = () => {
+    const sql = `
+    SELECT COUNT(*) AS count
+    FROM issues_table WHERE ${filterColumn} = $1`;
+
+    return query(sql, [filterValue]);
+  };
+
   try {
     // 3. Fire all 4 requests in parallel
     // We get an array of results: [ [row1], [row2], ... ]
     const results = await Promise.all([
+      runTotalsQuery(),
       runStatusQuery("pending"),
       runStatusQuery("in progress"),
       runStatusQuery("resolved"),
@@ -48,11 +58,13 @@ export const GET = withAuth(async ({ user }) => {
 
     // 4. Extract data safely
     // Assuming 'query' returns an array of rows.
-    const [pendingRows, progressRows, resolvedRows, unfeasibleRows] = results;
+    const [totalRows, pendingRows, progressRows, resolvedRows, unfeasibleRows] =
+      results;
 
     return NextResponse.json(
       {
         // Postgres COUNT returns a string (e.g. "5"), so we parse it to a number
+        totals: parseInt(totalRows[0]?.count || "0"),
         pending: parseInt(pendingRows[0]?.count || "0"),
         inProgress: parseInt(progressRows[0]?.count || "0"),
         resolved: parseInt(resolvedRows[0]?.count || "0"),
