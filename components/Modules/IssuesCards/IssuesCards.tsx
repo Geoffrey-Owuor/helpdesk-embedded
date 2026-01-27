@@ -10,9 +10,12 @@ import {
   XCircle,
   TrendingUp,
   RotateCcw,
+  ArrowLeft,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useUser } from "@/contexts/UserContext";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
+import DepartmentsDropDown from "../AutomationsPage/DepartmentsDropDown";
 
 const IssuesCards = ({ type }: { type: string }) => {
   const { issuesCounts, refetchIssuesCounts, loading } = useIssuesCards();
@@ -22,6 +25,7 @@ const IssuesCards = ({ type }: { type: string }) => {
     loading: automationLoading,
   } = useAutomations();
   const { role, department } = useUser();
+  const router = useRouter();
 
   // Defining our card variables
   let cardCounts;
@@ -97,8 +101,18 @@ const IssuesCards = ({ type }: { type: string }) => {
               : `${subtitleMapping[role]} Issues`}{" "}
             Overview
           </span>
+          {type === "automations" && <DepartmentsDropDown />}
         </div>
         <div className="items-center gap-4 md:flex">
+          {type === "automations" && (
+            <button
+              onClick={() => router.back()}
+              className="flex items-center gap-2 rounded-xl bg-black px-3 py-2 text-white transition-colors duration-200 hover:bg-neutral-900 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>back</span>
+            </button>
+          )}
           <button
             onClick={() => refetchCardCounts()}
             className="rounded-full bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
