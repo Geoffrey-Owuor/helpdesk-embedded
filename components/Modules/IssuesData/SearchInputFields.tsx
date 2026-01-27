@@ -63,10 +63,10 @@ const CustomDropdown = ({
     <div className="relative w-full sm:w-64" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex h-10 w-full items-center justify-between rounded-xl border px-3 text-sm transition-all ${
+        className={`flex h-10 w-full items-center justify-between rounded-xl border bg-white px-3 text-sm transition-all dark:bg-neutral-950 ${
           isOpen
-            ? "border-blue-500 ring-2 ring-blue-500/20 dark:bg-neutral-800"
-            : "border-neutral-200 bg-white hover:border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700 dark:hover:bg-neutral-800"
+            ? "border-blue-500 ring-2 ring-blue-500/20"
+            : "border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900"
         }`}
       >
         <span
@@ -85,7 +85,7 @@ const CustomDropdown = ({
                 e.stopPropagation();
                 onChange("");
               }}
-              className="cursor-pointer rounded-full p-0.5 hover:bg-neutral-200 dark:hover:bg-neutral-700"
+              className="cursor-pointer rounded-full p-0.5 hover:bg-neutral-300 dark:hover:bg-neutral-700"
             >
               <X className="h-3 w-3 text-neutral-500" />
             </div>
@@ -99,7 +99,7 @@ const CustomDropdown = ({
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 z-20 mt-2 max-h-60 w-full overflow-auto rounded-xl border border-neutral-200 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-none">
+        <div className="absolute top-full left-0 z-20 mt-2 max-h-60 w-full overflow-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-none">
           {options.map((option) => (
             <button
               key={option.value}
@@ -107,7 +107,7 @@ const CustomDropdown = ({
                 onChange(option.value);
                 setIsOpen(false);
               }}
-              className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+              className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-900"
             >
               {option.label}
               {value === option.value && (
@@ -138,7 +138,7 @@ const SearchInput = ({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="h-10 w-full rounded-xl border border-neutral-200 bg-white pr-3 pl-9 text-sm transition-all outline-none placeholder:text-neutral-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-neutral-800 dark:bg-neutral-900 dark:text-white dark:focus:border-blue-500"
+      className="h-10 w-full rounded-xl border border-neutral-300 bg-white pr-3 pl-9 text-sm transition-all outline-none placeholder:text-neutral-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-white dark:focus:border-blue-500"
     />
     {value && (
       <button
@@ -204,7 +204,7 @@ const SearchInputFields = () => {
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="dark:color-scheme-dark h-10 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm text-neutral-600 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300"
+              className="dark:color-scheme-dark h-10 w-full rounded-xl border border-neutral-300 bg-white px-3 text-sm text-neutral-600 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300"
             />
 
             <span className="self-center text-sm text-neutral-400">to</span>
@@ -213,7 +213,7 @@ const SearchInputFields = () => {
               type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="dark:color-scheme-dark h-10 w-full rounded-xl border border-neutral-200 bg-white px-3 text-sm text-neutral-600 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300"
+              className="dark:color-scheme-dark h-10 w-full rounded-xl border border-neutral-300 bg-white px-3 text-sm text-neutral-600 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300"
             />
           </div>
         );
@@ -239,11 +239,10 @@ const SearchInputFields = () => {
 
       case "type":
         return (
-          <CustomDropdown
-            options={issueTypeOptions}
+          <SearchInput
             value={issueType}
             onChange={setIssueType}
-            placeholder="Select Issue Type..."
+            placeholder="Search Issue Type..."
           />
         );
 

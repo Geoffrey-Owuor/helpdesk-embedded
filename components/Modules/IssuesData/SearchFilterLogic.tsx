@@ -66,10 +66,10 @@ const SearchFilterLogic = () => {
     <div className="relative w-fit" ref={filterRef}>
       <button
         onClick={() => setIsFilterOpen(!isFilterOpen)}
-        className={`flex h-9.5 w-full min-w-55 items-center justify-between rounded-xl border px-3 text-sm transition-all sm:w-auto ${
+        className={`flex h-9.5 w-full min-w-55 items-center justify-between rounded-xl border bg-white px-3 text-sm transition-all sm:w-auto dark:bg-neutral-950 ${
           isFilterOpen
-            ? "border-blue-500 bg-white ring-2 ring-blue-500/20 dark:bg-neutral-900"
-            : "border-neutral-200 bg-white hover:border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700 dark:hover:bg-neutral-800"
+            ? "border-blue-500 ring-2 ring-blue-500/20"
+            : "border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900"
         }`}
       >
         <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300">
@@ -87,7 +87,7 @@ const SearchFilterLogic = () => {
 
       {/* Dropdown Menu */}
       {isFilterOpen && (
-        <div className="absolute top-full left-0 z-20 mt-2 w-full origin-top-left rounded-xl border border-neutral-200 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-none">
+        <div className="absolute top-full left-0 z-20 mt-2 w-full origin-top-left rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-none">
           <div className="px-2 py-2 text-xs font-semibold text-neutral-500 uppercase">
             Filter Options
           </div>
@@ -95,7 +95,7 @@ const SearchFilterLogic = () => {
             <button
               key={option.value}
               onClick={() => handleSelectFilter(option.value)}
-              className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+              className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-900"
             >
               {option.label}
               {selectedFilter === option.value && (

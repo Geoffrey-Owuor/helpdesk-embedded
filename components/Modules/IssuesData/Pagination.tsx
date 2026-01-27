@@ -97,9 +97,9 @@ const Pagination = ({
               <div className="relative">
                 <button
                   onClick={() => setIsPerPageOpen(!isPerPageOpen)}
-                  className={`flex items-center gap-2 rounded-lg border bg-white px-2 py-1 text-sm font-medium transition-colors hover:bg-neutral-50 dark:bg-neutral-900 dark:hover:bg-neutral-800 ${
+                  className={`flex items-center gap-2 rounded-lg border bg-white px-2 py-1 text-sm font-medium transition-colors hover:bg-neutral-50 dark:bg-neutral-950 dark:hover:bg-neutral-900 ${
                     isPerPageOpen
-                      ? "border-neutral-400 dark:border-neutral-600"
+                      ? "border-neutral-300 dark:border-neutral-700"
                       : "border-neutral-200 dark:border-neutral-800"
                   }`}
                 >
@@ -113,7 +113,7 @@ const Pagination = ({
 
                 {/* Dropdown Menu - Positioned BOTTOM-FULL to open UPWARDS */}
                 {isPerPageOpen && (
-                  <div className="absolute bottom-full -left-4 mb-2 w-20 overflow-hidden rounded-xl border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900">
+                  <div className="absolute bottom-full -left-4 mb-2 w-20 overflow-hidden rounded-xl border border-neutral-300 bg-white p-1 shadow-lg dark:border-neutral-800 dark:bg-neutral-950">
                     {perPageOptions.map((option) => (
                       <button
                         key={option}
@@ -121,7 +121,7 @@ const Pagination = ({
                           setIssuesPerPage(option);
                           setIsPerPageOpen(!isPerPageOpen);
                         }}
-                        className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-900"
                       >
                         <span
                           className={

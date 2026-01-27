@@ -46,7 +46,7 @@ const ShowHideColumnsLogic = () => {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute top-full right-0 z-20 mt-2 max-h-80 w-56 overflow-y-auto rounded-xl border border-neutral-200 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-900 dark:shadow-none">
+        <div className="absolute top-full right-0 z-20 mt-2 max-h-80 w-56 overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-none">
           <div className="px-2 py-2 text-xs font-semibold text-neutral-500 uppercase">
             Visible Columns
           </div>
@@ -57,7 +57,7 @@ const ShowHideColumnsLogic = () => {
               <button
                 key={key}
                 onClick={() => toggleColumn(key)}
-                className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-900"
               >
                 <span>{columnLabels[key]}</span>
                 {visibleColumns[key] && (

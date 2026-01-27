@@ -176,7 +176,7 @@ const IssuesData = () => {
                   <tr>
                     <td
                       colSpan={100}
-                      className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50 py-12 text-center text-neutral-500 shadow-sm dark:border-neutral-700 dark:bg-neutral-800/50 dark:text-neutral-400"
+                      className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50 py-12 text-center text-neutral-500 shadow-sm dark:border-neutral-700 dark:bg-neutral-900/50 dark:text-neutral-400"
                     >
                       No issues found.
                     </td>
@@ -194,7 +194,7 @@ const IssuesData = () => {
               */}
 
                       {visibleColumns.ref && (
-                        <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-800/50 dark:group-hover:bg-neutral-700/50">
+                        <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
                           <p className="max-w-30 truncate text-sm font-semibold text-neutral-900 dark:text-neutral-100">
                             {issueData.issue_reference_id}
                           </p>
@@ -202,7 +202,7 @@ const IssuesData = () => {
                       )}
 
                       {visibleColumns.status && (
-                        <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-800/50 dark:group-hover:bg-neutral-700/50">
+                        <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
                           <IssueStatusFormatter
                             status={issueData.issue_status}
                           />
@@ -210,7 +210,7 @@ const IssuesData = () => {
                       )}
 
                       {visibleColumns.type && (
-                        <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-800/50 dark:group-hover:bg-neutral-700/50">
+                        <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
                           <p className="max-w-30 truncate text-sm text-gray-900 dark:text-white">
                             {issueData.issue_type}
                           </p>
@@ -218,7 +218,7 @@ const IssuesData = () => {
                       )}
 
                       {visibleColumns.submitter && (
-                        <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-800/50 dark:group-hover:bg-neutral-700/50">
+                        <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
                           <p className="max-w-30 truncate text-sm text-gray-900 dark:text-white">
                             {issueData.issue_submitter_name}
                           </p>
@@ -226,7 +226,7 @@ const IssuesData = () => {
                       )}
 
                       {visibleColumns.date && (
-                        <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-800/50 dark:group-hover:bg-neutral-700/50">
+                        <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
                           <p className="max-w-30 truncate text-sm text-gray-900 dark:text-white">
                             {dateFormatter(issueData.issue_created_at)}
                           </p>
@@ -234,7 +234,7 @@ const IssuesData = () => {
                       )}
 
                       {visibleColumns.subDept && (
-                        <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-800/50 dark:group-hover:bg-neutral-700/50">
+                        <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
                           <p className="max-w-30 truncate text-sm text-gray-900 dark:text-white">
                             {issueData.issue_submitter_department}
                           </p>
@@ -242,7 +242,7 @@ const IssuesData = () => {
                       )}
 
                       {visibleColumns.targetDept && (
-                        <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-800/50 dark:group-hover:bg-neutral-700/50">
+                        <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
                           <p className="max-w-30 truncate text-sm text-gray-900 dark:text-white">
                             {issueData.issue_target_department}
                           </p>
@@ -250,7 +250,7 @@ const IssuesData = () => {
                       )}
 
                       {visibleColumns.agent && (
-                        <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-800/50 dark:group-hover:bg-neutral-700/50">
+                        <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
                           <p
                             className={`max-w-30 truncate text-sm ${
                               issueData.issue_agent_name === "Not Assigned"
@@ -265,7 +265,7 @@ const IssuesData = () => {
 
                       {/* Title: Use max-w and truncate instead of fixed w-50 */}
                       {visibleColumns.title && (
-                        <td className="max-w-50 bg-white px-4 py-4 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-800/50 dark:group-hover:bg-neutral-700/50">
+                        <td className="max-w-50 bg-white px-4 py-4 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
                           <p
                             className="truncate text-sm font-semibold text-gray-900 dark:text-white"
                             title={titleHelper(issueData.issue_title)}
@@ -277,7 +277,7 @@ const IssuesData = () => {
 
                       {/* Description: Use max-w and truncate instead of fixed w-80 */}
                       {visibleColumns.desc && (
-                        <td className="max-w-[320px] bg-white px-4 py-4 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-800/50 dark:group-hover:bg-neutral-700/50">
+                        <td className="max-w-[320px] bg-white px-4 py-4 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
                           <p
                             className="truncate text-sm text-gray-900 dark:text-white"
                             title={titleHelper(issueData.issue_description)}

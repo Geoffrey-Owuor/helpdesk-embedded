@@ -54,7 +54,9 @@ const DashboardHeader = () => {
               <Bot className="h-5 w-5" />
               <span className="hidden md:flex">Automations</span>
             </Link>
-            <ThemeToggle />
+            <div className="w-10">
+              <ThemeToggle />
+            </div>
             <div className="relative">
               <button
                 ref={userButtonRef}

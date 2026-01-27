@@ -95,7 +95,7 @@ const IssuesCards = () => {
           {statItems.map((item, index) => (
             <div
               key={index}
-              className="group relative flex flex-col justify-between rounded-xl border border-neutral-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:border-neutral-900 dark:bg-neutral-950"
+              className="group relative flex flex-col justify-between rounded-xl border border-neutral-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-950"
             >
               <div className="flex items-center justify-between">
                 <div>

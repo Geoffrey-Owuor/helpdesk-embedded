@@ -32,7 +32,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="IssueDesk" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-white antialiased dark:bg-black`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-gray-100 antialiased dark:bg-neutral-950`}
       >
         <Provider>
           <AlertProvider>

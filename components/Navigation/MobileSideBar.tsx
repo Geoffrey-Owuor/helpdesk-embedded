@@ -43,7 +43,7 @@ const MobileSideBar = ({ sideBarOpen, setSideBarOpen }: MobileSideBarProps) => {
 
         {/* Sidebar panel */}
         <aside
-          className={`relative z-10 flex w-64 flex-col gap-6 bg-white px-6 py-4 shadow-sm dark:bg-neutral-900 ${
+          className={`relative z-10 flex w-64 flex-col gap-6 border-r border-neutral-300 bg-white px-6 py-4 shadow-sm dark:border-neutral-900 dark:bg-neutral-950 ${
             sideBarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
