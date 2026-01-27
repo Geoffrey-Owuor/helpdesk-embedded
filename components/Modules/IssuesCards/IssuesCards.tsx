@@ -78,10 +78,10 @@ const IssuesCards = () => {
             <RotateCcw />
           </button>
           {loading ? (
-            <SkeletonBox className="h-11 w-20" />
+            <SkeletonBox className="hidden h-11 w-20 md:inline-flex" />
           ) : (
             <div className="hidden items-center gap-2 rounded-xl bg-gray-100 px-3 py-2 md:flex dark:bg-gray-900">
-              <TrendingUp className="text-blue-600" />
+              <TrendingUp />
               <span className="text-lg font-semibold">45</span>
             </div>
           )}
