@@ -40,7 +40,7 @@ const SearchFilterLogic = ({ recordType }: { recordType: string }) => {
 
       // Hide department and Issue Type when recordType is automations
       if (
-        recordType === "automation" &&
+        recordType === "automations" &&
         (option.value === "department" || option.value === "type")
       )
         return false;

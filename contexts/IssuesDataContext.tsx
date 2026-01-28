@@ -73,7 +73,7 @@ export const IssuesDataProvider = ({
         }
 
         if (queryOptions.selectedFilter === "status" && queryOptions.status) {
-          url += `&status=${queryOptions.status}`;
+          url += `&status=${encodeURIComponent(queryOptions.status)}`;
         } else if (
           queryOptions.selectedFilter === "reference" &&
           queryOptions.reference
@@ -99,12 +99,12 @@ export const IssuesDataProvider = ({
           queryOptions.selectedFilter === "type" &&
           queryOptions.issueType
         ) {
-          url += `&type=${queryOptions.issueType}`;
+          url += `&type=${encodeURIComponent(queryOptions.issueType.trim())}`;
         } else if (
           queryOptions.selectedFilter === "submitter" &&
           queryOptions.submitter
         ) {
-          url += `&submitter=${queryOptions.submitter}`;
+          url += `&submitter=${encodeURIComponent(queryOptions.submitter.trim())}`;
         }
 
         // Fetch a response with the built url

@@ -11,6 +11,7 @@ import SearchFilterLogic from "./SearchFilterLogic";
 import SearchInputFields from "./SearchInputFields";
 import { RotateCcw } from "lucide-react";
 import ClearFilters from "./ClearFilters";
+import { useAutomations } from "@/contexts/AutomationCardsContext";
 import SearchFilters from "./SearchFilters";
 import { useColumnVisibility } from "@/contexts/ColumnVisibilityContext";
 import { useState } from "react";
@@ -28,6 +29,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
   const { role, department } = useUser();
   const { visibleColumns } = useColumnVisibility();
   const { agentAdminFilter } = useSearchLogic();
+  const { selectedDepartment } = useAutomations();
 
   // Defining our variables based on record type
   let recordsData;
@@ -91,13 +93,17 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
         {/* The title and toggle */}
         <div className="flex items-center justify-between md:justify-center md:gap-10">
           <div className="inline-flex flex-col">
-            <span className="text-xl font-semibold">Issues Data</span>
+            <span className="text-xl font-semibold">
+              {recordType === "automations" ? "Automations" : "Issues"} Data
+            </span>
             <span className="text-sm text-neutral-800 dark:text-neutral-400">
-              Issues {generatedSubtitle()}
+              {recordType === "automations"
+                ? `${selectedDepartment} Automations Summary`
+                : `Issues ${generatedSubtitle()}`}
             </span>
 
             <span className="text-xs text-neutral-500">
-              Total issues displayed: {recordsData.length || "none"}
+              Total records: {recordsData.length || "none"}
             </span>
           </div>
           {role !== "user" && recordType !== "automations" && (

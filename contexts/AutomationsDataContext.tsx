@@ -65,11 +65,11 @@ export const AutomationsDataProvider = ({
 
         // first, check if we have a department selected
         if (selectedDepartment) {
-          apiUrl += `&departmentFilter=${selectedDepartment}`;
+          apiUrl += `&departmentFilter=${encodeURIComponent(selectedDepartment)}`;
         }
 
         if (queryOptions.selectedFilter === "status" && queryOptions.status) {
-          apiUrl += `&status=${queryOptions.status}`;
+          apiUrl += `&status=${encodeURIComponent(queryOptions.status)}`;
         } else if (
           queryOptions.selectedFilter === "reference" &&
           queryOptions.reference
@@ -90,7 +90,7 @@ export const AutomationsDataProvider = ({
           queryOptions.selectedFilter === "submitter" &&
           queryOptions.submitter
         ) {
-          apiUrl += `&submitter=${queryOptions.submitter}`;
+          apiUrl += `&submitter=${encodeURIComponent(queryOptions.submitter.trim())}`;
         }
 
         // Fetch a response with the built url

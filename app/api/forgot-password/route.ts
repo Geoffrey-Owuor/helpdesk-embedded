@@ -3,9 +3,9 @@ import { validateHotpointEmail } from "@/utils/Validators";
 import crypto from "crypto";
 import { sendEmail } from "@/services/EmailService";
 import ResetLinkTemplate from "@/templates/ResetLinkTemplate";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const { email } = await request.json();
 

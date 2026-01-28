@@ -13,6 +13,9 @@ import DynamicIssueTypes from "./DynamicIssueTypes";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlert } from "@/contexts/AlertContext";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
+import { useAutomationsData } from "@/contexts/AutomationsDataContext";
+import { useIssuesCards } from "@/contexts/IssuesCardsContext";
+import { useAutomations } from "@/contexts/AutomationCardsContext";
 import OptionsDropDown from "./OptionsDropDown";
 import { baseDepartments } from "@/public/assets";
 
@@ -38,6 +41,9 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   const [loading, setLoading] = useState(false);
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
   const { refetchIssues } = useIssuesData();
+  const { refetchAutomations } = useAutomationsData();
+  const { refetchAutomationCounts } = useAutomations();
+  const { refetchIssuesCounts } = useIssuesCards();
 
   // set options error
   const optionsError = alertInfo.alertType === "error";
@@ -126,8 +132,11 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
 
       setAssignmentInfo(null); // Clear assignment info
 
-      // refetch issues
+      // refetch all data
       refetchIssues();
+      refetchAutomations();
+      refetchAutomationCounts();
+      refetchIssuesCounts();
 
       // Close issue modal
       setIsOpen(false);
