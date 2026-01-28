@@ -11,6 +11,7 @@ import {
 } from "react";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
+import { useSearchLogic } from "./SearchLogicContext";
 
 interface IssuesCounts {
   totals: number;
@@ -42,11 +43,17 @@ export const IssuesCardsProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [issuesCounts, setIssuesCounts] = useState<IssuesCounts>(defaultCounts);
 
+  const { agentAdminFilter } = useSearchLogic();
+
   const fetchIssuesCounts = useCallback(async () => {
     setLoading(true);
 
     try {
-      const response = await apiClient.get("/issues-cards");
+      let apiUrl = `/issues-cards`;
+      if (agentAdminFilter === "agentAdminFilter") {
+        apiUrl += `?agentAdminFilter=${agentAdminFilter}`;
+      }
+      const response = await apiClient.get(apiUrl);
       setIssuesCounts(response.data);
     } catch (error) {
       const errorMessage = getApiErrorMessage(error);
@@ -55,7 +62,7 @@ export const IssuesCardsProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [agentAdminFilter]);
 
   //   useEffect to perform a default fetch when the provider mounts
   useEffect(() => {

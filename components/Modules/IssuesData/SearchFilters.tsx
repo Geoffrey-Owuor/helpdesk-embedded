@@ -27,7 +27,6 @@ const SearchFilters = ({ setCurrentPage, recordType }: FilterProps) => {
 
   // Get the filter data
   const {
-    agentAdminFilter,
     selectedFilter,
     // Getters
     status,
@@ -60,7 +59,6 @@ const SearchFilters = ({ setCurrentPage, recordType }: FilterProps) => {
   // Compile options into one object
   const filterOptions = {
     selectedFilter,
-    agentAdminFilter,
     status,
     reference,
     fromDate,

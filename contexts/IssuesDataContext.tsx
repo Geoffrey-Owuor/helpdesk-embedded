@@ -12,6 +12,9 @@ import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useSearchLogic } from "./SearchLogicContext";
 
+// OUR DEFAULT FETCH OPTIONS
+const DEFAULT_FETCH_OPTIONS = { selectedFilter: "status", status: "" };
+
 export type issueValueTypes = string | number;
 
 interface Options {
@@ -44,16 +47,6 @@ export const IssuesDataProvider = ({
   // Get the agent admin filter
   const { agentAdminFilter } = useSearchLogic();
 
-  // Default fetch options
-  const DEFAULT_FETCH_OPTIONS = useMemo(
-    () => ({
-      selectedFilter: "status",
-      agentAdminFilter: agentAdminFilter,
-      status: "",
-    }),
-    [agentAdminFilter],
-  );
-
   const [issuesData, setIssuesData] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -68,8 +61,8 @@ export const IssuesDataProvider = ({
         let url = `/get-issues/?selectedFilter=${queryOptions.selectedFilter || "status"}`;
 
         // First we check if we have the agent admin filter enabled
-        if (queryOptions.agentAdminFilter) {
-          url += `&agentAdminFilter=${queryOptions.agentAdminFilter}`;
+        if (agentAdminFilter === "agentAdminFilter") {
+          url += `&agentAdminFilter=${agentAdminFilter}`;
         }
 
         if (queryOptions.selectedFilter === "status" && queryOptions.status) {
@@ -120,18 +113,18 @@ export const IssuesDataProvider = ({
         setLoading(false);
       }
     },
-    [DEFAULT_FETCH_OPTIONS],
+    [agentAdminFilter],
   );
 
   //   UseEffect for initial fetch when provider mounts with default fetch options
   useEffect(() => {
     fetchIssues(DEFAULT_FETCH_OPTIONS);
-  }, [fetchIssues, DEFAULT_FETCH_OPTIONS]);
+  }, [fetchIssues]);
 
   //   function for refetching the issues
   const refetchIssues = useCallback(() => {
     fetchIssues(DEFAULT_FETCH_OPTIONS);
-  }, [fetchIssues, DEFAULT_FETCH_OPTIONS]);
+  }, [fetchIssues]);
 
   // Prepare the values
   const values = useMemo(
