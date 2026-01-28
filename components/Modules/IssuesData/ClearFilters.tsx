@@ -1,9 +1,8 @@
 "use client";
 import { useSearchLogic } from "@/contexts/SearchLogicContext";
 import { XCircle } from "lucide-react";
-import { FilterProps } from "./SearchFilters";
 
-const ClearFilters = ({ setCurrentPage }: FilterProps) => {
+const ClearFilters = () => {
   // Get search setters from userSearch
   const {
     setSelectedFilter,
@@ -28,8 +27,6 @@ const ClearFilters = ({ setCurrentPage }: FilterProps) => {
     setAgent("");
     setIssueType("");
     setSubmitter("");
-    // reset page
-    setCurrentPage(1);
   };
   return (
     <button

@@ -8,7 +8,7 @@ const page = () => {
     <ColumnVisibilityProvider>
       <IssuesCards type="issues" />
 
-      <IssuesData />
+      <IssuesData recordType="issues" />
     </ColumnVisibilityProvider>
   );
 };
