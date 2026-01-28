@@ -114,7 +114,7 @@ const IssuesCards = ({ type }: { type: string }) => {
             </button>
           )}
           <button
-            onClick={() => refetchCardCounts()}
+            onClick={refetchCardCounts}
             className="rounded-full bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
           >
             <RotateCcw />

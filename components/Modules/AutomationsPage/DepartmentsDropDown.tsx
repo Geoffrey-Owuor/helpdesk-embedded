@@ -13,8 +13,7 @@ const departments = baseDepartments.map((department) => ({
 const DepartmentsDropDown = () => {
   // State for visibility
   const [isOpen, setIsOpen] = useState(false);
-  const [currentValue, setCurrentValue] = useState("");
-  const { refetchAutomationCounts } = useAutomations();
+  const { selectedDepartment, setSelectedDepartment } = useAutomations();
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -33,14 +32,13 @@ const DepartmentsDropDown = () => {
   }, []);
 
   const handleSelect = (selectedValue: string) => {
-    setCurrentValue(selectedValue);
-    refetchAutomationCounts(selectedValue);
+    setSelectedDepartment(selectedValue);
     setIsOpen(false);
   };
 
   // Helper to get the display label - default is all
   const currentLabel =
-    departments.find((d) => d.value === currentValue)?.label || "All";
+    departments.find((d) => d.value === selectedDepartment)?.label || "All";
 
   return (
     <div className="relative mt-3 w-fit" ref={dropdownRef}>
@@ -85,7 +83,9 @@ const DepartmentsDropDown = () => {
             className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-900"
           >
             All
-            {currentValue === "" && <Check className="h-4 w-4 text-blue-600" />}
+            {selectedDepartment === "" && (
+              <Check className="h-4 w-4 text-blue-600" />
+            )}
           </button>
           {departments.map((option) => (
             <button
@@ -94,7 +94,7 @@ const DepartmentsDropDown = () => {
               className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-900"
             >
               {option.label}
-              {currentValue === option.value && (
+              {selectedDepartment === option.value && (
                 <Check className="h-4 w-4 text-blue-600" />
               )}
             </button>
