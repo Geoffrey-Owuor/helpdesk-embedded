@@ -1,5 +1,6 @@
 "use client";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
+import { useAutomationsData } from "@/contexts/AutomationsDataContext";
 import { titleHelper } from "@/public/assets";
 import IssueStatusFormatter from "./IssueStatusFormatter";
 import { dateFormatter } from "@/public/assets";
@@ -17,26 +18,50 @@ import { useSearchLogic } from "@/contexts/SearchLogicContext";
 import ViewAgentAdminFilter from "./ViewAgentAdminFilter";
 import Pagination from "./Pagination";
 
-const IssuesData = () => {
+const IssuesData = ({ recordType }: { recordType: string }) => {
   const { issuesData, loading, refetchIssues } = useIssuesData();
+  const {
+    automationsData,
+    loading: automationsLoading,
+    refetchAutomations,
+  } = useAutomationsData();
   const { role, department } = useUser();
   const { visibleColumns } = useColumnVisibility();
   const { agentAdminFilter } = useSearchLogic();
 
+  // Defining our variables based on record type
+  let recordsData;
+  let recordsLoading;
+  let refetchRecords;
+
+  // Determine which data we should use based on record type
+  switch (recordType) {
+    case "automations":
+      recordsData = automationsData;
+      recordsLoading = automationsLoading;
+      refetchRecords = refetchAutomations;
+      break;
+    default:
+      recordsData = issuesData;
+      recordsLoading = loading;
+      refetchRecords = refetchIssues;
+      break;
+  }
+
   // Pagination states and logic
   const [currentPage, setCurrentPage] = useState(1);
   const [issuesPerPage, setIssuesPerPage] = useState(10);
-  const totalPages = Math.ceil(issuesData.length / issuesPerPage);
+  const totalPages = Math.ceil(recordsData.length / issuesPerPage);
   const indexOfLastIssue = currentPage * issuesPerPage;
   const indexOfFirstIssue = indexOfLastIssue - issuesPerPage;
-  const currentIssues = issuesData.slice(
+  const currentIssues = recordsData.slice(
     indexOfFirstIssue,
-    Math.min(indexOfLastIssue, issuesData.length),
+    Math.min(indexOfLastIssue, recordsData.length),
   );
 
   // Handle issue refetching
   const handleRefetchIssues = () => {
-    refetchIssues();
+    refetchRecords();
     setCurrentPage(1);
   };
 
@@ -106,7 +131,7 @@ const IssuesData = () => {
         <SearchFilters setCurrentPage={setCurrentPage} />
       </div>
 
-      {loading ? (
+      {recordsLoading ? (
         <IssuesDataSkeleton />
       ) : (
         <div>
@@ -172,7 +197,7 @@ const IssuesData = () => {
 
               {/* --- BODY --- */}
               <tbody>
-                {issuesData.length === 0 ? (
+                {recordsData.length === 0 ? (
                   <tr>
                     <td
                       colSpan={100}

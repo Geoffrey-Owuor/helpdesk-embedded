@@ -7,6 +7,9 @@ export const POST = withAuth(async ({ request, user }) => {
   // initialze the pool client variable
   let client: PoolClient | undefined;
 
+  // Define our default agent value
+  const defaultAgent = "Not Assigned";
+
   try {
     const { target_department, issue_type, issue_title, issue_description } =
       await request.json();
@@ -34,7 +37,7 @@ export const POST = withAuth(async ({ request, user }) => {
     const insertQuery = `
     INSERT INTO issues_table
     (issue_submitter_id, issue_submitter_name, issue_submitter_email, issue_submitter_department, issue_target_department, issue_type, issue_title, issue_description, issue_agent_name)
-    VALUES($1, $2, $3, $4, $5, $6, $7, $8, 'Not Assigned')
+    VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
     RETURNING issue_id
     `;
 
@@ -48,6 +51,7 @@ export const POST = withAuth(async ({ request, user }) => {
       issue_type,
       issue_title,
       issue_description,
+      defaultAgent,
     ];
 
     //run the query

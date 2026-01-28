@@ -65,7 +65,7 @@ export const IssuesDataProvider = ({
       setLoading(true);
 
       try {
-        let url = `/get-issues/?selectedFilter=${queryOptions.selectedFilter}`;
+        let url = `/get-issues/?selectedFilter=${queryOptions.selectedFilter || "status"}`;
 
         // First we check if we have the agent admin filter enabled
         if (queryOptions.agentAdminFilter) {

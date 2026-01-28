@@ -42,6 +42,7 @@ const IssuesCards = ({ type }: { type: string }) => {
       cardCounts = issuesCounts;
       refetchCardCounts = refetchIssuesCounts;
       cardLoading = loading;
+      break;
   }
 
   // Configuration for the cards to keep the JSX clean
