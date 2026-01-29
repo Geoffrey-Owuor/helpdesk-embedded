@@ -110,7 +110,7 @@ const IssuesCards = ({ type }: { type: string }) => {
           {type === "automations" && (
             <button
               onClick={() => router.back()}
-              className="flex items-center gap-2 rounded-xl bg-black px-3 py-2 text-white transition-colors duration-200 hover:bg-neutral-900 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+              className="flex items-center gap-2 rounded-xl bg-black px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-neutral-900 dark:bg-white dark:text-black dark:hover:bg-gray-200"
             >
               <ArrowLeft className="h-4 w-4" />
               <span className="hidden md:flex">back</span>
