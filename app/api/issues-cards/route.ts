@@ -4,94 +4,61 @@ import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 
 export const GET = withAuth(async ({ user, request }) => {
   const { userId, role, email, department } = user;
-
-  // Defining our query params
   const searchParams = request.nextUrl.searchParams;
   const agentAdminFilter = searchParams.get("agentAdminFilter");
 
-  // 1. Determine the Dynamic Column & Value
-  let filterColumn = "";
-  let filterValue = "";
+  // 1. Determine Dynamic Column & Value (Same as before)
+  let filterColumn = "issue_submitter_id";
+  let filterValue = userId;
 
   switch (role) {
     case "admin":
-      filterColumn =
-        agentAdminFilter === "agentAdminFilter"
-          ? "issue_submitter_id"
-          : "issue_target_department";
-      filterValue =
-        agentAdminFilter === "agentAdminFilter" ? userId : department;
+      if (agentAdminFilter !== "agentAdminFilter") {
+        filterColumn = "issue_target_department";
+        filterValue = department;
+      }
       break;
     case "agent":
-      filterColumn =
-        agentAdminFilter === "agentAdminFilter"
-          ? "issue_submitter_id"
-          : "issue_agent_email";
-      filterValue = agentAdminFilter === "agentAdminFilter" ? userId : email;
-      break;
-    default:
-      filterColumn = "issue_submitter_id";
-      filterValue = userId;
+      if (agentAdminFilter !== "agentAdminFilter") {
+        filterColumn = "issue_agent_email";
+        filterValue = email;
+      }
       break;
   }
 
-  // 2. Helper to run a Safe, Parameterized Query
-  const runStatusQuery = (status: string) => {
-    const sql = `
-      SELECT COUNT(*) AS count 
-      FROM issues_table 
-      WHERE issue_status = $1 AND ${filterColumn} = $2
-    `;
-
-    // We pass the actual values here. Postgres handles quotes and security.
-    return query(sql, [status, filterValue]);
-  };
-
-  // running the total's query
-  const runTotalsQuery = () => {
-    const sql = `
-    SELECT COUNT(*) AS count
-    FROM issues_table WHERE ${filterColumn} = $1`;
-
-    return query(sql, [filterValue]);
-  };
+  // 2. The Optimized Query: "The Pivot"
+  // We scan the table ONCE. As we look at each row, we decide which "bucket" it counts towards.
+  const sql = `
+    SELECT 
+      COUNT(*) AS totals,
+      COUNT(*) FILTER (WHERE issue_status = 'pending') AS pending,
+      COUNT(*) FILTER (WHERE issue_status = 'in progress') AS in_progress,
+      COUNT(*) FILTER (WHERE issue_status = 'resolved') AS resolved,
+      COUNT(*) FILTER (WHERE issue_status = 'unfeasible') AS unfeasible
+    FROM issues_table 
+    WHERE ${filterColumn} = $1
+  `;
 
   try {
-    // 3. Fire all 4 requests in parallel
-    // We get an array of results: [ [row1], [row2], ... ]
-    const results = await Promise.all([
-      runTotalsQuery(),
-      runStatusQuery("pending"),
-      runStatusQuery("in progress"),
-      runStatusQuery("resolved"),
-      runStatusQuery("unfeasible"),
-    ]);
+    // 3. Execute ONE query
+    const result = await query(sql, [filterValue]);
+    const row = result[0]; // We expect exactly one row with 5 columns
 
-    // 4. Extract data safely
-    // Assuming 'query' returns an array of rows.
-    const [totalRows, pendingRows, progressRows, resolvedRows, unfeasibleRows] =
-      results;
-
+    // 4. Return Data
     return NextResponse.json(
       {
-        // Postgres COUNT returns a string (e.g. "5"), so we parse it to a number
-        totals: parseInt(totalRows[0]?.count || "0"),
-        pending: parseInt(pendingRows[0]?.count || "0"),
-        inProgress: parseInt(progressRows[0]?.count || "0"),
-        resolved: parseInt(resolvedRows[0]?.count || "0"),
-        unfeasible: parseInt(unfeasibleRows[0]?.count || "0"),
+        totals: parseInt(row?.totals || "0"),
+        pending: parseInt(row?.pending || "0"),
+        inProgress: parseInt(row?.in_progress || "0"), // Note DB snake_case match
+        resolved: parseInt(row?.resolved || "0"),
+        unfeasible: parseInt(row?.unfeasible || "0"),
       },
       { status: 200 },
     );
   } catch (error) {
     console.error("Error retrieving status counts", error);
     return NextResponse.json(
-      {
-        pending: 0,
-        inProgress: 0,
-        resolved: 0,
-        unfeasible: 0,
-      },
+      { totals: 0, pending: 0, inProgress: 0, resolved: 0, unfeasible: 0 },
       { status: 500 },
     );
   }
