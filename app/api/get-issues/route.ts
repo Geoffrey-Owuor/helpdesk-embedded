@@ -6,6 +6,9 @@ export const GET = withAuth(async ({ user, request }) => {
   // destructure user details
   const { userId, email, role, department } = user;
 
+  // Define our query limit
+  const limit = 500;
+
   // Extract query parameters from the request url
   const searchParams = request.nextUrl.searchParams;
   const selectedFilter = searchParams.get("selectedFilter");
@@ -120,7 +123,9 @@ export const GET = withAuth(async ({ user, request }) => {
       baseQuery += ` WHERE ${whereClauses.join(" AND ")}`;
     }
 
-    baseQuery += ` ORDER BY issue_created_at DESC`;
+    // Drafting the final query
+    baseQuery += ` ORDER BY issue_created_at DESC LIMIT $${params.length + 1}`;
+    params.push(limit);
 
     // Execute the query
     const issuesData = await query(baseQuery, params);
