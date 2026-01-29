@@ -3,6 +3,7 @@
 import IssuesCardsSkeleton from "@/components/Skeletons/IssuesCardsSkeleton";
 import { useIssuesCards } from "@/contexts/IssuesCardsContext";
 import { useAutomations } from "@/contexts/AutomationCardsContext";
+import { useSearchLogic } from "@/contexts/SearchLogicContext";
 import {
   Clock,
   Activity,
@@ -26,6 +27,7 @@ const IssuesCards = ({ type }: { type: string }) => {
   } = useAutomations();
   const { role, department } = useUser();
   const router = useRouter();
+  const { agentAdminFilter } = useSearchLogic();
 
   // Defining our card variables
   let cardCounts;
@@ -42,6 +44,7 @@ const IssuesCards = ({ type }: { type: string }) => {
       cardCounts = issuesCounts;
       refetchCardCounts = refetchIssuesCounts;
       cardLoading = loading;
+      break;
   }
 
   // Configuration for the cards to keep the JSX clean
@@ -85,7 +88,7 @@ const IssuesCards = ({ type }: { type: string }) => {
   const subtitleMapping: Record<string, string> = {
     user: "Submitted",
     agent: "Assigned",
-    admin: department,
+    admin: agentAdminFilter === "agentAdminFilter" ? "Submitted" : department,
   };
 
   return (
@@ -103,18 +106,18 @@ const IssuesCards = ({ type }: { type: string }) => {
           </span>
           {type === "automations" && <DepartmentsDropDown />}
         </div>
-        <div className="items-center gap-4 md:flex">
+        <div className="flex items-center gap-4">
           {type === "automations" && (
             <button
               onClick={() => router.back()}
               className="flex items-center gap-2 rounded-xl bg-black px-3 py-2 text-white transition-colors duration-200 hover:bg-neutral-900 dark:bg-white dark:text-black dark:hover:bg-gray-200"
             >
               <ArrowLeft className="h-4 w-4" />
-              <span>back</span>
+              <span className="hidden md:flex">back</span>
             </button>
           )}
           <button
-            onClick={() => refetchCardCounts()}
+            onClick={refetchCardCounts}
             className="rounded-full bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
           >
             <RotateCcw />

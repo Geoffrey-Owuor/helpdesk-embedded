@@ -93,8 +93,8 @@ export const GET = withAuth(async ({ user, request }) => {
 
     // Issue type filtering
     else if (selectedFilter === "type" && issueType) {
-      whereClauses.push(`issue_type = $${params.length + 1}`);
-      params.push(issueType);
+      whereClauses.push(`issue_type ILIKE $${params.length + 1}`);
+      params.push(`%${issueType}%`);
     }
 
     // Submitter filter

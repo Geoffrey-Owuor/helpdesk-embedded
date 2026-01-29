@@ -8,6 +8,8 @@ import {
   useCallback,
   useMemo,
   ReactNode,
+  SetStateAction,
+  Dispatch,
 } from "react";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
@@ -31,7 +33,9 @@ const defaultCounts: AutomationCounts = {
 type AutomationCardsProviderValues = {
   loading: boolean;
   automationCounts: AutomationCounts;
-  refetchAutomationCounts: (val?: string) => Promise<void>;
+  selectedDepartment: string;
+  setSelectedDepartment: Dispatch<SetStateAction<string>>;
+  refetchAutomationCounts: () => Promise<void>;
 };
 
 const AutomationCardsContext =
@@ -43,16 +47,17 @@ export const AutomationCardsProvider = ({
   children: ReactNode;
 }) => {
   const [loading, setLoading] = useState(true);
+  const [selectedDepartment, setSelectedDepartment] = useState("");
   const [automationCounts, setAutomationCounts] =
     useState<AutomationCounts>(defaultCounts);
 
-  const fetchAutomationCounts = useCallback(async (department?: string) => {
+  const fetchAutomationCounts = useCallback(async () => {
     setLoading(true);
     //create a url variable
     let apiUrl = `/automation-cards`;
     try {
-      if (department && typeof department === "string")
-        apiUrl += `?department=${encodeURIComponent(department)}`;
+      if (selectedDepartment)
+        apiUrl += `?department=${encodeURIComponent(selectedDepartment)}`;
       const response = await apiClient.get(apiUrl);
       setAutomationCounts(response.data);
     } catch (error) {
@@ -62,7 +67,7 @@ export const AutomationCardsProvider = ({
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [selectedDepartment]);
 
   // useEffect to fetch counts when the provider mounts
   useEffect(() => {
@@ -74,9 +79,11 @@ export const AutomationCardsProvider = ({
     () => ({
       loading,
       automationCounts,
+      selectedDepartment,
+      setSelectedDepartment,
       refetchAutomationCounts: fetchAutomationCounts,
     }),
-    [loading, automationCounts, fetchAutomationCounts],
+    [loading, automationCounts, fetchAutomationCounts, selectedDepartment],
   );
 
   return (

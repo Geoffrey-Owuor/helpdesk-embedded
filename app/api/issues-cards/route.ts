@@ -2,8 +2,12 @@ import { query } from "@/lib/Db";
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 
-export const GET = withAuth(async ({ user }) => {
+export const GET = withAuth(async ({ user, request }) => {
   const { userId, role, email, department } = user;
+
+  // Defining our query params
+  const searchParams = request.nextUrl.searchParams;
+  const agentAdminFilter = searchParams.get("agentAdminFilter");
 
   // 1. Determine the Dynamic Column & Value
   let filterColumn = "";
@@ -11,12 +15,19 @@ export const GET = withAuth(async ({ user }) => {
 
   switch (role) {
     case "admin":
-      filterColumn = "issue_target_department";
-      filterValue = department;
+      filterColumn =
+        agentAdminFilter === "agentAdminFilter"
+          ? "issue_submitter_id"
+          : "issue_target_department";
+      filterValue =
+        agentAdminFilter === "agentAdminFilter" ? userId : department;
       break;
     case "agent":
-      filterColumn = "issue_agent_email";
-      filterValue = email;
+      filterColumn =
+        agentAdminFilter === "agentAdminFilter"
+          ? "issue_submitter_id"
+          : "issue_agent_email";
+      filterValue = agentAdminFilter === "agentAdminFilter" ? userId : email;
       break;
     default:
       filterColumn = "issue_submitter_id";

@@ -1,5 +1,6 @@
 "use client";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
+import { useAutomationsData } from "@/contexts/AutomationsDataContext";
 import { titleHelper } from "@/public/assets";
 import IssueStatusFormatter from "./IssueStatusFormatter";
 import { dateFormatter } from "@/public/assets";
@@ -10,6 +11,7 @@ import SearchFilterLogic from "./SearchFilterLogic";
 import SearchInputFields from "./SearchInputFields";
 import { RotateCcw } from "lucide-react";
 import ClearFilters from "./ClearFilters";
+import { useAutomations } from "@/contexts/AutomationCardsContext";
 import SearchFilters from "./SearchFilters";
 import { useColumnVisibility } from "@/contexts/ColumnVisibilityContext";
 import { useState } from "react";
@@ -17,26 +19,51 @@ import { useSearchLogic } from "@/contexts/SearchLogicContext";
 import ViewAgentAdminFilter from "./ViewAgentAdminFilter";
 import Pagination from "./Pagination";
 
-const IssuesData = () => {
+const IssuesData = ({ recordType }: { recordType: string }) => {
   const { issuesData, loading, refetchIssues } = useIssuesData();
+  const {
+    automationsData,
+    loading: automationsLoading,
+    refetchAutomations,
+  } = useAutomationsData();
   const { role, department } = useUser();
   const { visibleColumns } = useColumnVisibility();
   const { agentAdminFilter } = useSearchLogic();
+  const { selectedDepartment } = useAutomations();
+
+  // Defining our variables based on record type
+  let recordsData;
+  let recordsLoading;
+  let refetchRecords;
+
+  // Determine which data we should use based on record type
+  switch (recordType) {
+    case "automations":
+      recordsData = automationsData;
+      recordsLoading = automationsLoading;
+      refetchRecords = refetchAutomations;
+      break;
+    default:
+      recordsData = issuesData;
+      recordsLoading = loading;
+      refetchRecords = refetchIssues;
+      break;
+  }
 
   // Pagination states and logic
   const [currentPage, setCurrentPage] = useState(1);
   const [issuesPerPage, setIssuesPerPage] = useState(10);
-  const totalPages = Math.ceil(issuesData.length / issuesPerPage);
+  const totalPages = Math.ceil(recordsData.length / issuesPerPage);
   const indexOfLastIssue = currentPage * issuesPerPage;
   const indexOfFirstIssue = indexOfLastIssue - issuesPerPage;
-  const currentIssues = issuesData.slice(
+  const currentIssues = recordsData.slice(
     indexOfFirstIssue,
-    Math.min(indexOfLastIssue, issuesData.length),
+    Math.min(indexOfLastIssue, recordsData.length),
   );
 
   // Handle issue refetching
   const handleRefetchIssues = () => {
-    refetchIssues();
+    refetchRecords();
     setCurrentPage(1);
   };
 
@@ -66,16 +93,20 @@ const IssuesData = () => {
         {/* The title and toggle */}
         <div className="flex items-center justify-between md:justify-center md:gap-10">
           <div className="inline-flex flex-col">
-            <span className="text-xl font-semibold">Issues Data</span>
+            <span className="text-xl font-semibold">
+              {recordType === "automations" ? "Automations" : "Issues"} Data
+            </span>
             <span className="text-sm text-neutral-800 dark:text-neutral-400">
-              Issues {generatedSubtitle()}
+              {recordType === "automations"
+                ? `${selectedDepartment} Automations Summary`
+                : `Issues ${generatedSubtitle()}`}
             </span>
 
             <span className="text-xs text-neutral-500">
-              Total issues displayed: {issuesData.length || "none"}
+              Total records: {recordsData.length || "none"}
             </span>
           </div>
-          {role !== "user" && (
+          {role !== "user" && recordType !== "automations" && (
             <ViewAgentAdminFilter setCurrentPage={setCurrentPage} />
           )}
         </div>
@@ -83,7 +114,7 @@ const IssuesData = () => {
         {/* The refresh button, clear filters, hide columns */}
         <div className="flex items-center justify-start gap-4 md:justify-center">
           {/* Clearing filters */}
-          <ClearFilters setCurrentPage={setCurrentPage} />
+          <ClearFilters />
           <button
             onClick={handleRefetchIssues}
             className="flex h-9.5 items-center gap-2 rounded-xl bg-neutral-900 px-3 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
@@ -100,13 +131,16 @@ const IssuesData = () => {
       {/* The filtering logic and search input fields */}
 
       <div className="mb-6 flex flex-wrap items-center justify-start gap-4 md:justify-center">
-        <SearchFilterLogic />
+        <SearchFilterLogic recordType={recordType} />
         <SearchInputFields />
         {/* The search button */}
-        <SearchFilters setCurrentPage={setCurrentPage} />
+        <SearchFilters
+          setCurrentPage={setCurrentPage}
+          recordType={recordType}
+        />
       </div>
 
-      {loading ? (
+      {recordsLoading ? (
         <IssuesDataSkeleton />
       ) : (
         <div>
@@ -172,7 +206,7 @@ const IssuesData = () => {
 
               {/* --- BODY --- */}
               <tbody>
-                {issuesData.length === 0 ? (
+                {recordsData.length === 0 ? (
                   <tr>
                     <td
                       colSpan={100}
@@ -301,7 +335,7 @@ const IssuesData = () => {
             totalPages={totalPages}
             indexOfFirstIssue={indexOfFirstIssue}
             indexOfLastIssue={indexOfLastIssue}
-            issuesLength={issuesData.length}
+            issuesLength={recordsData.length}
           />
         </div>
       )}

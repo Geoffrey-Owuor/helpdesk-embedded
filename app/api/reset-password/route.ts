@@ -1,8 +1,8 @@
 import { query } from "@/lib/Db";
 import { hashPassword, verifyPassword } from "@/lib/Auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const { token, password } = await request.json();
 

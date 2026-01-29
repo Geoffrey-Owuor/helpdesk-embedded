@@ -1,19 +1,32 @@
 "use client";
 import { useSearchLogic } from "@/contexts/SearchLogicContext";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
+import { useAutomationsData } from "@/contexts/AutomationsDataContext";
 import { Search } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 
-export type FilterProps = {
+type FilterProps = {
   setCurrentPage: Dispatch<SetStateAction<number>>;
+  recordType: string;
 };
-const SearchFilters = ({ setCurrentPage }: FilterProps) => {
+const SearchFilters = ({ setCurrentPage, recordType }: FilterProps) => {
   // The the fetch issues function
   const { fetchIssues } = useIssuesData();
+  const { fetchAutomations } = useAutomationsData();
+
+  let fetchData;
+
+  switch (recordType) {
+    case "automations":
+      fetchData = fetchAutomations;
+      break;
+    default:
+      fetchData = fetchIssues;
+      break;
+  }
 
   // Get the filter data
   const {
-    agentAdminFilter,
     selectedFilter,
     // Getters
     status,
@@ -46,7 +59,6 @@ const SearchFilters = ({ setCurrentPage }: FilterProps) => {
   // Compile options into one object
   const filterOptions = {
     selectedFilter,
-    agentAdminFilter,
     status,
     reference,
     fromDate,
@@ -61,7 +73,7 @@ const SearchFilters = ({ setCurrentPage }: FilterProps) => {
   const handleFilterSearch = () => {
     // Do not run if button is disabled
     if (buttonDisabled) return;
-    fetchIssues(filterOptions);
+    fetchData(filterOptions);
     setCurrentPage(1);
   };
   return (

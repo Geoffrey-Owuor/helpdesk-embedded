@@ -1,7 +1,7 @@
 import { query } from "@/lib/Db";
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createSession } from "@/lib/Auth";
 import { cookies } from "next/headers";
 import {
@@ -11,7 +11,7 @@ import {
   hashPassword,
 } from "@/lib/Auth";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   // strict client typing
   let client: PoolClient | undefined;
   try {

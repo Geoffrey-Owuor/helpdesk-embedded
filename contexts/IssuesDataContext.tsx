@@ -12,6 +12,9 @@ import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useSearchLogic } from "./SearchLogicContext";
 
+// OUR DEFAULT FETCH OPTIONS
+const DEFAULT_FETCH_OPTIONS = { selectedFilter: "status", status: "" };
+
 export type issueValueTypes = string | number;
 
 interface Options {
@@ -44,16 +47,6 @@ export const IssuesDataProvider = ({
   // Get the agent admin filter
   const { agentAdminFilter } = useSearchLogic();
 
-  // Default fetch options
-  const DEFAULT_FETCH_OPTIONS = useMemo(
-    () => ({
-      selectedFilter: "status",
-      agentAdminFilter: agentAdminFilter,
-      status: "",
-    }),
-    [agentAdminFilter],
-  );
-
   const [issuesData, setIssuesData] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -65,15 +58,15 @@ export const IssuesDataProvider = ({
       setLoading(true);
 
       try {
-        let url = `/get-issues/?selectedFilter=${queryOptions.selectedFilter}`;
+        let url = `/get-issues/?selectedFilter=${queryOptions.selectedFilter || "status"}`;
 
         // First we check if we have the agent admin filter enabled
-        if (queryOptions.agentAdminFilter) {
-          url += `&agentAdminFilter=${queryOptions.agentAdminFilter}`;
+        if (agentAdminFilter === "agentAdminFilter") {
+          url += `&agentAdminFilter=${agentAdminFilter}`;
         }
 
         if (queryOptions.selectedFilter === "status" && queryOptions.status) {
-          url += `&status=${queryOptions.status}`;
+          url += `&status=${encodeURIComponent(queryOptions.status)}`;
         } else if (
           queryOptions.selectedFilter === "reference" &&
           queryOptions.reference
@@ -99,12 +92,12 @@ export const IssuesDataProvider = ({
           queryOptions.selectedFilter === "type" &&
           queryOptions.issueType
         ) {
-          url += `&type=${queryOptions.issueType}`;
+          url += `&type=${encodeURIComponent(queryOptions.issueType.trim())}`;
         } else if (
           queryOptions.selectedFilter === "submitter" &&
           queryOptions.submitter
         ) {
-          url += `&submitter=${queryOptions.submitter}`;
+          url += `&submitter=${encodeURIComponent(queryOptions.submitter.trim())}`;
         }
 
         // Fetch a response with the built url
@@ -120,18 +113,18 @@ export const IssuesDataProvider = ({
         setLoading(false);
       }
     },
-    [DEFAULT_FETCH_OPTIONS],
+    [agentAdminFilter],
   );
 
   //   UseEffect for initial fetch when provider mounts with default fetch options
   useEffect(() => {
     fetchIssues(DEFAULT_FETCH_OPTIONS);
-  }, [fetchIssues, DEFAULT_FETCH_OPTIONS]);
+  }, [fetchIssues]);
 
   //   function for refetching the issues
   const refetchIssues = useCallback(() => {
     fetchIssues(DEFAULT_FETCH_OPTIONS);
-  }, [fetchIssues, DEFAULT_FETCH_OPTIONS]);
+  }, [fetchIssues]);
 
   // Prepare the values
   const values = useMemo(

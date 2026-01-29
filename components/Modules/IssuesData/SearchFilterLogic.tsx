@@ -15,7 +15,7 @@ const filterOptions = [
   { label: "Submitter", value: "submitter" },
 ];
 
-const SearchFilterLogic = () => {
+const SearchFilterLogic = ({ recordType }: { recordType: string }) => {
   // State for the filter dropdown
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const { selectedFilter, agentAdminFilter, setSelectedFilter } =
@@ -38,10 +38,17 @@ const SearchFilterLogic = () => {
       // Hide the submitter filter if user is a standard user
       if (role === "user" && option.value === "submitter") return false;
 
+      // Hide department and Issue Type when recordType is automations
+      if (
+        recordType === "automations" &&
+        (option.value === "department" || option.value === "type")
+      )
+        return false;
+
       // Otherwise return true for the remaining ones
       return true;
     });
-  }, [role, agentAdminFilter]);
+  }, [role, agentAdminFilter, recordType]);
 
   // Close dropdown when clicking outside
   useEffect(() => {

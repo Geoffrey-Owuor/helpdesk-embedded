@@ -6,15 +6,16 @@ export const GET = withAuth(async ({ request }) => {
   // get query params from the request url
   const searchParams = request.nextUrl.searchParams;
   const department = searchParams.get("department");
+  const issueTypeFilter = "Automation";
 
   // Totals per status
   const runStatusQuery = (status: string) => {
     let sql = `SELECT COUNT(*) AS count
-        FROM issues_table WHERE issue_type = 'Automation' AND issue_status = $1`;
-    const params = [status];
+        FROM issues_table WHERE issue_type = $1 AND issue_status = $2`;
+    const params = [issueTypeFilter, status];
 
     if (department) {
-      sql += ` AND issue_target_department = $2`;
+      sql += ` AND issue_submitter_department = $3`;
       params.push(department);
     }
 
@@ -25,11 +26,11 @@ export const GET = withAuth(async ({ request }) => {
   const runTotalsQuery = () => {
     let sql = `
     SELECT COUNT(*) AS count
-    FROM issues_table WHERE issue_type = 'Automation'`;
-    const params = [];
+    FROM issues_table WHERE issue_type = $1`;
+    const params = [issueTypeFilter];
 
     if (department) {
-      sql += ` AND issue_target_department = $1`;
+      sql += ` AND issue_submitter_department = $2`;
       params.push(department);
     }
 

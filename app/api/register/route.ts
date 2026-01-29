@@ -1,5 +1,5 @@
 import { query } from "@/lib/Db";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import VerificationCodeTemplate from "@/templates/VerificationCodeTemplate";
 import { sendEmail } from "@/services/EmailService";
 import { validateHotpointEmail } from "@/utils/Validators";
@@ -7,7 +7,7 @@ import crypto from "crypto";
 import { cookies } from "next/headers";
 import { SignJWT } from "jose";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const { email } = await request.json();
 
