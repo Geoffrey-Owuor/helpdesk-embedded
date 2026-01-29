@@ -39,9 +39,3 @@ export const NameValidator = (name: string): NameValidationResult => {
     isValid: hasTwoNames && singleSpace && isCapitalized,
   };
 };
-
-//User Name Route Helper
-export const generateUserRoute = (username: string) => {
-  if (!username) return null;
-  return username.replace(" ", "-").toLowerCase();
-};
