@@ -9,6 +9,7 @@ const statusOptions = [
   { label: "Pending", value: "pending" },
   { label: "In Progress", value: "in progress" },
   { label: "Resolved", value: "resolved" },
+  { label: "Unfeasible", value: "unfeasible" },
 ];
 
 const departmentOptions = baseDepartments.map((department) => ({

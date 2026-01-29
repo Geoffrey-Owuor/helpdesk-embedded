@@ -125,7 +125,7 @@ const IssuesCards = ({ type }: { type: string }) => {
           {cardLoading ? (
             <SkeletonBox className="hidden h-11 w-20 md:inline-flex" />
           ) : (
-            <div className="hidden items-center gap-2 rounded-xl bg-gray-100 px-3 py-2 md:flex dark:bg-gray-900">
+            <div className="hidden items-center gap-2 rounded-xl bg-neutral-100 px-3 py-2 md:flex dark:bg-neutral-900">
               <TrendingUp />
               <span className="text-lg font-semibold">{cardCounts.totals}</span>
             </div>
@@ -154,7 +154,7 @@ const IssuesCards = ({ type }: { type: string }) => {
 
                 {/* Icon Container with dynamic colors */}
                 <div
-                  className={`flex h-12 w-12 items-center justify-center rounded-xl border ${item.bgColor} ${item.borderColor} ${item.color}`}
+                  className={`flex h-12 w-12 items-center justify-center rounded-full border ${item.bgColor} ${item.borderColor} ${item.color}`}
                 >
                   <item.icon className="h-6 w-6" strokeWidth={2} />
                 </div>
