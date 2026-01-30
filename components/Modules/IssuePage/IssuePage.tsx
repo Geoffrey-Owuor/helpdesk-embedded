@@ -30,6 +30,7 @@ import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAutomations } from "@/contexts/AutomationCardsContext";
 import { useIssuesCards } from "@/contexts/IssuesCardsContext";
 import { useUser } from "@/contexts/UserContext";
+import TitleDescriptionModal from "./TitleDescriptionModal";
 import { PromiseOverlay } from "../Overlays";
 
 const statusOptions = [
@@ -58,6 +59,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isEditModalOpen, setIsModalOpen] = useState(false);
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -163,6 +165,16 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
         />
       )}
       {updatingStatus && <PromiseOverlay overlaytext="loading" />}
+
+      {/* Title and description edit modal */}
+      {isEditModalOpen && (
+        <TitleDescriptionModal
+          title={issueData.issue_title}
+          description={issueData.issue_description}
+          closeModal={() => setIsModalOpen(false)}
+        />
+      )}
+
       <div className="mx-auto max-w-6xl px-4 py-8">
         {/* --- HEADER SECTION (Unchanged) --- */}
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-start">
@@ -301,7 +313,11 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
               </div>
               Description
             </h2>
-            <button className="group rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-white">
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(true)}
+              className="group rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-white"
+            >
               <PenLine className="h-4 w-4" />
             </button>
           </div>
