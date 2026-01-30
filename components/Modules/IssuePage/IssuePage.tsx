@@ -18,6 +18,7 @@ import {
   LucideIcon,
   ChevronDown,
   Check,
+  RotateCcw,
 } from "lucide-react";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import { dateFormatter } from "@/public/assets";
@@ -204,12 +205,19 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
 
           <div className="flex items-center gap-2">
             <button
+              onClick={refetchData}
+              className="rounded-full bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+            >
+              <RotateCcw />
+            </button>
+            <button
               onClick={() => router.back()}
               className="flex items-center gap-2 rounded-xl bg-black px-4 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
             >
               <ArrowLeft className="h-4 w-4" />
               <span className="hidden md:inline">Back</span>
             </button>
+
             {role === "admin" &&
               issueData.issue_status !== "resolved" &&
               issueData.issue_target_department === department && (

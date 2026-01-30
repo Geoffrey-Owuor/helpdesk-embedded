@@ -107,6 +107,12 @@ const IssuesCards = ({ type }: { type: string }) => {
           {type === "automations" && <DepartmentsDropDown />}
         </div>
         <div className="flex items-center gap-4">
+          <button
+            onClick={refetchCardCounts}
+            className="rounded-full bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+          >
+            <RotateCcw />
+          </button>
           {type === "automations" && (
             <button
               onClick={() => router.back()}
@@ -116,12 +122,7 @@ const IssuesCards = ({ type }: { type: string }) => {
               <span>back</span>
             </button>
           )}
-          <button
-            onClick={refetchCardCounts}
-            className="rounded-full bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
-          >
-            <RotateCcw />
-          </button>
+
           {cardLoading ? (
             <SkeletonBox className="hidden h-11 w-20 md:inline-flex" />
           ) : (
