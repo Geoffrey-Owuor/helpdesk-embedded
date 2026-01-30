@@ -1,5 +1,5 @@
 "use client";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { useSearchLogic } from "@/contexts/SearchLogicContext";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
 import { Building2, Send } from "lucide-react";
@@ -9,10 +9,10 @@ type AgentAdminFilterProps = {
 };
 
 const ViewAgentAdminFilter = ({ setCurrentPage }: AgentAdminFilterProps) => {
-  const [isFilterActive, setIsFilterActive] = useState(false);
   const { fetchIssues, refetchIssues } = useIssuesData();
 
   const {
+    agentAdminFilter,
     setSelectedFilter,
     setAgentAdminFilter,
     setStatus,
@@ -25,15 +25,24 @@ const ViewAgentAdminFilter = ({ setCurrentPage }: AgentAdminFilterProps) => {
     setSubmitter,
   } = useSearchLogic();
 
+  // Check is filter has been applied
+  const filterApplied = agentAdminFilter === "agentAdminFilter";
+
   // --- 1. Handle "Default" View (Incoming/Assigned Issues) ---
   const handleDefaultIssues = () => {
-    if (!isFilterActive) return; // Don't reload if already active
+    if (!filterApplied) return; // Don't reload if agent admin filter is already blank
 
-    setIsFilterActive(false);
-
-    // Reset the agentAdmin filter and the default selected filter
+    // Reset the agentAdmin filter
     setAgentAdminFilter("");
     setSelectedFilter("status");
+    setStatus("");
+    setReference("");
+    setFromDate("");
+    setToDate("");
+    setDepartment("");
+    setAgent("");
+    setIssueType("");
+    setSubmitter("");
 
     // Refetch using the context's default behavior
     // Refetches using the default selected filter
@@ -43,9 +52,7 @@ const ViewAgentAdminFilter = ({ setCurrentPage }: AgentAdminFilterProps) => {
 
   // --- 2. Handle "My Submissions" View (Agent/Admin Created) ---
   const fetchAgentAdminIssues = () => {
-    if (isFilterActive) return; // Don't reload if already active
-
-    setIsFilterActive(true);
+    if (filterApplied) return; // Don't reload if agent admin filter is already set
 
     // 1. Update the UI Context state (so search bars clear visually)
     setAgentAdminFilter("agentAdminFilter");
@@ -86,9 +93,9 @@ const ViewAgentAdminFilter = ({ setCurrentPage }: AgentAdminFilterProps) => {
         {/* Button 1: Default View */}
         <button
           onClick={handleDefaultIssues}
-          disabled={!isFilterActive}
+          disabled={!filterApplied}
           className={`flex items-center justify-center gap-2 rounded-lg px-4 py-1.5 text-sm font-semibold transition-all ${
-            !isFilterActive
+            !filterApplied
               ? "bg-white text-neutral-900 shadow-sm dark:bg-neutral-900 dark:text-white"
               : "text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
           }`}
@@ -100,9 +107,9 @@ const ViewAgentAdminFilter = ({ setCurrentPage }: AgentAdminFilterProps) => {
         {/* Button 2: Agent/Admin Submitted View */}
         <button
           onClick={fetchAgentAdminIssues}
-          disabled={isFilterActive}
+          disabled={filterApplied}
           className={`flex items-center justify-center gap-2 rounded-lg px-4 py-1.5 text-sm font-semibold transition-all ${
-            isFilterActive
+            filterApplied
               ? "bg-neutral-900 text-white shadow-sm dark:bg-white dark:text-neutral-900"
               : "text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
           }`}
