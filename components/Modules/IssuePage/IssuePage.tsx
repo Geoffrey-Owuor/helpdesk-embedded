@@ -83,6 +83,14 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
     setShowConfirmationDialog(true);
   };
 
+  // Helper function for refetching data
+  const refetchData = () => {
+    refetchIssues();
+    refetchAutomations();
+    refetchAutomationCounts();
+    refetchIssuesCounts();
+  };
+
   // Async function for updating the status
   const handleUpdateStatus = async () => {
     setShowConfirmationDialog(false);
@@ -104,10 +112,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
       // clear selected status
       setSelectedStatus("");
       // refetch data
-      refetchIssues();
-      refetchAutomations();
-      refetchAutomationCounts();
-      refetchIssuesCounts();
+      refetchData();
     } catch (error) {
       const errorMessage = getApiErrorMessage(error);
       setAlertInfo({
@@ -172,6 +177,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           title={issueData.issue_title}
           description={issueData.issue_description}
           closeModal={() => setIsModalOpen(false)}
+          uuid={uuid}
         />
       )}
 
@@ -313,13 +319,15 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
               </div>
               Description
             </h2>
-            <button
-              type="button"
-              onClick={() => setIsModalOpen(true)}
-              className="group rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-white"
-            >
-              <PenLine className="h-4 w-4" />
-            </button>
+            {role === "user" && issueData.issue_status !== "resolved" && (
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(true)}
+                className="group rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-white"
+              >
+                <PenLine className="h-4 w-4" />
+              </button>
+            )}
           </div>
           <div className="prose prose-neutral dark:prose-invert max-w-none">
             <p className="leading-relaxed whitespace-pre-wrap text-neutral-600 dark:text-neutral-300">

@@ -60,7 +60,7 @@ export const PUT = withAuth(async ({ request, user }) => {
     UPDATE issues_table SET 
     issue_title = $1,
     issue_description = $2,
-    issue_update_at = CURRENT_TIMESTAMP
+    issue_updated_at = CURRENT_TIMESTAMP
     WHERE issue_uuid = $3
     `;
 
@@ -75,7 +75,7 @@ export const PUT = withAuth(async ({ request, user }) => {
 
     // Return a response to the user
     return NextResponse.json(
-      { message: "Details update successfully" },
+      { message: "Details updated successfully" },
       { status: 200 },
     );
   } catch (error) {

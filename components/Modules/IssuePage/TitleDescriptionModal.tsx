@@ -1,5 +1,5 @@
 "use client";
-import { ChangeEvent, MouseEventHandler, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { useAlert } from "@/contexts/AlertContext";
 import { PromiseOverlay } from "../Overlays";
 import ConfirmationDialog from "../Overlays";
@@ -16,11 +16,13 @@ import { automationsValueTypes } from "@/contexts/AutomationsDataContext";
 type TitleDescriptionModalProps = {
   title: automationsValueTypes;
   description: automationsValueTypes;
-  closeModal: MouseEventHandler<HTMLButtonElement>;
+  uuid: string;
+  closeModal: () => void;
 };
 const TitleDescriptionModal = ({
   title,
   description,
+  uuid,
   closeModal,
 }: TitleDescriptionModalProps) => {
   const [formData, setFormData] = useState({
@@ -29,6 +31,14 @@ const TitleDescriptionModal = ({
   });
 
   const [updating, setUpdating] = useState(false);
+  const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
+
+  // context data
+  const { setAlertInfo } = useAlert();
+  const { refetchIssues } = useIssuesData();
+  const { refetchAutomations } = useAutomationsData();
+  const { refetchIssuesCounts } = useIssuesCards();
+  const { refetchAutomationCounts } = useAutomations();
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -40,8 +50,67 @@ const TitleDescriptionModal = ({
     }));
   };
 
+  //the handle confirm submit function
+  const handleConfirmSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    setShowConfirmationDialog(true);
+  };
+
+  // the handle submit function
+  const handleSubmit = async () => {
+    setShowConfirmationDialog(false);
+    setUpdating(true);
+
+    // compile our data into one object
+    const payload = {
+      ...formData,
+      uuid,
+    };
+
+    try {
+      const response = await apiClient.put("/update-issueinfo", payload);
+
+      // Set a success alert
+      setAlertInfo({
+        alertType: "success",
+        showAlert: true,
+        alertMessage:
+          response.data.message || "Issue status updated successfully",
+      });
+
+      // clear the form data
+      setFormData({ issue_title: "", issue_description: "" });
+      // refetch data
+      refetchIssues();
+      refetchAutomations();
+      refetchAutomationCounts();
+      refetchIssuesCounts();
+
+      // close the modal
+      closeModal();
+    } catch (error) {
+      const errorMessage = getApiErrorMessage(error);
+      setAlertInfo({
+        alertType: "error",
+        showAlert: true,
+        alertMessage: errorMessage,
+      });
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   return (
     <>
+      {updating && <PromiseOverlay overlaytext="loading" />}
+      {showConfirmationDialog && (
+        <ConfirmationDialog
+          title="Update Issue Info"
+          onConfirm={handleSubmit}
+          onCancel={() => setShowConfirmationDialog(false)}
+          message="Are you sure you want to update the issue info"
+        />
+      )}
       <ClientPortal>
         {/* Backdrop */}
         <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 dark:bg-black/60">
@@ -61,7 +130,7 @@ const TitleDescriptionModal = ({
             </div>
 
             {/* Update Form */}
-            <form action="" className="space-y-6">
+            <form onSubmit={handleConfirmSubmit} className="space-y-6">
               {/* Issue Title */}
               <div className="flex flex-col gap-1">
                 <label
