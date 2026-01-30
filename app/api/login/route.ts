@@ -64,10 +64,7 @@ export async function POST(request: NextRequest) {
     // Create a session with the tokens
     await createSession(accessToken, refreshToken);
 
-    return NextResponse.json({
-      message: "Login successful",
-      username: user.username,
-    });
+    return NextResponse.json({ message: "Login successful" }, { status: 200 });
   } catch (error) {
     console.error("Login Error:", error);
     return NextResponse.json(

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import { generateUserRoute } from "@/utils/Validators";
 import Link from "next/link";
 import {
   Eye,
@@ -128,10 +127,8 @@ const CompleteRegistration = ({ email }: { email: string }) => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Registration failed");
 
-      // response is ok - get username
-      const username = generateUserRoute(data.username);
       // Push to protected dashboard
-      router.push(`/${username}`);
+      router.push("/dashboard");
       router.refresh(); //Refresh server components
     } catch (error) {
       if (error instanceof Error)

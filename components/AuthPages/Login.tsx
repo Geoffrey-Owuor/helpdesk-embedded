@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ApiHandler } from "@/utils/ApiHandler";
-import { generateUserRoute } from "@/utils/Validators";
 import AuthShell from "./AuthShell";
 import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
 import { useAlert } from "@/contexts/AlertContext";
@@ -33,8 +32,7 @@ export default function LoginPage() {
       const data = await response.json();
       //   Successfull login
       if (response.ok) {
-        const username = generateUserRoute(data.username);
-        router.push(`/${username}`);
+        router.push("/dashboard");
         router.refresh(); //refresh server components
       } else {
         setError(data.message || "Login Failed");

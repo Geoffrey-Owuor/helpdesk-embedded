@@ -11,6 +11,9 @@ import SearchFilterLogic from "./SearchFilterLogic";
 import SearchInputFields from "./SearchInputFields";
 import { RotateCcw } from "lucide-react";
 import ClearFilters from "./ClearFilters";
+import { useRouter } from "next/navigation";
+import { useLoadingLine } from "@/contexts/LoadingLineContext";
+import Link from "next/link";
 import { useAutomations } from "@/contexts/AutomationCardsContext";
 import SearchFilters from "./SearchFilters";
 import { useColumnVisibility } from "@/contexts/ColumnVisibilityContext";
@@ -30,6 +33,8 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
   const { visibleColumns } = useColumnVisibility();
   const { agentAdminFilter } = useSearchLogic();
   const { selectedDepartment } = useAutomations();
+  const router = useRouter();
+  const { setLoadingLine } = useLoadingLine();
 
   // Defining our variables based on record type
   let recordsData;
@@ -49,6 +54,10 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
       refetchRecords = refetchIssues;
       break;
   }
+
+  // Generate a dynamic url param that we will pass to the issue url - based on the data we are currently viewing
+  // We have two sources of data, some are in issuesData,  some are in Automations (based on recordType)
+  const dynamicUrlParam = recordType === "automations" ? "automation" : "issue";
 
   // Pagination states and logic
   const [currentPage, setCurrentPage] = useState(1);
@@ -219,19 +228,32 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
                   currentIssues.map((issueData) => (
                     <tr
                       key={issueData.issue_uuid}
-                      className="group rounded-xl shadow-sm transition-transform duration-200"
+                      onClick={() => {
+                        setLoadingLine(true);
+                        router.push(
+                          `/dashboard/${issueData.issue_uuid}?type=${dynamicUrlParam}`,
+                        );
+                      }}
+                      className="group cursor-pointer rounded-xl shadow-sm transition-transform duration-200"
                     >
                       {/* ROW STYLING NOTES: 
                   - We apply bg-neutral-50, and padding to every TD.
                   - first:rounded-l-xl rounds the left side of the row.
                   - last:rounded-r-xl rounds the right side of the row.
-              */}
+                          */}
 
                       {visibleColumns.ref && (
                         <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
-                          <p className="max-w-30 truncate text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                          <Link
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setLoadingLine(true);
+                            }}
+                            href={`/dashboard/${issueData.issue_uuid}?type=${dynamicUrlParam}`}
+                            className="max-w-30 truncate text-sm font-semibold text-neutral-900 hover:text-blue-500 hover:underline dark:text-neutral-100"
+                          >
                             {issueData.issue_reference_id}
-                          </p>
+                          </Link>
                         </td>
                       )}
 

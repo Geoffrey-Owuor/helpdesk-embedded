@@ -3,74 +3,55 @@ import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 
 export const GET = withAuth(async ({ request }) => {
-  // get query params from the request url
   const searchParams = request.nextUrl.searchParams;
   const department = searchParams.get("department");
   const issueTypeFilter = "Automation";
 
-  // Totals per status
-  const runStatusQuery = (status: string) => {
-    let sql = `SELECT COUNT(*) AS count
-        FROM issues_table WHERE issue_type = $1 AND issue_status = $2`;
-    const params = [issueTypeFilter, status];
+  // 1. Prepare Dynamic SQL
+  // We start with the base requirement: filter by issue_type.
+  // We will append the department filter only if it exists.
+  let sql = `
+    SELECT 
+      COUNT(*) AS totals,
+      COUNT(*) FILTER (WHERE issue_status = 'pending') AS pending,
+      COUNT(*) FILTER (WHERE issue_status = 'in progress') AS in_progress,
+      COUNT(*) FILTER (WHERE issue_status = 'resolved') AS resolved,
+      COUNT(*) FILTER (WHERE issue_status = 'unfeasible') AS unfeasible
+    FROM issues_table 
+    WHERE issue_type = $1
+  `;
 
-    if (department) {
-      sql += ` AND issue_submitter_department = $3`;
-      params.push(department);
-    }
+  // Initialize params with the required issue type
+  const params = [issueTypeFilter];
 
-    return query(sql, params);
-  };
-
-  // General totals
-  const runTotalsQuery = () => {
-    let sql = `
-    SELECT COUNT(*) AS count
-    FROM issues_table WHERE issue_type = $1`;
-    const params = [issueTypeFilter];
-
-    if (department) {
-      sql += ` AND issue_submitter_department = $2`;
-      params.push(department);
-    }
-
-    return query(sql, params);
-  };
+  // 2. Add Conditional Logic
+  // If a department is provided, we append the AND clause and push the parameter.
+  if (department) {
+    sql += ` AND issue_submitter_department = $2`;
+    params.push(department);
+  }
 
   try {
-    // Fire all four requests in parallel
-    const results = await Promise.all([
-      runTotalsQuery(),
-      runStatusQuery("pending"),
-      runStatusQuery("in progress"),
-      runStatusQuery("resolved"),
-      runStatusQuery("unfeasible"),
-    ]);
+    // 3. Execute ONE query
+    // Instead of Promise.all with 5 requests, we make 1 round-trip to the DB.
+    const result = await query(sql, params);
+    const row = result[0];
 
-    // Extract the returned data
-    const [totalRows, pendingRows, progressRows, resolvedRows, unfeasibleRows] =
-      results;
-
+    // 4. Return Data
     return NextResponse.json(
       {
-        // Postgres COUNT returns a string (e.g. "5"), so we parse it to a number
-        totals: parseInt(totalRows[0]?.count || "0"),
-        pending: parseInt(pendingRows[0]?.count || "0"),
-        inProgress: parseInt(progressRows[0]?.count || "0"),
-        resolved: parseInt(resolvedRows[0]?.count || "0"),
-        unfeasible: parseInt(unfeasibleRows[0]?.count || "0"),
+        totals: parseInt(row?.totals || "0"),
+        pending: parseInt(row?.pending || "0"),
+        inProgress: parseInt(row?.in_progress || "0"), // Map snake_case DB column to camelCase JSON
+        resolved: parseInt(row?.resolved || "0"),
+        unfeasible: parseInt(row?.unfeasible || "0"),
       },
       { status: 200 },
     );
   } catch (error) {
-    console.error("Error retrieving status counts", error);
+    console.error("Error retrieving automation stats", error);
     return NextResponse.json(
-      {
-        pending: 0,
-        inProgress: 0,
-        resolved: 0,
-        unfeasible: 0,
-      },
+      { totals: 0, pending: 0, inProgress: 0, resolved: 0, unfeasible: 0 },
       { status: 500 },
     );
   }

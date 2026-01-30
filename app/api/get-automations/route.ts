@@ -6,6 +6,9 @@ export const GET = withAuth(async ({ request }) => {
   //Our main filter
   const IssueTypeFilter = "Automation";
 
+  // Our query limit
+  const limit = 500;
+
   // Extract query parameters from the request url
   const searchParams = request.nextUrl.searchParams;
   const selectedFilter = searchParams.get("selectedFilter");
@@ -80,7 +83,9 @@ export const GET = withAuth(async ({ request }) => {
       baseQuery += ` WHERE ${whereClauses.join(" AND ")}`;
     }
 
-    baseQuery += ` ORDER BY issue_created_at DESC`;
+    // Our final query
+    baseQuery += ` ORDER BY issue_created_at DESC LIMIT $${params.length + 1}`;
+    params.push(limit);
 
     const automationsData = await query(baseQuery, params);
 

@@ -9,14 +9,12 @@ import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
 
 type MobileSideBarProps = {
   sideBarOpen: boolean;
-  automationsRoute: string;
   handleRouteChange: (val: string) => void;
   setSideBarOpen: Dispatch<SetStateAction<boolean>> | ((open: boolean) => void);
 };
 
 const MobileSideBar = ({
   sideBarOpen,
-  automationsRoute,
   handleRouteChange,
   setSideBarOpen,
 }: MobileSideBarProps) => {
@@ -80,8 +78,8 @@ const MobileSideBar = ({
 
             {/* Link: Automations */}
             <Link
-              href={automationsRoute}
-              onClick={() => handleMobileRouteChange(automationsRoute)}
+              href="/dashboard/automations"
+              onClick={() => handleMobileRouteChange("/dashboard/automations")}
               className="flex w-full items-center gap-2 rounded-lg p-2 text-sm font-semibold hover:bg-neutral-200 dark:hover:bg-neutral-800"
             >
               <Bot />

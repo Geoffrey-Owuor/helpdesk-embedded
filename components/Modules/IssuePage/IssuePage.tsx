@@ -1,0 +1,309 @@
+"use client";
+
+import { useIssuesData } from "@/contexts/IssuesDataContext";
+import { useAutomationsData } from "@/contexts/AutomationsDataContext";
+import { useSearchParams } from "next/navigation";
+import IssueDetailsSkeleton from "@/components/Skeletons/IssueDetailsSkeleton";
+import { useRouter } from "next/navigation";
+import {
+  ArrowLeft,
+  Hash,
+  Briefcase,
+  Calendar,
+  FileText,
+  UserRound,
+  PenLine,
+  SquareCheckBig,
+  UserRoundPen,
+  LucideIcon,
+  ChevronDown,
+  Check,
+} from "lucide-react";
+import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
+import { dateFormatter } from "@/public/assets";
+import { titleHelper } from "@/public/assets";
+import { ReactNode, useState, useRef, useEffect } from "react";
+import ConfirmationDialog from "../Overlays";
+import apiClient from "@/lib/AxiosClient";
+
+const statusOptions = [
+  { label: "In Progress", value: "in progress" },
+  { label: "Resolved", value: "resolved" },
+  { label: "Unfeasible", value: "unfeasible" },
+];
+
+export const IssuePage = ({ uuid }: { uuid: string }) => {
+  // Get our data
+  const { issuesData, loading } = useIssuesData();
+  const { automationsData, loading: automationsLoading } = useAutomationsData();
+  const searchParams = useSearchParams();
+  const type = searchParams.get("type");
+  const router = useRouter();
+
+  // Status to hold our selected status
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleSelect = (selectedValue: string) => {
+    setSelectedStatus(selectedValue);
+    setIsOpen(false);
+    setShowConfirmationDialog(true);
+  };
+
+  // Async function for updating the status
+  const handleUpdateStatus = async () => {};
+
+  let recordsData;
+  let recordsLoading;
+
+  switch (type) {
+    case "automation":
+      recordsData = automationsData;
+      recordsLoading = automationsLoading;
+      break;
+    default:
+      recordsData = issuesData;
+      recordsLoading = loading;
+      break;
+  }
+
+  // Defining a constant to hold our specific issue
+  const issueData = recordsData.find((record) => record.issue_uuid === uuid);
+
+  if (recordsLoading) return <IssueDetailsSkeleton />;
+
+  // Handle case where ID is invalid or not found after loading
+  if (!issueData) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-neutral-500">
+        <p className="text-lg font-semibold">Record not found</p>
+        <button
+          onClick={() => router.back()}
+          className="mt-4 flex items-center gap-2 text-blue-600 hover:underline"
+        >
+          <ArrowLeft className="h-4 w-4" /> Go Back
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {showConfirmationDialog && (
+        <ConfirmationDialog
+          title="Update Status"
+          onConfirm={handleUpdateStatus}
+          onCancel={() => setShowConfirmationDialog(false)}
+          message={`Are you sure you want to mark this issue as ${selectedStatus}`}
+        />
+      )}
+      <div className="mx-auto max-w-6xl px-4 py-8">
+        {/* --- HEADER SECTION (Unchanged) --- */}
+        <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-start">
+          <div className="flex flex-col gap-3">
+            <h1 className="text-2xl font-semibold text-neutral-900 dark:text-white">
+              {issueData.issue_title}
+            </h1>
+            <div className="flex flex-wrap items-center gap-3 text-sm">
+              <span className="font-mono font-semibold text-blue-600 dark:text-blue-400">
+                {issueData.issue_reference_id}
+              </span>
+              <span className="h-1 w-1 rounded-full bg-neutral-300 dark:bg-neutral-600"></span>
+              <div className="flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400">
+                <Calendar className="h-3.5 w-3.5" />
+                {dateFormatter(issueData.issue_created_at)}
+              </div>
+              <span className="h-1 w-1 rounded-full bg-neutral-300 dark:bg-neutral-600"></span>
+              <IssueStatusFormatter status={issueData.issue_status} />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => router.back()}
+              className="flex items-center gap-2 rounded-xl bg-black px-4 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="hidden md:inline">Back</span>
+            </button>
+            <button className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold transition-colors duration-200 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-transparent dark:hover:bg-neutral-900">
+              <UserRoundPen className="h-4 w-4" />
+              <span className="hidden md:inline">Reassign</span>
+            </button>
+            <div className="relative w-fit" ref={dropdownRef}>
+              <button
+                type="button" // Prevent form submission if inside a form
+                onClick={() => setIsOpen(!isOpen)}
+                className={`flex h-9.5 w-full min-w-45 items-center justify-between rounded-xl border bg-white px-3 text-sm transition-all sm:w-auto dark:bg-neutral-950 ${
+                  isOpen
+                    ? "border-blue-500 ring-2 ring-blue-500/20"
+                    : "border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900"
+                }`}
+              >
+                <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300">
+                  <SquareCheckBig className="h-4 w-4" />
+                  <span className="font-semibold text-neutral-600 dark:text-neutral-400">
+                    Update Status:
+                  </span>
+                </div>
+                <ChevronDown
+                  className={`h-4 w-4 text-neutral-400 transition-transform ${
+                    isOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {/* Dropdown Menu */}
+              {isOpen && (
+                <div className="absolute top-full left-0 z-20 mt-2 max-h-80 w-full min-w-50 origin-top-left overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-none">
+                  <div className="px-2 py-2 text-xs font-semibold text-neutral-500 uppercase">
+                    Available options
+                  </div>
+                  {statusOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => handleSelect(option.value)}
+                      className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-900"
+                    >
+                      {option.label}
+                      {selectedStatus === option.value && (
+                        <Check className="h-4 w-4 text-blue-600" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* --- DETAILS GRID (Revamped into 3 Cards) --- */}
+        <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {/* Card 1: Submitter Info */}
+          <DetailCard title="Submitter Details" icon={UserRound}>
+            <InfoBlock
+              label="Submitted By"
+              value={issueData.issue_submitter_name}
+            />
+            <InfoBlock
+              label="Department"
+              value={issueData.issue_submitter_department}
+            />
+          </DetailCard>
+
+          {/* Card 2: Handling Info */}
+          <DetailCard title="Handling Details" icon={Briefcase}>
+            <InfoBlock
+              label="Target Department"
+              value={issueData.issue_target_department}
+            />
+            <div className="flex flex-col">
+              <span className="text-xs font-semibold tracking-wider text-neutral-500 uppercase dark:text-neutral-500">
+                Assigned Agent
+              </span>
+              <span
+                className={`mt-1 font-semibold ${
+                  issueData.issue_agent_name === "Not Assigned"
+                    ? "text-amber-500"
+                    : "text-green-600 dark:text-green-400"
+                }`}
+              >
+                {issueData.issue_agent_name}
+              </span>
+            </div>
+          </DetailCard>
+
+          {/* Card 3: System Info */}
+          <DetailCard title="Issue Data" icon={Hash}>
+            <InfoBlock label="Record Type" value={issueData.issue_type} />
+            <InfoBlock label="UUID" value={issueData.issue_uuid} />
+          </DetailCard>
+        </div>
+
+        {/* --- DESCRIPTION SECTION --- */}
+        <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-[#0A0A0A]">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="flex items-center gap-2 text-lg font-semibold text-neutral-900 dark:text-white">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
+                <FileText className="h-4 w-4" />
+              </div>
+              Description
+            </h2>
+            <button className="group rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-white">
+              <PenLine className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="prose prose-neutral dark:prose-invert max-w-none">
+            <p className="leading-relaxed whitespace-pre-wrap text-neutral-600 dark:text-neutral-300">
+              {issueData.issue_description}
+            </p>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+// --- Helper Components ---
+
+// 1. New Detail Card Wrapper
+const DetailCard = ({
+  title,
+  icon: Icon,
+  children,
+}: {
+  title: string;
+  icon: LucideIcon;
+  children: ReactNode;
+}) => (
+  <div className="flex flex-col rounded-xl border border-neutral-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md dark:border-neutral-800 dark:bg-[#0A0A0A]">
+    <div className="mb-4 flex items-center gap-2 border-b border-neutral-100 pb-3 dark:border-neutral-800/50">
+      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
+        <Icon className="h-4 w-4" />
+      </div>
+      <h3 className="font-semibold text-neutral-900 dark:text-white">
+        {title}
+      </h3>
+    </div>
+    <div className="flex flex-col gap-5">{children}</div>
+  </div>
+);
+
+// 2. Info Block (Slightly refined)
+const InfoBlock = ({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | number;
+  truncate?: boolean;
+}) => (
+  <div className="flex flex-col">
+    <span className="text-xs font-semibold tracking-wider text-neutral-500 uppercase dark:text-neutral-500">
+      {label}
+    </span>
+    <span
+      className="mt-1 max-w-62.5 truncate font-semibold text-neutral-900 dark:text-neutral-200"
+      title={titleHelper(value)}
+    >
+      {value}
+    </span>
+  </div>
+);
+
+export default IssuePage;
