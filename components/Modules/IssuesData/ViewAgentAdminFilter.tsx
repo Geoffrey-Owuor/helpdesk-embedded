@@ -94,7 +94,7 @@ const ViewAgentAdminFilter = ({ setCurrentPage }: AgentAdminFilterProps) => {
         <button
           onClick={handleDefaultIssues}
           disabled={!filterApplied}
-          className={`flex items-center justify-center gap-2 rounded-lg px-4 py-1.5 text-sm font-semibold transition-all ${
+          className={`flex items-center justify-center gap-2 rounded-lg px-4 py-1.5 text-sm font-semibold ${
             !filterApplied
               ? "bg-white text-neutral-900 shadow-sm dark:bg-neutral-900 dark:text-white"
               : "text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
@@ -108,7 +108,7 @@ const ViewAgentAdminFilter = ({ setCurrentPage }: AgentAdminFilterProps) => {
         <button
           onClick={fetchAgentAdminIssues}
           disabled={filterApplied}
-          className={`flex items-center justify-center gap-2 rounded-lg px-4 py-1.5 text-sm font-semibold transition-all ${
+          className={`flex items-center justify-center gap-2 rounded-lg px-4 py-1.5 text-sm font-semibold ${
             filterApplied
               ? "bg-neutral-900 text-white shadow-sm dark:bg-white dark:text-neutral-900"
               : "text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
