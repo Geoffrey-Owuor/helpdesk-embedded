@@ -15,8 +15,11 @@ export interface IssueAgentMapping {
 
 const getIssueTypes = async (department: string) => {
   // Draft the query
-  const baseQuery = `SELECT issue_type FROM issues_mapping
-    WHERE agent_department = $1`;
+  const baseQuery = `SELECT m.issue_type
+     FROM issues_mapping AS m
+     INNER JOIN department_admins AS a
+     ON m.admin_id = a.admin_id
+     WHERE a.admin_department = $1`;
   const params = [department];
 
   try {
@@ -29,8 +32,11 @@ const getIssueTypes = async (department: string) => {
 };
 
 const getIssueAgentsMapping = async (issueType: string) => {
-  const baseQuery = `SELECT agent_name, admin_name FROM issues_mapping
-              WHERE issue_type = $1 LIMIT 1`;
+  const baseQuery = `SELECT m.agent_name, a.admin_name
+                  FROM issues_mapping AS m
+                  INNER JOIN department_admins AS a
+                  ON m.admin_id = a.admin_id
+                  WHERE m.issue_type = $1 LIMIT 1`;
   try {
     const result = await query(baseQuery, [issueType]);
     return result;

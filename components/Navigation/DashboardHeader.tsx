@@ -1,5 +1,5 @@
 "use client";
-import { Menu, CirclePlus, Bot } from "lucide-react";
+import { Menu, CirclePlus, Bot, Home } from "lucide-react";
 import Link from "next/link";
 import ThemeToggle from "../Themes/ThemeToggle";
 import { useState, useRef } from "react";
@@ -50,6 +50,13 @@ const DashboardHeader = () => {
             <DashBoardLogo />
           </div>
           <div className="flex items-center gap-4">
+            <Link
+              href="/dashboard"
+              onClick={() => handleRouteChange("/dashboard")}
+              className="rounded-full bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+            >
+              <Home className="h-5 w-5" />
+            </Link>
             <button
               onClick={() => setIsIssueModalOpen(true)}
               className="hidden items-center gap-2 rounded-full bg-blue-700 px-2 py-2 text-sm text-white hover:bg-blue-800 sm:flex md:rounded-xl md:px-3"

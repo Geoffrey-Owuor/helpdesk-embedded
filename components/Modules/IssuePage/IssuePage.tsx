@@ -82,11 +82,11 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
       recordsLoading = loading;
       break;
   }
-
   // Defining a constant to hold our specific issue
   const issueData = recordsData.find((record) => record.issue_uuid === uuid);
 
-  if (recordsLoading) return <IssueDetailsSkeleton />;
+  if (recordsLoading || (!issueData && recordsData.length === 0))
+    return <IssueDetailsSkeleton />;
 
   // Handle case where ID is invalid or not found after loading
   if (!issueData) {
