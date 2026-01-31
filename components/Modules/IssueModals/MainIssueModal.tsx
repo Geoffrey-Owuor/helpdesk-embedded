@@ -259,7 +259,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                                   <span className="font-semibold">
                                     Dept Admin
                                   </span>
-                                  : {assignmentInfo?.username})
+                                  : {assignmentInfo?.admin_name})
                                 </span>
                               </div>
                             </div>
