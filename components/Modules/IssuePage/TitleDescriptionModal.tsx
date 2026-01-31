@@ -11,11 +11,11 @@ import { useAutomationsData } from "@/contexts/AutomationsDataContext";
 import { useIssuesCards } from "@/contexts/IssuesCardsContext";
 import { useAutomations } from "@/contexts/AutomationCardsContext";
 import { Asterisk, X } from "lucide-react";
-import { automationsValueTypes } from "@/contexts/AutomationsDataContext";
+import { IssueValueTypes } from "@/contexts/IssuesDataContext";
 
 type TitleDescriptionModalProps = {
-  title: automationsValueTypes;
-  description: automationsValueTypes;
+  title: IssueValueTypes;
+  description: IssueValueTypes;
   uuid: string;
   closeModal: () => void;
 };

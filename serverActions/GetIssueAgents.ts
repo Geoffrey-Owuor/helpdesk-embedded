@@ -11,9 +11,13 @@ export interface IssueAgents {
 const getIssueAgents = async (adminId: string) => {
   //Creating our base query
   const baseQuery = `
-      SELECT issue_type, agent_name, agent_email
-      FROM issues_mapping 
-      WHERE admin_id = $1
+      SELECT 
+        agents.username AS agent_name,
+        agents.email AS agent_email,
+        m.issue_type
+        FROM issues_mapping as m
+        JOIN users as agents ON m.agent_id = agents.user_id
+        WHERE m.admin_id = $1
     `;
   try {
     const result = await query<IssueAgents>(baseQuery, [adminId]);

@@ -15,7 +15,7 @@ import { useSearchLogic } from "./SearchLogicContext";
 // OUR DEFAULT FETCH OPTIONS
 const DEFAULT_FETCH_OPTIONS = { selectedFilter: "status", status: "" };
 
-export type issueValueTypes = string | number;
+export type IssueValueTypes<T extends string | number = string | number> = T;
 
 interface Options {
   selectedFilter?: string;
@@ -31,7 +31,7 @@ interface Options {
 }
 
 type IssuesDataValues = {
-  issuesData: Record<string, issueValueTypes>[];
+  issuesData: Record<string, IssueValueTypes>[];
   loading: boolean;
   fetchIssues: (val: Options) => Promise<void>;
   refetchIssues: () => void;
