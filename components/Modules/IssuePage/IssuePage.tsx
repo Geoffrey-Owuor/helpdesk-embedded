@@ -32,6 +32,7 @@ import { useAutomations } from "@/contexts/AutomationCardsContext";
 import { useIssuesCards } from "@/contexts/IssuesCardsContext";
 import { useUser } from "@/contexts/UserContext";
 import TitleDescriptionModal from "./TitleDescriptionModal";
+import ReassignIssue from "./ReassignIssue";
 import { PromiseOverlay } from "../Overlays";
 
 const statusOptions = [
@@ -60,7 +61,8 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [isEditModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isReassignModalOpen, setIsReassignModalOpen] = useState(false);
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -177,8 +179,16 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
         <TitleDescriptionModal
           title={issueData.issue_title}
           description={issueData.issue_description}
-          closeModal={() => setIsModalOpen(false)}
+          closeModal={() => setIsEditModalOpen(false)}
           uuid={uuid}
+        />
+      )}
+
+      {isReassignModalOpen && (
+        <ReassignIssue
+          uuid={uuid}
+          closeModal={() => setIsReassignModalOpen(false)}
+          issueType={issueData.issue_type}
         />
       )}
 
@@ -221,7 +231,10 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
             {role === "admin" &&
               issueData.issue_status !== "resolved" &&
               issueData.issue_target_department === department && (
-                <button className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold transition-colors duration-200 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-transparent dark:hover:bg-neutral-900">
+                <button
+                  onClick={() => setIsReassignModalOpen(true)}
+                  className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold transition-colors duration-200 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-transparent dark:hover:bg-neutral-900"
+                >
                   <UserRoundPen className="h-4 w-4" />
                   <span className="hidden md:inline">Reassign</span>
                 </button>
@@ -330,7 +343,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
             {role === "user" && issueData.issue_status !== "resolved" && (
               <button
                 type="button"
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => setIsEditModalOpen(true)}
                 className="group rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-white"
               >
                 <PenLine className="h-4 w-4" />
