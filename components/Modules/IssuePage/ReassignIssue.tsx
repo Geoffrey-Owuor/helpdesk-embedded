@@ -69,8 +69,19 @@ const ReassignIssue = ({ uuid, closeModal, issueType }: ReassignIssueProps) => {
     setAgentName(agentName);
   };
 
+  //function for calling the api endpoint to handle reassigning
+  const handleReAssigning = async () => {};
+
   return (
     <>
+      {showConfirmationDialog && (
+        <ConfirmationDialog
+          title="Reassign Issue"
+          message={`Confirm reassigning of issue to ${agentName}`}
+          onCancel={() => setShowConfirmationDialog(false)}
+          onConfirm={handleReAssigning}
+        />
+      )}
       <ClientPortal>
         {/* Backdrop */}
         <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 dark:bg-black/60">
