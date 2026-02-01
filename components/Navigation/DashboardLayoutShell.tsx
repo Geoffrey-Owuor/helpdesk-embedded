@@ -15,21 +15,21 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
           <AutomationsDataProvider>
             <IssuesCardsProvider>
               <ColumnVisibilityProvider>
-                <div className="flex min-h-full flex-col">
-                  <DashboardHeader />
-                  <main
-                    id="main-content"
-                    className="fixed top-16 right-1 bottom-3 left-1 overflow-y-auto rounded-3xl border border-neutral-100 bg-white sm:bottom-1 sm:rounded-2xl dark:border-neutral-900 dark:bg-black"
-                  >
+                <DashboardHeader />
+                <div
+                  id="main-content"
+                  className="fixed top-16 right-1 bottom-3 left-1 overflow-y-auto rounded-3xl border border-neutral-100 bg-white sm:bottom-1 sm:rounded-2xl dark:border-neutral-900 dark:bg-black"
+                >
+                  <div className="flex h-full flex-col">
                     {/* Content */}
-                    <div className="mx-auto w-full max-w-7xl flex-1 px-4">
+                    <main className="mx-auto w-full max-w-7xl flex-1 px-4">
                       {children}
-                    </div>
+                    </main>
 
-                    <footer className="flex justify-center px-6 py-4 text-neutral-500">
+                    <footer className="flex justify-center px-6 py-4 text-sm text-neutral-500">
                       &copy; {currentYear} Issue Desk. All rights reserved.
                     </footer>
-                  </main>
+                  </div>
                 </div>
               </ColumnVisibilityProvider>
             </IssuesCardsProvider>

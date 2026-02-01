@@ -69,6 +69,7 @@ export const PUT = withAuth(async ({ request, user }) => {
     // Otherwise let's perform our update
     const updateQuery = `
     UPDATE issues_table SET 
+    issue_agent_id = NULL,
     issue_agent_name = $1,
     issue_agent_email = $2,
     issue_assigner_id = $3,

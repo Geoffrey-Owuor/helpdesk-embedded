@@ -36,6 +36,7 @@ import { PromiseOverlay } from "../Overlays";
 import { DetailCard } from "./HelperComponents/DetailCard";
 import { InfoBlock } from "./HelperComponents/InfoBlock";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
+import CommentsSection from "./CommentsSection";
 
 const statusOptions = [
   { label: "In Progress", value: "in progress" },
@@ -332,7 +333,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
         </div>
 
         {/* --- DESCRIPTION SECTION --- */}
-        <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-[#0A0A0A]">
+        <div className="mb-6 rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="flex items-center gap-2 text-lg font-semibold text-neutral-900 dark:text-white">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
@@ -356,6 +357,9 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
             </p>
           </div>
         </div>
+
+        {/* COMMENTS SECTION */}
+        <CommentsSection />
       </div>
     </>
   );

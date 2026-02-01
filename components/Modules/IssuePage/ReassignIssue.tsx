@@ -7,7 +7,7 @@ import { useAlert } from "@/contexts/AlertContext";
 import ConfirmationDialog from "../Overlays";
 import apiClient from "@/lib/AxiosClient";
 import { PromiseOverlay } from "../Overlays";
-import IssueAgentsSkeleton from "@/components/Skeletons/IssueAgentsSkeleton";
+import { IssueAgentsSkeleton } from "@/components/Skeletons/IssueAgentsSkeleton";
 import { useUser } from "@/contexts/UserContext";
 import ClientPortal from "../ClientPortal";
 import {
