@@ -5,6 +5,7 @@ import { useAutomationsData } from "@/contexts/AutomationsDataContext";
 import { useSearchParams } from "next/navigation";
 import IssueDetailsSkeleton from "@/components/Skeletons/IssueDetailsSkeleton";
 import { useRouter } from "next/navigation";
+import { AssignedAgentFormatter } from "../IssuesData/AssignedAgentFormatter";
 import {
   ArrowLeft,
   Hash,
@@ -34,6 +35,7 @@ import ReassignIssue from "./ReassignIssue";
 import { PromiseOverlay } from "../Overlays";
 import { DetailCard } from "./HelperComponents/DetailCard";
 import { InfoBlock } from "./HelperComponents/InfoBlock";
+import { useScrollToTop } from "@/hooks/useScrollToTop";
 
 const statusOptions = [
   { label: "In Progress", value: "in progress" },
@@ -65,6 +67,9 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const [isReassignModalOpen, setIsReassignModalOpen] = useState(false);
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // call useScrollToTop hook
+  useScrollToTop();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -191,7 +196,6 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           issueType={issueData.issue_type}
         />
       )}
-
       <div className="mx-auto max-w-6xl px-4 py-8">
         {/* --- HEADER SECTION (Unchanged) --- */}
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-start">
@@ -312,15 +316,11 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
               <span className="text-xs font-semibold tracking-wider text-neutral-500 uppercase dark:text-neutral-500">
                 Assigned Agent
               </span>
-              <span
-                className={`mt-1 font-semibold ${
-                  issueData.issue_agent_name === "Not Assigned"
-                    ? "text-amber-500"
-                    : "text-green-600 dark:text-green-400"
-                }`}
-              >
-                {issueData.issue_agent_name}
-              </span>
+              <div className="mt-2 w-auto">
+                <AssignedAgentFormatter
+                  agentName={issueData.issue_agent_name}
+                />
+              </div>
             </div>
           </DetailCard>
 

@@ -20,6 +20,11 @@ import {
 } from "lucide-react";
 import { arrayReducer } from "@/utils/ArrayReducer";
 import { IssueValueTypes } from "@/contexts/IssuesDataContext";
+import { useAutomations } from "@/contexts/AutomationCardsContext";
+import { useIssuesCards } from "@/contexts/IssuesCardsContext";
+import { useIssuesData } from "@/contexts/IssuesDataContext";
+import { useAutomationsData } from "@/contexts/AutomationsDataContext";
+import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 
 type ReassignIssueProps = {
   uuid: string;
@@ -36,6 +41,12 @@ const ReassignIssue = ({ uuid, closeModal, issueType }: ReassignIssueProps) => {
   const [updating, setUpdating] = useState(false);
   const [agentEmail, setAgentEmail] = useState(""); //will be sent to the api
   const [agentName, setAgentName] = useState(""); //will be sent to the api
+
+  //The refetch functions - called after successful reassigning
+  const { refetchAutomationCounts } = useAutomations();
+  const { refetchAutomations } = useAutomationsData();
+  const { refetchIssuesCounts } = useIssuesCards();
+  const { refetchIssues } = useIssuesData();
 
   useEffect(() => {
     const fetchAgents = async () => {
@@ -70,7 +81,47 @@ const ReassignIssue = ({ uuid, closeModal, issueType }: ReassignIssueProps) => {
   };
 
   //function for calling the api endpoint to handle reassigning
-  const handleReAssigning = async () => {};
+  const handleReAssigning = async () => {
+    setShowConfirmationDialog(false);
+    setUpdating(true);
+
+    try {
+      const response = await apiClient.put("/reassign-issue", {
+        agentName,
+        agentEmail,
+        uuid,
+      });
+
+      // Show the alert on success
+      setAlertInfo({
+        alertType: "success",
+        showAlert: true,
+        alertMessage: response.data.message || "Agent Updated Successfully",
+      });
+
+      //   clear data
+      setAgentEmail("");
+      setAgentName("");
+
+      //   Refetch data
+      refetchAutomationCounts();
+      refetchAutomations();
+      refetchIssuesCounts();
+      refetchIssues();
+
+      // close the modal
+      closeModal();
+    } catch (error) {
+      const errorMessage = getApiErrorMessage(error);
+      setAlertInfo({
+        alertType: "error",
+        showAlert: true,
+        alertMessage: errorMessage,
+      });
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   return (
     <>
@@ -82,6 +133,7 @@ const ReassignIssue = ({ uuid, closeModal, issueType }: ReassignIssueProps) => {
           onConfirm={handleReAssigning}
         />
       )}
+      {updating && <PromiseOverlay overlaytext="loading" />}
       <ClientPortal>
         {/* Backdrop */}
         <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 dark:bg-black/60">

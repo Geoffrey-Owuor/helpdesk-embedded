@@ -5,7 +5,11 @@ type issueParams = {
 };
 const page = async ({ params }: issueParams) => {
   const { uuid } = await params;
-  return <IssuePage uuid={uuid} />;
+  return (
+    <>
+      <IssuePage uuid={uuid} />
+    </>
+  );
 };
 
 export default page;

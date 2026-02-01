@@ -20,6 +20,7 @@ import { useState } from "react";
 import { useSearchLogic } from "@/contexts/SearchLogicContext";
 import ViewAgentAdminFilter from "./ViewAgentAdminFilter";
 import Pagination from "./Pagination";
+import { AssignedAgentFormatter } from "./AssignedAgentFormatter";
 
 const IssuesData = ({ recordType }: { recordType: string }) => {
   const { issuesData, loading, refetchIssues } = useIssuesData();
@@ -299,15 +300,9 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
 
                       {visibleColumns.agent && (
                         <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
-                          <p
-                            className={`max-w-30 truncate text-sm ${
-                              issueData.issue_agent_name === "Not Assigned"
-                                ? "text-amber-500"
-                                : "text-green-500"
-                            }`}
-                          >
-                            {issueData.issue_agent_name}
-                          </p>
+                          <AssignedAgentFormatter
+                            agentName={issueData.issue_agent_name}
+                          />
                         </td>
                       )}
 
