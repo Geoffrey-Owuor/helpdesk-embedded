@@ -5,6 +5,7 @@ import { useAutomationsData } from "@/contexts/AutomationsDataContext";
 import { useSearchParams } from "next/navigation";
 import IssueDetailsSkeleton from "@/components/Skeletons/IssueDetailsSkeleton";
 import { useRouter } from "next/navigation";
+import { AssignedAgentFormatter } from "../IssuesData/AssignedAgentFormatter";
 import {
   ArrowLeft,
   Hash,
@@ -15,15 +16,13 @@ import {
   PenLine,
   SquareCheckBig,
   UserRoundPen,
-  LucideIcon,
   ChevronDown,
   Check,
   RotateCcw,
 } from "lucide-react";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import { dateFormatter } from "@/public/assets";
-import { titleHelper } from "@/public/assets";
-import { ReactNode, useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import ConfirmationDialog from "../Overlays";
 import { useAlert } from "@/contexts/AlertContext";
 import apiClient from "@/lib/AxiosClient";
@@ -32,7 +31,12 @@ import { useAutomations } from "@/contexts/AutomationCardsContext";
 import { useIssuesCards } from "@/contexts/IssuesCardsContext";
 import { useUser } from "@/contexts/UserContext";
 import TitleDescriptionModal from "./TitleDescriptionModal";
+import ReassignIssue from "./ReassignIssue";
 import { PromiseOverlay } from "../Overlays";
+import { DetailCard } from "./HelperComponents/DetailCard";
+import { InfoBlock } from "./HelperComponents/InfoBlock";
+import { useScrollToTop } from "@/hooks/useScrollToTop";
+import CommentsSection from "./CommentsSection";
 
 const statusOptions = [
   { label: "In Progress", value: "in progress" },
@@ -60,9 +64,13 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [isEditModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isReassignModalOpen, setIsReassignModalOpen] = useState(false);
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // call useScrollToTop hook
+  useScrollToTop();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -177,11 +185,18 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
         <TitleDescriptionModal
           title={issueData.issue_title}
           description={issueData.issue_description}
-          closeModal={() => setIsModalOpen(false)}
+          closeModal={() => setIsEditModalOpen(false)}
           uuid={uuid}
         />
       )}
 
+      {isReassignModalOpen && (
+        <ReassignIssue
+          uuid={uuid}
+          closeModal={() => setIsReassignModalOpen(false)}
+          issueType={issueData.issue_type}
+        />
+      )}
       <div className="mx-auto max-w-6xl px-4 py-8">
         {/* --- HEADER SECTION (Unchanged) --- */}
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-start">
@@ -221,7 +236,10 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
             {role === "admin" &&
               issueData.issue_status !== "resolved" &&
               issueData.issue_target_department === department && (
-                <button className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold transition-colors duration-200 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-transparent dark:hover:bg-neutral-900">
+                <button
+                  onClick={() => setIsReassignModalOpen(true)}
+                  className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold transition-colors duration-200 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-transparent dark:hover:bg-neutral-900"
+                >
                   <UserRoundPen className="h-4 w-4" />
                   <span className="hidden md:inline">Reassign</span>
                 </button>
@@ -299,15 +317,11 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
               <span className="text-xs font-semibold tracking-wider text-neutral-500 uppercase dark:text-neutral-500">
                 Assigned Agent
               </span>
-              <span
-                className={`mt-1 font-semibold ${
-                  issueData.issue_agent_name === "Not Assigned"
-                    ? "text-amber-500"
-                    : "text-green-600 dark:text-green-400"
-                }`}
-              >
-                {issueData.issue_agent_name}
-              </span>
+              <div className="mt-2 w-auto">
+                <AssignedAgentFormatter
+                  agentName={issueData.issue_agent_name}
+                />
+              </div>
             </div>
           </DetailCard>
 
@@ -319,7 +333,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
         </div>
 
         {/* --- DESCRIPTION SECTION --- */}
-        <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-[#0A0A0A]">
+        <div className="mb-6 rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="flex items-center gap-2 text-lg font-semibold text-neutral-900 dark:text-white">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
@@ -330,7 +344,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
             {role === "user" && issueData.issue_status !== "resolved" && (
               <button
                 type="button"
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => setIsEditModalOpen(true)}
                 className="group rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-white"
               >
                 <PenLine className="h-4 w-4" />
@@ -343,56 +357,12 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
             </p>
           </div>
         </div>
+
+        {/* COMMENTS SECTION */}
+        <CommentsSection />
       </div>
     </>
   );
 };
-
-// --- Helper Components ---
-
-// 1. New Detail Card Wrapper
-const DetailCard = ({
-  title,
-  icon: Icon,
-  children,
-}: {
-  title: string;
-  icon: LucideIcon;
-  children: ReactNode;
-}) => (
-  <div className="flex flex-col rounded-xl border border-neutral-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md dark:border-neutral-800 dark:bg-[#0A0A0A]">
-    <div className="mb-4 flex items-center gap-2 border-b border-neutral-100 pb-3 dark:border-neutral-800/50">
-      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
-        <Icon className="h-4 w-4" />
-      </div>
-      <h3 className="font-semibold text-neutral-900 dark:text-white">
-        {title}
-      </h3>
-    </div>
-    <div className="flex flex-col gap-5">{children}</div>
-  </div>
-);
-
-// 2. Info Block (Slightly refined)
-const InfoBlock = ({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | number;
-  truncate?: boolean;
-}) => (
-  <div className="flex flex-col">
-    <span className="text-xs font-semibold tracking-wider text-neutral-500 uppercase dark:text-neutral-500">
-      {label}
-    </span>
-    <span
-      className="mt-1 max-w-62.5 truncate font-semibold text-neutral-900 dark:text-neutral-200"
-      title={titleHelper(value)}
-    >
-      {value}
-    </span>
-  </div>
-);
 
 export default IssuePage;

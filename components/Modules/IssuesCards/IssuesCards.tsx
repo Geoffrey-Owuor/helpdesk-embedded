@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@/contexts/UserContext";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import DepartmentsDropDown from "../AutomationsPage/DepartmentsDropDown";
+import { useScrollToTop } from "@/hooks/useScrollToTop";
 
 const IssuesCards = ({ type }: { type: string }) => {
   const { issuesCounts, refetchIssuesCounts, loading } = useIssuesCards();
@@ -28,6 +29,9 @@ const IssuesCards = ({ type }: { type: string }) => {
   const { role, department } = useUser();
   const router = useRouter();
   const { agentAdminFilter } = useSearchLogic();
+
+  // Call srolling top hook
+  useScrollToTop();
 
   // Defining our card variables
   let cardCounts;
@@ -92,7 +96,7 @@ const IssuesCards = ({ type }: { type: string }) => {
   };
 
   return (
-    <div className="my-6">
+    <div className="py-6">
       <div className="mb-4 flex items-center justify-between">
         <div className="inline-flex flex-col">
           <span className="text-xl font-semibold">

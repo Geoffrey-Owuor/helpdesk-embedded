@@ -12,14 +12,13 @@ import {
 import apiClient from "@/lib/AxiosClient";
 import { useAutomations } from "./AutomationCardsContext";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
+import { IssueValueTypes } from "./IssuesDataContext";
 
 // Defining our default fetch options
 const DEFAULT_FETCH_OPTIONS = {
   selectedFilter: "status",
   status: "",
 };
-
-export type automationsValueTypes = string | number;
 
 interface Options {
   selectedFilter?: string;
@@ -33,7 +32,7 @@ interface Options {
 }
 
 type AutomationsDataValues = {
-  automationsData: Record<string, automationsValueTypes>[];
+  automationsData: Record<string, IssueValueTypes>[];
   loading: boolean;
   fetchAutomations: (val: Options) => Promise<void>;
   refetchAutomations: () => void;
