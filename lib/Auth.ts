@@ -1,6 +1,7 @@
 import { SignJWT, jwtVerify, JWTPayload } from "jose";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
+import { cache } from "react";
 
 export interface AuthJWTPayload extends JWTPayload {
   userId: string;
@@ -101,7 +102,7 @@ export async function verifyRefreshTokenJWT(
 }
 
 // Require session to get a valid session - A simpler version which is quicker
-export async function requireSession(): Promise<AuthJWTPayload | null> {
+const getSession = async (): Promise<AuthJWTPayload | null> => {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get("refreshToken")?.value;
 
@@ -114,4 +115,8 @@ export async function requireSession(): Promise<AuthJWTPayload | null> {
     console.error("Session verification failed:", error);
     return null;
   }
-}
+};
+
+// A memoized version of the function that persists
+// for the lifetime of a single server request.
+export const requireSession = cache(getSession);

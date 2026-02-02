@@ -170,8 +170,8 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
                 >
                   {/* Avatar - Fixed width (shrink-0) to prevent squishing */}
                   <div className="shrink-0">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-900 text-neutral-50 shadow-sm dark:bg-neutral-100 dark:text-neutral-900">
-                      <span className="text-sm tracking-tight">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-linear-to-br from-blue-500 via-blue-600 to-blue-700 text-white shadow-sm">
+                      <span className="text-sm font-semibold tracking-tight">
                         {abbreviateUserName(comment.comment_submitter_name)}
                       </span>
                     </div>
