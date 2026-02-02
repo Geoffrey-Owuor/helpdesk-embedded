@@ -7,6 +7,8 @@ import {
   SendHorizonal,
   MessageCircle,
   CalendarCheck,
+  RotateCcw,
+  Dot,
 } from "lucide-react";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
@@ -14,12 +16,15 @@ import { commentsQuery } from "@/app/api/get-comments/route";
 import { dateFormatter } from "@/public/assets";
 import { abbreviateUserName } from "@/public/assets";
 import CommentsSkeleton from "@/components/Skeletons/CommentsSkeleton";
+import { useUser } from "@/contexts/UserContext";
 
 const CommentsSection = ({ uuid }: { uuid: string }) => {
   const [comment, setComment] = useState("");
   const [showCommentsInput, setShowCommentsInput] = useState(false);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [commentsData, setCommentsData] = useState<commentsQuery[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+  const { username, email } = useUser();
 
   // Default fetch comments function
   const handleFetchComments = useCallback(async () => {
@@ -46,18 +51,36 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
 
   //Posting a comment
   const postComment = async () => {
+    // Basic validation to prevent empty comments
+    if (!comment.trim()) return;
+
+    setSubmitting(true);
     try {
       //Posting the comment
       await apiClient.post("/post-comment", { comment, uuid });
 
-      // If api is successful, we modify the comments array mapper
-      //to display the current posted comment without refreshing the comments
+      // create a local comment object
+      const newComment: commentsQuery = {
+        comment_id: Date.now(),
+        comment_submitter_name: username,
+        comment_submitter_email: email,
+        comment_description: comment,
+        comment_created_at: new Date().toISOString(),
+      };
 
-      // clear the comments after api success
+      //Update the state without refetching
+      setCommentsData((prevComments) => {
+        // Add to top - newest to oldest
+        return [newComment, ...prevComments];
+      });
+
+      // clear the input
       setComment("");
     } catch (error) {
       const generatedError = getApiErrorMessage(error);
       console.error("Error while trying to post a comment", generatedError);
+    } finally {
+      setSubmitting(false);
     }
   };
   return (
@@ -80,6 +103,12 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
         </div>
         {/* The add comment button */}
         <div className="flex items-center gap-4">
+          <button
+            onClick={handleFetchComments}
+            className="rounded-full bg-neutral-200 p-2 transition-colors duration-200 hover:bg-neutral-300 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+          >
+            <RotateCcw className="h-5 w-5" />
+          </button>
           <button
             onClick={() => setShowCommentsInput((prev) => !prev)}
             className="flex items-center gap-2 rounded-xl bg-black px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-neutral-900 dark:bg-white dark:text-black dark:hover:bg-gray-200"
@@ -105,7 +134,7 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
 
           {/* The submit comment button */}
           <button
-            disabled={!comment}
+            disabled={!comment || submitting}
             onClick={postComment}
             className="absolute top-1.25 right-2 flex items-center justify-center rounded-full bg-blue-600 p-2 text-white transition-colors duration-200 hover:bg-blue-700 disabled:opacity-50"
           >
@@ -152,13 +181,11 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
                   <div className="min-w-0 flex-1 rounded-2xl rounded-tl-none bg-neutral-100 px-5 py-4 shadow-sm dark:bg-neutral-900">
                     {/* Header: Name and Date */}
                     <div className="mb-2 flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2 text-sm">
+                      <div className="flex items-center gap-0.5 text-sm">
                         <span className="font-semibold text-neutral-900 dark:text-neutral-100">
                           {comment.comment_submitter_name}
                         </span>
-                        <span className="text-neutral-500 dark:text-neutral-400">
-                          ,
-                        </span>
+                        <Dot className="mt-1 h-4 w-4 text-neutral-400 dark:text-neutral-600" />
                         <span className="text-neutral-500">
                           {comment.comment_submitter_email}
                         </span>

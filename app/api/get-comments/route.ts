@@ -20,7 +20,7 @@ export const POST = withAuth(async ({ request }) => {
     const getQuery = `SELECT 
                         comment_id, comment_submitter_name, comment_submitter_email, comment_description, comment_created_at
                         FROM comments
-                        WHERE issue_uuid = $1`;
+                        WHERE issue_uuid = $1 ORDER BY comment_created_at DESC`;
 
     // Executing the query with the uuid param
     const result = await query<commentsQuery>(getQuery, [uuid]);
