@@ -6,10 +6,10 @@ import {
   HelpCircle,
   LucideIcon,
 } from "lucide-react";
-import { issueValueTypes } from "@/contexts/IssuesDataContext";
+import { IssueValueTypes } from "@/contexts/IssuesDataContext";
 
 interface IssueStatusProps {
-  status: issueValueTypes;
+  status: IssueValueTypes;
 }
 
 // 1. Define the specific styling and icons for each status
