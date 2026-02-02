@@ -359,7 +359,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
         </div>
 
         {/* COMMENTS SECTION */}
-        <CommentsSection />
+        <CommentsSection uuid={uuid} />
       </div>
     </>
   );
