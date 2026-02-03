@@ -72,20 +72,6 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   // call useScrollToTop hook
   useScrollToTop();
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   const handleSelect = (selectedValue: string) => {
     setSelectedStatus(selectedValue);
     setIsOpen(false);
@@ -149,6 +135,20 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   }
   // Defining a constant to hold our specific issue
   const issueData = recordsData.find((record) => record.issue_uuid === uuid);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   if (recordsLoading || (!issueData && recordsData.length === 0))
     return <IssueDetailsSkeleton />;
