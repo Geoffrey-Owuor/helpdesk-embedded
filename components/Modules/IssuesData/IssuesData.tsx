@@ -224,7 +224,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
                       onClick={() => {
                         setLoadingLine(true);
                         router.push(
-                          `/dashboard/${issueData.issue_uuid}?type=${dynamicUrlParam}`,
+                          `/dashboard/${issueData.issue_uuid}?type=${dynamicUrlParam}&title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`,
                         );
                       }}
                       className="group cursor-pointer rounded-xl shadow-sm transition-transform duration-200"
@@ -242,7 +242,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
                               e.stopPropagation();
                               setLoadingLine(true);
                             }}
-                            href={`/dashboard/${issueData.issue_uuid}?type=${dynamicUrlParam}`}
+                            href={`/dashboard/${issueData.issue_uuid}?type=${dynamicUrlParam}&title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`}
                             className="max-w-30 truncate text-sm font-semibold text-neutral-900 hover:text-blue-500 hover:underline dark:text-neutral-100"
                           >
                             {issueData.issue_reference_id}

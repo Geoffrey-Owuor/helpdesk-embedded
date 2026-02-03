@@ -1,6 +1,6 @@
 import issue_desk_logo from "./web-app-manifest-512x512.png";
 import issue_desk_image from "./issue_desk_light.png";
-import { issueValueTypes } from "@/contexts/IssuesDataContext";
+import { IssueValueTypes } from "@/contexts/IssuesDataContext";
 
 export const assets = {
   issue_desk_logo,
@@ -21,14 +21,14 @@ export const abbreviateUserName = (username: string | undefined) => {
 };
 
 // Title helper for converting values to string
-export const titleHelper = (value: issueValueTypes) => {
+export const titleHelper = (value: IssueValueTypes) => {
   if (!value) return "";
 
   return value.toString();
 };
 
 // Date formatter to format date for the ui
-export const dateFormatter = (dateString: issueValueTypes) => {
+export const dateFormatter = (dateString: IssueValueTypes) => {
   if (!dateString) return "dd/mm/yy";
   const date = new Date(dateString);
 
