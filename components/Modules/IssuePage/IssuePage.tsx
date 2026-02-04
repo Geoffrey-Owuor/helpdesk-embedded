@@ -197,7 +197,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           issueType={issueData.issue_type}
         />
       )}
-      <div className="mx-auto max-w-6xl px-4 py-8">
+      <div className="mx-auto max-w-6xl py-8">
         {/* --- HEADER SECTION (Unchanged) --- */}
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-start">
           <div className="flex flex-col gap-3">
