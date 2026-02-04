@@ -55,6 +55,9 @@ export const PUT = withAuth(async ({ user, request }) => {
       );
     }
 
+    // Tomorrow's goal - Return a response if a user is trying to
+    // mark the same status it was already marked with
+
     // Group our params
     const queryParams = [status, userId, email, username, uuid];
 

@@ -85,7 +85,7 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
   };
   return (
     <div className="max-h-150 max-w-3xl overflow-y-auto rounded-xl border border-neutral-200 p-6 shadow-sm dark:border-neutral-800">
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         {/* The title and total comments */}
         <div className="flex flex-col gap-2">
           <h2 className="flex items-center gap-2 text-lg font-semibold text-neutral-900 dark:text-white">
@@ -114,7 +114,7 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
             className="flex items-center gap-2 rounded-xl bg-black px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-neutral-900 dark:bg-white dark:text-black dark:hover:bg-gray-200"
           >
             <MessageCirclePlus className="h-4 w-4" />
-            Add comment
+            <span className="hidden sm:inline-flex">Add comment</span>
           </button>
         </div>
       </div>
@@ -180,8 +180,8 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
                   {/* Content Box - flex-1 and min-w-0 are CRITICAL for text wrapping */}
                   <div className="min-w-0 flex-1 rounded-2xl rounded-tl-none bg-neutral-100 px-5 py-4 shadow-sm dark:bg-neutral-900">
                     {/* Header: Name and Date */}
-                    <div className="mb-2 flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-0.5 text-sm">
+                    <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex flex-wrap items-center gap-0.5 text-sm">
                         <span className="font-semibold text-neutral-900 dark:text-neutral-100">
                           {comment.comment_submitter_name}
                         </span>
