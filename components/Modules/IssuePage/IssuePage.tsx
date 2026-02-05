@@ -195,6 +195,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           uuid={uuid}
           closeModal={() => setIsReassignModalOpen(false)}
           issueType={issueData.issue_type}
+          issueAgentEmail={issueData.issue_agent_email}
         />
       )}
       <div className="mx-auto max-w-6xl py-8">

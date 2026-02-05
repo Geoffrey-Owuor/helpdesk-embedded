@@ -30,9 +30,15 @@ type ReassignIssueProps = {
   uuid: string;
   closeModal: () => void;
   issueType: IssueValueTypes;
+  issueAgentEmail: IssueValueTypes;
 };
 
-const ReassignIssue = ({ uuid, closeModal, issueType }: ReassignIssueProps) => {
+const ReassignIssue = ({
+  uuid,
+  closeModal,
+  issueType,
+  issueAgentEmail,
+}: ReassignIssueProps) => {
   const [loading, setLoading] = useState(false);
   const { userId } = useUser();
   const { setAlertInfo } = useAlert();
@@ -71,7 +77,7 @@ const ReassignIssue = ({ uuid, closeModal, issueType }: ReassignIssueProps) => {
 
   //Handling the selectedAgent
   const handleSelectedAgent = (
-    e: MouseEvent<HTMLDivElement>,
+    e: MouseEvent<HTMLButtonElement>,
     agentEmail: string,
     agentName: string,
   ) => {
@@ -171,8 +177,9 @@ const ReassignIssue = ({ uuid, closeModal, issueType }: ReassignIssueProps) => {
                         issueAgent.supported_issues.includes(issueType);
 
                       return (
-                        <div
+                        <button
                           key={issueAgent.email}
+                          disabled={issueAgentEmail === issueAgent.email}
                           onClick={(e) =>
                             handleSelectedAgent(
                               e,
@@ -180,7 +187,7 @@ const ReassignIssue = ({ uuid, closeModal, issueType }: ReassignIssueProps) => {
                               issueAgent.name,
                             )
                           }
-                          className={`relative flex cursor-pointer items-center gap-3 rounded-xl border py-1.5 pr-4 pl-1.5 transition-all duration-200 select-none ${
+                          className={`relative flex cursor-pointer items-center gap-3 rounded-xl border py-1.5 pr-4 pl-1.5 transition-all duration-200 select-none disabled:cursor-default disabled:opacity-50 ${
                             agentEmail === issueAgent.email
                               ? "border-blue-200 bg-blue-50 shadow-sm dark:border-blue-800 dark:bg-blue-900/20"
                               : "border-neutral-300 bg-white opacity-90 hover:border-blue-200 hover:bg-blue-50/30 hover:opacity-100 dark:border-neutral-700 dark:bg-neutral-950 dark:hover:border-blue-800 dark:hover:bg-blue-900/10"
@@ -198,7 +205,7 @@ const ReassignIssue = ({ uuid, closeModal, issueType }: ReassignIssueProps) => {
                           </div>
 
                           {/* Agent Info Stack */}
-                          <div className="flex flex-col">
+                          <div className="flex flex-col items-start">
                             <span
                               className={`text-sm leading-none font-semibold ${
                                 isBestFit
@@ -231,7 +238,7 @@ const ReassignIssue = ({ uuid, closeModal, issueType }: ReassignIssueProps) => {
                               </span>
                             </div>
                           )}
-                        </div>
+                        </button>
                       );
                     })}
                   </>
