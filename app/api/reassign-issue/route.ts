@@ -57,11 +57,11 @@ export const PUT = withAuth(async ({ request, user }) => {
       );
     }
 
-    //Trying to reassign an issue to the same agent
+    //Trying to reassign an issue to the same agent (Feature add: Return a response with the agent name)
     if (agentEmail === currentAgentEmail) {
       await client.query("ROLLBACK");
       return NextResponse.json(
-        { message: "Issue is already assigned to the selected agent" },
+        { message: `Issue is already assigned to ${agentName}` },
         { status: 409 },
       );
     }
