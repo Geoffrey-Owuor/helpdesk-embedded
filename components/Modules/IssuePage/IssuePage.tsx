@@ -278,7 +278,8 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                         <button
                           key={option.value}
                           onClick={() => handleSelect(option.value)}
-                          className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-900"
+                          disabled={option.value === issueData.issue_status}
+                          className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-900"
                         >
                           {option.label}
                           {selectedStatus === option.value && (

@@ -55,8 +55,14 @@ export const PUT = withAuth(async ({ user, request }) => {
       );
     }
 
-    // Tomorrow's goal - Return a response if a user is trying to
-    // mark the same status it was already marked with
+    // Selected status is the one currently marked for the issue
+    if (currentStatus === status) {
+      await client.query("ROLLBACK");
+      return NextResponse.json(
+        { message: `This issue is already marked as ${status}` },
+        { status: 409 },
+      );
+    }
 
     // Group our params
     const queryParams = [status, userId, email, username, uuid];
