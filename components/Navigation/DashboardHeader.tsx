@@ -55,7 +55,7 @@ const DashboardHeader = () => {
               onClick={() => handleRouteChange("/dashboard")}
               className="rounded-full bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
             >
-              <Home className="h-5 w-5" />
+              <Home className="h-4.5 w-4.5" />
             </Link>
             <button
               onClick={() => setIsIssueModalOpen(true)}
@@ -79,9 +79,9 @@ const DashboardHeader = () => {
               <button
                 ref={userButtonRef}
                 onClick={() => setIsUserCardOpen((prev) => !prev)}
-                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+                className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
               >
-                <span className="text-sm font-semibold">
+                <span className="text-xs font-semibold">
                   {abbreviateUserName(username)}
                 </span>
               </button>
