@@ -1,6 +1,6 @@
 ﻿# Issue Desk
 
-Lightweight, centralized issue tracker built with Next.js and Tailwind CSS.
+A lightweight, centralized issue tracker built with Next.js and Tailwind CSS that enables teams to manage user-reported issues with clear ownership and status updates.
 
 Quick start
 
@@ -16,4 +16,6 @@ Scripts
 
 - `npm run dev`, `npm run build`, `npm run start`, `npm run lint`
 
-See the `app/`, `components/`, and `lib/` folders for implementation details.
+See the `app/`, `components/`, `utils`, and `lib/` folders for more implementation details.
+
+The extended `README.md` file can be found in the `docs/` folder
