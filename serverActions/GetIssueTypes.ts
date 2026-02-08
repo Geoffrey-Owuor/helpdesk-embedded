@@ -31,16 +31,16 @@ const getIssueTypes = async (department: string) => {
   }
 };
 
-const getIssueAgentsMapping = async (issueType: string) => {
+const getIssueAgentsMapping = async (issueType: string, department: string) => {
   const baseQuery = `SELECT
                      agents.username AS agent_name,
                      admins.username AS admin_name
                      FROM issues_mapping AS m
                      JOIN users AS agents ON m.agent_id = agents.user_id
                      JOIN users AS admins ON m.admin_id = admins.user_id
-                     WHERE m.issue_type = $1 LIMIT 1`;
+                     WHERE m.issue_type = $1 AND admins.department = $2 AND agents.department = $2 LIMIT 1`;
   try {
-    const result = await query(baseQuery, [issueType]);
+    const result = await query(baseQuery, [issueType, department]);
     return result;
   } catch (error) {
     console.error("Error fetching agent name and admin name:", error);
@@ -68,11 +68,15 @@ export const fetchedIssueTypes = unstable_cache(
 );
 
 export const fetchedIssueAgentsMapping = unstable_cache(
-  async (issueType: string): Promise<IssueAgentMapping | null> => {
-    if (!issueType) return null;
+  async (
+    issueType: string,
+    department: string,
+  ): Promise<IssueAgentMapping | null> => {
+    if (!issueType || !department) return null;
 
     const data = (await getIssueAgentsMapping(
       issueType,
+      department,
     )) as IssueAgentMapping[];
 
     return data.length > 0 ? data[0] : null;
