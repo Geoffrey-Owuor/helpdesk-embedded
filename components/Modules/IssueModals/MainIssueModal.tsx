@@ -80,7 +80,10 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     if (value) {
       setIsFetchingAssignment(true);
       try {
-        const info = await fetchedIssueAgentsMapping(value);
+        const info = await fetchedIssueAgentsMapping(
+          value,
+          formData.target_department,
+        );
         setAssignmentInfo(info);
       } catch (error) {
         console.error("Failed to fetch assignment info", error);
