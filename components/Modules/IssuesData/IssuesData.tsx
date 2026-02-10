@@ -15,6 +15,7 @@ import ViewAgentAdminFilter from "./ViewAgentAdminFilter";
 import Pagination from "./Pagination";
 import ToggleTableView from "./ToggleTableView";
 import TableViewData from "./TableViewData";
+import CardViewData from "./CardViewData";
 
 const IssuesData = ({ recordType }: { recordType: string }) => {
   const { issuesData, loading, refetchIssues } = useIssuesData();
@@ -148,7 +149,10 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
               dynamicUrlParam={dynamicUrlParam}
             />
           ) : (
-            <></>
+            <CardViewData
+              currentIssues={currentIssues}
+              dynamicUrlParam={dynamicUrlParam}
+            />
           )}
 
           {/* Our pagination ui */}

@@ -17,12 +17,14 @@ type TitleDescriptionModalProps = {
   title: IssueValueTypes;
   description: IssueValueTypes;
   uuid: string;
+  userId: IssueValueTypes;
   closeModal: () => void;
 };
 const TitleDescriptionModal = ({
   title,
   description,
   uuid,
+  userId,
   closeModal,
 }: TitleDescriptionModalProps) => {
   const [formData, setFormData] = useState({
@@ -65,6 +67,7 @@ const TitleDescriptionModal = ({
     const payload = {
       ...formData,
       uuid,
+      userId,
     };
 
     try {

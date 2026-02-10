@@ -6,18 +6,19 @@ import { PoolClient } from "pg";
 export const PUT = withAuth(async ({ request, user }) => {
   let client: PoolClient | undefined;
 
-  const { role } = user;
-
-  // Check if user is authorized to perform this action
-  if (role !== "user") {
-    return NextResponse.json(
-      { message: "You are not authorized to perform this action" },
-      { status: 403 },
-    );
-  }
+  const { userId: payloadUserId } = user;
 
   try {
-    const { issue_title, issue_description, uuid } = await request.json();
+    const { issue_title, issue_description, uuid, userId } =
+      await request.json();
+
+    // Check if user is authorized to perform this action
+    if (userId !== payloadUserId) {
+      return NextResponse.json(
+        { message: "You are not authorized to perform this action" },
+        { status: 403 },
+      );
+    }
 
     if (!issue_title || !issue_description || !uuid) {
       return NextResponse.json(

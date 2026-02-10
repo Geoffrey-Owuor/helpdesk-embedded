@@ -58,7 +58,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const type = searchParams.get("type");
   const router = useRouter();
   const { setAlertInfo } = useAlert();
-  const { role, email, department } = useUser();
+  const { role, email, department, userId } = useUser();
 
   // Status to hold our selected status
   const [selectedStatus, setSelectedStatus] = useState("");
@@ -85,6 +85,22 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
     refetchAutomationCounts();
     refetchIssuesCounts();
   };
+
+  let recordsData;
+  let recordsLoading;
+
+  switch (type) {
+    case "automation":
+      recordsData = automationsData;
+      recordsLoading = automationsLoading;
+      break;
+    default:
+      recordsData = issuesData;
+      recordsLoading = loading;
+      break;
+  }
+  // Defining a constant to hold our specific issue
+  const issueData = recordsData.find((record) => record.issue_uuid === uuid);
 
   // Async function for updating the status
   const handleUpdateStatus = async () => {
@@ -119,22 +135,6 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
       setUpdatingStatus(false);
     }
   };
-
-  let recordsData;
-  let recordsLoading;
-
-  switch (type) {
-    case "automation":
-      recordsData = automationsData;
-      recordsLoading = automationsLoading;
-      break;
-    default:
-      recordsData = issuesData;
-      recordsLoading = loading;
-      break;
-  }
-  // Defining a constant to hold our specific issue
-  const issueData = recordsData.find((record) => record.issue_uuid === uuid);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -187,6 +187,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           description={issueData.issue_description}
           closeModal={() => setIsEditModalOpen(false)}
           uuid={uuid}
+          userId={issueData.issue_submitter_id}
         />
       )}
 
@@ -343,15 +344,16 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
               </div>
               Description
             </h2>
-            {role === "user" && issueData.issue_status !== "resolved" && (
-              <button
-                type="button"
-                onClick={() => setIsEditModalOpen(true)}
-                className="group rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-white"
-              >
-                <PenLine className="h-4 w-4" />
-              </button>
-            )}
+            {userId === issueData.issue_submitter_id &&
+              issueData.issue_status !== "resolved" && (
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(true)}
+                  className="group rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-white"
+                >
+                  <PenLine className="h-4 w-4" />
+                </button>
+              )}
           </div>
           <div className="prose prose-neutral dark:prose-invert max-w-none">
             <p className="leading-relaxed whitespace-pre-wrap text-neutral-600 dark:text-neutral-300">
