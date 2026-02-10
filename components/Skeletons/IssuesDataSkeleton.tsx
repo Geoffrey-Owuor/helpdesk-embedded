@@ -1,6 +1,8 @@
+"use client";
+
 import SkeletonBox from "./SkeletonBox";
 
-// Reuse the exact same widths to ensure the skeleton matches the real table
+// Reuse widths for table
 const colWidths = {
   ref: "w-24 shrink-0",
   status: "w-24 shrink-0",
@@ -16,83 +18,86 @@ const colWidths = {
 const IssuesDataSkeleton = ({ isTableView }: { isTableView: boolean }) => {
   return (
     <div>
-      {/* --- Major Container --- */}
       {isTableView ? (
+        /* --- Table View Skeleton --- */
         <div className="w-full overflow-x-auto rounded-xl bg-gray-100/50 p-4 dark:bg-neutral-900/50">
           <div className="min-w-max space-y-2">
-            {/* 1. Header Row Skeleton */}
             <div className="flex items-center gap-4 px-4 pb-2">
-              <SkeletonBox className={`h-3 ${colWidths.ref}`} />
-              <SkeletonBox className={`h-3 ${colWidths.status}`} />
-              <SkeletonBox className={`h-3 ${colWidths.type}`} />
-              <SkeletonBox className={`h-3 ${colWidths.submitter}`} />
-              <SkeletonBox className={`h-3 ${colWidths.date}`} />
-              <SkeletonBox className={`h-3 ${colWidths.dept}`} />
-              <SkeletonBox className={`h-3 ${colWidths.dept}`} />
-              <SkeletonBox className={`h-3 ${colWidths.agent}`} />
-              <SkeletonBox className={`h-3 ${colWidths.title}`} />
-              <SkeletonBox className={`h-3 ${colWidths.desc}`} />
+              {Object.values(colWidths).map((width, i) => (
+                <SkeletonBox key={i} className={`h-3 ${width}`} />
+              ))}
             </div>
 
-            {/* 2. Data Rows Skeletons (Generate 5 fake rows) */}
             {[...Array(5)].map((_, index) => (
               <div
                 key={index}
-                className="flex items-center gap-4 rounded-xl bg-neutral-50 p-4 shadow dark:bg-neutral-800/50"
+                className="flex items-center gap-4 rounded-xl bg-neutral-50 p-4 shadow-sm dark:bg-neutral-800/50"
               >
-                {/* Reference */}
                 <SkeletonBox className={`h-5 ${colWidths.ref}`} />
-
-                {/* Status Badge */}
                 <div className={colWidths.status}>
                   <SkeletonBox className="h-6 w-20 rounded-full" />
                 </div>
-
-                {/* Type */}
                 <SkeletonBox className={`h-4 ${colWidths.type}`} />
-
-                {/* Submitter */}
                 <SkeletonBox className={`h-4 ${colWidths.submitter}`} />
-
-                {/* Date */}
                 <SkeletonBox className={`h-4 ${colWidths.date}`} />
-
-                {/* Submitter Dept */}
                 <SkeletonBox className={`h-4 ${colWidths.dept}`} />
-
-                {/* Target Dept */}
                 <SkeletonBox className={`h-4 ${colWidths.dept}`} />
-
-                {/* Agent */}
                 <SkeletonBox className={`h-4 ${colWidths.agent}`} />
-
-                {/* Title */}
                 <SkeletonBox className={`h-5 ${colWidths.title}`} />
-
-                {/* Description */}
                 <SkeletonBox className={`h-4 ${colWidths.desc}`} />
               </div>
             ))}
           </div>
         </div>
       ) : (
-        <></>
+        /* --- Card View Skeleton --- */
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {[...Array(8)].map((_, index) => (
+            <div
+              key={index}
+              className="flex flex-col justify-between rounded-xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/50"
+            >
+              {/* Header Skeleton */}
+              <div className="mb-4 flex items-start justify-between">
+                <SkeletonBox className="h-4 w-20 rounded" />
+                <SkeletonBox className="h-6 w-24 rounded-full" />
+              </div>
+
+              {/* Body Skeleton */}
+              <div className="mb-6 space-y-3">
+                <SkeletonBox className="h-5 w-3/4 rounded" />
+                <div className="space-y-2">
+                  <SkeletonBox className="h-3 w-full rounded" />
+                  <SkeletonBox className="h-3 w-5/6 rounded" />
+                </div>
+              </div>
+
+              {/* Footer Skeleton */}
+              <div className="space-y-4 border-t border-neutral-100 pt-4 dark:border-neutral-800">
+                <div className="grid grid-cols-2 gap-2">
+                  <SkeletonBox className="h-3 w-16 rounded" />
+                  <SkeletonBox className="h-3 w-20 rounded" />
+                </div>
+                <div className="flex flex-col gap-3">
+                  <SkeletonBox className="h-4 w-32 rounded" />
+                  <div className="rounded-lg border border-neutral-100 bg-neutral-50 p-2 dark:border-neutral-800/50 dark:bg-neutral-800/40">
+                    <SkeletonBox className="h-6 w-24 rounded" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
 
       {/* --- Pagination Skeleton --- */}
       <div className="mt-6 flex items-center justify-between py-3">
-        {/* Left: "Showing 1 to 10..." text */}
         <SkeletonBox className="hidden h-4 w-48 lg:block" />
-
-        {/* Center: Page Numbers */}
         <div className="flex items-center gap-2">
-          <SkeletonBox className="h-8 w-8 rounded-lg" /> {/* Prev */}
-          <SkeletonBox className="h-8 w-8 rounded-lg" /> {/* 1 */}
-          <SkeletonBox className="h-8 w-8 rounded-lg" /> {/* 2 */}
-          <SkeletonBox className="h-8 w-8 rounded-lg" /> {/* Next */}
+          {[...Array(4)].map((_, i) => (
+            <SkeletonBox key={i} className="h-8 w-8 rounded-lg" />
+          ))}
         </div>
-
-        {/* Right: Rows per page dropdown */}
         <div className="hidden justify-end lg:flex lg:w-48">
           <SkeletonBox className="h-8 w-32 rounded-lg" />
         </div>

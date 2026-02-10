@@ -5,11 +5,13 @@ import {
   useColumnVisibility,
   columnLabels,
 } from "@/contexts/ColumnVisibilityContext";
+import { useSearchLogic } from "@/contexts/SearchLogicContext";
 
 const ShowHideColumnsLogic = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { visibleColumns, toggleColumn } = useColumnVisibility();
+  const { isTableView } = useSearchLogic();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -29,7 +31,8 @@ const ShowHideColumnsLogic = () => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex h-9.5 items-center gap-2 rounded-xl border px-3 text-sm transition-colors ${
+        disabled={!isTableView}
+        className={`flex h-9.5 items-center gap-2 rounded-xl border px-3 text-sm transition-colors disabled:opacity-50 ${
           isOpen
             ? "border-blue-500 bg-white ring-2 ring-blue-500/20 dark:bg-neutral-900"
             : "border-neutral-300 bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:border-neutral-800 dark:bg-neutral-800/50 dark:text-white dark:hover:bg-neutral-700/50"
