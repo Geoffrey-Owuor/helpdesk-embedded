@@ -34,7 +34,7 @@ const Pagination = ({
   const perPageRef = useRef<HTMLDivElement>(null);
 
   // Options for rows per page
-  const perPageOptions = [5, 10, 25, 50, 100];
+  const perPageOptions = [4, 8, 16, 32, 64, 128];
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -92,7 +92,7 @@ const Pagination = ({
             {/* The button to set issues per page */}
             <div className="flex items-center gap-2" ref={perPageRef}>
               <span className="text-sm text-neutral-600 dark:text-neutral-400">
-                Rows per page:
+                Records:
               </span>
               <div className="relative">
                 <button

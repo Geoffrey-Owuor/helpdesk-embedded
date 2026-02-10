@@ -4,8 +4,18 @@ import Link from "next/link";
 import { DashBoardLogo } from "../Modules/DashBoardLogo";
 import { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
-import { CirclePlus, Bot, X } from "lucide-react";
+import {
+  CirclePlus,
+  Bot,
+  X,
+  Home,
+  ShieldUser,
+  ChevronDown,
+  UserRoundPlus,
+  Bug,
+} from "lucide-react";
 import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
+import { useUser } from "@/contexts/UserContext";
 
 type MobileSideBarProps = {
   sideBarOpen: boolean;
@@ -19,6 +29,8 @@ const MobileSideBar = ({
   setSideBarOpen,
 }: MobileSideBarProps) => {
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
+  const { role } = useUser();
+  const [showAdminOptions, setShowAdminOptions] = useState(false);
 
   // Handling mobile route change
   const handleMobileRouteChange = (route: string) => {
@@ -70,11 +82,21 @@ const MobileSideBar = ({
             {/* Button: New Issue */}
             <button
               onClick={handleNewIssueOpening}
-              className="flex w-full items-center gap-2 rounded-lg bg-blue-700 p-2 text-sm font-semibold text-white transition hover:bg-blue-800"
+              className="flex w-full items-center gap-2 rounded-xl bg-blue-700 p-2 text-sm font-semibold text-white transition hover:bg-blue-800"
             >
               <CirclePlus />
               <span>New Issue</span>
             </button>
+
+            {/* Link: Homepage */}
+            <Link
+              href="/dashboard"
+              onClick={() => handleMobileRouteChange("/dashboard")}
+              className="flex w-full items-center gap-2 rounded-lg p-2 text-sm font-semibold hover:bg-neutral-200 dark:hover:bg-neutral-800"
+            >
+              <Home />
+              <span>Home</span>
+            </Link>
 
             {/* Link: Automations */}
             <Link
@@ -85,6 +107,37 @@ const MobileSideBar = ({
               <Bot />
               <span>Automations</span>
             </Link>
+
+            {/* Admin functionality */}
+            {role === "admin" && (
+              <div className="flex flex-col space-y-3">
+                <div
+                  onClick={() => setShowAdminOptions((prev) => !prev)}
+                  className="flex w-full items-center justify-between rounded-lg p-2 text-sm font-semibold hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <ShieldUser />
+                    <span>Admin Panel</span>
+                  </div>
+                  <ChevronDown
+                    className={`h-5 w-5 transition-transform duration-200 ${showAdminOptions ? "rotate-180" : ""}`}
+                  />
+                </div>
+                {/* Options for admin panel */}
+                {showAdminOptions && (
+                  <div className="ml-4 flex flex-col gap-2">
+                    <button className="flex w-full items-center gap-2 rounded-lg p-2 text-sm hover:bg-neutral-200 dark:hover:bg-neutral-800">
+                      <Bug className="h-4.5 w-4.5" />
+                      <span>Add Issue Type</span>
+                    </button>
+                    <button className="flex w-full items-center gap-2 rounded-lg p-2 text-sm hover:bg-neutral-200 dark:hover:bg-neutral-800">
+                      <UserRoundPlus className="h-4.5 w-4.5" />
+                      <span>Add Agent</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </nav>
         </aside>
       </div>

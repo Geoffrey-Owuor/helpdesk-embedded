@@ -58,7 +58,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const type = searchParams.get("type");
   const router = useRouter();
   const { setAlertInfo } = useAlert();
-  const { role, email, department } = useUser();
+  const { role, email, department, userId } = useUser();
 
   // Status to hold our selected status
   const [selectedStatus, setSelectedStatus] = useState("");
@@ -85,6 +85,22 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
     refetchAutomationCounts();
     refetchIssuesCounts();
   };
+
+  let recordsData;
+  let recordsLoading;
+
+  switch (type) {
+    case "automation":
+      recordsData = automationsData;
+      recordsLoading = automationsLoading;
+      break;
+    default:
+      recordsData = issuesData;
+      recordsLoading = loading;
+      break;
+  }
+  // Defining a constant to hold our specific issue
+  const issueData = recordsData.find((record) => record.issue_uuid === uuid);
 
   // Async function for updating the status
   const handleUpdateStatus = async () => {
@@ -119,22 +135,6 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
       setUpdatingStatus(false);
     }
   };
-
-  let recordsData;
-  let recordsLoading;
-
-  switch (type) {
-    case "automation":
-      recordsData = automationsData;
-      recordsLoading = automationsLoading;
-      break;
-    default:
-      recordsData = issuesData;
-      recordsLoading = loading;
-      break;
-  }
-  // Defining a constant to hold our specific issue
-  const issueData = recordsData.find((record) => record.issue_uuid === uuid);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -187,6 +187,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           description={issueData.issue_description}
           closeModal={() => setIsEditModalOpen(false)}
           uuid={uuid}
+          userId={issueData.issue_submitter_id}
         />
       )}
 
@@ -226,13 +227,6 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
             >
               <RotateCcw />
             </button>
-            <button
-              onClick={() => router.back()}
-              className="flex items-center gap-2 rounded-xl bg-black px-4 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span className="hidden md:inline">Back</span>
-            </button>
 
             {role === "admin" &&
               issueData.issue_status !== "resolved" &&
@@ -242,7 +236,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                   className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold transition-colors duration-200 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-transparent dark:hover:bg-neutral-900"
                 >
                   <UserRoundPen className="h-4 w-4" />
-                  <span className="hidden md:inline">Reassign</span>
+                  <span>Reassign</span>
                 </button>
               )}
             {issueData.issue_agent_email === email &&
@@ -251,7 +245,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                   <button
                     type="button" // Prevent form submission if inside a form
                     onClick={() => setIsOpen(!isOpen)}
-                    className={`flex h-9.5 w-full min-w-45 items-center justify-between rounded-xl border bg-white px-3 text-sm transition-all sm:w-auto dark:bg-neutral-950 ${
+                    className={`flex h-9.5 w-full min-w-43 items-center justify-between rounded-xl border bg-white px-3 text-sm transition-all sm:w-auto dark:bg-neutral-950 ${
                       isOpen
                         ? "border-blue-500 ring-2 ring-blue-500/20"
                         : "border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900"
@@ -343,15 +337,16 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
               </div>
               Description
             </h2>
-            {role === "user" && issueData.issue_status !== "resolved" && (
-              <button
-                type="button"
-                onClick={() => setIsEditModalOpen(true)}
-                className="group rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-white"
-              >
-                <PenLine className="h-4 w-4" />
-              </button>
-            )}
+            {userId === issueData.issue_submitter_id &&
+              issueData.issue_status !== "resolved" && (
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(true)}
+                  className="group rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-white"
+                >
+                  <PenLine className="h-4 w-4" />
+                </button>
+              )}
           </div>
           <div className="prose prose-neutral dark:prose-invert max-w-none">
             <p className="leading-relaxed whitespace-pre-wrap text-neutral-600 dark:text-neutral-300">

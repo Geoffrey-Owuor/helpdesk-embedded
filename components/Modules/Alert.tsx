@@ -46,17 +46,19 @@ const Alert = () => {
     <ClientPortal>
       {alertInfo.showAlert && (
         <div
-          className={`fixed top-0 left-1/2 z-9999 -translate-x-1/2 ${
+          className={`fixed top-0 left-1/2 z-9999 max-w-sm -translate-x-1/2 ${
             isClosing ? "animate-slideUp" : "animate-slideDown"
           }`}
         >
           <div
-            className={`mt-4 flex w-auto items-center justify-between rounded-full bg-black px-4 py-4.5 text-white shadow-md dark:bg-white dark:text-black`}
+            className={`mt-4 flex items-center justify-between rounded-full bg-black px-4 py-4.5 text-white shadow-md dark:bg-white dark:text-black`}
           >
             <div className="flex items-center gap-2">
               {/* Render the appropriate icon */}
               <IconComponent className={`h-5 w-5 shrink-0 ${iconColorClass}`} />
-              <p className="text-sm">{alertInfo.alertMessage}</p>
+              <p className="max-w-70 truncate text-sm text-nowrap">
+                {alertInfo.alertMessage}
+              </p>
             </div>
             <button
               onClick={handleClose}
