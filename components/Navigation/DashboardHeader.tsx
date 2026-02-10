@@ -11,6 +11,7 @@ import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
 import { DashBoardLogo } from "../Modules/DashBoardLogo";
 import { usePathname } from "next/navigation";
 import { useLoadingLine } from "@/contexts/LoadingLineContext";
+import AdminPanel from "./AdminFunctions/AdminPanel";
 
 const DashboardHeader = () => {
   // Get the user information
@@ -50,6 +51,16 @@ const DashboardHeader = () => {
             <DashBoardLogo />
           </div>
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsIssueModalOpen(true)}
+              className="hidden items-center gap-2 rounded-full bg-blue-700 px-2 py-2 text-sm text-white hover:bg-blue-800 sm:flex md:rounded-xl md:px-3"
+            >
+              <CirclePlus className="h-4.5 w-4.5" />
+              <span className="hidden md:inline-flex">New Issue</span>
+            </button>
+            {/* Admin Functionality */}
+            <AdminPanel />
+
             <Link
               href="/dashboard"
               onClick={() => handleRouteChange("/dashboard")}
@@ -57,20 +68,13 @@ const DashboardHeader = () => {
             >
               <Home className="h-4.5 w-4.5" />
             </Link>
-            <button
-              onClick={() => setIsIssueModalOpen(true)}
-              className="hidden items-center gap-2 rounded-full bg-blue-700 px-2 py-2 text-sm text-white hover:bg-blue-800 sm:flex md:rounded-xl md:px-3"
-            >
-              <CirclePlus className="h-4.5 w-4.5" />
-              <span className="hidden md:flex">New Issue</span>
-            </button>
             <Link
               href="/dashboard/automations"
               onClick={() => handleRouteChange("/dashboard/automations")}
               className="hidden items-center gap-2 rounded-full px-2 py-2 text-sm hover:bg-neutral-200 sm:flex md:rounded-xl dark:hover:bg-neutral-800"
             >
               <Bot className="h-5 w-5" />
-              <span className="hidden md:flex">Automations</span>
+              <span className="custom:inline-flex hidden">Automations</span>
             </Link>
             <div className="w-10">
               <ThemeToggle />

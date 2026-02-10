@@ -6,7 +6,7 @@ import IssueStatusFormatter from "./IssueStatusFormatter";
 import { AssignedAgentFormatter } from "./AssignedAgentFormatter";
 import { useRouter } from "next/navigation";
 import { useLoadingLine } from "@/contexts/LoadingLineContext";
-import { Calendar, User, Tag, AlignLeft, ArrowRight } from "lucide-react";
+import { Calendar, Tag, AlignLeft, ArrowRight, UserRound } from "lucide-react";
 
 type CardViewDataProps = {
   currentIssues: Record<string, string | number>[];
@@ -59,7 +59,7 @@ const CardViewData = ({
           {/* Body: Title & Description */}
           <div className="mb-6 space-y-2">
             <h3
-              className="line-clamp-1 text-sm font-bold text-neutral-900 dark:text-neutral-100"
+              className="line-clamp-1 text-sm font-semibold text-neutral-900 dark:text-neutral-100"
               title={titleHelper(issueData.issue_title)}
             >
               {issueData.issue_title}
@@ -93,7 +93,7 @@ const CardViewData = ({
             {/* Submitter & Agent Row */}
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-2 text-[11px] text-neutral-600 dark:text-neutral-400">
-                <User size={13} className="opacity-70" />
+                <UserRound size={13} className="opacity-70" />
                 <div className="truncate">
                   <span className="font-semibold">
                     {issueData.issue_submitter_name}

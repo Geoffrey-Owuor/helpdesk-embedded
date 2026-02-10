@@ -40,7 +40,9 @@ const ShowHideColumnsLogic = () => {
       >
         <Columns2 className="h-4.5 w-4.5" />
         <span>
-          <span className="hidden sm:inline-flex">Show/Hide Columns</span>
+          <span className="hidden max-w-40 truncate sm:inline-flex">
+            Show/Hide Columns
+          </span>
         </span>
         <ChevronDown
           className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
@@ -49,7 +51,7 @@ const ShowHideColumnsLogic = () => {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute top-full right-0 z-20 mt-2 max-h-80 w-56 overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-none">
+        <div className="absolute top-full right-0 z-20 mt-2 max-h-80 w-56 overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-950 dark:shadow-none">
           <div className="px-2 py-2 text-xs font-semibold text-neutral-500 uppercase">
             Visible Columns
           </div>
