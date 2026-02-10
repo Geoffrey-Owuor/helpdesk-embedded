@@ -21,6 +21,7 @@ import { useSearchLogic } from "@/contexts/SearchLogicContext";
 import ViewAgentAdminFilter from "./ViewAgentAdminFilter";
 import Pagination from "./Pagination";
 import { AssignedAgentFormatter } from "./AssignedAgentFormatter";
+import ToggleTableView from "./ToggleTableView";
 
 const IssuesData = ({ recordType }: { recordType: string }) => {
   const { issuesData, loading, refetchIssues } = useIssuesData();
@@ -132,7 +133,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
 
       {/* The filtering logic and search input fields */}
 
-      <div className="mb-6 flex flex-wrap items-center justify-start gap-4 md:justify-center">
+      <div className="mb-6 flex flex-wrap items-center justify-start gap-4">
         <SearchFilterLogic recordType={recordType} />
         <SearchInputFields />
         {/* The search button */}
@@ -140,7 +141,12 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
           setCurrentPage={setCurrentPage}
           recordType={recordType}
         />
+
+        {/* Toggle between table and card view */}
+        <ToggleTableView />
       </div>
+
+      {/* Implementing both table view and card view */}
 
       {recordsLoading ? (
         <IssuesDataSkeleton />

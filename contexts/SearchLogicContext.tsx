@@ -20,6 +20,7 @@ type SearchLogicContextTypes = {
   issueType: string;
   submitter: string;
   agentAdminFilter: string;
+  isTableView: boolean;
   setSelectedFilter: Dispatch<SetStateAction<string>>;
   setFromDate: Dispatch<SetStateAction<string>>;
   setToDate: Dispatch<SetStateAction<string>>;
@@ -30,6 +31,7 @@ type SearchLogicContextTypes = {
   setIssueType: Dispatch<SetStateAction<string>>;
   setSubmitter: Dispatch<SetStateAction<string>>;
   setAgentAdminFilter: Dispatch<SetStateAction<string>>;
+  setIsTableView: Dispatch<SetStateAction<boolean>>;
 };
 
 const SearchLogicContext = createContext<SearchLogicContextTypes | null>(null);
@@ -51,6 +53,9 @@ export const SearchLogicProvider = ({
   const [submitter, setSubmitter] = useState("");
   const [agentAdminFilter, setAgentAdminFilter] = useState("");
 
+  // State for switching between table and card view
+  const [isTableView, setIsTableView] = useState(true);
+
   const values = useMemo(
     () => ({
       selectedFilter,
@@ -63,6 +68,7 @@ export const SearchLogicProvider = ({
       issueType,
       submitter,
       agentAdminFilter,
+      isTableView,
       setSelectedFilter,
       setFromDate,
       setToDate,
@@ -73,6 +79,7 @@ export const SearchLogicProvider = ({
       setIssueType,
       setSubmitter,
       setAgentAdminFilter,
+      setIsTableView,
     }),
     [
       selectedFilter,
@@ -82,6 +89,7 @@ export const SearchLogicProvider = ({
       reference,
       department,
       agentAdminFilter,
+      isTableView,
       agent,
       issueType,
       submitter,
