@@ -82,7 +82,7 @@ const MobileSideBar = ({
             {/* Button: New Issue */}
             <button
               onClick={handleNewIssueOpening}
-              className="flex w-full items-center gap-2 rounded-lg bg-blue-700 p-2 text-sm font-semibold text-white transition hover:bg-blue-800"
+              className="flex w-full items-center gap-2 rounded-xl bg-blue-700 p-2 text-sm font-semibold text-white transition hover:bg-blue-800"
             >
               <CirclePlus />
               <span>New Issue</span>

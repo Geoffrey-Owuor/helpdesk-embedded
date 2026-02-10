@@ -227,13 +227,6 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
             >
               <RotateCcw />
             </button>
-            <button
-              onClick={() => router.back()}
-              className="flex items-center gap-2 rounded-xl bg-black px-4 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span className="hidden md:inline">Back</span>
-            </button>
 
             {role === "admin" &&
               issueData.issue_status !== "resolved" &&
@@ -243,7 +236,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                   className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold transition-colors duration-200 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-transparent dark:hover:bg-neutral-900"
                 >
                   <UserRoundPen className="h-4 w-4" />
-                  <span className="hidden md:inline">Reassign</span>
+                  <span>Reassign</span>
                 </button>
               )}
             {issueData.issue_agent_email === email &&
@@ -252,7 +245,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                   <button
                     type="button" // Prevent form submission if inside a form
                     onClick={() => setIsOpen(!isOpen)}
-                    className={`flex h-9.5 w-full min-w-45 items-center justify-between rounded-xl border bg-white px-3 text-sm transition-all sm:w-auto dark:bg-neutral-950 ${
+                    className={`flex h-9.5 w-full min-w-43 items-center justify-between rounded-xl border bg-white px-3 text-sm transition-all sm:w-auto dark:bg-neutral-950 ${
                       isOpen
                         ? "border-blue-500 ring-2 ring-blue-500/20"
                         : "border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900"

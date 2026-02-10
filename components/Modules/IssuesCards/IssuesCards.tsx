@@ -11,9 +11,7 @@ import {
   XCircle,
   TrendingUp,
   RotateCcw,
-  ArrowLeft,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useUser } from "@/contexts/UserContext";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import DepartmentsDropDown from "../AutomationsPage/DepartmentsDropDown";
@@ -27,7 +25,6 @@ const IssuesCards = ({ type }: { type: string }) => {
     loading: automationLoading,
   } = useAutomations();
   const { role, department } = useUser();
-  const router = useRouter();
   const { agentAdminFilter } = useSearchLogic();
 
   // Call srolling top hook
@@ -117,15 +114,6 @@ const IssuesCards = ({ type }: { type: string }) => {
           >
             <RotateCcw />
           </button>
-          {type === "automations" && (
-            <button
-              onClick={() => router.back()}
-              className="hidden items-center gap-1.5 rounded-xl bg-black px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-neutral-900 md:flex dark:bg-white dark:text-black dark:hover:bg-gray-200"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span>back</span>
-            </button>
-          )}
 
           {cardLoading ? (
             <SkeletonBox className="hidden h-11 w-20 md:inline-flex" />

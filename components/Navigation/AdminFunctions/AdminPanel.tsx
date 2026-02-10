@@ -45,7 +45,7 @@ const AdminPanel = () => {
         }`}
       >
         <ShieldUser className="h-5 w-5 text-neutral-500" />
-        <span className="hidden text-neutral-700 md:inline-flex dark:text-neutral-300">
+        <span className="custom:inline-flex hidden text-neutral-700 dark:text-neutral-300">
           Admin Panel
         </span>
         <ChevronDown
