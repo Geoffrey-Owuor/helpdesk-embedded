@@ -147,7 +147,7 @@ const ReassignIssue = ({
           <div className="w-full max-w-lg rounded-2xl border border-neutral-300 bg-neutral-50 p-6 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
             {/* Header */}
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+              <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
                 Department Agents
               </h2>
               <button

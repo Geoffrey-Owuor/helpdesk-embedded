@@ -77,7 +77,7 @@ const DashboardHeader = () => {
             {/* Admin Functionality */}
             {role === "admin" && (
               <button
-                onClick={() => setShowAdminPanel((prev) => !prev)}
+                onClick={() => setShowAdminPanel(true)}
                 className="hidden items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm transition-all hover:bg-neutral-50 md:flex dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-900"
               >
                 <ShieldUser className="h-5 w-5 text-neutral-500" />
