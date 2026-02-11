@@ -2,7 +2,6 @@
 
 import {
   X,
-  Users,
   UserPlus,
   Bug,
   ShieldCheck,
@@ -99,17 +98,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
 
           {/* Tab Content Rendering */}
           <main className="flex-1 overflow-y-auto p-6">
-            {activeTab === "agent-info" && (
-              <div className="space-y-4">
-                <div className="rounded-xl border border-dashed border-neutral-300 p-8 text-center dark:border-neutral-700">
-                  <Users className="mx-auto mb-3 opacity-20" size={48} />
-                  <h4 className="font-medium">Agent Directory Placeholder</h4>
-                  <p className="text-sm text-neutral-500">
-                    List and manage existing support agents here.
-                  </p>
-                </div>
-              </div>
-            )}
+            {activeTab === "agent-info" && <AgentsInfo />}
 
             {activeTab === "add-agent" && (
               <div className="space-y-4">
