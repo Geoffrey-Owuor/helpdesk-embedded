@@ -6,9 +6,10 @@ import {
 } from "@/serverActions/GetIssueAgents";
 import { useUser } from "@/contexts/UserContext";
 import { useState, useEffect } from "react";
-import { Mail, Tag, Loader2, Info, BadgeCheck } from "lucide-react";
+import { Mail, Tag, Info, BadgeCheck } from "lucide-react";
 import { arrayReducer, AgentWithSkills } from "@/utils/ArrayReducer";
 import { abbreviateUserName } from "@/public/assets";
+import AgentsInfoSkeleton from "@/components/Skeletons/AgentsInfoSkeleton";
 
 const AgentsInfo = () => {
   const [agentsInfo, setAgentsInfo] = useState<AgentWithSkills[]>([]);
@@ -37,15 +38,7 @@ const AgentsInfo = () => {
     fetchAgentsInfo();
   }, [userId]);
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 text-neutral-500">
-        <Loader2 className="h-8 w-8 animate-spin opacity-20" />
-        <p className="mt-2 text-sm">Loading agents...</p>
-        {/* Placeholder for your upcoming skeleton */}
-      </div>
-    );
-  }
+  if (loading) return <AgentsInfoSkeleton />;
 
   if (agentsInfo.length === 0) {
     return (

@@ -1,5 +1,3 @@
-"use client";
-
 import SkeletonBox from "./SkeletonBox";
 
 // Reuse widths for table
