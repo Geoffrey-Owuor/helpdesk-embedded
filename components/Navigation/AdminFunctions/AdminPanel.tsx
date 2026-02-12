@@ -1,86 +1,135 @@
 "use client";
 
-import { useUser } from "@/contexts/UserContext";
-import { ChevronDown, ShieldUser, Bug, UserRoundPlus } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import {
+  X,
+  UserPlus,
+  Bug,
+  ShieldCheck,
+  UsersRound,
+  UserRoundPlus,
+} from "lucide-react";
+import { Dispatch, SetStateAction, useState } from "react";
+import AgentsInfo from "./AgentsInfo";
 
-const AdminPanel = () => {
-  const [showAdminOptions, setShowAdminOptions] = useState(false);
-  const { role } = useUser();
+type AdminPanelProps = {
+  showAdminPanel: boolean;
+  setShowAdminPanel: Dispatch<SetStateAction<boolean>>;
+};
 
-  // Reference for the dropdown container
-  const menuRef = useRef<HTMLDivElement>(null);
+type TabId = "agent-info" | "add-agent" | "add-issue-type";
 
-  // Toggle function
-  const toggleDropdown = () => setShowAdminOptions((prev) => !prev);
+const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
+  const [activeTab, setActiveTab] = useState<TabId>("agent-info");
 
-  // Handle clicking outside of the menu
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setShowAdminOptions(false);
-      }
-    };
+  if (!showAdminPanel) return null;
 
-    if (showAdminOptions) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showAdminOptions]);
-
-  if (role !== "admin") return null;
+  // Shared button styles
+  const baseTabStyles =
+    "flex w-full items-center gap-3 px-4 py-3 text-sm font-semibold transition-all duration-200 rounded-xl";
+  const activeTabStyles =
+    "bg-neutral-200 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 shadow-sm";
+  const inactiveTabStyles =
+    "text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-900 hover:text-neutral-700 dark:hover:text-neutral-300";
 
   return (
-    <div className="relative" ref={menuRef}>
-      {/* Trigger Button */}
-      <button
-        onClick={toggleDropdown}
-        className={`hidden items-center gap-2 rounded-xl border bg-white px-3 py-2 text-sm transition-all md:flex dark:bg-neutral-950 ${
-          showAdminOptions
-            ? "border-blue-500 ring-2 ring-blue-500/20"
-            : "border-neutral-200 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900"
-        }`}
-      >
-        <ShieldUser className="h-5 w-5 text-neutral-500" />
-        <span className="custom:inline-flex hidden text-neutral-700 dark:text-neutral-300">
-          Admin Panel
-        </span>
-        <ChevronDown
-          className={`h-4 w-4 text-neutral-400 transition-transform duration-200 ${
-            showAdminOptions ? "rotate-180" : ""
-          }`}
-        />
-      </button>
-
-      {/* Dropdown Menu */}
-      {showAdminOptions && (
-        <div className="absolute top-full right-0 z-50 mt-2 w-48 origin-top-right rounded-xl border border-neutral-300 bg-white p-1.5 shadow-lg focus:outline-none dark:border-neutral-700 dark:bg-neutral-950">
-          <div className="space-y-1">
-            <button
-              onClick={() => {
-                /* Your logic here */ setShowAdminOptions(false);
-              }}
-              className="flex w-full items-center gap-2 rounded-lg p-2 text-sm text-neutral-600 transition-colors hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-900"
-            >
-              <Bug className="h-4 w-4" />
-              <span>Add Issue Type</span>
-            </button>
-
-            <button
-              onClick={() => {
-                /* Your logic here */ setShowAdminOptions(false);
-              }}
-              className="flex w-full items-center gap-2 rounded-lg p-2 text-sm text-neutral-600 transition-colors hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-900"
-            >
-              <UserRoundPlus className="h-4 w-4" />
-              <span>Add Agent</span>
-            </button>
+    // Backdrop
+    <div className="custom-blur fixed inset-0 z-70 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
+      {/* Modal Container */}
+      <div className="flex h-[90vh] w-full max-w-4xl overflow-hidden rounded-2xl border border-neutral-300 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
+        {/* --- LEFT SIDEBAR --- */}
+        <aside className="hidden w-64 flex-col border-r border-neutral-200 bg-neutral-50/50 p-4 md:flex dark:border-neutral-800 dark:bg-neutral-900/30">
+          <div className="mb-8 flex items-center gap-2 px-2">
+            <ShieldCheck
+              className="text-blue-600 dark:text-blue-500"
+              size={22}
+            />
+            <h2 className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
+              Admin Panel
+            </h2>
           </div>
+
+          <nav className="flex-1 space-y-1">
+            <button
+              onClick={() => setActiveTab("agent-info")}
+              className={`${baseTabStyles} ${activeTab === "agent-info" ? activeTabStyles : inactiveTabStyles}`}
+            >
+              <UsersRound size={18} />
+              Agents Info
+            </button>
+
+            <button
+              onClick={() => setActiveTab("add-agent")}
+              className={`${baseTabStyles} ${activeTab === "add-agent" ? activeTabStyles : inactiveTabStyles}`}
+            >
+              <UserRoundPlus size={18} />
+              Add Agent
+            </button>
+
+            <button
+              onClick={() => setActiveTab("add-issue-type")}
+              className={`${baseTabStyles} ${activeTab === "add-issue-type" ? activeTabStyles : inactiveTabStyles}`}
+            >
+              <Bug size={18} />
+              Add Issue Type
+            </button>
+          </nav>
+
+          <div className="mt-auto border-t border-neutral-200 pt-4 dark:border-neutral-800">
+            <p className="px-2 text-[10px] tracking-widest text-neutral-400 uppercase">
+              IssueDesk v1.0
+            </p>
+          </div>
+        </aside>
+
+        {/* --- MAIN CONTENT AREA --- */}
+        <div className="flex flex-1 flex-col overflow-hidden bg-white dark:bg-neutral-950">
+          {/* Header */}
+          <header className="flex items-center justify-between border-b border-neutral-100 p-4 dark:border-neutral-800">
+            <h3 className="text-sm font-semibold text-neutral-500 capitalize dark:text-neutral-400">
+              {activeTab.replace("-", " ")}
+            </h3>
+            <button
+              onClick={() => setShowAdminPanel(false)}
+              className="rounded-full p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
+            >
+              <X size={20} />
+            </button>
+          </header>
+
+          {/* Tab Content Rendering */}
+          <main className="flex-1 overflow-y-auto p-6">
+            {activeTab === "agent-info" && <AgentsInfo />}
+
+            {activeTab === "add-agent" && (
+              <div className="space-y-4">
+                <div className="rounded-xl border border-dashed border-neutral-300 p-8 text-center dark:border-neutral-700">
+                  <UserPlus className="mx-auto mb-3 opacity-20" size={48} />
+                  <h4 className="font-medium">
+                    Add New Agent Form Placeholder
+                  </h4>
+                  <p className="text-sm text-neutral-500">
+                    Inputs for name, email, and department would go here.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "add-issue-type" && (
+              <div className="space-y-4">
+                <div className="rounded-xl border border-dashed border-neutral-300 p-8 text-center dark:border-neutral-700">
+                  <Bug className="mx-auto mb-3 opacity-20" size={48} />
+                  <h4 className="font-medium">
+                    Issue Configuration Placeholder
+                  </h4>
+                  <p className="text-sm text-neutral-500">
+                    Create new categories and priority levels here.
+                  </p>
+                </div>
+              </div>
+            )}
+          </main>
         </div>
-      )}
+      </div>
     </div>
   );
 };

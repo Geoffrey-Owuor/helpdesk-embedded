@@ -1,5 +1,12 @@
 "use client";
-import { Menu, CirclePlus, Bot, Home, ChevronLeft } from "lucide-react";
+import {
+  Menu,
+  CirclePlus,
+  Bot,
+  Home,
+  ChevronLeft,
+  ShieldUser,
+} from "lucide-react";
 import Link from "next/link";
 import ThemeToggle from "../Themes/ThemeToggle";
 import { useState, useRef } from "react";
@@ -15,10 +22,12 @@ import AdminPanel from "./AdminFunctions/AdminPanel";
 
 const DashboardHeader = () => {
   // Get the user information
-  const { username } = useUser();
+  const { username, role } = useUser();
   const [isUserCardOpen, setIsUserCardOpen] = useState(false);
   const [sideBarOpen, setSideBarOpen] = useState(false);
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+
   const userButtonRef = useRef<HTMLButtonElement>(null);
   const { setLoadingLine } = useLoadingLine();
   const pathname = usePathname();
@@ -40,8 +49,13 @@ const DashboardHeader = () => {
         isOpen={isIssueModalOpen}
         setIsOpen={setIsIssueModalOpen}
       />
+      <AdminPanel
+        showAdminPanel={showAdminPanel}
+        setShowAdminPanel={setShowAdminPanel}
+      />
+
       <div className={`fixed top-0 right-0 left-0 z-50`}>
-        <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+        <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between pr-6 pl-4">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSideBarOpen(true)}
@@ -59,8 +73,19 @@ const DashboardHeader = () => {
               <CirclePlus className="h-4.5 w-4.5" />
               <span className="hidden md:inline-flex">New Issue</span>
             </button>
+
             {/* Admin Functionality */}
-            <AdminPanel />
+            {role === "admin" && (
+              <button
+                onClick={() => setShowAdminPanel(true)}
+                className="hidden items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm transition-all hover:bg-neutral-50 md:flex dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-900"
+              >
+                <ShieldUser className="h-5 w-5 text-neutral-500" />
+                <span className="custom:inline-flex hidden text-neutral-700 dark:text-neutral-300">
+                  Admin Panel
+                </span>
+              </button>
+            )}
 
             <Link
               href="/dashboard/automations"
