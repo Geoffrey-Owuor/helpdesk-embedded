@@ -4,14 +4,11 @@ import { Mail, Tag, Info, BadgeCheck, UserRoundPlus } from "lucide-react";
 import { arrayReducer } from "@/utils/ArrayReducer";
 import { abbreviateUserName } from "@/public/assets";
 import AgentsInfoSkeleton from "@/components/Skeletons/AgentsInfoSkeleton";
-import { IssueAgents } from "@/serverActions/GetIssueAgents";
+import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 
-type AgentsInfoProps = {
-  loading: boolean;
-  agentsFlatInfo: IssueAgents[];
-};
-
-const AgentsInfo = ({ loading, agentsFlatInfo }: AgentsInfoProps) => {
+const AgentsInfo = () => {
+  // Get context data
+  const { loading, agentsInfo: agentsFlatInfo } = useAgentsInfo();
   // Grouping the flattened array
   const agentsInfo = arrayReducer(agentsFlatInfo);
 

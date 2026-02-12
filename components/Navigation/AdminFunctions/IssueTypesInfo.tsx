@@ -1,6 +1,5 @@
 "use client";
 
-import { IssueAgents } from "@/serverActions/GetIssueAgents";
 import {
   Bug,
   Mail,
@@ -13,13 +12,11 @@ import { useState } from "react";
 import EditIssueTypeInfo from "./EditIssueTypeInfo";
 import { arrayReducer } from "@/utils/ArrayReducer";
 import IssueTypesInfoSkeleton from "@/components/Skeletons/IssueTypesInfoSkeleton";
+import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 
-type IssueTypesInfoProps = {
-  loading: boolean;
-  agentsFlatInfo: IssueAgents[];
-};
-
-const IssueTypesInfo = ({ loading, agentsFlatInfo }: IssueTypesInfoProps) => {
+const IssueTypesInfo = () => {
+  // Get context data
+  const { loading, agentsInfo: agentsFlatInfo } = useAgentsInfo();
   // Tracking the id of the active edit section
   const [activeEditId, setActiveEditId] = useState<string | null>(null);
 
