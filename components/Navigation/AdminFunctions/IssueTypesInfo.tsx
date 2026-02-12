@@ -8,9 +8,11 @@ import {
   Info,
   UserRound,
   UserRoundPen,
+  BugPlay,
 } from "lucide-react";
 import { useState } from "react";
 import EditIssueTypeInfo from "./EditIssueTypeInfo";
+import { arrayReducer } from "@/utils/ArrayReducer";
 
 type IssueTypesInfoProps = {
   loading: boolean;
@@ -25,6 +27,15 @@ const IssueTypesInfo = ({ loading, agentsFlatInfo }: IssueTypesInfoProps) => {
     // If clicking the same one, close it, otherwise open a new one
     setActiveEditId((prev) => (prev === id ? null : id));
   };
+
+  // Group the flattened array
+  const agentsInfo = arrayReducer(agentsFlatInfo);
+
+  // Get the agent names array from agentsInfo
+  const agentNames = agentsInfo.map((agentInfo) => ({
+    agentName: agentInfo.name,
+    agentEmail: agentInfo.email,
+  }));
 
   if (loading) {
     return (
@@ -54,6 +65,11 @@ const IssueTypesInfo = ({ loading, agentsFlatInfo }: IssueTypesInfoProps) => {
           Overview of specific issue types and their assigned agents.
         </p>
       </div>
+
+      <button className="mb-4 flex items-center gap-1.5 rounded-xl bg-blue-700 px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-blue-800">
+        <BugPlay className="h-4 w-4" />
+        <span>Add Issue Type</span>
+      </button>
 
       <div className="grid gap-3">
         {agentsFlatInfo.map((item, index) => (
@@ -109,7 +125,13 @@ const IssueTypesInfo = ({ loading, agentsFlatInfo }: IssueTypesInfoProps) => {
             </div>
 
             {/* The edit issueType info div */}
-            {activeEditId === item.issue_type && <EditIssueTypeInfo />}
+            {activeEditId === item.issue_type && (
+              <EditIssueTypeInfo
+                agentName={item.agent_name}
+                issueType={item.issue_type}
+                agentNames={agentNames}
+              />
+            )}
           </div>
         ))}
       </div>
