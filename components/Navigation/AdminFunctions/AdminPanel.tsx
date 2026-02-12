@@ -1,25 +1,46 @@
 "use client";
 
+import { X, Bug, ShieldCheck, UsersRound } from "lucide-react";
+import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import {
-  X,
-  UserPlus,
-  Bug,
-  ShieldCheck,
-  UsersRound,
-  UserRoundPlus,
-} from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
+  fetchedIssueAgents,
+  IssueAgents,
+} from "@/serverActions/GetIssueAgents";
+import { useUser } from "@/contexts/UserContext";
 import AgentsInfo from "./AgentsInfo";
+import IssueTypesInfo from "./IssueTypesInfo";
 
 type AdminPanelProps = {
   showAdminPanel: boolean;
   setShowAdminPanel: Dispatch<SetStateAction<boolean>>;
 };
 
-type TabId = "agent-info" | "add-agent" | "add-issue-type";
+type TabId = "agent-info" | "issue-type-info";
 
 const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   const [activeTab, setActiveTab] = useState<TabId>("agent-info");
+  const [agentsInfo, setAgentsInfo] = useState<IssueAgents[]>([]);
+  const [loading, setLoading] = useState(false);
+  const { userId } = useUser();
+
+  useEffect(() => {
+    const fetchAgentsInfo = async () => {
+      if (!userId) return;
+      setLoading(true);
+      try {
+        const agentsData = await fetchedIssueAgents(userId);
+
+        setAgentsInfo(agentsData);
+      } catch (error) {
+        console.error("Error while fetching agents information:", error);
+        setAgentsInfo([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAgentsInfo();
+  }, [userId]);
 
   if (!showAdminPanel) return null;
 
@@ -58,19 +79,11 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
             </button>
 
             <button
-              onClick={() => setActiveTab("add-agent")}
-              className={`${baseTabStyles} ${activeTab === "add-agent" ? activeTabStyles : inactiveTabStyles}`}
-            >
-              <UserRoundPlus size={18} />
-              Add Agent
-            </button>
-
-            <button
-              onClick={() => setActiveTab("add-issue-type")}
-              className={`${baseTabStyles} ${activeTab === "add-issue-type" ? activeTabStyles : inactiveTabStyles}`}
+              onClick={() => setActiveTab("issue-type-info")}
+              className={`${baseTabStyles} ${activeTab === "issue-type-info" ? activeTabStyles : inactiveTabStyles}`}
             >
               <Bug size={18} />
-              Add Issue Type
+              Issue Types Info
             </button>
           </nav>
 
@@ -98,34 +111,12 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
 
           {/* Tab Content Rendering */}
           <main className="flex-1 overflow-y-auto p-6">
-            {activeTab === "agent-info" && <AgentsInfo />}
-
-            {activeTab === "add-agent" && (
-              <div className="space-y-4">
-                <div className="rounded-xl border border-dashed border-neutral-300 p-8 text-center dark:border-neutral-700">
-                  <UserPlus className="mx-auto mb-3 opacity-20" size={48} />
-                  <h4 className="font-medium">
-                    Add New Agent Form Placeholder
-                  </h4>
-                  <p className="text-sm text-neutral-500">
-                    Inputs for name, email, and department would go here.
-                  </p>
-                </div>
-              </div>
+            {activeTab === "agent-info" && (
+              <AgentsInfo loading={loading} agentsFlatInfo={agentsInfo} />
             )}
 
-            {activeTab === "add-issue-type" && (
-              <div className="space-y-4">
-                <div className="rounded-xl border border-dashed border-neutral-300 p-8 text-center dark:border-neutral-700">
-                  <Bug className="mx-auto mb-3 opacity-20" size={48} />
-                  <h4 className="font-medium">
-                    Issue Configuration Placeholder
-                  </h4>
-                  <p className="text-sm text-neutral-500">
-                    Create new categories and priority levels here.
-                  </p>
-                </div>
-              </div>
+            {activeTab === "issue-type-info" && (
+              <IssueTypesInfo loading={loading} agentsFlatInfo={agentsInfo} />
             )}
           </main>
         </div>
