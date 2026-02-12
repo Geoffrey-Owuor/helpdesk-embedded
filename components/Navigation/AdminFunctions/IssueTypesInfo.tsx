@@ -4,7 +4,6 @@ import { IssueAgents } from "@/serverActions/GetIssueAgents";
 import {
   Bug,
   Mail,
-  Loader2,
   Info,
   UserRound,
   UserRoundPen,
@@ -13,6 +12,7 @@ import {
 import { useState } from "react";
 import EditIssueTypeInfo from "./EditIssueTypeInfo";
 import { arrayReducer } from "@/utils/ArrayReducer";
+import IssueTypesInfoSkeleton from "@/components/Skeletons/IssueTypesInfoSkeleton";
 
 type IssueTypesInfoProps = {
   loading: boolean;
@@ -38,12 +38,7 @@ const IssueTypesInfo = ({ loading, agentsFlatInfo }: IssueTypesInfoProps) => {
   }));
 
   if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 text-neutral-500">
-        <Loader2 className="h-8 w-8 animate-spin opacity-20" />
-        <p className="mt-2 text-sm italic">Loading issue configurations...</p>
-      </div>
-    );
+    return <IssueTypesInfoSkeleton />;
   }
 
   if (agentsFlatInfo.length === 0) {
@@ -118,7 +113,7 @@ const IssueTypesInfo = ({ loading, agentsFlatInfo }: IssueTypesInfoProps) => {
               {/* Right Section: Edit button - Visible on hover */}
               <button
                 onClick={() => handleToggleEdit(item.issue_type)}
-                className={`${activeEditId === item.issue_type ? "inline-flex" : "hidden hover:inline-flex"} hidden h-8 w-8 items-center justify-center rounded-full bg-neutral-200 group-hover:inline-flex hover:bg-neutral-300 dark:bg-neutral-900 dark:hover:bg-neutral-800`}
+                className={`${activeEditId === item.issue_type ? "inline-flex" : "inline-flex md:hidden md:hover:inline-flex"} h-8 w-8 items-center justify-center rounded-full bg-neutral-200 group-hover:inline-flex hover:bg-neutral-300 dark:bg-neutral-900 dark:hover:bg-neutral-800`}
               >
                 <UserRoundPen className="h-4 w-4" />
               </button>
@@ -127,7 +122,7 @@ const IssueTypesInfo = ({ loading, agentsFlatInfo }: IssueTypesInfoProps) => {
             {/* The edit issueType info div */}
             {activeEditId === item.issue_type && (
               <EditIssueTypeInfo
-                agentName={item.agent_name}
+                agentEmail={item.agent_email}
                 issueType={item.issue_type}
                 agentNames={agentNames}
               />
