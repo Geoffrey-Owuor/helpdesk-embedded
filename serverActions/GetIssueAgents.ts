@@ -8,19 +8,20 @@ export interface IssueAgents {
   agent_email: string;
 }
 
-const getIssueAgents = async (adminId: string) => {
+const getIssueAgents = async (department: string) => {
   //Creating our base query
   const baseQuery = `
       SELECT 
         agents.username AS agent_name,
         agents.email AS agent_email,
-        m.issue_type
-        FROM issues_mapping as m
-        JOIN users as agents ON m.agent_id = agents.user_id
-        WHERE m.admin_id = $1
+        -- If issue_type is NULL, display 'No Issues Assigned' instead
+        COALESCE(m.issue_type, 'No Issues Assigned') AS issue_type
+        FROM users as agents
+        LEFT JOIN issues_mapping as m ON agents.user_id = m.agent_id
+        WHERE (agents.role = 'agent' OR agents.role = 'admin') AND agents.department = $1
     `;
   try {
-    const result = await query<IssueAgents>(baseQuery, [adminId]);
+    const result = await query<IssueAgents>(baseQuery, [department]);
     return result;
   } catch (error) {
     console.error("Error fetching issue agents:", error);
@@ -29,9 +30,9 @@ const getIssueAgents = async (adminId: string) => {
 };
 
 export const fetchedIssueAgents = unstable_cache(
-  async (adminId: string): Promise<IssueAgents[]> => {
-    if (!adminId) return [];
-    const data = await getIssueAgents(adminId);
+  async (department: string): Promise<IssueAgents[]> => {
+    if (!department) return [];
+    const data = await getIssueAgents(department);
 
     //return the data
     return data;

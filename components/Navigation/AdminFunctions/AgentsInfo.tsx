@@ -1,42 +1,16 @@
 "use client";
 
-import {
-  fetchedIssueAgents,
-  IssueAgents,
-} from "@/serverActions/GetIssueAgents";
-import { useUser } from "@/contexts/UserContext";
-import { useState, useEffect } from "react";
-import { Mail, Tag, Info, BadgeCheck } from "lucide-react";
-import { arrayReducer, AgentWithSkills } from "@/utils/ArrayReducer";
+import { Mail, Tag, Info, BadgeCheck, UserRoundPlus } from "lucide-react";
+import { arrayReducer } from "@/utils/ArrayReducer";
 import { abbreviateUserName } from "@/public/assets";
 import AgentsInfoSkeleton from "@/components/Skeletons/AgentsInfoSkeleton";
+import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 
 const AgentsInfo = () => {
-  const [agentsInfo, setAgentsInfo] = useState<AgentWithSkills[]>([]);
-  const [loading, setLoading] = useState(false);
-  const { userId } = useUser();
-
-  useEffect(() => {
-    const fetchAgentsInfo = async () => {
-      if (!userId) return;
-      setLoading(true);
-      try {
-        const agentsData: IssueAgents[] = await fetchedIssueAgents(userId);
-
-        // Transform flat array into a grouped array
-        const groupedData = arrayReducer(agentsData);
-
-        setAgentsInfo(groupedData);
-      } catch (error) {
-        console.error("Error while fetching agents information:", error);
-        setAgentsInfo([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAgentsInfo();
-  }, [userId]);
+  // Get context data
+  const { loading, agentsInfo: agentsFlatInfo } = useAgentsInfo();
+  // Grouping the flattened array
+  const agentsInfo = arrayReducer(agentsFlatInfo);
 
   if (loading) return <AgentsInfoSkeleton />;
 
@@ -60,6 +34,11 @@ const AgentsInfo = () => {
           assigned to.
         </p>
       </div>
+
+      <button className="mb-4 flex items-center gap-1.5 rounded-xl bg-blue-700 px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-blue-800">
+        <UserRoundPlus className="h-4 w-4" />
+        <span>Add Agent</span>
+      </button>
 
       <div className="grid gap-4">
         {agentsInfo.map((agent) => (

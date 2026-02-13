@@ -1,22 +1,16 @@
 "use client";
 
-import {
-  X,
-  UserPlus,
-  Bug,
-  ShieldCheck,
-  UsersRound,
-  UserRoundPlus,
-} from "lucide-react";
+import { X, Bug, ShieldCheck, UsersRound } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
 import AgentsInfo from "./AgentsInfo";
+import IssueTypesInfo from "./IssueTypesInfo";
 
 type AdminPanelProps = {
   showAdminPanel: boolean;
   setShowAdminPanel: Dispatch<SetStateAction<boolean>>;
 };
 
-type TabId = "agent-info" | "add-agent" | "add-issue-type";
+type TabId = "agent-info" | "issue-type-info";
 
 const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   const [activeTab, setActiveTab] = useState<TabId>("agent-info");
@@ -32,7 +26,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
     "text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-900 hover:text-neutral-700 dark:hover:text-neutral-300";
 
   return (
-    // Backdrop
+    //  Backdrop
     <div className="custom-blur fixed inset-0 z-70 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
       {/* Modal Container */}
       <div className="flex h-[90vh] w-full max-w-4xl overflow-hidden rounded-2xl border border-neutral-300 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
@@ -58,19 +52,11 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
             </button>
 
             <button
-              onClick={() => setActiveTab("add-agent")}
-              className={`${baseTabStyles} ${activeTab === "add-agent" ? activeTabStyles : inactiveTabStyles}`}
-            >
-              <UserRoundPlus size={18} />
-              Add Agent
-            </button>
-
-            <button
-              onClick={() => setActiveTab("add-issue-type")}
-              className={`${baseTabStyles} ${activeTab === "add-issue-type" ? activeTabStyles : inactiveTabStyles}`}
+              onClick={() => setActiveTab("issue-type-info")}
+              className={`${baseTabStyles} ${activeTab === "issue-type-info" ? activeTabStyles : inactiveTabStyles}`}
             >
               <Bug size={18} />
-              Add Issue Type
+              Issue Types Info
             </button>
           </nav>
 
@@ -100,33 +86,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
           <main className="flex-1 overflow-y-auto p-6">
             {activeTab === "agent-info" && <AgentsInfo />}
 
-            {activeTab === "add-agent" && (
-              <div className="space-y-4">
-                <div className="rounded-xl border border-dashed border-neutral-300 p-8 text-center dark:border-neutral-700">
-                  <UserPlus className="mx-auto mb-3 opacity-20" size={48} />
-                  <h4 className="font-medium">
-                    Add New Agent Form Placeholder
-                  </h4>
-                  <p className="text-sm text-neutral-500">
-                    Inputs for name, email, and department would go here.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {activeTab === "add-issue-type" && (
-              <div className="space-y-4">
-                <div className="rounded-xl border border-dashed border-neutral-300 p-8 text-center dark:border-neutral-700">
-                  <Bug className="mx-auto mb-3 opacity-20" size={48} />
-                  <h4 className="font-medium">
-                    Issue Configuration Placeholder
-                  </h4>
-                  <p className="text-sm text-neutral-500">
-                    Create new categories and priority levels here.
-                  </p>
-                </div>
-              </div>
-            )}
+            {activeTab === "issue-type-info" && <IssueTypesInfo />}
           </main>
         </div>
       </div>
