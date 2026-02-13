@@ -6,7 +6,7 @@ import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlert } from "@/contexts/AlertContext";
 import { PromiseOverlay } from "@/components/Modules/Overlays";
-import { updateTag } from "next/cache";
+import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 import ConfirmationDialog from "@/components/Modules/Overlays";
 
 type EditIssueTypeInfoProps = {
@@ -27,6 +27,7 @@ const EditIssueTypeInfo = ({
   const { setAlertInfo } = useAlert();
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { refetchAgentsInfo } = useAgentsInfo();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -60,6 +61,7 @@ const EditIssueTypeInfo = ({
       const response = await apiClient.put("/update-issuetype", {
         selectedEmail,
         selectedType,
+        issueType,
       });
 
       // Show alert on success
@@ -70,10 +72,23 @@ const EditIssueTypeInfo = ({
           response.data.message || "Issue type info updated successfully",
       });
 
-      // Update the cache tag
-      updateTag("GetIssueAgents");
+      // refetch info data
+      refetchAgentsInfo();
     } catch (error) {
+      const errorMessage = getApiErrorMessage(error);
+
+      console.error(
+        "Erro while trying to update the issue info:",
+        errorMessage,
+      );
+
+      setAlertInfo({
+        alertType: "error",
+        showAlert: true,
+        alertMessage: errorMessage,
+      });
     } finally {
+      setUpdating(false);
     }
   };
 

@@ -40,7 +40,7 @@ const ReassignIssue = ({
   issueAgentEmail,
 }: ReassignIssueProps) => {
   const [loading, setLoading] = useState(false);
-  const { userId } = useUser();
+  const { department } = useUser();
   const { setAlertInfo } = useAlert();
   const [issueAgents, setIssueAgents] = useState<IssueAgents[]>([]);
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
@@ -58,7 +58,7 @@ const ReassignIssue = ({
     const fetchAgents = async () => {
       setLoading(true);
       try {
-        const result = await fetchedIssueAgents(userId);
+        const result = await fetchedIssueAgents(department);
         setIssueAgents(result);
       } catch (error) {
         console.error("Error while trying to fetch Issue Agents:", error);
@@ -70,7 +70,7 @@ const ReassignIssue = ({
 
     //Call the function
     fetchAgents();
-  }, [userId]);
+  }, [department]);
 
   //Get the organized array from the Array Reducer
   const organizedIssueAgents = arrayReducer(issueAgents);

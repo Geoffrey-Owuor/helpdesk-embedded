@@ -25,17 +25,17 @@ const AgentsInfoContext = createContext<AgentsInfoProviderValues | null>(null);
 
 export const AgentsInfoProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
-  const { userId } = useUser();
+  const { department } = useUser();
   const [agentsInfo, setAgentsInfo] = useState<IssueAgents[]>([]);
 
   // Our fetch function
   const fetchAgentsInfo = useCallback(async () => {
-    if (!userId) return;
+    if (!department) return;
 
     setLoading(true);
 
     try {
-      const agentsData = await fetchedIssueAgents(userId);
+      const agentsData = await fetchedIssueAgents(department);
 
       setAgentsInfo(agentsData);
     } catch (error) {
@@ -44,7 +44,7 @@ export const AgentsInfoProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, [department]);
 
   // useEffect for fetching data on first mount
   useEffect(() => {
