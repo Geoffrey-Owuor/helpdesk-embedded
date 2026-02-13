@@ -15,16 +15,14 @@ const Alert = () => {
       () => setAlertInfo({ showAlert: false, alertType: "", alertMessage: "" }),
       200,
     ); // Match this with animation duration
+
+    setIsClosing(false);
   }, [setAlertInfo]);
 
   useEffect(() => {
-    // FIX 1: Reset 'isClosing' whenever the alert becomes active again
-    if (alertInfo.showAlert) {
-      Promise.resolve().then(() => setIsClosing(false));
-    }
-
     // FIX 2: Reset timer whenever alertInfo changes (e.g., new message comes in)
     let timer: NodeJS.Timeout;
+
     if (alertInfo.showAlert) {
       timer = setTimeout(handleClose, 6000);
     }

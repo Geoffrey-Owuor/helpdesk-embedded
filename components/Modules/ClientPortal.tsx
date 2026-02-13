@@ -14,8 +14,6 @@ const ClientPortal = ({ children, selector = "body" }: ClientPortalProps) => {
 
   useEffect(() => {
     Promise.resolve().then(() => setMounted(true));
-
-    return () => setMounted(false);
   }, []);
 
   //   Check if mounted
