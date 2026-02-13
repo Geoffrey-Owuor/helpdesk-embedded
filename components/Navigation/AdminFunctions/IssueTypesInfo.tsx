@@ -110,7 +110,8 @@ const IssueTypesInfo = () => {
               {/* Right Section: Edit button - Visible on hover */}
               <button
                 onClick={() => handleToggleEdit(item.issue_type)}
-                className={`${activeEditId === item.issue_type ? "inline-flex" : "inline-flex md:hidden md:hover:inline-flex"} h-8 w-8 items-center justify-center rounded-full bg-neutral-200 group-hover:inline-flex hover:bg-neutral-300 dark:bg-neutral-900 dark:hover:bg-neutral-800`}
+                disabled={item.issue_type === "No Issues Assigned"}
+                className={`${activeEditId === item.issue_type ? "inline-flex" : "inline-flex md:hidden md:hover:inline-flex"} h-8 w-8 items-center justify-center rounded-full bg-neutral-200 group-hover:inline-flex hover:bg-neutral-300 disabled:opacity-50 dark:bg-neutral-900 dark:hover:bg-neutral-800`}
               >
                 <UserRoundPen className="h-4 w-4" />
               </button>
@@ -122,6 +123,7 @@ const IssueTypesInfo = () => {
                 agentEmail={item.agent_email}
                 issueType={item.issue_type}
                 agentNames={agentNames}
+                setActiveEditId={setActiveEditId}
               />
             )}
           </div>

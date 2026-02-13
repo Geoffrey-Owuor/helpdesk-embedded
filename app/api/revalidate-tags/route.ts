@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 
   //   Otherwise, perform the revalidation
   try {
-    revalidateTag(tag, "max");
+    revalidateTag(tag, { expire: 0 });
     return NextResponse.json(
       { message: "Successful revalidation", time: date },
       { status: 200 },

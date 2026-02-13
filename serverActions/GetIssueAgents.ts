@@ -18,7 +18,7 @@ const getIssueAgents = async (department: string) => {
         COALESCE(m.issue_type, 'No Issues Assigned') AS issue_type
         FROM users as agents
         LEFT JOIN issues_mapping as m ON agents.user_id = m.agent_id
-        WHERE agents.department = $1
+        WHERE (agents.role = 'agent' OR agents.role = 'admin') AND agents.department = $1
     `;
   try {
     const result = await query<IssueAgents>(baseQuery, [department]);

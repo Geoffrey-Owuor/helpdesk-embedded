@@ -29,13 +29,28 @@ export const PUT = withAuth(async ({ request, user }) => {
        SET issue_type = $1,
        agent_id = (SELECT user_id FROM users WHERE email = $2)
        WHERE issue_type = $3 AND admin_id = $4
+       RETURNING id
     `;
 
     // Run the query
-    await query(updateQuery, [selectedType, selectedEmail, issueType, userId]);
+    const result = await query(updateQuery, [
+      selectedType,
+      selectedEmail,
+      issueType,
+      userId,
+    ]);
 
-    // Revalidate the cache tag
+    if (result.length === 0) {
+      return NextResponse.json(
+        { message: "Issue type could not be found" },
+        { status: 404 },
+      );
+    }
+
+    // Revalidate the cache tags
     revalidateTag("GetIssueAgents", { expire: 0 });
+    revalidateTag("Issue_Types", { expire: 0 });
+    revalidateTag("Issue_Agents_Mapping", { expire: 0 });
 
     // return a response
     return NextResponse.json(

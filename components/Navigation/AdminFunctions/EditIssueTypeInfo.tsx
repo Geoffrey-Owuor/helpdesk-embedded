@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Dispatch, SetStateAction } from "react";
 import { Check, ChevronDown, UserRound, Bug, Save } from "lucide-react";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
@@ -13,12 +13,14 @@ type EditIssueTypeInfoProps = {
   issueType: string;
   agentNames: { agentName: string; agentEmail: string }[];
   agentEmail: string;
+  setActiveEditId: Dispatch<SetStateAction<string | null>>;
 };
 
 const EditIssueTypeInfo = ({
   issueType,
   agentNames,
   agentEmail,
+  setActiveEditId,
 }: EditIssueTypeInfoProps) => {
   const [selectedType, setSelectedType] = useState(issueType || "");
   const [selectedEmail, setSelectedEmail] = useState(agentEmail || "");
@@ -72,6 +74,8 @@ const EditIssueTypeInfo = ({
           response.data.message || "Issue type info updated successfully",
       });
 
+      // Close the EditIssueTypeInfo Modal
+      setActiveEditId(null);
       // refetch info data
       refetchAgentsInfo();
     } catch (error) {

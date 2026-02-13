@@ -19,6 +19,7 @@ import { DashBoardLogo } from "../Modules/DashBoardLogo";
 import { usePathname, useRouter } from "next/navigation";
 import { useLoadingLine } from "@/contexts/LoadingLineContext";
 import AdminPanel from "./AdminFunctions/AdminPanel";
+import { AgentsInfoProvider } from "@/contexts/AgentsInfoContext";
 
 const DashboardHeader = () => {
   // Get the user information
@@ -39,7 +40,7 @@ const DashboardHeader = () => {
   };
 
   return (
-    <>
+    <AgentsInfoProvider>
       <MobileSideBar
         handleRouteChange={handleRouteChange}
         sideBarOpen={sideBarOpen}
@@ -133,7 +134,7 @@ const DashboardHeader = () => {
           </div>
         </nav>
       </div>
-    </>
+    </AgentsInfoProvider>
   );
 };
 
