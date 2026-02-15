@@ -10,7 +10,7 @@ type AdminPanelProps = {
   setShowAdminPanel: Dispatch<SetStateAction<boolean>>;
 };
 
-type TabId = "agent-info" | "issue-type-info";
+type TabId = "agent-info" | "issue-info";
 
 const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   const [activeTab, setActiveTab] = useState<TabId>("agent-info");
@@ -52,8 +52,8 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
             </button>
 
             <button
-              onClick={() => setActiveTab("issue-type-info")}
-              className={`${baseTabStyles} ${activeTab === "issue-type-info" ? activeTabStyles : inactiveTabStyles}`}
+              onClick={() => setActiveTab("issue-info")}
+              className={`${baseTabStyles} ${activeTab === "issue-info" ? activeTabStyles : inactiveTabStyles}`}
             >
               <Bug size={18} />
               Issue Types Info
@@ -86,7 +86,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
           <main className="flex-1 overflow-y-auto p-6">
             {activeTab === "agent-info" && <AgentsInfo />}
 
-            {activeTab === "issue-type-info" && <IssueTypesInfo />}
+            {activeTab === "issue-info" && <IssueTypesInfo />}
           </main>
         </div>
       </div>

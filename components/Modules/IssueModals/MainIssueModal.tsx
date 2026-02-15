@@ -3,7 +3,7 @@
 import { ChangeEvent, Dispatch, FormEvent, SetStateAction } from "react";
 import ClientPortal from "../ClientPortal";
 import { useState } from "react";
-import { X, Asterisk, Bot, UserRoundCog } from "lucide-react";
+import { X, Bot, UserRoundCog } from "lucide-react";
 import { fetchedIssueAgentsMapping } from "@/serverActions/GetIssueTypes";
 import { IssueAgentMapping } from "@/serverActions/GetIssueTypes";
 import apiClient from "@/lib/AxiosClient";
@@ -18,6 +18,7 @@ import { useIssuesCards } from "@/contexts/IssuesCardsContext";
 import { useAutomations } from "@/contexts/AutomationCardsContext";
 import OptionsDropDown from "./OptionsDropDown";
 import { baseDepartments } from "@/public/assets";
+import FormAsterisk from "../FormAsterisk";
 
 type MainIssueModalProps = {
   isOpen: boolean;
@@ -200,8 +201,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                     htmlFor="target_department"
                     className="flex items-center gap-1 text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
                   >
-                    Target Department{" "}
-                    <Asterisk className="h-3 w-3 text-red-500" />
+                    Target Department <FormAsterisk />
                   </label>
 
                   {/* Options Dropdown */}
@@ -281,7 +281,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                   className="flex items-center gap-1 text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
                 >
                   Issue Title
-                  <Asterisk className="h-3 w-3 text-red-500" />
+                  <FormAsterisk />
                 </label>
                 <input
                   type="text"
@@ -303,7 +303,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                   className="flex items-center gap-1 text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
                 >
                   Description
-                  <Asterisk className="h-3 w-3 text-red-500" />
+                  <FormAsterisk />
                 </label>
                 <textarea
                   id="issue_description"
