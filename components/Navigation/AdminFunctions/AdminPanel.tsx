@@ -70,7 +70,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
         {/* --- MAIN CONTENT AREA --- */}
         <div className="flex flex-1 flex-col overflow-hidden bg-white dark:bg-neutral-950">
           {/* Header */}
-          <header className="flex items-center justify-between border-b border-neutral-100 p-4 dark:border-neutral-800">
+          <header className="flex items-center justify-between border-b border-neutral-100 p-4 dark:border-neutral-900">
             <h3 className="text-sm font-semibold text-neutral-500 capitalize dark:text-neutral-400">
               {activeTab.replace("-", " ")}
             </h3>
