@@ -5,10 +5,14 @@ import { arrayReducer } from "@/utils/ArrayReducer";
 import { abbreviateUserName } from "@/public/assets";
 import AgentsInfoSkeleton from "@/components/Skeletons/AgentsInfoSkeleton";
 import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
+import { useState } from "react";
+import AddAgent from "./AddAgent";
 
 const AgentsInfo = () => {
   // Get context data
   const { loading, agentsInfo: agentsFlatInfo } = useAgentsInfo();
+  const [showAddAgentModal, setShowAddAgentModal] = useState(false);
+
   // Grouping the flattened array
   const agentsInfo = arrayReducer(agentsFlatInfo);
 
@@ -35,10 +39,16 @@ const AgentsInfo = () => {
         </p>
       </div>
 
-      <button className="mb-4 flex items-center gap-1.5 rounded-xl bg-blue-700 px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-blue-800">
+      <button
+        onClick={() => setShowAddAgentModal((prev) => !prev)}
+        className="mb-4 flex items-center gap-1.5 rounded-xl bg-blue-700 px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-blue-800"
+      >
         <UserRoundPlus className="h-4 w-4" />
         <span>Add Agent</span>
       </button>
+
+      {/* Add Agent Modal */}
+      {showAddAgentModal && <AddAgent />}
 
       <div className="grid gap-4">
         {agentsInfo.map((agent) => (
