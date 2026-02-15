@@ -48,7 +48,10 @@ const AgentsInfo = () => {
       </button>
 
       {/* Add Agent Modal */}
-      {showAddAgentModal && <AddAgent />}
+      <AddAgent
+        showAgentModal={showAddAgentModal}
+        setShowAgentModal={setShowAddAgentModal}
+      />
 
       <div className="grid gap-4">
         {agentsInfo.map((agent) => (
