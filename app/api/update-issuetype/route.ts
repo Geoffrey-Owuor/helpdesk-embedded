@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
-import { query } from "@/lib/Db";
 import { revalidateTag } from "next/cache";
+import { pool } from "@/lib/Db";
+import { PoolClient } from "pg";
 
 export const PUT = withAuth(async ({ request, user }) => {
+  let client: PoolClient | undefined;
+
   const { userId, role } = user;
 
-  // Make sure the user running the query is an administrator
+  // Make sure the user running the query is an admin
   if (role !== "admin") {
     return NextResponse.json(
       { message: "You are not authorized to perform this action" },
@@ -19,11 +22,33 @@ export const PUT = withAuth(async ({ request, user }) => {
 
     if (!selectedType || !selectedEmail || !issueType) {
       return NextResponse.json(
-        { message: "Missing some required payload" },
+        { message: "Missing some required payload information" },
         { status: 403 },
       );
     }
 
+    // get a pool client
+    client = await pool.connect();
+
+    // Begin a transaction
+    await client.query("BEGIN");
+
+    // Check if the issue type exists
+    const { rows } = await client.query(
+      `SELECT issue_type FROM issues_mapping WHERE issue_type = $1 AND admin_id = $2 FOR UPDATE`,
+      [issueType, userId],
+    );
+
+    // Issue type does not exist
+    if (rows.length === 0) {
+      await client.query("ROLLBACK");
+      return NextResponse.json(
+        { message: "Issue type not found" },
+        { status: 404 },
+      );
+    }
+
+    // Issue type exists - we can update it
     const updateQuery = `
        UPDATE issues_mapping
        SET issue_type = $1,
@@ -33,19 +58,15 @@ export const PUT = withAuth(async ({ request, user }) => {
     `;
 
     // Run the query
-    const result = await query(updateQuery, [
+    await client.query(updateQuery, [
       selectedType,
       selectedEmail,
       issueType,
       userId,
     ]);
 
-    if (result.length === 0) {
-      return NextResponse.json(
-        { message: "Issue type could not be found" },
-        { status: 404 },
-      );
-    }
+    // Commit the transaction
+    await client.query("COMMIT");
 
     // Revalidate the cache tags
     revalidateTag("GetIssueAgents", { expire: 0 });
@@ -58,10 +79,13 @@ export const PUT = withAuth(async ({ request, user }) => {
       { status: 200 },
     );
   } catch (error) {
+    await client?.query("ROLLBACK");
     console.error("Error while trying to update issue type info:", error);
     return NextResponse.json(
       { message: "Error updating issue type info" },
       { status: 500 },
     );
+  } finally {
+    if (client) client.release();
   }
 });
