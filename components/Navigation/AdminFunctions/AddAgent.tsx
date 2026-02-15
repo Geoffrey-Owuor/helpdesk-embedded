@@ -59,6 +59,21 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
 
   const handleSubmit = async () => {
     setShowConfirmationDialog(false);
+
+    //password validation logic
+    if (
+      formData.password.length < 6 ||
+      formData.password !== formData.confirmPassword
+    ) {
+      setAlertInfo({
+        showAlert: true,
+        alertType: "error",
+        alertMessage: "Short password or mismatched passwords",
+      });
+
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await apiClient.post("/add-agent", formData);
@@ -67,7 +82,7 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
       setAlertInfo({
         showAlert: true,
         alertType: "success",
-        alertMessage: response.data.message,
+        alertMessage: response.data.message || "Agent registered successfully",
       });
 
       // refetch agents data

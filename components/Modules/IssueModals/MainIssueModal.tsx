@@ -3,7 +3,7 @@
 import { ChangeEvent, Dispatch, FormEvent, SetStateAction } from "react";
 import ClientPortal from "../ClientPortal";
 import { useState } from "react";
-import { X, Bot, UserRoundCog } from "lucide-react";
+import { X, UserRoundCog, BotMessageSquare } from "lucide-react";
 import { fetchedIssueAgentsMapping } from "@/serverActions/GetIssueTypes";
 import { IssueAgentMapping } from "@/serverActions/GetIssueTypes";
 import apiClient from "@/lib/AxiosClient";
@@ -194,7 +194,11 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
 
             {/* Issue Form */}
             <div className="flex-1 overflow-y-auto p-6">
-              <form onSubmit={handleConfirmSubmit} className="space-y-4">
+              <form
+                onSubmit={handleConfirmSubmit}
+                autoComplete="off"
+                className="space-y-4"
+              >
                 {/* Row: Department & Target Department */}
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="flex flex-col gap-1">
@@ -233,7 +237,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                           {isFetchingAssignment ? (
                             <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
                           ) : (
-                            <Bot size={18} />
+                            <BotMessageSquare size={18} />
                           )}
                         </div>
                         <div className="flex-1">
