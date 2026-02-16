@@ -54,6 +54,8 @@ const EditIssueTypeInfo = ({
   const selectedName = selectedNameObject?.agentName;
 
   const handleUpdate = async () => {
+    setShowConfirmationDialog(false);
+
     // Do nothing if no data has changed
     if (
       (agentEmail === selectedEmail && issueType === selectedType) ||
@@ -69,7 +71,6 @@ const EditIssueTypeInfo = ({
       return;
     }
 
-    setShowConfirmationDialog(false);
     setUpdating(true);
 
     try {
@@ -186,7 +187,7 @@ const EditIssueTypeInfo = ({
                       className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-700"
                     >
                       <div className="flex flex-col">
-                        <span className="font-medium text-neutral-900 dark:text-neutral-100">
+                        <span className="font-semibold text-neutral-900 dark:text-neutral-100">
                           {agent.agentName}
                         </span>
                         <span className="text-[10px] text-neutral-500">
