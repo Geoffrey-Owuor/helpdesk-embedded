@@ -8,6 +8,7 @@ import { useAlert } from "@/contexts/AlertContext";
 import { PromiseOverlay } from "@/components/Modules/Overlays";
 import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 import ConfirmationDialog from "@/components/Modules/Overlays";
+import FormAsterisk from "@/components/Modules/FormAsterisk";
 
 type EditIssueTypeInfoProps = {
   issueType: string;
@@ -115,7 +116,10 @@ const EditIssueTypeInfo = ({
           <div className="space-y-1.5">
             <label className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
               <Bug size={12} />
-              Issue Type Name
+              <div className="inline-flex items-center gap-1">
+                <span>Issue Type Name</span>
+                <FormAsterisk />
+              </div>
             </label>
             <input
               type="text"
@@ -130,7 +134,10 @@ const EditIssueTypeInfo = ({
           <div className="space-y-1.5" ref={dropdownRef}>
             <label className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
               <UserRound size={12} />
-              Assigned Agent
+              <div className="inline-flex items-center gap-1">
+                <span>Assigned Agent</span>
+                <FormAsterisk />
+              </div>
             </label>
 
             <div className="relative">
@@ -184,13 +191,13 @@ const EditIssueTypeInfo = ({
           </div>
 
           {/* 3. Action Buttons */}
-          <div className="flex items-center gap-2 pt-2">
+          <div className="flex items-center justify-end gap-2 pt-2">
             <button
               onClick={() => setShowConfirmationDialog(true)}
               disabled={
                 agentEmail === selectedEmail && issueType === selectedType
               } //We will also repeat this logic in our handleUpdate function for double security
-              className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50"
+              className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50"
             >
               <Save size={16} />
               Update Configuration
