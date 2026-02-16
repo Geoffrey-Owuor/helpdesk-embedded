@@ -53,6 +53,16 @@ const TitleDescriptionModal = ({
     }));
   };
 
+  const handleBlur = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value.trim(),
+    }));
+  };
+
   //the handle confirm submit function
   const handleConfirmSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -150,6 +160,7 @@ const TitleDescriptionModal = ({
                   id="issue_title"
                   value={formData.issue_title}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   required
                   maxLength={50}
                   placeholder="Brief summary of the issue (50 characters maximum)"
@@ -171,6 +182,7 @@ const TitleDescriptionModal = ({
                   name="issue_description"
                   value={formData.issue_description}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   required
                   rows={4}
                   placeholder="Please describe the issue in detail..."

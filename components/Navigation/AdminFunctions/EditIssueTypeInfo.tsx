@@ -125,6 +125,7 @@ const EditIssueTypeInfo = ({
               type="text"
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
+              onBlur={(e) => setSelectedType(e.target.value.trim())}
               className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:focus:border-blue-500"
               placeholder="e.g. Technical Support"
             />

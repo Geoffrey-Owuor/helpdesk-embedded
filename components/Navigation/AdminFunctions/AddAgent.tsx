@@ -1,6 +1,12 @@
 "use client";
 
-import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  FocusEvent,
+  SetStateAction,
+  useState,
+} from "react";
 import {
   Mail,
   Building,
@@ -9,6 +15,9 @@ import {
   Plus,
   AlertCircle,
   UserRound,
+  Eye,
+  EyeOff,
+  CheckCircle2,
 } from "lucide-react";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
 import { useUser } from "@/contexts/UserContext";
@@ -19,6 +28,8 @@ import ConfirmationDialog, {
   PromiseOverlay,
 } from "@/components/Modules/Overlays";
 import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
+import { NameValidator, NameValidationResult } from "@/utils/Validators";
+import NameRulesCard from "@/components/Modules/NameRulesCard";
 
 type AddAgentProps = {
   showAgentModal: boolean;
@@ -39,16 +50,43 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
     confirmPassword: "",
   });
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
+  // State for showing/hiding password
+  const [showPassword, setShowPassword] = useState(false);
+
+  //   Name Validation States
+  const [isNameFocused, setIsNameFocused] = useState(false);
+  const [nameValidation, setNameValidation] = useState<NameValidationResult>({
+    hasTwoNames: false,
+    isCapitalized: false,
+    singleSpace: true,
+    isValid: false,
+  });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    //If the input changing is name, run the validator
+    if (name === "name") {
+      const validationResult = NameValidator(value);
+      setNameValidation(validationResult);
+    }
+  };
+
+  // Cleanup when a user clicks away
+  const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value.trim(), // Final cleanup when they click away
+    }));
   };
 
   // Derived states for checking password length and if the passwords match
   const shortPassword =
-    formData.password && formData.password.length < 6
-      ? "Password length should be atleast 6 characters"
+    formData.password && formData.password.length < 8
+      ? "Password length should be atleast 8 characters"
       : null;
   const passwordsMismatch =
     formData.confirmPassword &&
@@ -62,7 +100,7 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
 
     //password validation logic
     if (
-      formData.password.length < 6 ||
+      formData.password.length < 8 ||
       formData.password !== formData.confirmPassword
     ) {
       setAlertInfo({
@@ -142,21 +180,44 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
         >
           <div className="grid gap-5 md:grid-cols-2">
             {/* Name */}
-            <div className="space-y-1.5">
+            <div className="relative space-y-1.5">
+              {/* Name rules card component */}
+              <NameRulesCard
+                validation={nameValidation}
+                isVisible={isNameFocused}
+              />
               <label className="flex items-center gap-1 text-xs font-semibold text-neutral-600 dark:text-neutral-400">
                 <span>Full Name</span>
                 <FormAsterisk />
               </label>
               <div className="relative">
-                <UserRound className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+                <div className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2">
+                  {nameValidation.isValid ? (
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  ) : (
+                    <UserRound className="h-4 w-4 text-neutral-400" />
+                  )}
+                </div>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
+                  // Focus handler
+                  onFocus={() => setIsNameFocused(true)}
+                  onBlur={(e) => {
+                    setIsNameFocused(false);
+                    handleBlur(e);
+                  }}
                   placeholder="Agent Name..."
                   required
-                  className="w-full rounded-lg border border-neutral-300 bg-white py-2 pr-3 pl-9 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-500"
+                  className={`w-full rounded-lg border bg-white py-2 pr-3 pl-9 text-sm text-neutral-900 placeholder-neutral-400 focus:ring-1 ${
+                    !nameValidation.isValid &&
+                    formData.name.length > 0 &&
+                    !isNameFocused
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                      : "border-neutral-300 focus:border-blue-500 focus:ring-blue-500 dark:border-neutral-700"
+                  } focus:outline-none dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-500`}
                 />
               </div>
             </div>
@@ -177,6 +238,7 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   placeholder="username@hotpoint.co.ke"
                   required
                   className="w-full rounded-lg border border-neutral-300 bg-white py-2 pr-3 pl-9 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-500"
@@ -233,14 +295,26 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
               <div className="relative">
                 <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-neutral-400" />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   placeholder="••••••••"
                   required
                   className="w-full rounded-lg border border-neutral-300 bg-white py-2 pr-3 pl-9 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-500"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute top-1/2 right-3 -translate-y-1/2 text-neutral-400 hover:text-neutral-500 dark:hover:text-neutral-300"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
               </div>
             </div>
 
@@ -281,7 +355,11 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
           <div className="flex justify-end pt-2">
             <button
               type="submit"
-              disabled={!!shortPassword || !!passwordsMismatch}
+              disabled={
+                !!shortPassword ||
+                !!passwordsMismatch ||
+                !nameValidation.isValid
+              }
               className="flex items-center gap-2 rounded-lg bg-blue-700 px-4 py-2 text-sm text-white transition-colors hover:bg-blue-800 disabled:opacity-50"
             >
               <Plus size={16} />
