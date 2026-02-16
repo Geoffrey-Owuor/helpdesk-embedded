@@ -1,7 +1,6 @@
 "use client";
 import { Dispatch, SetStateAction } from "react";
 import { useSearchLogic } from "@/contexts/SearchLogicContext";
-import { useIssuesData } from "@/contexts/IssuesDataContext";
 import { Building2, Send } from "lucide-react";
 
 type AgentAdminFilterProps = {
@@ -9,8 +8,6 @@ type AgentAdminFilterProps = {
 };
 
 const ViewAgentAdminFilter = ({ setCurrentPage }: AgentAdminFilterProps) => {
-  const { fetchIssues, refetchIssues } = useIssuesData();
-
   const {
     agentAdminFilter,
     setSelectedFilter,
@@ -28,12 +25,8 @@ const ViewAgentAdminFilter = ({ setCurrentPage }: AgentAdminFilterProps) => {
   // Check is filter has been applied
   const filterApplied = agentAdminFilter === "agentAdminFilter";
 
-  // --- 1. Handle "Default" View (Incoming/Assigned Issues) ---
-  const handleDefaultIssues = () => {
-    if (!filterApplied) return; // Don't reload if agent admin filter is already blank
-
-    // Reset the agentAdmin filter
-    setAgentAdminFilter("");
+  // function for clearing default filters and sets current page to one
+  const clearDefaultFilters = () => {
     setSelectedFilter("status");
     setStatus("");
     setReference("");
@@ -44,47 +37,29 @@ const ViewAgentAdminFilter = ({ setCurrentPage }: AgentAdminFilterProps) => {
     setIssueType("");
     setSubmitter("");
 
-    // Refetch using the context's default behavior
-    // Refetches using the default selected filter
-    refetchIssues();
     setCurrentPage(1);
   };
 
-  // --- 2. Handle "My Submissions" View (Agent/Admin Created) ---
+  // Incoming Issues
+  const handleDefaultIssues = () => {
+    if (!filterApplied) return; // Don't reload if agent admin filter is already blank
+
+    // Reset agentAdminFilter
+    setAgentAdminFilter("");
+
+    // Call the default resetter
+    clearDefaultFilters();
+  };
+
+  // Personal submissions
   const fetchAgentAdminIssues = () => {
     if (filterApplied) return; // Don't reload if agent admin filter is already set
 
-    // 1. Update the UI Context state (so search bars clear visually)
+    // Set agentAdminFilter
     setAgentAdminFilter("agentAdminFilter");
-    setSelectedFilter("status");
-    setStatus("");
-    setReference("");
-    setFromDate("");
-    setToDate("");
-    setDepartment("");
-    setAgent("");
-    setIssueType("");
-    setSubmitter("");
 
-    // 2. Prepare explicit options for the API call
-    // We cannot use the state variables here because setX() is async.
-    // We must pass the intended values directly.
-    const cleanOptions = {
-      agentAdminFilter: "agentAdminFilter",
-      selectedFilter: "status",
-      status: "",
-      reference: "",
-      fromDate: "",
-      toDate: "",
-      department: "",
-      agent: "",
-      issueType: "",
-      submitter: "",
-    };
-
-    // 3. Fetch immediately with clean data
-    fetchIssues(cleanOptions);
-    setCurrentPage(1);
+    //Call the default resetter
+    clearDefaultFilters();
   };
 
   return (
