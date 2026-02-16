@@ -10,8 +10,9 @@ import { useIssuesData } from "@/contexts/IssuesDataContext";
 import { useAutomationsData } from "@/contexts/AutomationsDataContext";
 import { useIssuesCards } from "@/contexts/IssuesCardsContext";
 import { useAutomations } from "@/contexts/AutomationCardsContext";
-import { Asterisk, X } from "lucide-react";
+import { X } from "lucide-react";
 import { IssueValueTypes } from "@/contexts/IssuesDataContext";
+import FormAsterisk from "../FormAsterisk";
 
 type TitleDescriptionModalProps = {
   title: IssueValueTypes;
@@ -140,8 +141,8 @@ const TitleDescriptionModal = ({
                   htmlFor="issue_title"
                   className="flex items-center gap-1 text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
                 >
-                  Issue Title
-                  <Asterisk className="h-3 w-3 text-red-500" />
+                  <span>Issue Title</span>
+                  <FormAsterisk />
                 </label>
                 <input
                   type="text"
@@ -162,8 +163,8 @@ const TitleDescriptionModal = ({
                   htmlFor="issue_description"
                   className="flex items-center gap-1 text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
                 >
-                  Description
-                  <Asterisk className="h-3 w-3 text-red-500" />
+                  <span>Description</span>
+                  <FormAsterisk />
                 </label>
                 <textarea
                   id="issue_description"

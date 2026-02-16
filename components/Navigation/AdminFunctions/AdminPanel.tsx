@@ -10,7 +10,7 @@ type AdminPanelProps = {
   setShowAdminPanel: Dispatch<SetStateAction<boolean>>;
 };
 
-type TabId = "agent-info" | "issue-type-info";
+type TabId = "agent-info" | "issue-info";
 
 const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   const [activeTab, setActiveTab] = useState<TabId>("agent-info");
@@ -52,8 +52,8 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
             </button>
 
             <button
-              onClick={() => setActiveTab("issue-type-info")}
-              className={`${baseTabStyles} ${activeTab === "issue-type-info" ? activeTabStyles : inactiveTabStyles}`}
+              onClick={() => setActiveTab("issue-info")}
+              className={`${baseTabStyles} ${activeTab === "issue-info" ? activeTabStyles : inactiveTabStyles}`}
             >
               <Bug size={18} />
               Issue Types Info
@@ -70,7 +70,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
         {/* --- MAIN CONTENT AREA --- */}
         <div className="flex flex-1 flex-col overflow-hidden bg-white dark:bg-neutral-950">
           {/* Header */}
-          <header className="flex items-center justify-between border-b border-neutral-100 p-4 dark:border-neutral-800">
+          <header className="flex items-center justify-between border-b border-neutral-100 p-4 dark:border-neutral-900">
             <h3 className="text-sm font-semibold text-neutral-500 capitalize dark:text-neutral-400">
               {activeTab.replace("-", " ")}
             </h3>
@@ -86,7 +86,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
           <main className="flex-1 overflow-y-auto p-6">
             {activeTab === "agent-info" && <AgentsInfo />}
 
-            {activeTab === "issue-type-info" && <IssueTypesInfo />}
+            {activeTab === "issue-info" && <IssueTypesInfo />}
           </main>
         </div>
       </div>
