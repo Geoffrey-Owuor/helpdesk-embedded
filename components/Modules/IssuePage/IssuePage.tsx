@@ -23,7 +23,6 @@ import {
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import { dateFormatter } from "@/public/assets";
 import { useState, useRef, useEffect } from "react";
-import ConfirmationDialog from "../Overlays";
 import { useAlert } from "@/contexts/AlertContext";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
@@ -32,11 +31,12 @@ import { useIssuesCards } from "@/contexts/IssuesCardsContext";
 import { useUser } from "@/contexts/UserContext";
 import TitleDescriptionModal from "./TitleDescriptionModal";
 import ReassignIssue from "./ReassignIssue";
-import { PromiseOverlay } from "../Overlays";
 import { DetailCard } from "./HelperComponents/DetailCard";
 import { InfoBlock } from "./HelperComponents/InfoBlock";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import CommentsSection from "./CommentsSection";
+import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
+import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
 
 const statusOptions = [
   { label: "In Progress", value: "in progress" },
@@ -58,15 +58,15 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const type = searchParams.get("type");
   const router = useRouter();
   const { setAlertInfo } = useAlert();
+  const { setPromiseOverlayInfo } = usePromiseOverlay();
+  const { setConfirmationDialogInfo } = useConfirmationDialog();
   const { role, email, department, userId } = useUser();
 
   // Status to hold our selected status
   const [selectedStatus, setSelectedStatus] = useState("");
-  const [updatingStatus, setUpdatingStatus] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isReassignModalOpen, setIsReassignModalOpen] = useState(false);
-  const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // call useScrollToTop hook
@@ -75,7 +75,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const handleSelect = (selectedValue: string) => {
     setSelectedStatus(selectedValue);
     setIsOpen(false);
-    setShowConfirmationDialog(true);
+    handleConfirmationDialog();
   };
 
   // Helper function for refetching data
@@ -104,8 +104,16 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
 
   // Async function for updating the status
   const handleUpdateStatus = async () => {
-    setShowConfirmationDialog(false);
-    setUpdatingStatus(true);
+    setConfirmationDialogInfo((prev) => ({
+      ...prev,
+      showDialog: false,
+    }));
+
+    setPromiseOverlayInfo({
+      loading: true,
+      overlaytext: "Updating",
+    });
+
     try {
       const response = await apiClient.put("/update-status", {
         uuid,
@@ -132,8 +140,20 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
         alertMessage: errorMessage,
       });
     } finally {
-      setUpdatingStatus(false);
+      setPromiseOverlayInfo({
+        loading: false,
+        overlaytext: "",
+      });
     }
+  };
+
+  const handleConfirmationDialog = () => {
+    setConfirmationDialogInfo({
+      showDialog: true,
+      title: "Update Status",
+      description: `Are you sure you want to mark this issue as ${selectedStatus}`,
+      onConfirm: handleUpdateStatus,
+    });
   };
 
   // Close dropdown when clicking outside
@@ -170,16 +190,6 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
 
   return (
     <>
-      {showConfirmationDialog && (
-        <ConfirmationDialog
-          title="Update Status"
-          onConfirm={handleUpdateStatus}
-          onCancel={() => setShowConfirmationDialog(false)}
-          message={`Are you sure you want to mark this issue as ${selectedStatus}`}
-        />
-      )}
-      {updatingStatus && <PromiseOverlay overlaytext="loading" />}
-
       {/* Title and description edit modal */}
       {isEditModalOpen && (
         <TitleDescriptionModal

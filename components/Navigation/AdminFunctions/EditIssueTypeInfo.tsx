@@ -5,10 +5,10 @@ import { Check, ChevronDown, UserRound, Bug, Save } from "lucide-react";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlert } from "@/contexts/AlertContext";
-import { PromiseOverlay } from "@/components/Modules/Overlays";
 import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
-import ConfirmationDialog from "@/components/Modules/Overlays";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
+import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
 
 type EditIssueTypeInfoProps = {
   issueType: string;
@@ -26,9 +26,9 @@ const EditIssueTypeInfo = ({
   const [selectedType, setSelectedType] = useState(issueType || "");
   const [selectedEmail, setSelectedEmail] = useState(agentEmail || "");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [updating, setUpdating] = useState(false);
   const { setAlertInfo } = useAlert();
-  const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
+  const { setPromiseOverlayInfo } = usePromiseOverlay();
+  const { setConfirmationDialogInfo } = useConfirmationDialog();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { refetchAgentsInfo } = useAgentsInfo();
 
@@ -54,7 +54,10 @@ const EditIssueTypeInfo = ({
   const selectedName = selectedNameObject?.agentName;
 
   const handleUpdate = async () => {
-    setShowConfirmationDialog(false);
+    setConfirmationDialogInfo((prev) => ({
+      ...prev,
+      showDialog: false,
+    }));
 
     // Do nothing if no data has changed
     if (
@@ -71,7 +74,10 @@ const EditIssueTypeInfo = ({
       return;
     }
 
-    setUpdating(true);
+    setPromiseOverlayInfo({
+      loading: true,
+      overlaytext: "Editing",
+    });
 
     try {
       const response = await apiClient.put("/update-issuetype", {
@@ -106,122 +112,121 @@ const EditIssueTypeInfo = ({
         alertMessage: errorMessage,
       });
     } finally {
-      setUpdating(false);
+      setPromiseOverlayInfo({
+        loading: false,
+        overlaytext: "",
+      });
     }
   };
 
+  const handleConfirmationDialog = () => {
+    setConfirmationDialogInfo({
+      showDialog: true,
+      title: "Edit Issue Type Info",
+      description: "Are you sure you want to edit this issue type info?",
+      onConfirm: handleUpdate,
+    });
+  };
+
   return (
-    <>
-      {showConfirmationDialog && (
-        <ConfirmationDialog
-          title="Update Issue Type"
-          message="Are you sure you want to update this issue type"
-          onCancel={() => setShowConfirmationDialog(false)}
-          onConfirm={handleUpdate}
-        />
-      )}
-
-      {updating && <PromiseOverlay overlaytext="loading" />}
-
-      <div className="rounded-xl border border-neutral-200 bg-neutral-50/50 p-5 dark:border-neutral-800 dark:bg-neutral-900/60">
-        <div className="grid gap-5">
-          {/* 1. Issue Type Input */}
-          <div className="space-y-1.5">
-            <label className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
-              <Bug size={12} />
-              <div className="inline-flex items-center gap-1">
-                <span>Issue Type Name</span>
-                <FormAsterisk />
-              </div>
-            </label>
-            <input
-              type="text"
-              value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
-              onBlur={(e) => setSelectedType(e.target.value.trim())}
-              className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:focus:border-blue-500"
-              placeholder="e.g. Technical Support"
-            />
-          </div>
-
-          {/* 2. Agent Selection Dropdown */}
-          <div className="space-y-1.5" ref={dropdownRef}>
-            <label className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
-              <UserRound size={12} />
-              <div className="inline-flex items-center gap-1">
-                <span>Assigned Agent</span>
-                <FormAsterisk />
-              </div>
-            </label>
-
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex w-full items-center justify-between rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm transition-all hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800"
-              >
-                <span
-                  className={
-                    selectedName
-                      ? "text-neutral-900 dark:text-neutral-100"
-                      : "text-neutral-400"
-                  }
-                >
-                  {selectedName || "Select an agent"}
-                </span>
-                <ChevronDown
-                  size={16}
-                  className={`text-neutral-400 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
-                />
-              </button>
-
-              {isDropdownOpen && (
-                <div className="absolute left-0 z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-lg border border-neutral-200 bg-white p-2 shadow-xl dark:border-neutral-700 dark:bg-neutral-800">
-                  {agentNames.map((agent) => (
-                    <button
-                      key={agent.agentEmail}
-                      onClick={() => {
-                        setSelectedEmail(agent.agentEmail);
-                        setIsDropdownOpen(false);
-                      }}
-                      className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-700"
-                    >
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-neutral-900 dark:text-neutral-100">
-                          {agent.agentName}
-                        </span>
-                        <span className="text-[10px] text-neutral-500">
-                          {agent.agentEmail}
-                        </span>
-                      </div>
-                      {selectedName === agent.agentName && (
-                        <Check size={14} className="text-blue-500" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
+    <div className="rounded-xl border border-neutral-200 bg-neutral-50/50 p-5 dark:border-neutral-800 dark:bg-neutral-900/60">
+      <div className="grid gap-5">
+        {/* 1. Issue Type Input */}
+        <div className="space-y-1.5">
+          <label className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
+            <Bug size={12} />
+            <div className="inline-flex items-center gap-1">
+              <span>Issue Type Name</span>
+              <FormAsterisk />
             </div>
-          </div>
+          </label>
+          <input
+            type="text"
+            value={selectedType}
+            onChange={(e) => setSelectedType(e.target.value)}
+            onBlur={(e) => setSelectedType(e.target.value.trim())}
+            className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:focus:border-blue-500"
+            placeholder="e.g. Technical Support"
+          />
+        </div>
 
-          {/* 3. Action Buttons */}
-          <div className="flex items-center justify-end gap-2 pt-2">
+        {/* 2. Agent Selection Dropdown */}
+        <div className="space-y-1.5" ref={dropdownRef}>
+          <label className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
+            <UserRound size={12} />
+            <div className="inline-flex items-center gap-1">
+              <span>Assigned Agent</span>
+              <FormAsterisk />
+            </div>
+          </label>
+
+          <div className="relative">
             <button
-              onClick={() => setShowConfirmationDialog(true)}
-              disabled={
-                (agentEmail === selectedEmail && issueType === selectedType) ||
-                !selectedEmail ||
-                !selectedType
-              } //We will also repeat this logic in our handleUpdate function for double security
-              className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50"
+              type="button"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex w-full items-center justify-between rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm transition-all hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800"
             >
-              <Save size={16} />
-              Update Configuration
+              <span
+                className={
+                  selectedName
+                    ? "text-neutral-900 dark:text-neutral-100"
+                    : "text-neutral-400"
+                }
+              >
+                {selectedName || "Select an agent"}
+              </span>
+              <ChevronDown
+                size={16}
+                className={`text-neutral-400 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
+              />
             </button>
+
+            {isDropdownOpen && (
+              <div className="absolute left-0 z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-lg border border-neutral-200 bg-white p-2 shadow-xl dark:border-neutral-700 dark:bg-neutral-800">
+                {agentNames.map((agent) => (
+                  <button
+                    key={agent.agentEmail}
+                    onClick={() => {
+                      setSelectedEmail(agent.agentEmail);
+                      setIsDropdownOpen(false);
+                    }}
+                    className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                  >
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-neutral-900 dark:text-neutral-100">
+                        {agent.agentName}
+                      </span>
+                      <span className="text-[10px] text-neutral-500">
+                        {agent.agentEmail}
+                      </span>
+                    </div>
+                    {selectedName === agent.agentName && (
+                      <Check size={14} className="text-blue-500" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
+
+        {/* 3. Action Buttons */}
+        <div className="flex items-center justify-end gap-2 pt-2">
+          <button
+            onClick={handleConfirmationDialog}
+            disabled={
+              (agentEmail === selectedEmail && issueType === selectedType) ||
+              !selectedEmail ||
+              !selectedType
+            } //We will also repeat this logic in our handleUpdate function for double security
+            className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50"
+          >
+            <Save size={16} />
+            Update Configuration
+          </button>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 
