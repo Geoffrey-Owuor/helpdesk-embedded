@@ -55,7 +55,19 @@ const EditIssueTypeInfo = ({
 
   const handleUpdate = async () => {
     // Do nothing if no data has changed
-    if (agentEmail === selectedEmail && issueType === selectedType) return;
+    if (
+      (agentEmail === selectedEmail && issueType === selectedType) ||
+      !selectedEmail ||
+      !selectedType
+    ) {
+      setAlertInfo({
+        alertType: "error",
+        showAlert: true,
+        alertMessage: "Missing required info or same information passed",
+      });
+
+      return;
+    }
 
     setShowConfirmationDialog(false);
     setUpdating(true);
@@ -196,7 +208,9 @@ const EditIssueTypeInfo = ({
             <button
               onClick={() => setShowConfirmationDialog(true)}
               disabled={
-                agentEmail === selectedEmail && issueType === selectedType
+                (agentEmail === selectedEmail && issueType === selectedType) ||
+                !selectedEmail ||
+                !selectedType
               } //We will also repeat this logic in our handleUpdate function for double security
               className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50"
             >

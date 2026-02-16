@@ -13,12 +13,16 @@ import EditIssueTypeInfo from "./EditIssueTypeInfo";
 import { arrayReducer } from "@/utils/ArrayReducer";
 import IssueTypesInfoSkeleton from "@/components/Skeletons/IssueTypesInfoSkeleton";
 import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
+import AddIssueType from "./AddIssueType";
 
 const IssueTypesInfo = () => {
   // Get context data
   const { loading, agentsInfo: agentsFlatInfo } = useAgentsInfo();
   // Tracking the id of the active edit section
   const [activeEditId, setActiveEditId] = useState<string | null>(null);
+
+  // State for showing the AddIssueType Modal
+  const [showAddIssueModal, setShowAddIssueModal] = useState(false);
 
   const handleToggleEdit = (id: string) => {
     // If clicking the same one, close it, otherwise open a new one
@@ -58,10 +62,20 @@ const IssueTypesInfo = () => {
         </p>
       </div>
 
-      <button className="mb-4 flex items-center gap-1.5 rounded-xl bg-blue-700 px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-blue-800">
+      <button
+        onClick={() => setShowAddIssueModal((prev) => !prev)}
+        className="mb-4 flex items-center gap-1.5 rounded-xl bg-blue-700 px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-blue-800"
+      >
         <BugPlay className="h-4 w-4" />
         <span>Add Issue Type</span>
       </button>
+
+      {/* The AddIssueType Modal */}
+      <AddIssueType
+        showAddIssueModal={showAddIssueModal}
+        setShowAddIssueModal={setShowAddIssueModal}
+        agentNames={agentNames}
+      />
 
       <div className="grid gap-3">
         {agentsFlatInfo.map((item, index) => (
