@@ -30,11 +30,12 @@ const HomeNavBar = () => {
     >
       <nav className="custom:px-8 mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-0.5">
-          <div className="h-8 w-8">
+          <div className="relative h-8 w-8">
             <Image
               src={assets.issue_desk_image}
               alt="Issue Desk Logo"
-              className="dark:invert"
+              sizes="32px"
+              className="object-contain dark:invert"
             />
           </div>
           <span className="hidden text-xl font-semibold text-black sm:flex dark:text-white">
