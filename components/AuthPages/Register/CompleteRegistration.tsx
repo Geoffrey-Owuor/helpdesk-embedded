@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import { useState, useEffect, ChangeEvent, FormEvent, FocusEvent } from "react";
 import Link from "next/link";
 import {
   Eye,
   EyeOff,
-  User,
   Building2,
   ChevronDown,
   Lock,
   Loader2,
   CheckCircle2,
   XCircle,
+  UserRound,
 } from "lucide-react";
 import AuthShell from "../AuthShell";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -77,12 +77,23 @@ const CompleteRegistration = ({ email }: { email: string }) => {
   ) => {
     const { name, value } = e.target;
 
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
     //If the input changing is name, run the validator
     if (name === "name") {
       const validationResult = NameValidator(value);
       setNameValidation(validationResult);
     }
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Cleanup when a user clicks away
+  const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value.trim(), // Final cleanup when they click away
+    }));
   };
 
   // Handle user information submission
@@ -178,7 +189,7 @@ const CompleteRegistration = ({ email }: { email: string }) => {
                 {nameValidation.isValid ? (
                   <CheckCircle2 className="h-5 w-5 text-green-500" />
                 ) : (
-                  <User className="h-5 w-5 text-neutral-400" />
+                  <UserRound className="h-5 w-5 text-neutral-400" />
                 )}
               </div>
               <input
@@ -189,7 +200,10 @@ const CompleteRegistration = ({ email }: { email: string }) => {
                 onChange={handleChange}
                 // 3. ADD FOCUS HANDLERS
                 onFocus={() => setIsNameFocused(true)}
-                onBlur={() => setIsNameFocused(false)}
+                onBlur={(e) => {
+                  setIsNameFocused(false);
+                  handleBlur(e);
+                }}
                 className={`w-full rounded-full border bg-white py-3 pr-3 pl-14 text-neutral-900 placeholder-neutral-400 focus:outline-none dark:bg-neutral-900/50 dark:text-white ${
                   !nameValidation.isValid &&
                   formData.name.length > 0 &&
@@ -275,6 +289,7 @@ const CompleteRegistration = ({ email }: { email: string }) => {
                 name="password"
                 type={showPassword ? "text" : "password"}
                 value={formData.password}
+                onBlur={handleBlur}
                 onChange={handleChange}
                 className="w-full rounded-full border border-neutral-400 bg-white py-3 pr-12 pl-14 text-neutral-900 placeholder-neutral-400 focus:border-neutral-600 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900/50 dark:text-white dark:focus:border-neutral-500"
                 placeholder="••••••••"
