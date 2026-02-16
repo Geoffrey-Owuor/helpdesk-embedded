@@ -1,8 +1,6 @@
 "use client";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useAlert } from "@/contexts/AlertContext";
-import { PromiseOverlay } from "../Overlays";
-import ConfirmationDialog from "../Overlays";
 import ClientPortal from "../ClientPortal";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import apiClient from "@/lib/AxiosClient";
@@ -13,6 +11,8 @@ import { useAutomations } from "@/contexts/AutomationCardsContext";
 import { X } from "lucide-react";
 import { IssueValueTypes } from "@/contexts/IssuesDataContext";
 import FormAsterisk from "../FormAsterisk";
+import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
+import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
 
 type TitleDescriptionModalProps = {
   title: IssueValueTypes;
@@ -33,11 +33,10 @@ const TitleDescriptionModal = ({
     issue_description: description || "",
   });
 
-  const [updating, setUpdating] = useState(false);
-  const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
-
   // context data
   const { setAlertInfo } = useAlert();
+  const { setPromiseOverlayInfo } = usePromiseOverlay();
+  const { setConfirmationDialogInfo } = useConfirmationDialog();
   const { refetchIssues } = useIssuesData();
   const { refetchAutomations } = useAutomationsData();
   const { refetchIssuesCounts } = useIssuesCards();
@@ -63,16 +62,17 @@ const TitleDescriptionModal = ({
     }));
   };
 
-  //the handle confirm submit function
-  const handleConfirmSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    setShowConfirmationDialog(true);
-  };
-
   // the handle submit function
   const handleSubmit = async () => {
-    setShowConfirmationDialog(false);
-    setUpdating(true);
+    setConfirmationDialogInfo((prev) => ({
+      ...prev,
+      showDialog: false,
+    }));
+
+    setPromiseOverlayInfo({
+      loading: true,
+      overlaytext: "Editing",
+    });
 
     // compile our data into one object
     const payload = {
@@ -110,101 +110,109 @@ const TitleDescriptionModal = ({
         alertMessage: errorMessage,
       });
     } finally {
-      setUpdating(false);
+      setPromiseOverlayInfo({
+        loading: false,
+        overlaytext: "",
+      });
     }
   };
 
+  const handleConfirmSubmit = (e: FormEvent) => {
+    e.preventDefault();
+
+    setConfirmationDialogInfo({
+      showDialog: true,
+      title: "Update Issue Info",
+      description: "Are you sure you want to make these changes?",
+      onConfirm: handleSubmit,
+    });
+  };
+
   return (
-    <>
-      {updating && <PromiseOverlay overlaytext="loading" />}
-      {showConfirmationDialog && (
-        <ConfirmationDialog
-          title="Update Issue Info"
-          onConfirm={handleSubmit}
-          onCancel={() => setShowConfirmationDialog(false)}
-          message="Are you sure you want to update the issue info"
-        />
-      )}
-      <ClientPortal>
-        {/* Backdrop */}
-        <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 dark:bg-black/60">
-          {/* Modal Container */}
-          <div className="w-full max-w-lg rounded-2xl border border-neutral-300 bg-neutral-50 p-6 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
-            {/* Header */}
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
-                Update Title & Description
-              </h2>
-              <button
-                onClick={closeModal}
-                className="rounded-full p-1 text-neutral-500 hover:bg-neutral-200 hover:text-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+    <ClientPortal>
+      {/* Backdrop */}
+      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 dark:bg-black/60">
+        {/* Modal Container */}
+        <div className="w-full max-w-lg rounded-2xl border border-neutral-300 bg-neutral-50 p-6 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
+          {/* Header */}
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+              Update Title & Description
+            </h2>
+            <button
+              onClick={closeModal}
+              className="rounded-full p-1 text-neutral-500 hover:bg-neutral-200 hover:text-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* Update Form */}
+          <form onSubmit={handleConfirmSubmit} className="space-y-6">
+            {/* Issue Title */}
+            <div className="flex flex-col gap-1">
+              <label
+                htmlFor="issue_title"
+                className="flex items-center gap-1 text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
               >
-                <X size={20} />
-              </button>
+                <span>Issue Title</span>
+                <FormAsterisk />
+              </label>
+              <input
+                type="text"
+                name="issue_title"
+                id="issue_title"
+                value={formData.issue_title}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                required
+                maxLength={50}
+                placeholder="Brief summary of the issue (50 characters maximum)"
+                className="rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+              />
             </div>
 
-            {/* Update Form */}
-            <form onSubmit={handleConfirmSubmit} className="space-y-6">
-              {/* Issue Title */}
-              <div className="flex flex-col gap-1">
-                <label
-                  htmlFor="issue_title"
-                  className="flex items-center gap-1 text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
-                >
-                  <span>Issue Title</span>
-                  <FormAsterisk />
-                </label>
-                <input
-                  type="text"
-                  name="issue_title"
-                  id="issue_title"
-                  value={formData.issue_title}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  required
-                  maxLength={50}
-                  placeholder="Brief summary of the issue (50 characters maximum)"
-                  className="rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
-                />
-              </div>
+            {/* Issue Description */}
+            <div className="flex flex-col gap-1">
+              <label
+                htmlFor="issue_description"
+                className="flex items-center gap-1 text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
+              >
+                <span>Description</span>
+                <FormAsterisk />
+              </label>
+              <textarea
+                id="issue_description"
+                name="issue_description"
+                value={formData.issue_description}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                required
+                rows={4}
+                placeholder="Please describe the issue in detail..."
+                className="resize-none rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+              />
+            </div>
 
-              {/* Issue Description */}
-              <div className="flex flex-col gap-1">
-                <label
-                  htmlFor="issue_description"
-                  className="flex items-center gap-1 text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
-                >
-                  <span>Description</span>
-                  <FormAsterisk />
-                </label>
-                <textarea
-                  id="issue_description"
-                  name="issue_description"
-                  value={formData.issue_description}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  required
-                  rows={4}
-                  placeholder="Please describe the issue in detail..."
-                  className="resize-none rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
-                />
-              </div>
-
-              {/* Update button */}
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={updating}
-                  className="w-full rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:focus:ring-offset-neutral-900"
-                >
-                  Update
-                </button>
-              </div>
-            </form>
-          </div>
+            {/* Update button */}
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={
+                  !formData.issue_description ||
+                  !formData.issue_title ||
+                  (formData.issue_description === description &&
+                    formData.issue_title === title)
+                }
+                className="w-full rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:focus:ring-offset-neutral-900"
+              >
+                Update
+              </button>
+            </div>
+          </form>
         </div>
-      </ClientPortal>
-    </>
+      </div>
+    </ClientPortal>
   );
 };
 

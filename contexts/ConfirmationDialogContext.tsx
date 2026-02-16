@@ -12,8 +12,8 @@ import {
 interface ConfirmationDialogValues {
   title: string;
   description: string;
-  onConfirm: (() => Promise<void>) | null;
-  onCancel: (() => void) | null;
+  onConfirm: (() => Promise<void>) | undefined;
+  showDialog: boolean;
 }
 
 type ConfirmationDialogProviderValues = {
@@ -33,8 +33,8 @@ export const ConfirmationDialogProvider = ({
     useState<ConfirmationDialogValues>({
       title: "",
       description: "",
-      onConfirm: null,
-      onCancel: null,
+      onConfirm: undefined,
+      showDialog: false,
     });
 
   //Our values
