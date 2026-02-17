@@ -3,13 +3,11 @@ import { useSearchLogic } from "@/contexts/SearchLogicContext";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
 import { useAutomationsData } from "@/contexts/AutomationsDataContext";
 import { Search } from "lucide-react";
-import { Dispatch, SetStateAction } from "react";
 
 type FilterProps = {
-  setCurrentPage: Dispatch<SetStateAction<number>>;
   recordType: string;
 };
-const SearchFilters = ({ setCurrentPage, recordType }: FilterProps) => {
+const SearchFilters = ({ recordType }: FilterProps) => {
   // The the fetch issues function
   const { fetchIssues } = useIssuesData();
   const { fetchAutomations } = useAutomationsData();
@@ -74,7 +72,6 @@ const SearchFilters = ({ setCurrentPage, recordType }: FilterProps) => {
     // Do not run if button is disabled
     if (buttonDisabled) return;
     fetchData(filterOptions);
-    setCurrentPage(1);
   };
   return (
     <button

@@ -1,13 +1,8 @@
 "use client";
-import { Dispatch, SetStateAction } from "react";
 import { useSearchLogic } from "@/contexts/SearchLogicContext";
 import { Building2, Send } from "lucide-react";
 
-type AgentAdminFilterProps = {
-  setCurrentPage: Dispatch<SetStateAction<number>>;
-};
-
-const ViewAgentAdminFilter = ({ setCurrentPage }: AgentAdminFilterProps) => {
+const ViewAgentAdminFilter = () => {
   const {
     agentAdminFilter,
     setSelectedFilter,
@@ -36,8 +31,6 @@ const ViewAgentAdminFilter = ({ setCurrentPage }: AgentAdminFilterProps) => {
     setAgent("");
     setIssueType("");
     setSubmitter("");
-
-    setCurrentPage(1);
   };
 
   // Incoming Issues
@@ -71,7 +64,7 @@ const ViewAgentAdminFilter = ({ setCurrentPage }: AgentAdminFilterProps) => {
           disabled={!filterApplied}
           className={`flex items-center justify-center gap-2 rounded-lg px-4 py-1.5 text-sm font-semibold ${
             !filterApplied
-              ? "bg-white text-neutral-900 shadow-sm dark:bg-neutral-900 dark:text-white"
+              ? "bg-neutral-900 text-white shadow-sm dark:bg-white dark:text-neutral-900"
               : "text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
           }`}
         >
