@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useState,
+  useEffect,
   useMemo,
   Dispatch,
   SetStateAction,
@@ -51,7 +52,20 @@ export const SearchLogicProvider = ({
   const [agent, setAgent] = useState("");
   const [issueType, setIssueType] = useState("");
   const [submitter, setSubmitter] = useState("");
-  const [agentAdminFilter, setAgentAdminFilter] = useState("");
+
+  // Setting the value of agentAdminFilter from the localstorage
+  const [agentAdminFilter, setAgentAdminFilter] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("agentAdminFilter") || "";
+    }
+
+    return "";
+  });
+
+  // Sync state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("agentAdminFilter", agentAdminFilter);
+  }, [agentAdminFilter]);
 
   // State for switching between table and card view
   const [isTableView, setIsTableView] = useState(true);
