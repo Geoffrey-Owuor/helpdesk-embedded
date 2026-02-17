@@ -10,12 +10,12 @@ const ToggleTableView = () => {
   const baseBtnStyles =
     "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200";
   const activeStyles =
-    "bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 shadow-sm";
+    "bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 shadow-sm";
   const inactiveStyles =
     "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300";
 
   return (
-    <div className="ml-0 flex rounded-xl border border-neutral-200 bg-neutral-100 p-1 md:ml-auto dark:border-neutral-700 dark:bg-neutral-800/50">
+    <div className="ml-0 flex rounded-xl border border-neutral-200 bg-neutral-100 p-1 md:ml-auto dark:border-neutral-800 dark:bg-neutral-950">
       {/* Card View Button */}
       <button
         onClick={() => setIsTableView(false)}

@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { Check, ChevronDown, Building2 } from "lucide-react"; // Using Building2 for departments
 import { baseDepartments } from "@/public/assets";
 import { useAutomations } from "@/contexts/AutomationCardsContext";
+import { useSearchLogic } from "@/contexts/SearchLogicContext";
 
 // Map the data as requested
 const departments = baseDepartments.map((department) => ({
@@ -14,6 +15,30 @@ const DepartmentsDropDown = () => {
   // State for visibility
   const [isOpen, setIsOpen] = useState(false);
   const { selectedDepartment, setSelectedDepartment } = useAutomations();
+  const {
+    setSelectedFilter,
+    setStatus,
+    setReference,
+    setFromDate,
+    setToDate,
+    setDepartment,
+    setAgent,
+    setIssueType,
+    setSubmitter,
+  } = useSearchLogic();
+
+  // function for clearing default filters and sets current page to one
+  const clearDefaultFilters = () => {
+    setSelectedFilter("status");
+    setStatus("");
+    setReference("");
+    setFromDate("");
+    setToDate("");
+    setDepartment("");
+    setAgent("");
+    setIssueType("");
+    setSubmitter("");
+  };
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -33,6 +58,7 @@ const DepartmentsDropDown = () => {
 
   const handleSelect = (selectedValue: string) => {
     setSelectedDepartment(selectedValue);
+    clearDefaultFilters();
     setIsOpen(false);
   };
 
