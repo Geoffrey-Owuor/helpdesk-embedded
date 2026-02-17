@@ -1,6 +1,5 @@
 "use client";
 
-import ClientPortal from "./ClientPortal";
 import { Loader2, X } from "lucide-react";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
@@ -41,7 +40,7 @@ export const PromiseOverlay = () => {
 
   if (!promiseOverlayInfo.loading) return null;
 
-  return <ClientPortal>{content}</ClientPortal>;
+  return content;
 };
 
 // The Confirmation Dialogue Overlay
@@ -100,5 +99,5 @@ export const ConfirmationDialog = () => {
 
   if (!confirmationDialogInfo.showDialog) return null;
 
-  return <ClientPortal>{content}</ClientPortal>;
+  return content;
 };

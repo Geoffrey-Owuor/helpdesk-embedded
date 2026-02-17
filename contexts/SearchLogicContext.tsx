@@ -10,6 +10,8 @@ import {
   SetStateAction,
 } from "react";
 
+import HydrationGuard from "@/components/Modules/HydrationGuard";
+
 type SearchLogicContextTypes = {
   selectedFilter: string;
   fromDate: string;
@@ -53,18 +55,22 @@ export const SearchLogicProvider = ({
   const [issueType, setIssueType] = useState("");
   const [submitter, setSubmitter] = useState("");
 
-  // Setting the value of agentAdminFilter from the localstorage
-  const [agentAdminFilter, setAgentAdminFilter] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("agentAdminFilter") || "";
-    }
+  const [agentAdminFilter, setAgentAdminFilter] = useState("");
 
-    return "";
-  });
-
-  // Sync state to localStorage whenever it changes
+  // This effect runs immediately after mount, grabbing the value before the Guard releases the UI.
   useEffect(() => {
-    localStorage.setItem("agentAdminFilter", agentAdminFilter);
+    const savedFilter = localStorage.getItem("agentAdminFilter");
+    if (savedFilter) {
+      Promise.resolve().then(() => setAgentAdminFilter(savedFilter));
+    }
+  }, []);
+
+  // Sync changes back to local storage
+  useEffect(() => {
+    // Only save if we actually have a value or if we want to allow saving empty strings
+    if (typeof window !== "undefined") {
+      localStorage.setItem("agentAdminFilter", agentAdminFilter);
+    }
   }, [agentAdminFilter]);
 
   // State for switching between table and card view
@@ -111,9 +117,12 @@ export const SearchLogicProvider = ({
   );
 
   return (
-    <SearchLogicContext.Provider value={values}>
-      {children}
-    </SearchLogicContext.Provider>
+    // Wrap in a client portal to prevent hydration issues
+    <HydrationGuard>
+      <SearchLogicContext.Provider value={values}>
+        {children}
+      </SearchLogicContext.Provider>
+    </HydrationGuard>
   );
 };
 
