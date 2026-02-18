@@ -156,7 +156,7 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
     setConfirmationDialogInfo({
       showDialog: true,
       title: "Add Agent",
-      description: "Are you sure you want to add this agent?",
+      description: "Confirm adding of new agent.",
       onConfirm: handleSubmit,
     });
   };
@@ -231,7 +231,7 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
           {/* Email */}
           <div className="space-y-1.5">
             <label className="flex items-center gap-1 text-xs font-semibold text-neutral-600 dark:text-neutral-400">
-              Email Address{" "}
+              Email{" "}
               <span className="font-normal text-gray-500">
                 (should be accurate)
               </span>

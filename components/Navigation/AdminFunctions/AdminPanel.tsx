@@ -26,6 +26,10 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   const inactiveTabStyles =
     "text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-900 hover:text-neutral-700 dark:hover:text-neutral-300";
 
+  // Mobile shared button base styles
+  const baseMobileTabStyles =
+    "flex items-center gap-2 px-3 py-2 font-semibold text-sm transition-all duration-200 rounded-xl";
+
   return (
     <ClientPortal>
       {/* The Backdrop */}
@@ -71,18 +75,39 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
 
           {/* --- MAIN CONTENT AREA --- */}
           <div className="flex flex-1 flex-col overflow-hidden bg-white dark:bg-neutral-950">
-            {/* Header */}
-            <header className="flex items-center justify-between border-b border-neutral-100 p-4 dark:border-neutral-900">
-              <h3 className="text-sm font-semibold text-neutral-500 capitalize dark:text-neutral-400">
-                {activeTab.replace("-", " ")}
-              </h3>
-              <button
-                onClick={() => setShowAdminPanel(false)}
-                className="rounded-full p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
-              >
-                <X size={20} />
-              </button>
-            </header>
+            {/* Header and mobile buttons navigation */}
+            <div className="flex flex-col gap-3 border-b border-neutral-100 pb-4 dark:border-neutral-900">
+              <header className="flex items-center justify-between px-4 pt-4">
+                <h3 className="text-sm font-semibold text-neutral-500 capitalize dark:text-neutral-400">
+                  {activeTab.replace("-", " ")}
+                </h3>
+                <button
+                  onClick={() => setShowAdminPanel(false)}
+                  className="rounded-full p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
+                >
+                  <X size={20} />
+                </button>
+              </header>
+              {/* Mobile Admin Navigation - Hidden on laptops */}
+              <div className="flex items-center justify-center gap-2 md:hidden">
+                {/* Agents Info */}
+                <button
+                  onClick={() => setActiveTab("agent-info")}
+                  className={`${baseMobileTabStyles} ${activeTab === "agent-info" ? activeTabStyles : inactiveTabStyles}`}
+                >
+                  <UsersRound className="h-4 w-4" />
+                  Agents Info
+                </button>
+                {/* Issue Types Info */}
+                <button
+                  onClick={() => setActiveTab("issue-info")}
+                  className={`${baseMobileTabStyles} ${activeTab === "issue-info" ? activeTabStyles : inactiveTabStyles}`}
+                >
+                  <Bug className="h-4 w-4" />
+                  Issue Types Info
+                </button>
+              </div>
+            </div>
 
             {/* Tab Content Rendering */}
             <main className="flex-1 overflow-y-auto p-6">

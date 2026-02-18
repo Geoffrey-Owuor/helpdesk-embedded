@@ -123,7 +123,7 @@ const EditIssueTypeInfo = ({
     setConfirmationDialogInfo({
       showDialog: true,
       title: "Edit Issue Type Info",
-      description: "Are you sure you want to edit this issue type info?",
+      description: "Confirm editing of issue info.",
       onConfirm: handleUpdate,
     });
   };
