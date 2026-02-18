@@ -42,9 +42,9 @@ export const POST = withAuth(async ({ user, request }) => {
 
     // Everything is ok - perform the insert query
     const insertQuery = `
-        INSERT INTO issues_mapping (issue_type, admin_id, agent_id)
+        INSERT INTO issues_mapping(issue_type, admin_id, agent_id)
         VALUES
-        ($1, $2, COALESCE((SELECT user_id FROM users WHERE email = $3 LIMIT 1), -1) -- Force an invalid ID)
+        ($1, $2, (SELECT user_id FROM users WHERE email = $3 LIMIT 1))
         `;
 
     // Execute the query
