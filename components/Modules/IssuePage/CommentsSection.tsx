@@ -121,24 +121,24 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
 
       {/* The comments textarea */}
       {showCommentsInput && (
-        <div className="relative mb-8">
+        <div className="relative mb-8 w-full">
           <textarea
-            rows={1}
+            rows={4}
             name="comment"
             id="comment"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder="Enter your comment here..."
-            className="w-full max-w-165 resize-none rounded-full border border-neutral-300 py-4 pr-14 pl-4 text-sm text-neutral-900 placeholder-neutral-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:text-neutral-100"
+            className="w-full resize-none rounded-xl border border-neutral-300 py-4 pr-14 pl-4 text-sm text-neutral-900 placeholder-neutral-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100"
           />
 
-          {/* The submit comment button */}
           <button
+            type="button"
             disabled={!comment || submitting}
             onClick={postComment}
-            className="absolute top-1.25 right-2 flex items-center justify-center rounded-full bg-blue-600 p-2 text-white transition-colors duration-200 hover:bg-blue-700 disabled:opacity-50"
+            className="absolute right-2.5 bottom-4 flex items-center justify-center rounded-full bg-blue-600 p-2 text-white transition-colors duration-200 hover:bg-blue-700 disabled:opacity-50"
           >
-            <SendHorizonal className="h-7 w-7" />
+            <SendHorizonal className="h-5 w-5" />
           </button>
         </div>
       )}

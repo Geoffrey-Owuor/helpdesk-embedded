@@ -6,6 +6,12 @@ import Alert from "@/components/Modules/Alert";
 import Provider from "@/components/Themes/Provider";
 import { LoadingLineProvider } from "@/contexts/LoadingLineContext";
 import LoadingLine from "@/components/Modules/LoadingLine";
+import { PromiseOverlayProvider } from "@/contexts/PromiseOverlayContext";
+import { ConfirmationDialogProvider } from "@/contexts/ConfirmationDialogContext";
+import {
+  ConfirmationDialog,
+  PromiseOverlay,
+} from "@/components/Modules/Overlays";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,9 +45,15 @@ export default function RootLayout({
         <Provider>
           <LoadingLineProvider>
             <AlertProvider>
-              <LoadingLine />
-              <Alert />
-              {children}
+              <PromiseOverlayProvider>
+                <ConfirmationDialogProvider>
+                  <LoadingLine />
+                  <Alert />
+                  <PromiseOverlay />
+                  <ConfirmationDialog />
+                  {children}
+                </ConfirmationDialogProvider>
+              </PromiseOverlayProvider>
             </AlertProvider>
           </LoadingLineProvider>
         </Provider>

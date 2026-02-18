@@ -1,21 +1,27 @@
 "use client";
 
-import ClientPortal from "./ClientPortal";
-import { Loader2, X } from "lucide-react";
-
-// Confirmation dialogue props
-type ConfirmationDialogProps = {
-  message: string;
-  title: string;
-  onConfirm: () => Promise<void>;
-  onCancel: () => void;
-};
+import { ArrowRight, Loader2, X } from "lucide-react";
+import { useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
+import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
 
 // Overlay displayed when performing crud operations or logging out
-export const PromiseOverlay = ({ overlaytext }: { overlaytext: string }) => {
+export const PromiseOverlay = () => {
+  const { promiseOverlayInfo, setPromiseOverlayInfo } = usePromiseOverlay();
+  const pathname = usePathname();
+
+  // reset promise overlay when pathname changes
+  useEffect(() => {
+    setPromiseOverlayInfo({
+      loading: false,
+      overlaytext: "",
+    });
+  }, [pathname, setPromiseOverlayInfo]);
+
   const content = (
     <div
-      className={`fixed inset-0 z-9999 flex h-screen items-center justify-center ${overlaytext === "Logging out" ? "bg-white dark:bg-black" : "bg-black/30 dark:bg-black/60"}`}
+      className={`fixed inset-0 z-9999 flex h-screen items-center justify-center ${promiseOverlayInfo.overlaytext === "Logging out" ? "bg-white dark:bg-black" : "bg-black/30 dark:bg-black/60"}`}
     >
       {/* Container to align the spinner and text horizontally */}
       <div className="flex items-center space-x-2">
@@ -26,30 +32,39 @@ export const PromiseOverlay = ({ overlaytext }: { overlaytext: string }) => {
         />
         {/* The text, styled for dark and light modes */}
         <span className="text-xl text-neutral-900 dark:text-white">
-          {overlaytext}...
+          {promiseOverlayInfo.overlaytext}...
         </span>
       </div>
     </div>
   );
 
-  return <ClientPortal>{content}</ClientPortal>;
+  if (!promiseOverlayInfo.loading) return null;
+
+  return content;
 };
 
 // The Confirmation Dialogue Overlay
-const ConfirmationDialog = ({
-  message,
-  onConfirm,
-  onCancel,
-  title,
-}: ConfirmationDialogProps) => {
+export const ConfirmationDialog = () => {
+  const { confirmationDialogInfo, setConfirmationDialogInfo } =
+    useConfirmationDialog();
+
+  const onCancel = () => {
+    setConfirmationDialogInfo({
+      title: "",
+      description: "",
+      showDialog: false,
+      onConfirm: undefined,
+    });
+  };
+
   const content = (
     <div
       className={`fixed inset-0 z-9999 flex items-center justify-center bg-black/50 dark:bg-black/60`}
     >
-      <div className="mx-auto max-w-90 rounded-2xl border border-neutral-200 bg-neutral-50 p-4 shadow-2xl md:max-w-md dark:border-neutral-700 dark:bg-neutral-950">
+      <div className="mx-auto max-w-90 min-w-80 rounded-2xl border border-neutral-200 bg-neutral-50 p-4 shadow-2xl md:max-w-md dark:border-neutral-700 dark:bg-neutral-950">
         <div className="relative mb-4 flex items-start justify-between">
           <h3 className="text-xl font-bold text-neutral-900 dark:text-white">
-            {title}
+            {confirmationDialogInfo.title}
           </h3>
           <button
             onClick={onCancel}
@@ -60,28 +75,31 @@ const ConfirmationDialog = ({
             <X className="h-6 w-6" />
           </button>
         </div>
-        <p className="mb-4 text-center text-sm text-neutral-700 dark:text-neutral-400">
-          {message}
+        <p className="mb-4 text-start text-sm text-neutral-700 dark:text-neutral-400">
+          {confirmationDialogInfo.description}
         </p>
         <div className="flex justify-center space-x-4">
           <button
             onClick={onCancel}
             type="button"
-            className="rounded-xl border border-neutral-300 bg-white px-4 py-1.5 text-sm text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700"
+            className="flex items-center gap-0.5 rounded-xl border border-neutral-300 bg-white px-4 py-1.5 text-sm text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700"
           >
+            <X className="h-4 w-4" />
             Cancel
           </button>
           <button
-            onClick={onConfirm}
-            className="rounded-xl bg-neutral-900 px-4 py-1.5 text-sm text-white hover:bg-neutral-700 dark:bg-neutral-200 dark:text-neutral-900 dark:hover:bg-neutral-300"
+            onClick={confirmationDialogInfo.onConfirm}
+            className="flex items-center gap-0.5 rounded-xl bg-neutral-900 px-4 py-1.5 text-sm text-white hover:bg-neutral-700 dark:bg-neutral-200 dark:text-neutral-900 dark:hover:bg-neutral-300"
           >
+            <ArrowRight className="h-4 w-4" />
             Proceed
           </button>
         </div>
       </div>
     </div>
   );
-  return <ClientPortal>{content}</ClientPortal>;
-};
 
-export default ConfirmationDialog;
+  if (!confirmationDialogInfo.showDialog) return null;
+
+  return content;
+};

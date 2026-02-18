@@ -51,11 +51,6 @@ const OptionsDropDown = ({
     setIsOpen(false);
   };
 
-  // Find the label for the current value
-  const selectedLabel = options.find(
-    (option) => option.value === value,
-  )?.option;
-
   return (
     <div className="relative w-full" ref={dropdownRef}>
       <button
@@ -84,7 +79,7 @@ const OptionsDropDown = ({
             className={`${!value ? "text-neutral-500" : "text-neutral-900 dark:text-neutral-100"}`}
           >
             {value
-              ? selectedLabel
+              ? value
               : dropDownType === "department"
                 ? "Direct this issue to..."
                 : "Select an issue type..."}
