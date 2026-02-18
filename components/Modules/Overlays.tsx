@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, X } from "lucide-react";
+import { ArrowRight, Loader2, X } from "lucide-react";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
@@ -61,7 +61,7 @@ export const ConfirmationDialog = () => {
     <div
       className={`fixed inset-0 z-9999 flex items-center justify-center bg-black/50 dark:bg-black/60`}
     >
-      <div className="mx-auto max-w-90 rounded-2xl border border-neutral-200 bg-neutral-50 p-4 shadow-2xl md:max-w-md dark:border-neutral-700 dark:bg-neutral-950">
+      <div className="mx-auto max-w-90 min-w-80 rounded-2xl border border-neutral-200 bg-neutral-50 p-4 shadow-2xl md:max-w-md dark:border-neutral-700 dark:bg-neutral-950">
         <div className="relative mb-4 flex items-start justify-between">
           <h3 className="text-xl font-bold text-neutral-900 dark:text-white">
             {confirmationDialogInfo.title}
@@ -75,21 +75,23 @@ export const ConfirmationDialog = () => {
             <X className="h-6 w-6" />
           </button>
         </div>
-        <p className="mb-4 text-center text-sm text-neutral-700 dark:text-neutral-400">
+        <p className="mb-4 text-start text-sm text-neutral-700 dark:text-neutral-400">
           {confirmationDialogInfo.description}
         </p>
         <div className="flex justify-center space-x-4">
           <button
             onClick={onCancel}
             type="button"
-            className="rounded-xl border border-neutral-300 bg-white px-4 py-1.5 text-sm text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700"
+            className="flex items-center gap-0.5 rounded-xl border border-neutral-300 bg-white px-4 py-1.5 text-sm text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700"
           >
+            <X className="h-4 w-4" />
             Cancel
           </button>
           <button
             onClick={confirmationDialogInfo.onConfirm}
-            className="rounded-xl bg-neutral-900 px-4 py-1.5 text-sm text-white hover:bg-neutral-700 dark:bg-neutral-200 dark:text-neutral-900 dark:hover:bg-neutral-300"
+            className="flex items-center gap-0.5 rounded-xl bg-neutral-900 px-4 py-1.5 text-sm text-white hover:bg-neutral-700 dark:bg-neutral-200 dark:text-neutral-900 dark:hover:bg-neutral-300"
           >
+            <ArrowRight className="h-4 w-4" />
             Proceed
           </button>
         </div>

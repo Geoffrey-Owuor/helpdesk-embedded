@@ -138,7 +138,7 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
             onClick={postComment}
             className="absolute right-2.5 bottom-4 flex items-center justify-center rounded-full bg-blue-600 p-2 text-white transition-colors duration-200 hover:bg-blue-700 disabled:opacity-50"
           >
-            <SendHorizonal className="h-6 w-6" />
+            <SendHorizonal className="h-5 w-5" />
           </button>
         </div>
       )}
