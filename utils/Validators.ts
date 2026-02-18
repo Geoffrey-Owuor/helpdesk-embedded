@@ -18,7 +18,6 @@ export interface NameValidationResult {
 // Name validation function
 export const NameValidator = (name: string): NameValidationResult => {
   // 1. Check for single space separation and max 2 names
-  // trim the name to remove accidental leading/trailing spaces for the checks
   const parts = name.trim().split(" ");
 
   // Rule: Exactly two names (No more, no less)

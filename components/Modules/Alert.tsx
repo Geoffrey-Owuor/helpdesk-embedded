@@ -2,7 +2,6 @@
 
 import { XIcon, AlertCircle, CheckCircle } from "lucide-react";
 import { useEffect, useCallback, useState } from "react";
-import ClientPortal from "./ClientPortal";
 import { useAlert } from "@/contexts/AlertContext";
 
 const Alert = () => {
@@ -42,32 +41,30 @@ const Alert = () => {
       : "text-red-500 dark:text-red-700";
 
   return (
-    <ClientPortal>
+    <div
+      className={`fixed top-0 left-1/2 z-9999 max-w-sm -translate-x-1/2 ${
+        isClosing ? "animate-slideUp" : "animate-slideDown"
+      }`}
+    >
       <div
-        className={`fixed top-0 left-1/2 z-9999 max-w-sm -translate-x-1/2 ${
-          isClosing ? "animate-slideUp" : "animate-slideDown"
-        }`}
+        className={`mt-4 flex items-center justify-between rounded-full bg-black px-4 py-4.5 text-white shadow-md dark:bg-white dark:text-black`}
       >
-        <div
-          className={`mt-4 flex items-center justify-between rounded-full bg-black px-4 py-4.5 text-white shadow-md dark:bg-white dark:text-black`}
-        >
-          <div className="flex items-center gap-2">
-            {/* Render the appropriate icon */}
-            <IconComponent className={`h-5 w-5 shrink-0 ${iconColorClass}`} />
-            <p className="max-w-70 truncate text-sm text-nowrap">
-              {alertInfo.alertMessage}
-            </p>
-          </div>
-          <button
-            onClick={handleClose}
-            className="ml-4 cursor-pointer text-gray-200 hover:text-gray-300 dark:text-gray-600 dark:hover:text-gray-700"
-            aria-label="Close alert"
-          >
-            <XIcon className="h-5 w-5 shrink-0" />
-          </button>
+        <div className="flex items-center gap-2">
+          {/* Render the appropriate icon */}
+          <IconComponent className={`h-5 w-5 shrink-0 ${iconColorClass}`} />
+          <p className="max-w-70 truncate text-sm text-nowrap">
+            {alertInfo.alertMessage}
+          </p>
         </div>
+        <button
+          onClick={handleClose}
+          className="ml-4 cursor-pointer text-gray-200 hover:text-gray-300 dark:text-gray-600 dark:hover:text-gray-700"
+          aria-label="Close alert"
+        >
+          <XIcon className="h-5 w-5 shrink-0" />
+        </button>
       </div>
-    </ClientPortal>
+    </div>
   );
 };
 

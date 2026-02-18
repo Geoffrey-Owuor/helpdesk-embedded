@@ -9,7 +9,7 @@ import SearchInputFields from "./SearchInputFields";
 import ClearRefreshFilters from "./ClearRefreshFilters";
 import { useAutomations } from "@/contexts/AutomationCardsContext";
 import SearchFilters from "./SearchFilters";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchLogic } from "@/contexts/SearchLogicContext";
 import ViewAgentAdminFilter from "./ViewAgentAdminFilter";
 import Pagination from "./Pagination";
@@ -65,8 +65,12 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
   // Handle issue refetching
   const handleRefetchIssues = () => {
     refetchRecords();
-    setCurrentPage(1);
   };
+
+  // useEffect that resets current page when data changes
+  useEffect(() => {
+    Promise.resolve().then(() => setCurrentPage(1));
+  }, [recordsData]);
 
   // default subtitle
   const defaultSubtitle = `you have submitted`;
@@ -108,7 +112,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
             </span>
           </div>
           {role !== "user" && recordType !== "automations" && (
-            <ViewAgentAdminFilter setCurrentPage={setCurrentPage} />
+            <ViewAgentAdminFilter />
           )}
         </div>
 
@@ -128,10 +132,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
         <SearchFilterLogic recordType={recordType} />
         <SearchInputFields />
         {/* The search button */}
-        <SearchFilters
-          setCurrentPage={setCurrentPage}
-          recordType={recordType}
-        />
+        <SearchFilters recordType={recordType} />
 
         {/* Toggle between table and card view */}
         <ToggleTableView />

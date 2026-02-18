@@ -6,12 +6,13 @@ export const DashBoardLogo = ({
 }: {
   isSideBarOpen?: boolean;
 }) => (
-  <div className="flex items-center gap-0.5">
-    <div className="h-8 w-8">
+  <div className="relative flex items-center gap-0.5">
+    <div className="relative h-8 w-8">
       <Image
         src={assets.issue_desk_image}
         alt="Issue Desk Logo"
-        className="dark:invert"
+        sizes="32px"
+        className="object-contain dark:invert"
       />
     </div>
     <span

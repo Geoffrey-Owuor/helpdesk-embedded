@@ -4,10 +4,13 @@ import {
   createContext,
   useContext,
   useState,
+  useEffect,
   useMemo,
   Dispatch,
   SetStateAction,
 } from "react";
+
+import HydrationGuard from "@/components/Modules/HydrationGuard";
 
 type SearchLogicContextTypes = {
   selectedFilter: string;
@@ -51,10 +54,27 @@ export const SearchLogicProvider = ({
   const [agent, setAgent] = useState("");
   const [issueType, setIssueType] = useState("");
   const [submitter, setSubmitter] = useState("");
+
   const [agentAdminFilter, setAgentAdminFilter] = useState("");
 
-  // State for switching between table and card view
-  const [isTableView, setIsTableView] = useState(true);
+  // This effect runs immediately after mount, grabbing the value before the Guard releases the UI.
+  useEffect(() => {
+    const savedFilter = localStorage.getItem("agentAdminFilter");
+    if (savedFilter) {
+      Promise.resolve().then(() => setAgentAdminFilter(savedFilter));
+    }
+  }, []);
+
+  // Sync changes back to local storage
+  useEffect(() => {
+    // Only save if we actually have a value or if we want to allow saving empty strings
+    if (typeof window !== "undefined") {
+      localStorage.setItem("agentAdminFilter", agentAdminFilter);
+    }
+  }, [agentAdminFilter]);
+
+  // State for switching between table and card view - default is card view
+  const [isTableView, setIsTableView] = useState(false);
 
   const values = useMemo(
     () => ({
@@ -97,9 +117,12 @@ export const SearchLogicProvider = ({
   );
 
   return (
-    <SearchLogicContext.Provider value={values}>
-      {children}
-    </SearchLogicContext.Provider>
+    // Wrap in a client portal to prevent hydration issues
+    <HydrationGuard>
+      <SearchLogicContext.Provider value={values}>
+        {children}
+      </SearchLogicContext.Provider>
+    </HydrationGuard>
   );
 };
 

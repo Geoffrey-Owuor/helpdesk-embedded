@@ -11,9 +11,9 @@ const RuleItem = ({ label, passed }: { label: string; passed: boolean }) => (
     className={`flex items-center gap-2 text-xs ${passed ? "text-green-600" : "text-neutral-500"}`}
   >
     {passed ? (
-      <CheckCircle2 className="h-3 w-3" />
+      <CheckCircle2 className="h-3 w-3 shrink-0" />
     ) : (
-      <Circle className="h-3 w-3" />
+      <Circle className="h-3 w-3 shrink-0" />
     )}
     <span>{label}</span>
   </div>
