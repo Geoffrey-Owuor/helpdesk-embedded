@@ -52,9 +52,8 @@ export const PUT = withAuth(async ({ request, user }) => {
     const updateQuery = `
        UPDATE issues_mapping
        SET issue_type = $1,
-       agent_id = (SELECT user_id FROM users WHERE email = $2)
+       agent_id = (COALESCE((SELECT user_id FROM users WHERE email = $2 LIMIT 1), -1)) -- Force an invalid ID
        WHERE issue_type = $3 AND admin_id = $4
-       RETURNING id
     `;
 
     // Run the query
