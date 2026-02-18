@@ -180,7 +180,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       setConfirmationDialogInfo({
         showDialog: true,
         title: "Submit Issue",
-        description: "Are you sure you want to submit this issue?",
+        description: "Confirm submission of the issue.",
         onConfirm: handleFormSubmit,
       });
     }

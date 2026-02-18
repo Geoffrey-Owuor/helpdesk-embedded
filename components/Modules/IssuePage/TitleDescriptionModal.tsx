@@ -123,7 +123,7 @@ const TitleDescriptionModal = ({
     setConfirmationDialogInfo({
       showDialog: true,
       title: "Update Issue Info",
-      description: "Are you sure you want to make these changes?",
+      description: "Confirm the changes made.",
       onConfirm: handleSubmit,
     });
   };

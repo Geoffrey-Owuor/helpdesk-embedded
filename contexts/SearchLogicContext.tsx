@@ -73,8 +73,8 @@ export const SearchLogicProvider = ({
     }
   }, [agentAdminFilter]);
 
-  // State for switching between table and card view
-  const [isTableView, setIsTableView] = useState(true);
+  // State for switching between table and card view - default is card view
+  const [isTableView, setIsTableView] = useState(false);
 
   const values = useMemo(
     () => ({

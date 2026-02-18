@@ -72,12 +72,6 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   // call useScrollToTop hook
   useScrollToTop();
 
-  const handleSelect = (selectedValue: string) => {
-    setSelectedStatus(selectedValue);
-    setIsOpen(false);
-    handleConfirmationDialog();
-  };
-
   // Helper function for refetching data
   const refetchData = () => {
     refetchIssues();
@@ -147,11 +141,14 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
     }
   };
 
-  const handleConfirmationDialog = () => {
+  const handleConfirmationDialog = (selectedValue: string) => {
+    setSelectedStatus(selectedValue);
+    setIsOpen(false);
+    // Show the dialog
     setConfirmationDialogInfo({
       showDialog: true,
       title: "Update Status",
-      description: `Are you sure you want to mark this issue as ${selectedStatus}`,
+      description: `Confirm marking of issue as ${selectedValue}.`,
       onConfirm: handleUpdateStatus,
     });
   };
@@ -282,7 +279,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                       {statusOptions.map((option) => (
                         <button
                           key={option.value}
-                          onClick={() => handleSelect(option.value)}
+                          onClick={() => handleConfirmationDialog(option.value)}
                           disabled={option.value === issueData.issue_status}
                           className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-900"
                         >

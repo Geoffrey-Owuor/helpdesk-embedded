@@ -111,7 +111,7 @@ const AddIssueType = ({
     setConfirmationDialogInfo({
       showDialog: true,
       title: "Add Issue Type",
-      description: "Are you sure you want to add this issue type?",
+      description: "Confirm adding of new issue type.",
       onConfirm: handleSubmit,
     });
   };
