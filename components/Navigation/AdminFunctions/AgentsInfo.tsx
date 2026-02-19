@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, Tag, Info, BadgeCheck, UserRoundPlus } from "lucide-react";
+import { Mail, Tag, Info, UserRoundPlus, Trash2 } from "lucide-react";
 import { arrayReducer } from "@/utils/ArrayReducer";
 import { abbreviateUserName } from "@/public/assets";
 import AgentsInfoSkeleton from "@/components/Skeletons/AgentsInfoSkeleton";
@@ -57,10 +57,10 @@ const AgentsInfo = () => {
         {agentsInfo.map((agent) => (
           <div
             key={agent.email}
-            className="group flex flex-col gap-4 rounded-xl border border-neutral-200 bg-white p-5 transition-all hover:border-neutral-300 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900/40 dark:hover:border-neutral-700"
+            className="group flex flex-col gap-4 rounded-xl border border-neutral-200 bg-white p-4 transition-all hover:border-neutral-300 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900/40 dark:hover:border-neutral-700"
           >
             {/* 1. Header: Avatar & Info */}
-            <div className="flex items-start justify-between">
+            <div className="flex flex-wrap items-start justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-sm text-white dark:bg-white dark:text-black">
                   {abbreviateUserName(agent.name)}
@@ -75,10 +75,9 @@ const AgentsInfo = () => {
                   </div>
                 </div>
               </div>
-              <BadgeCheck
-                size={16}
-                className="-translate-x-2 text-neutral-500 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100 dark:text-neutral-300"
-              />
+              <button className="inline-flex -translate-x-2 rounded-full bg-red-50 p-2 text-red-600 transition-all group-hover:translate-x-0 hover:bg-red-100 hover:text-red-700 md:opacity-0 md:group-hover:opacity-100 dark:bg-red-500/20 dark:text-red-300 dark:hover:bg-red-500/30 dark:hover:text-red-400">
+                <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+              </button>
             </div>
 
             {/* 2. Skills Section: Tag Cloud */}
