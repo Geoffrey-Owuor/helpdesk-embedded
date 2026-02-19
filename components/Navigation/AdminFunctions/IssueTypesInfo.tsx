@@ -7,6 +7,7 @@ import {
   UserRound,
   UserRoundPen,
   BugPlay,
+  Trash2,
 } from "lucide-react";
 import { useState } from "react";
 import EditIssueTypeInfo from "./EditIssueTypeInfo";
@@ -122,13 +123,21 @@ const IssueTypesInfo = () => {
               </div>
 
               {/* Right Section: Edit button - Visible on hover */}
-              <button
-                onClick={() => handleToggleEdit(item.issue_type)}
-                disabled={item.issue_type === "No Issues Assigned"}
-                className={`${activeEditId === item.issue_type ? "inline-flex" : "inline-flex md:hidden md:hover:inline-flex"} h-8 w-8 items-center justify-center rounded-full bg-neutral-200 group-hover:inline-flex hover:bg-neutral-300 disabled:opacity-50 dark:bg-neutral-900 dark:hover:bg-neutral-800`}
-              >
-                <UserRoundPen className="h-4 w-4" />
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleToggleEdit(item.issue_type)}
+                  disabled={item.issue_type === "No Issues Assigned"}
+                  className={`${activeEditId === item.issue_type ? "inline-flex" : "inline-flex md:hidden md:hover:inline-flex"} h-8 w-8 items-center justify-center rounded-full bg-neutral-200 group-hover:inline-flex hover:bg-neutral-300 disabled:opacity-50 dark:bg-neutral-900 dark:hover:bg-neutral-800`}
+                >
+                  <UserRoundPen className="h-3 w-3 sm:h-4 sm:w-4" />
+                </button>
+                <button
+                  disabled={item.issue_type === "No Issues Assigned"}
+                  className={`${activeEditId === item.issue_type ? "inline-flex" : "inline-flex md:hidden md:hover:inline-flex"} h-8 w-8 items-center justify-center rounded-full bg-red-50 text-red-600 group-hover:inline-flex hover:bg-red-100 hover:text-red-700 disabled:opacity-50 dark:bg-red-500/20 dark:text-red-300 dark:hover:bg-red-500/30 dark:hover:text-red-400`}
+                >
+                  <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                </button>
+              </div>
             </div>
 
             {/* The edit issueType info div */}
