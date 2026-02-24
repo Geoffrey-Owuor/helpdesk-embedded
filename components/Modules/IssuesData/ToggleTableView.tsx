@@ -24,7 +24,7 @@ const ToggleTableView = () => {
         title="Switch to Card View"
       >
         <LayoutGrid size={16} strokeWidth={2.5} />
-        <span>Cards</span>
+        <span className="custom:inline-flex hidden">Cards</span>
       </button>
 
       {/* Table View Button */}
@@ -35,7 +35,7 @@ const ToggleTableView = () => {
         title="Switch to Table View"
       >
         <Table size={16} strokeWidth={2.5} />
-        <span>Table</span>
+        <span className="custom:inline-flex hidden">Table</span>
       </button>
     </div>
   );

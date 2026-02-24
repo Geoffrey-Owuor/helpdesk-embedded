@@ -7,14 +7,95 @@ import AgentsInfoSkeleton from "@/components/Skeletons/AgentsInfoSkeleton";
 import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 import { useState } from "react";
 import AddAgent from "./AddAgent";
+import apiClient from "@/lib/AxiosClient";
+import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
+import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
+import { useAlert } from "@/contexts/AlertContext";
+import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
 
 const AgentsInfo = () => {
   // Get context data
-  const { loading, agentsInfo: agentsFlatInfo } = useAgentsInfo();
+  const {
+    loading,
+    agentsInfo: agentsFlatInfo,
+    refetchAgentsInfo,
+  } = useAgentsInfo();
   const [showAddAgentModal, setShowAddAgentModal] = useState(false);
+
+  // context hooks
+  const { setConfirmationDialogInfo } = useConfirmationDialog();
+  const { setAlertInfo } = useAlert();
+  const { setPromiseOverlayInfo } = usePromiseOverlay();
 
   // Grouping the flattened array
   const agentsInfo = arrayReducer(agentsFlatInfo);
+
+  // Confirm Agent deletion
+  const handleConfirmDeletion = (agentEmail: string, agentName: string) => {
+    // Show confirmation dialog
+    setConfirmationDialogInfo({
+      showDialog: true,
+      title: "Delete Agent",
+      description: `Confirm deletion of agent: ${agentName}`,
+      onConfirm: () => handleDeletion(agentEmail),
+    });
+  };
+
+  // Handle the real deletion
+  const handleDeletion = async (agentEmail: string) => {
+    // hide confirmation dialog
+    setConfirmationDialogInfo((prev) => ({
+      ...prev,
+      showDialog: false,
+    }));
+
+    // Check if we have an agent email provided
+    if (!agentEmail) {
+      setAlertInfo({
+        showAlert: true,
+        alertMessage: "Selected action has no selected agent email",
+        alertType: "error",
+      });
+    }
+
+    // Show the promise overlay
+    setPromiseOverlayInfo({
+      loading: true,
+      overlaytext: "Deleting",
+    });
+
+    // Api call
+    try {
+      const response = await apiClient.delete("/delete-agent", {
+        data: { agentEmail: agentEmail },
+      });
+
+      // Refetch agents info on success
+      refetchAgentsInfo();
+
+      // Show alert
+      setAlertInfo({
+        showAlert: true,
+        alertType: "success",
+        alertMessage: response.data.message,
+      });
+    } catch (error) {
+      const apiError = getApiErrorMessage(error);
+      setAlertInfo({
+        showAlert: true,
+        alertType: "error",
+        alertMessage: apiError,
+      });
+
+      // Log the error
+      console.error("Error while deleting an agent:", apiError);
+    } finally {
+      setPromiseOverlayInfo({
+        loading: false,
+        overlaytext: "",
+      });
+    }
+  };
 
   if (loading) return <AgentsInfoSkeleton />;
 
@@ -75,7 +156,10 @@ const AgentsInfo = () => {
                   </div>
                 </div>
               </div>
-              <button className="inline-flex -translate-x-2 rounded-full bg-red-50 p-2 text-red-600 transition-all group-hover:translate-x-0 hover:bg-red-100 hover:text-red-700 md:opacity-0 md:group-hover:opacity-100 dark:bg-red-500/20 dark:text-red-300 dark:hover:bg-red-500/30 dark:hover:text-red-400">
+              <button
+                onClick={() => handleConfirmDeletion(agent.email, agent.name)}
+                className="inline-flex rounded-full bg-red-50 p-2 text-red-600 hover:bg-red-100 hover:text-red-700 md:opacity-0 md:group-hover:opacity-100 dark:bg-red-500/20 dark:text-red-300 dark:hover:bg-red-500/30 dark:hover:text-red-400"
+              >
                 <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
               </button>
             </div>

@@ -76,7 +76,7 @@ const IssueTypesInfo = () => {
     if (!issueType) {
       setAlertInfo({
         showAlert: true,
-        alertMessage: "Selected action has no matching issue type",
+        alertMessage: "Selected action has no selected issue type",
         alertType: "error",
       });
     }
@@ -84,7 +84,7 @@ const IssueTypesInfo = () => {
     // Show the promise overlay
     setPromiseOverlayInfo({
       loading: true,
-      overlaytext: "Adding",
+      overlaytext: "Deleting",
     });
 
     // Api call
