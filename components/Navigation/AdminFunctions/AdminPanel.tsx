@@ -1,10 +1,12 @@
 "use client";
 
-import { X, Bug, ShieldCheck, UsersRound } from "lucide-react";
+import { X, Bug, ShieldCheck, UsersRound, RotateCcw } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
 import AgentsInfo from "./AgentsInfo";
 import IssueTypesInfo from "./IssueTypesInfo";
 import ClientPortal from "@/components/Modules/ClientPortal";
+import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
+import { handleRefetchIssueAgentsData } from "@/serverActions/refetchIssueAgentsData";
 
 type AdminPanelProps = {
   showAdminPanel: boolean;
@@ -15,6 +17,16 @@ type TabId = "agent-info" | "issue-info";
 
 const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   const [activeTab, setActiveTab] = useState<TabId>("agent-info");
+  const { refetchAgentsInfo } = useAgentsInfo();
+
+  // Refetch agents and issue types data
+  const handleRefetchIssueAgents = async () => {
+    // We call our server action here
+    await handleRefetchIssueAgentsData();
+
+    // refetch data after revalidation
+    refetchAgentsInfo();
+  };
 
   if (!showAdminPanel) return null;
 
@@ -81,12 +93,20 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
                 <h3 className="text-sm font-semibold text-neutral-500 capitalize dark:text-neutral-400">
                   {activeTab.replace("-", " ")}
                 </h3>
-                <button
-                  onClick={() => setShowAdminPanel(false)}
-                  className="rounded-full p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
-                >
-                  <X size={20} />
-                </button>
+                <div className="flex items-center gap-6">
+                  <button
+                    onClick={handleRefetchIssueAgents}
+                    className="rounded-full p-1.5 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+                  >
+                    <RotateCcw size={20} />
+                  </button>
+                  <button
+                    onClick={() => setShowAdminPanel(false)}
+                    className="rounded-full p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
               </header>
               {/* Mobile Admin Navigation - Hidden on laptops */}
               <div className="flex items-center justify-center gap-2 md:hidden">

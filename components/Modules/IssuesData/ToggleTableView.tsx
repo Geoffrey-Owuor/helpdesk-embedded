@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchLogic } from "@/contexts/SearchLogicContext";
-import { LayoutGrid, Table } from "lucide-react";
+import { LayoutGrid, List } from "lucide-react";
 
 const ToggleTableView = () => {
   const { isTableView, setIsTableView } = useSearchLogic();
@@ -34,7 +34,7 @@ const ToggleTableView = () => {
         aria-label="Switch to Table View"
         title="Switch to Table View"
       >
-        <Table size={16} strokeWidth={2.5} />
+        <List size={16} strokeWidth={2.5} />
         <span className="custom:inline-flex hidden">Table</span>
       </button>
     </div>
