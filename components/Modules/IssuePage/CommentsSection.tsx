@@ -31,7 +31,9 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
     setCommentsLoading(true);
 
     try {
-      const response = await apiClient.post("/get-comments", { uuid });
+      const response = await apiClient.get("/get-comments", {
+        params: { uuid: uuid },
+      });
 
       // set response data to commentsData
       setCommentsData(response.data);
