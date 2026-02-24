@@ -12,9 +12,11 @@ export interface commentsQuery {
   comment_created_at: IssueValueTypes;
 }
 
-export const POST = withAuth(async ({ request }) => {
+export const GET = withAuth(async ({ request }) => {
   try {
-    const { uuid } = await request.json();
+    const searchParams = request.nextUrl.searchParams;
+
+    const uuid = searchParams.get("uuid");
 
     // Our query
     const getQuery = `SELECT 
