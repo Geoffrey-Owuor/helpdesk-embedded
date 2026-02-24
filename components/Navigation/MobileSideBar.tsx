@@ -76,8 +76,11 @@ const MobileSideBar = ({
           {/* Logo Area and close button */}
           <div className="flex items-center justify-between">
             <DashBoardLogo isSideBarOpen={true} />
-            <button onClick={() => setSideBarOpen(false)}>
-              <X />
+            <button
+              className="rounded-full p-1.5 hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              onClick={() => setSideBarOpen(false)}
+            >
+              <X className="h-5 w-5" />
             </button>
           </div>
 
