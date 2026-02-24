@@ -15,15 +15,29 @@ import { arrayReducer } from "@/utils/ArrayReducer";
 import IssueTypesInfoSkeleton from "@/components/Skeletons/IssueTypesInfoSkeleton";
 import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 import AddIssueType from "./AddIssueType";
+import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
+import { useAlert } from "@/contexts/AlertContext";
+import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+import apiClient from "@/lib/AxiosClient";
+import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 
 const IssueTypesInfo = () => {
   // Get context data
-  const { loading, agentsInfo: agentsFlatInfo } = useAgentsInfo();
+  const {
+    loading,
+    agentsInfo: agentsFlatInfo,
+    refetchAgentsInfo,
+  } = useAgentsInfo();
   // Tracking the id of the active edit section
   const [activeEditId, setActiveEditId] = useState<string | null>(null);
 
   // State for showing the AddIssueType Modal
   const [showAddIssueModal, setShowAddIssueModal] = useState(false);
+
+  // context hooks
+  const { setAlertInfo } = useAlert();
+  const { setConfirmationDialogInfo } = useConfirmationDialog();
+  const { setPromiseOverlayInfo } = usePromiseOverlay();
 
   const handleToggleEdit = (id: string) => {
     // If clicking the same one, close it, otherwise open a new one
@@ -38,6 +52,74 @@ const IssueTypesInfo = () => {
     agentName: agentInfo.name,
     agentEmail: agentInfo.email,
   }));
+
+  // Handling issue deletion confirmation
+  const handleConfirmIssueDeletion = (issueType: string) => {
+    // Show Confirmation Dialog
+    setConfirmationDialogInfo({
+      showDialog: true,
+      title: "Delete Issue Type",
+      description: `Confirm deletion of issue: ${issueType}`,
+      onConfirm: () => handleIssueDeletion(issueType),
+    });
+  };
+
+  // Handling the issue deletion
+  const handleIssueDeletion = async (issueType: string) => {
+    // Hide the dialogue
+    setConfirmationDialogInfo((prev) => ({
+      ...prev,
+      showDialog: false,
+    }));
+
+    // Check if issue type is provided
+    if (!issueType) {
+      setAlertInfo({
+        showAlert: true,
+        alertMessage: "Selected action has no matching issue type",
+        alertType: "error",
+      });
+    }
+
+    // Show the promise overlay
+    setPromiseOverlayInfo({
+      loading: true,
+      overlaytext: "Adding",
+    });
+
+    // Api call
+    try {
+      const response = await apiClient.delete("/delete-issuetype", {
+        data: { issueType: issueType },
+      });
+
+      // Refetch agents data
+      refetchAgentsInfo();
+
+      // Show alert on success
+      setAlertInfo({
+        showAlert: true,
+        alertType: "success",
+        alertMessage: response.data.message,
+      });
+    } catch (error) {
+      const apiError = getApiErrorMessage(error);
+      // show alert Error
+      setAlertInfo({
+        showAlert: true,
+        alertType: "error",
+        alertMessage: apiError,
+      });
+
+      // Log the error
+      console.error("Error while deleting issue type:", apiError);
+    } finally {
+      setPromiseOverlayInfo({
+        loading: false,
+        overlaytext: "",
+      });
+    }
+  };
 
   if (loading) {
     return <IssueTypesInfoSkeleton />;
@@ -133,6 +215,7 @@ const IssueTypesInfo = () => {
                 </button>
                 <button
                   disabled={item.issue_type === "No Issues Assigned"}
+                  onClick={() => handleConfirmIssueDeletion(item.issue_type)}
                   className={`${activeEditId === item.issue_type ? "inline-flex" : "inline-flex md:hidden md:hover:inline-flex"} h-8 w-8 items-center justify-center rounded-full bg-red-50 text-red-600 group-hover:inline-flex hover:bg-red-100 hover:text-red-700 disabled:opacity-50 dark:bg-red-500/20 dark:text-red-300 dark:hover:bg-red-500/30 dark:hover:text-red-400`}
                 >
                   <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
