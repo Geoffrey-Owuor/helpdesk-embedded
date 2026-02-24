@@ -54,7 +54,7 @@ const CustomDropdown = ({
   const selectedLabel = options.find((opt) => opt.value === value)?.label;
 
   return (
-    <div className="relative w-full sm:w-64" ref={dropdownRef}>
+    <div className="relative w-55" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`flex h-10 w-full items-center justify-between rounded-xl border bg-white px-3 text-sm transition-all dark:bg-neutral-950 ${
@@ -125,7 +125,7 @@ const SearchInput = ({
   onChange: (val: string) => void;
   placeholder: string;
 }) => (
-  <div className="relative w-full sm:w-64">
+  <div className="relative w-55">
     <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-neutral-400" />
     <input
       type="text"

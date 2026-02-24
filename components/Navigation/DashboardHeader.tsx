@@ -59,7 +59,7 @@ const DashboardHeader = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSideBarOpen(true)}
-              className="rounded-full p-2 hover:bg-neutral-200 sm:hidden dark:hover:bg-neutral-800"
+              className="rounded-full p-2 hover:bg-neutral-200 md:hidden dark:hover:bg-neutral-800"
             >
               <Menu />
             </button>
@@ -68,20 +68,20 @@ const DashboardHeader = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsIssueModalOpen(true)}
-              className="hidden items-center gap-2 rounded-full bg-blue-700 px-2 py-2 text-sm text-white hover:bg-blue-800 sm:flex md:rounded-xl md:px-3"
+              className="hidden items-center gap-2 rounded-full bg-blue-700 px-2 py-2 text-sm text-white hover:bg-blue-800 md:flex lg:rounded-xl lg:px-3"
             >
               <CirclePlus className="h-4.5 w-4.5" />
-              <span className="hidden md:inline-flex">New Issue</span>
+              <span className="hidden lg:inline-flex">New Issue</span>
             </button>
 
             {/* Admin Functionality */}
             {role === "admin" && (
               <button
                 onClick={() => setShowAdminPanel(true)}
-                className="hidden items-center gap-2 rounded-full border border-neutral-200 bg-white px-2 py-2 text-sm transition-all hover:bg-neutral-50 sm:flex md:rounded-xl md:px-3 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-900"
+                className="hidden items-center gap-2 rounded-full border border-neutral-200 bg-white px-2 py-2 text-sm transition-all hover:bg-neutral-50 md:flex lg:rounded-xl lg:px-3 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-900"
               >
                 <ShieldUser className="h-5 w-5 text-neutral-500" />
-                <span className="custom:inline-flex hidden text-neutral-700 dark:text-neutral-300">
+                <span className="hidden text-neutral-700 lg:inline-flex dark:text-neutral-300">
                   Admin Panel
                 </span>
               </button>
@@ -90,7 +90,7 @@ const DashboardHeader = () => {
             <Link
               href="/dashboard/automations"
               onClick={() => handleRouteChange("/dashboard/automations")}
-              className="custom:rounded-xl custom:px-3 hidden items-center gap-2 rounded-full px-2 py-2 text-sm hover:bg-neutral-200 sm:flex dark:hover:bg-neutral-800"
+              className="custom:rounded-xl custom:px-3 hidden items-center gap-2 rounded-full px-2 py-2 text-sm hover:bg-neutral-200 md:flex dark:hover:bg-neutral-800"
             >
               <Bot className="h-5 w-5" />
               <span className="custom:inline-flex hidden">Automations</span>
@@ -106,7 +106,7 @@ const DashboardHeader = () => {
             <Link
               href="/dashboard"
               onClick={() => handleRouteChange("/dashboard")}
-              className="rounded-full p-2 transition-colors duration-200 hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              className="hidden rounded-full p-2 transition-colors duration-200 hover:bg-neutral-200 md:block dark:hover:bg-neutral-800"
             >
               <Home className="h-4.5 w-4.5" />
             </Link>
