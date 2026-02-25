@@ -96,6 +96,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
                 <div className="flex items-center gap-6">
                   <button
                     onClick={handleRefetchIssueAgents}
+                    title="Refresh"
                     className="rounded-full p-1.5 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
                   >
                     <RotateCcw size={20} />
