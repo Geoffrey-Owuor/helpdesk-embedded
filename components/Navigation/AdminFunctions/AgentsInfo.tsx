@@ -6,6 +6,7 @@ import { abbreviateUserName } from "@/public/assets";
 import AgentsInfoSkeleton from "@/components/Skeletons/AgentsInfoSkeleton";
 import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 import { useState } from "react";
+import { useUser } from "@/contexts/UserContext";
 import AddAgent from "./AddAgent";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
@@ -25,6 +26,7 @@ const AgentsInfo = () => {
   // context hooks
   const { setConfirmationDialogInfo } = useConfirmationDialog();
   const { setAlertInfo } = useAlert();
+  const { email: adminEmail } = useUser();
   const { setPromiseOverlayInfo } = usePromiseOverlay();
 
   // Grouping the flattened array
@@ -158,7 +160,8 @@ const AgentsInfo = () => {
               </div>
               <button
                 onClick={() => handleConfirmDeletion(agent.email, agent.name)}
-                className="inline-flex rounded-full bg-red-50 p-2 text-red-600 hover:bg-red-100 hover:text-red-700 md:opacity-0 md:group-hover:opacity-100 dark:bg-red-500/20 dark:text-red-300 dark:hover:bg-red-500/30 dark:hover:text-red-400"
+                disabled={agent.email === adminEmail}
+                className="inline-flex rounded-full bg-red-50 p-2 text-red-600 hover:bg-red-100 hover:text-red-700 disabled:opacity-50 md:opacity-0 md:group-hover:opacity-100 md:disabled:opacity-0 md:group-hover:disabled:opacity-50 dark:bg-red-500/20 dark:text-red-300 dark:hover:bg-red-500/30 dark:hover:text-red-400"
               >
                 <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
               </button>
