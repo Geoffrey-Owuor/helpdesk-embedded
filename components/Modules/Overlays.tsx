@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Loader2, X } from "lucide-react";
+import { ArrowRight, Loader, Loader2, X } from "lucide-react";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
@@ -26,10 +26,17 @@ export const PromiseOverlay = () => {
       {/* Container to align the spinner and text horizontally */}
       <div className="flex items-center space-x-2">
         {/* The Lucide Loader spinner */}
-        <Loader2
-          className="h-9 w-9 animate-spin text-neutral-900 dark:text-white"
-          aria-label="overlay text"
-        />
+        {promiseOverlayInfo.overlaytext === "Logging out" ? (
+          <Loader
+            className="h-9 w-9 animate-spin text-neutral-900 dark:text-white"
+            aria-label="overlay text"
+          />
+        ) : (
+          <Loader2
+            className="h-9 w-9 animate-spin text-neutral-900 dark:text-white"
+            aria-label="overlay text"
+          />
+        )}
         {/* The text, styled for dark and light modes */}
         <span className="text-xl text-neutral-900 dark:text-white">
           {promiseOverlayInfo.overlaytext}...

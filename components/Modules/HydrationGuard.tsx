@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2 } from "lucide-react";
 
 export default function HydrationGuard({
   children,
@@ -17,12 +16,8 @@ export default function HydrationGuard({
   if (!mounted) {
     return (
       <div className="fixed inset-0 z-9999 flex items-center justify-center bg-white/80 backdrop-blur-sm dark:bg-black/80">
-        <div className="flex flex-col items-center gap-2">
-          <Loader2 className="h-12 w-12 animate-spin text-neutral-900 dark:text-neutral-100" />
-          <span className="text-sm font-semibold text-neutral-500">
-            Loading...
-          </span>
-        </div>
+        {/* Tailwind border illusion */}
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-neutral-900 dark:border-neutral-700 dark:border-t-neutral-100" />
       </div>
     );
   }
