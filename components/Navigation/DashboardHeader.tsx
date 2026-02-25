@@ -19,6 +19,7 @@ import { DashBoardLogo } from "../Modules/DashBoardLogo";
 import { usePathname, useRouter } from "next/navigation";
 import { useLoadingLine } from "@/contexts/LoadingLineContext";
 import AdminPanel from "./AdminFunctions/AdminPanel";
+import UserSettings from "./UserSettings/UserSettings";
 
 const DashboardHeader = () => {
   // Get the user information
@@ -27,8 +28,9 @@ const DashboardHeader = () => {
   const [sideBarOpen, setSideBarOpen] = useState(false);
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [showUserSettings, setShowUserSettings] = useState(false);
 
-  const userButtonRef = useRef<HTMLButtonElement>(null);
+  const userDivRef = useRef<HTMLDivElement>(null);
   const { setLoadingLine } = useLoadingLine();
   const pathname = usePathname();
   const router = useRouter();
@@ -52,6 +54,11 @@ const DashboardHeader = () => {
       <AdminPanel
         showAdminPanel={showAdminPanel}
         setShowAdminPanel={setShowAdminPanel}
+      />
+
+      <UserSettings
+        isUserSettingsOpen={showUserSettings}
+        setIsUserSettingsOpen={setShowUserSettings}
       />
 
       <div className={`fixed top-0 right-0 left-0 z-50`}>
@@ -113,9 +120,8 @@ const DashboardHeader = () => {
             <div className="w-10">
               <ThemeToggle />
             </div>
-            <div className="relative">
+            <div className="relative" ref={userDivRef}>
               <button
-                ref={userButtonRef}
                 onClick={() => setIsUserCardOpen((prev) => !prev)}
                 className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
               >
@@ -126,8 +132,9 @@ const DashboardHeader = () => {
               {/* Show the user info card */}
               <UserInfoCard
                 isUserCardOpen={isUserCardOpen}
+                openUserSettings={() => setShowUserSettings(true)}
                 closeUserCard={() => setIsUserCardOpen(false)}
-                triggerRef={userButtonRef} //passing the ref to the child
+                triggerRef={userDivRef} //passing the ref to the child
               />
             </div>
           </div>

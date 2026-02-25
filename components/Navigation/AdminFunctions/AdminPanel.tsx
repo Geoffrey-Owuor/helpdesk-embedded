@@ -7,6 +7,7 @@ import IssueTypesInfo from "./IssueTypesInfo";
 import ClientPortal from "@/components/Modules/ClientPortal";
 import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 import { handleRefetchIssueAgentsData } from "@/serverActions/refetchIssueAgentsData";
+import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
 
 type AdminPanelProps = {
   showAdminPanel: boolean;
@@ -18,11 +19,24 @@ type TabId = "agent-info" | "issue-info";
 const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   const [activeTab, setActiveTab] = useState<TabId>("agent-info");
   const { refetchAgentsInfo } = useAgentsInfo();
+  const { setPromiseOverlayInfo } = usePromiseOverlay();
 
   // Refetch agents and issue types data
   const handleRefetchIssueAgents = async () => {
+    // Show our promise overlay
+    setPromiseOverlayInfo({
+      loading: true,
+      overlaytext: "Refreshing",
+    });
+
     // We call our server action here
     await handleRefetchIssueAgentsData();
+
+    // After it's complete - we hide our promise overlay
+    setPromiseOverlayInfo({
+      loading: false,
+      overlaytext: "",
+    });
 
     // refetch data after revalidation
     refetchAgentsInfo();
@@ -45,7 +59,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   return (
     <ClientPortal>
       {/* The Backdrop */}
-      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
+      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
         {/* Modal Container */}
         <div className="flex h-[90vh] w-full max-w-4xl overflow-hidden rounded-2xl border border-neutral-300 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
           {/* --- LEFT SIDEBAR --- */}
