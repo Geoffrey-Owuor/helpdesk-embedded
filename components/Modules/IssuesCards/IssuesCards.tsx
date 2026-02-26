@@ -93,7 +93,7 @@ const IssuesCards = ({ type }: { type: string }) => {
   };
 
   return (
-    <div className="py-6">
+    <div className="py-6 md:py-3.5">
       <div className="mb-4 flex items-center justify-between">
         <div className="inline-flex flex-col">
           <span className="text-xl font-semibold">
@@ -133,7 +133,7 @@ const IssuesCards = ({ type }: { type: string }) => {
           {statItems.map((item, index) => (
             <div
               key={index}
-              className="group relative flex flex-col justify-between rounded-xl border border-neutral-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-950"
+              className="group relative flex flex-col justify-between rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-950"
             >
               <div className="flex items-center justify-between">
                 <div>
