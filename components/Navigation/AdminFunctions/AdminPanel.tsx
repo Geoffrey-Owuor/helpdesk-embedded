@@ -63,7 +63,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
         {/* Modal Container */}
         <div className="flex h-[90vh] w-full max-w-4xl overflow-hidden rounded-2xl border border-neutral-300 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
           {/* --- LEFT SIDEBAR --- */}
-          <aside className="hidden w-64 flex-col border-r border-neutral-200 bg-neutral-50/50 p-4 md:flex dark:border-neutral-800 dark:bg-neutral-900/30">
+          <aside className="hidden w-60 flex-col border-r border-neutral-200 bg-neutral-50/50 p-4 md:flex dark:border-neutral-800 dark:bg-neutral-900/30">
             <div className="mb-8 flex items-center gap-2 px-2">
               <ShieldCheck
                 className="text-blue-600 dark:text-blue-500"
