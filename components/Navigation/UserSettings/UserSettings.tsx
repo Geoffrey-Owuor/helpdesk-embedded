@@ -2,7 +2,7 @@
 
 import { useUser } from "@/contexts/UserContext";
 import ClientPortal from "@/components/Modules/ClientPortal";
-import { Dispatch, SetStateAction } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import {
   X,
   Mail,
@@ -13,6 +13,8 @@ import {
   UserRound,
   CircleUserRound,
   UserRoundPen,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 type UserSettingsProps = {
@@ -25,6 +27,55 @@ const UserSettings = ({
   setIsUserSettingsOpen,
 }: UserSettingsProps) => {
   const { username, email, department, role } = useUser();
+
+  const [formData, setFormData] = useState({
+    previousPassword: "",
+    newPassword: "",
+    confirmNewPassword: "",
+  });
+
+  // Show password state
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Password properties object
+  interface PasswordProperties {
+    label: string;
+    placeholder: string;
+  }
+
+  //Dynamic placeholder object
+  const dynamicPlaceHolder: Record<string, PasswordProperties> = {
+    previousPassword: {
+      label: "Previous password",
+      placeholder: "Enter previous password",
+    },
+    newPassword: {
+      label: "New password",
+      placeholder: "Enter current password",
+    },
+    confirmNewPassword: {
+      label: "Confirm password",
+      placeholder: "Confirm new password",
+    },
+  };
+
+  // Handle passwords change
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Derived password error state
+  const passwordError =
+    formData.newPassword &&
+    formData.confirmNewPassword &&
+    formData.newPassword !== formData.confirmNewPassword
+      ? "passwords do not match"
+      : "";
 
   if (!isUserSettingsOpen) return null;
 
@@ -85,43 +136,45 @@ const UserSettings = ({
               </div>
 
               <form className="max-w-md space-y-4">
-                <div>
-                  <label className="mb-1.5 block text-sm font-semibold text-neutral-700 dark:text-neutral-300">
-                    Current password
-                  </label>
-                  <input
-                    type="password"
-                    placeholder="Enter current password"
-                    className="w-full rounded-lg border border-neutral-300 bg-neutral-50/50 px-3 py-2.5 text-sm text-neutral-900 transition-all placeholder:text-neutral-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900/50 dark:text-neutral-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
-                    required
-                  />
-                </div>
+                {/* Mapping through the formData to create our input values */}
+                {Object.entries(formData).map(([key, value]) => (
+                  <div key={key} className="relative">
+                    <label className="mb-1.5 block text-sm font-semibold text-neutral-700 dark:text-neutral-300">
+                      {dynamicPlaceHolder[key].label}
+                    </label>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name={key}
+                      placeholder={dynamicPlaceHolder[key].placeholder}
+                      value={value}
+                      onChange={handlePasswordChange}
+                      className="w-full rounded-lg border border-neutral-300 bg-neutral-50/50 px-3 py-2.5 text-sm text-neutral-900 transition-all placeholder:text-neutral-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900/50 dark:text-neutral-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="absolute right-3 bottom-3 text-neutral-700 transition-all duration-200 hover:text-neutral-500 dark:text-neutral-300"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                ))}
 
-                <div>
-                  <label className="mb-1.5 block text-sm font-semibold text-neutral-700 dark:text-neutral-300">
-                    New password
-                  </label>
-                  <input
-                    type="password"
-                    placeholder="Create a new password"
-                    className="w-full rounded-lg border border-neutral-300 bg-neutral-50/50 px-3 py-2.5 text-sm text-neutral-900 transition-all placeholder:text-neutral-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900/50 dark:text-neutral-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
-                    required
-                  />
-                </div>
+                {/* Password error */}
+                {passwordError && (
+                  <p className="text-xs text-red-500">{passwordError}</p>
+                )}
 
-                <div>
-                  <label className="mb-1.5 block text-sm font-semibold text-neutral-700 dark:text-neutral-300">
-                    Confirm new password
-                  </label>
-                  <input
-                    type="password"
-                    placeholder="Confirm your new password"
-                    className="w-full rounded-lg border border-neutral-300 bg-neutral-50/50 px-3 py-2.5 text-sm text-neutral-900 transition-all placeholder:text-neutral-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900/50 dark:text-neutral-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
-                    required
-                  />
-                </div>
                 <button
                   type="submit"
+                  disabled={
+                    !Object.values(formData).every(Boolean) || !!passwordError
+                  }
                   className="flex items-center gap-1.5 rounded-xl bg-red-600 px-3 py-2 text-sm text-white transition-all duration-200 hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <UserRoundPen className="h-4 w-4" />
