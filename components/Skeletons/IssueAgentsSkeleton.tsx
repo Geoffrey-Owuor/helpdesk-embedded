@@ -4,7 +4,7 @@ export const IssueAgentsSkeleton = () => {
   // We render 3 skeleton cards to simulate a realistic loading state
   return (
     <div className="flex flex-wrap items-center gap-3">
-      {[1, 2, 3].map((index) => (
+      {[1, 2, 3, 4, 5, 6].map((index) => (
         <div
           key={index}
           className="flex items-center gap-3 rounded-xl border border-neutral-200 bg-white py-1.5 pr-4 pl-1.5 dark:border-neutral-800 dark:bg-neutral-950"
