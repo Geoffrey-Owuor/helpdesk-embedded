@@ -91,6 +91,14 @@ const UserSettings = ({
       ? "passwords do not match"
       : "";
 
+  //Derived same password state
+  const samePassword =
+    formData.previousPassword &&
+    formData.newPassword &&
+    formData.previousPassword === formData.newPassword
+      ? "new password same as previous password"
+      : "";
+
   // Handle submission confirmation
   const handleConfirmSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -124,6 +132,13 @@ const UserSettings = ({
         showAlert: true,
         alertType: "success",
         alertMessage: response.data.message,
+      });
+
+      // Clear form data
+      setFormData({
+        previousPassword: "",
+        newPassword: "",
+        confirmNewPassword: "",
       });
     } catch (error) {
       const errorMessage = getApiErrorMessage(error);
@@ -237,15 +252,19 @@ const UserSettings = ({
                   </div>
                 ))}
 
-                {/* Password error */}
-                {passwordError && (
-                  <p className="text-xs text-red-500">{passwordError}</p>
+                {/* Password error or same password */}
+                {(passwordError || samePassword) && (
+                  <p className="text-xs text-red-500">
+                    {passwordError || samePassword}
+                  </p>
                 )}
 
                 <button
                   type="submit"
                   disabled={
-                    !Object.values(formData).every(Boolean) || !!passwordError
+                    !Object.values(formData).every(Boolean) ||
+                    !!passwordError ||
+                    !!samePassword
                   }
                   className="flex items-center gap-1.5 rounded-xl bg-red-600 px-3 py-2 text-sm text-white transition-all duration-200 hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >

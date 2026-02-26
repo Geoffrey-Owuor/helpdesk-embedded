@@ -70,7 +70,7 @@ export const PUT = withAuth(async ({ user, request }) => {
     if (isSameAsCurrent) {
       await client.query("ROLLBACK");
       return NextResponse.json(
-        { message: "New password cannot be the same as your current password" },
+        { message: "New password same as your current password" },
         { status: 400 },
       );
     }
