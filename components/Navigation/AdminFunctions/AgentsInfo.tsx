@@ -1,20 +1,103 @@
 "use client";
 
-import { Mail, Tag, Info, BadgeCheck, UserRoundPlus } from "lucide-react";
+import { Mail, Tag, Info, UserRoundPlus, Trash2 } from "lucide-react";
 import { arrayReducer } from "@/utils/ArrayReducer";
 import { abbreviateUserName } from "@/public/assets";
 import AgentsInfoSkeleton from "@/components/Skeletons/AgentsInfoSkeleton";
 import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 import { useState } from "react";
+import { useUser } from "@/contexts/UserContext";
 import AddAgent from "./AddAgent";
+import apiClient from "@/lib/AxiosClient";
+import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
+import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
+import { useAlert } from "@/contexts/AlertContext";
+import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
 
 const AgentsInfo = () => {
   // Get context data
-  const { loading, agentsInfo: agentsFlatInfo } = useAgentsInfo();
+  const {
+    loading,
+    agentsInfo: agentsFlatInfo,
+    refetchAgentsInfo,
+  } = useAgentsInfo();
   const [showAddAgentModal, setShowAddAgentModal] = useState(false);
+
+  // context hooks
+  const { setConfirmationDialogInfo } = useConfirmationDialog();
+  const { setAlertInfo } = useAlert();
+  const { email: adminEmail } = useUser();
+  const { setPromiseOverlayInfo } = usePromiseOverlay();
 
   // Grouping the flattened array
   const agentsInfo = arrayReducer(agentsFlatInfo);
+
+  // Confirm Agent deletion
+  const handleConfirmDeletion = (agentEmail: string, agentName: string) => {
+    // Show confirmation dialog
+    setConfirmationDialogInfo({
+      showDialog: true,
+      title: "Delete Agent",
+      description: `Confirm deletion of agent: ${agentName}`,
+      onConfirm: () => handleDeletion(agentEmail),
+    });
+  };
+
+  // Handle the real deletion
+  const handleDeletion = async (agentEmail: string) => {
+    // hide confirmation dialog
+    setConfirmationDialogInfo((prev) => ({
+      ...prev,
+      showDialog: false,
+    }));
+
+    // Check if we have an agent email provided
+    if (!agentEmail) {
+      setAlertInfo({
+        showAlert: true,
+        alertMessage: "Selected action has no selected agent email",
+        alertType: "error",
+      });
+    }
+
+    // Show the promise overlay
+    setPromiseOverlayInfo({
+      loading: true,
+      overlaytext: "Deleting",
+    });
+
+    // Api call
+    try {
+      const response = await apiClient.delete("/delete-agent", {
+        data: { agentEmail: agentEmail },
+      });
+
+      // Refetch agents info on success
+      refetchAgentsInfo();
+
+      // Show alert
+      setAlertInfo({
+        showAlert: true,
+        alertType: "success",
+        alertMessage: response.data.message,
+      });
+    } catch (error) {
+      const apiError = getApiErrorMessage(error);
+      setAlertInfo({
+        showAlert: true,
+        alertType: "error",
+        alertMessage: apiError,
+      });
+
+      // Log the error
+      console.error("Error while deleting an agent:", apiError);
+    } finally {
+      setPromiseOverlayInfo({
+        loading: false,
+        overlaytext: "",
+      });
+    }
+  };
 
   if (loading) return <AgentsInfoSkeleton />;
 
@@ -57,10 +140,10 @@ const AgentsInfo = () => {
         {agentsInfo.map((agent) => (
           <div
             key={agent.email}
-            className="group flex flex-col gap-4 rounded-xl border border-neutral-200 bg-white p-5 transition-all hover:border-neutral-300 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900/40 dark:hover:border-neutral-700"
+            className="group flex flex-col gap-4 rounded-xl border border-neutral-200 bg-white p-4 transition-all hover:border-neutral-300 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900/40 dark:hover:border-neutral-700"
           >
             {/* 1. Header: Avatar & Info */}
-            <div className="flex items-start justify-between">
+            <div className="flex flex-wrap items-start justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-sm text-white dark:bg-white dark:text-black">
                   {abbreviateUserName(agent.name)}
@@ -75,10 +158,13 @@ const AgentsInfo = () => {
                   </div>
                 </div>
               </div>
-              <BadgeCheck
-                size={16}
-                className="-translate-x-2 text-neutral-500 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100 dark:text-neutral-300"
-              />
+              <button
+                onClick={() => handleConfirmDeletion(agent.email, agent.name)}
+                disabled={agent.email === adminEmail}
+                className="inline-flex rounded-full bg-red-50 p-2 text-red-600 hover:bg-red-100 hover:text-red-700 disabled:opacity-50 md:opacity-0 md:group-hover:opacity-100 md:disabled:opacity-0 md:group-hover:disabled:opacity-50 dark:bg-red-500/20 dark:text-red-300 dark:hover:bg-red-500/30 dark:hover:text-red-400"
+              >
+                <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+              </button>
             </div>
 
             {/* 2. Skills Section: Tag Cloud */}

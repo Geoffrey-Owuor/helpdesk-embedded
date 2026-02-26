@@ -206,11 +206,11 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           issueAgentEmail={issueData.issue_agent_email}
         />
       )}
-      <div className="mx-auto max-w-6xl py-8">
+      <div className="mx-auto max-w-6xl py-6 md:py-3.5">
         {/* --- HEADER SECTION (Unchanged) --- */}
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-start">
           <div className="flex flex-col gap-3">
-            <h1 className="text-2xl font-semibold text-neutral-900 dark:text-white">
+            <h1 className="text-xl font-semibold text-neutral-900 dark:text-white">
               {issueData.issue_title}
             </h1>
             <div className="flex flex-wrap items-center gap-3 text-sm">

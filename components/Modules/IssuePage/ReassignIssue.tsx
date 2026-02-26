@@ -153,7 +153,7 @@ const ReassignIssue = ({
       {/* Backdrop */}
       <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 dark:bg-black/60">
         {/* Modal Container*/}
-        <div className="w-full max-w-lg rounded-2xl border border-neutral-300 bg-neutral-50 p-6 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
+        <div className="flex max-h-120 w-full max-w-lg flex-col rounded-2xl border border-neutral-300 bg-neutral-50 p-6 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
           {/* Header */}
           <div className="mb-6 flex items-center justify-between">
             <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
@@ -170,7 +170,7 @@ const ReassignIssue = ({
           {loading ? (
             <IssueAgentsSkeleton />
           ) : (
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3 overflow-y-auto">
               {organizedIssueAgents.length === 0 ? (
                 // Empty State - Added subtle blue background
                 <div className="flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-blue-800 dark:border-blue-900/30 dark:bg-blue-950/20 dark:text-blue-300">
