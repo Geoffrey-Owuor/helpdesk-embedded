@@ -16,7 +16,7 @@ export const DashBoardLogo = ({
       />
     </div>
     <span
-      className={`${isSideBarOpen ? "block" : "hidden md:block"} text-xl font-semibold text-black dark:text-white`}
+      className={`${isSideBarOpen ? "block" : "hidden"} text-xl font-semibold text-black dark:text-white`}
     >
       Issue Desk
     </span>

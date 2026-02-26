@@ -9,6 +9,7 @@ import { useEffect, RefObject } from "react";
 
 type UserCardProps = {
   isUserCardOpen: boolean;
+  openDownwards: boolean;
   closeUserCard: () => void;
   openUserSettings: () => void;
   triggerRef: RefObject<HTMLElement | null>;
@@ -16,6 +17,7 @@ type UserCardProps = {
 
 const UserInfoCard = ({
   isUserCardOpen,
+  openDownwards,
   closeUserCard,
   openUserSettings,
   triggerRef,
@@ -64,7 +66,9 @@ const UserInfoCard = ({
   if (!isUserCardOpen) return null;
 
   return (
-    <div className="absolute top-full right-0 z-50 mt-2 w-45 origin-top-right rounded-xl border border-neutral-300 bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-950">
+    <div
+      className={`absolute ${openDownwards ? "top-full right-0 mt-2 origin-top-right" : "bottom-full left-0 mb-2 origin-bottom-left"} z-50 w-45 rounded-xl border border-neutral-300 bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-950`}
+    >
       {/* Header Section: Avatar & Name */}
       <div className="flex items-center gap-3 border-b border-neutral-100 p-4 dark:border-neutral-800">
         <div className="flex min-w-0 flex-col">

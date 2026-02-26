@@ -154,7 +154,7 @@ const InfoCard = ({
       <span className="text-xs text-neutral-500 dark:text-neutral-400">
         {label}
       </span>
-      <span className="max-w-40 truncate text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+      <span className="text-sm font-semibold text-neutral-900 md:max-w-30 md:truncate dark:text-neutral-100">
         {(label === "Role"
           ? `${value?.charAt(0).toUpperCase()}${value?.slice(1)}`
           : value) || "Not specified"}
