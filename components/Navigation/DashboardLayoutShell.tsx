@@ -1,4 +1,4 @@
-import DashboardHeader from "./DashboardHeader";
+import DashboardSidebar from "./DashboardSidebar";
 import { IssuesDataProvider } from "@/contexts/IssuesDataContext";
 import { SearchLogicProvider } from "@/contexts/SearchLogicContext";
 import { IssuesCardsProvider } from "@/contexts/IssuesCardsContext";
@@ -17,10 +17,10 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
             <IssuesCardsProvider>
               <ColumnVisibilityProvider>
                 <AgentsInfoProvider>
-                  <DashboardHeader />
+                  <DashboardSidebar />
                   <div
                     id="main-content"
-                    className="fixed top-16 right-1 bottom-3 left-1 overflow-y-auto rounded-3xl border border-neutral-100 bg-white sm:bottom-1 sm:rounded-2xl dark:border-neutral-900 dark:bg-black"
+                    className="fixed top-16 right-1 bottom-3 left-1 overflow-y-auto rounded-3xl border border-neutral-200 bg-white sm:bottom-1 sm:rounded-2xl md:top-1 md:left-20 dark:border-neutral-800 dark:bg-black"
                   >
                     <div className="flex h-full flex-col">
                       {/* Content */}
