@@ -2,7 +2,13 @@
 
 import { useUser } from "@/contexts/UserContext";
 import ClientPortal from "@/components/Modules/ClientPortal";
-import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  FormEvent,
+  SetStateAction,
+  useState,
+} from "react";
 import {
   X,
   Mail,
@@ -16,6 +22,11 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
+import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
+import { useAlert } from "@/contexts/AlertContext";
+import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+import apiClient from "@/lib/AxiosClient";
+import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 
 type UserSettingsProps = {
   isUserSettingsOpen: boolean;
@@ -27,6 +38,9 @@ const UserSettings = ({
   setIsUserSettingsOpen,
 }: UserSettingsProps) => {
   const { username, email, department, role } = useUser();
+  const { setAlertInfo } = useAlert();
+  const { setPromiseOverlayInfo } = usePromiseOverlay();
+  const { setConfirmationDialogInfo } = useConfirmationDialog();
 
   const [formData, setFormData] = useState({
     previousPassword: "",
@@ -76,6 +90,61 @@ const UserSettings = ({
     formData.newPassword !== formData.confirmNewPassword
       ? "passwords do not match"
       : "";
+
+  // Handle submission confirmation
+  const handleConfirmSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    setConfirmationDialogInfo({
+      showDialog: true,
+      title: "Change Password",
+      description: "Confirm changing your current password",
+      onConfirm: handleSubmit,
+    });
+  };
+
+  const handleSubmit = async () => {
+    // Hide confirmation dialog
+    setConfirmationDialogInfo((prev) => ({
+      ...prev,
+      showDialog: false,
+    }));
+
+    // Show promise overlay
+    setPromiseOverlayInfo({
+      loading: true,
+      overlaytext: "Changing",
+    });
+
+    //Api call
+    try {
+      const response = await apiClient.put("/update-password", formData);
+
+      // Show alert info on success
+      setAlertInfo({
+        showAlert: true,
+        alertType: "success",
+        alertMessage: response.data.message,
+      });
+    } catch (error) {
+      const errorMessage = getApiErrorMessage(error);
+      // Show alert info and log the error
+      setAlertInfo({
+        showAlert: true,
+        alertType: "error",
+        alertMessage: errorMessage,
+      });
+
+      console.error(
+        "An error occurred while trying to update the password:",
+        errorMessage,
+      );
+    } finally {
+      setPromiseOverlayInfo({
+        loading: false,
+        overlaytext: "",
+      });
+    }
+  };
 
   if (!isUserSettingsOpen) return null;
 
@@ -135,7 +204,10 @@ const UserSettings = ({
                 </h3>
               </div>
 
-              <form className="max-w-md space-y-4">
+              <form
+                className="max-w-md space-y-4"
+                onSubmit={handleConfirmSubmit}
+              >
                 {/* Mapping through the formData to create our input values */}
                 {Object.entries(formData).map(([key, value]) => (
                   <div key={key} className="relative">
