@@ -42,7 +42,7 @@ const ClearRefreshFilters = ({ handleRefetchIssues }: ClearRefreshProps) => {
       <button
         onClick={clearFilters}
         title="Clear filters"
-        className="flex h-9.5 items-center gap-1.5 rounded-xl bg-blue-700 px-3 text-sm text-white hover:bg-blue-800"
+        className="flex h-9.5 items-center gap-1.5 rounded-xl bg-neutral-200 px-3 text-sm text-neutral-900 transition-colors duration-200 hover:bg-neutral-200/60 dark:bg-neutral-700/50 dark:text-neutral-100 dark:hover:bg-neutral-800/70"
       >
         <XCircle className="h-4.5 w-4.5" />
         <span className="max-w-20 truncate">Clear filters</span>
