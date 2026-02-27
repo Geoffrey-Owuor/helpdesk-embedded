@@ -15,7 +15,7 @@ const ToggleTableView = () => {
     "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300";
 
   return (
-    <div className="ml-0 flex rounded-xl border border-neutral-200 bg-neutral-100 p-1 md:ml-auto dark:border-neutral-800 dark:bg-neutral-950">
+    <div className="flex rounded-xl border border-neutral-200 bg-neutral-100 p-1 dark:border-neutral-800 dark:bg-neutral-950">
       {/* Card View Button */}
       <button
         onClick={() => setIsTableView(false)}

@@ -155,7 +155,7 @@ const DashboardSidebar = () => {
         </nav>
 
         {/* Bottom section: theme toggle + avatar */}
-        <div className="mt-auto flex flex-col items-center gap-3 pb-2">
+        <div className="mt-auto flex flex-col items-center gap-3">
           <div className="flex items-center justify-center">
             <ThemeToggle />
           </div>

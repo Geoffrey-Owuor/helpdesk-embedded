@@ -16,6 +16,7 @@ import Pagination from "./Pagination";
 import ToggleTableView from "./ToggleTableView";
 import TableViewData from "./TableViewData";
 import CardViewData from "./CardViewData";
+import ExportData from "./ExportData";
 
 const IssuesData = ({ recordType }: { recordType: string }) => {
   const { issuesData, loading, refetchIssues } = useIssuesData();
@@ -134,11 +135,12 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
         {/* The search button */}
         <SearchFilters recordType={recordType} />
 
-        {/* Toggle between table and card view */}
-        <ToggleTableView />
+        {/* Toggle between table and card view and Export Data buttons*/}
+        <div className="ml-0 flex items-center gap-4 md:ml-auto">
+          <ExportData />
+          <ToggleTableView />
+        </div>
       </div>
-
-      {/* Implementing table view and card view */}
 
       {recordsLoading ? (
         <IssuesDataSkeleton isTableView={isTableView} />
