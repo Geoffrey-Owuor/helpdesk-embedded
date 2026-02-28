@@ -28,7 +28,7 @@ export const GET = withAuth(async ({ request, user }) => {
     const params: (string | number)[] = [];
 
     // constructing clauses based on the fetch automations params
-    if (fetchAutomations === "fetchAutomations") {
+    if (fetchAutomations === "automations") {
       whereClauses.push(`issue_type = $${params.length + 1}`);
       params.push("Automation");
     } else {
@@ -86,10 +86,17 @@ export const GET = withAuth(async ({ request, user }) => {
     // Defining the columns for our worksheet
     if (rows.length > 0) {
       worksheet.columns = Object.keys(rows[0]).map((key) => ({
-        header: key.split("_"),
+        // Split by an underscore, capitalize first letter of each word and join with a space
+        header: key
+          .split("_")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" "),
         key: key,
         width: 20,
       }));
+
+      // Make the entire header row bold
+      worksheet.getRow(1).font = { bold: true };
 
       // Add the data rows
       worksheet.addRows(rows);
