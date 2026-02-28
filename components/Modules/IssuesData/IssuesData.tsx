@@ -137,7 +137,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
 
         {/* Toggle between table and card view and Export Data buttons*/}
         <div className="ml-0 flex items-center gap-4 md:ml-auto">
-          <ExportData />
+          <ExportData fetchAutomations={recordType} />
           <ToggleTableView />
         </div>
       </div>
