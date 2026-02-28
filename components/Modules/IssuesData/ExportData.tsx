@@ -61,17 +61,18 @@ const ExportData = ({ fetchAutomations }: { fetchAutomations: string }) => {
   };
 
   return (
-    <div className="relative flex items-center justify-center p-0.75">
-      {/* Spinning border */}
+    <div className="relative inline-flex items-center justify-center p-1">
+      {/* Spinning border with a visible track */}
       {isExporting && (
-        <div className="absolute inset-0 animate-spin rounded-full border-t border-current" />
+        <div className="absolute inset-0 animate-spin rounded-full border-2 border-neutral-200 border-t-black dark:border-neutral-800 dark:border-t-white" />
       )}
+
       {/* Download button */}
       <button
-        title="export data"
+        title="Export data"
         onClick={handleExport}
         disabled={isExporting}
-        className="rounded-full bg-black p-2 text-white transition-colors duration-200 hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-300"
+        className="relative z-10 rounded-full bg-black p-2 text-white transition-all duration-200 hover:scale-105 hover:bg-neutral-800 active:scale-95 disabled:pointer-events-none disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
       >
         <Download className="h-5 w-5" />
       </button>

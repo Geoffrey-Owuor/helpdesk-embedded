@@ -4,7 +4,7 @@ const IssuesCardsSkeleton = () => {
       {[...Array(4)].map((_, index) => (
         <div
           key={index}
-          className="details-shimmer h-36 w-full rounded-2xl bg-gray-100 dark:bg-neutral-900"
+          className="details-shimmer h-36.5 w-full rounded-2xl bg-gray-100 dark:bg-neutral-900"
         />
       ))}
     </div>
