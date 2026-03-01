@@ -1,6 +1,12 @@
 "use client";
 
-import { X, GitCommitHorizontal, CircleDot, CheckCheck } from "lucide-react";
+import {
+  X,
+  GitCommitHorizontal,
+  CircleDot,
+  CheckCheck,
+  BellOff,
+} from "lucide-react";
 import ClientPortal from "@/components/Modules/ClientPortal";
 import { dateFormatter } from "@/public/assets";
 import { IssueValueTypes } from "@/contexts/IssuesDataContext";
@@ -18,6 +24,7 @@ type NotificationModalProps = {
   handleRouteChange: ({ uuid, title, description }: RouteChangeProps) => void;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
   changelogs: ChangelogItem[];
+  count: number;
   issues: Record<string, IssueValueTypes>[];
 };
 
@@ -26,6 +33,7 @@ const NotificationModal = ({
   handleRouteChange,
   setIsModalOpen,
   changelogs,
+  count,
   issues,
 }: NotificationModalProps) => {
   const hasIssues = issues.length > 0;
@@ -60,8 +68,17 @@ const NotificationModal = ({
           {/* Body */}
           <div className="flex-1 overflow-y-auto">
             {isEmpty && (
-              <div className="flex flex-col items-center justify-center px-6 py-16 text-neutral-400 dark:text-neutral-600">
-                <p className="text-sm">You&apos;re all caught up!</p>
+              <div className="flex flex-col items-center justify-center gap-3 px-6 py-16 text-neutral-500">
+                <div className="rounded-full bg-blue-500/10 p-4">
+                  <BellOff
+                    className="h-12 w-12 text-blue-400"
+                    strokeWidth={1.5}
+                  />
+                </div>
+                <p className="text-sm font-semibold">
+                  You&apos;re all caught up!
+                </p>
+                <p className="text-xs">No new notifications at the moment</p>
               </div>
             )}
 
@@ -170,15 +187,17 @@ const NotificationModal = ({
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end border-t border-neutral-200 px-6 py-4 dark:border-neutral-800">
-            <button
-              onClick={closeModal}
-              className="inline-flex items-center gap-2 rounded-xl bg-black px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-300"
-            >
-              <CheckCheck className="h-4 w-4" />
-              <span>Mark all as read</span>
-            </button>
-          </div>
+          {count > 0 && (
+            <div className="flex items-center justify-end border-t border-neutral-200 px-6 py-4 dark:border-neutral-800">
+              <button
+                onClick={closeModal}
+                className="inline-flex items-center gap-2 rounded-xl bg-black px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-neutral-800 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-neutral-300"
+              >
+                <CheckCheck className="h-4 w-4" />
+                <span>Mark all as read</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </ClientPortal>
