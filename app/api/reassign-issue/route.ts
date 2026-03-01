@@ -74,7 +74,8 @@ export const PUT = withAuth(async ({ request, user }) => {
     issue_agent_email = $2,
     issue_assigner_id = $3,
     issue_assigner_name = $4,
-    issue_assigner_email = $5
+    issue_assigner_email = $5,
+    issue_updated_at = CURRENT_TIMESTAMP
     WHERE issue_uuid = $6
     `;
 

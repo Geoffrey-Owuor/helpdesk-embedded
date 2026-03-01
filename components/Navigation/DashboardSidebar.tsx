@@ -20,6 +20,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useLoadingLine } from "@/contexts/LoadingLineContext";
 import AdminPanel from "./AdminFunctions/AdminPanel";
 import UserSettings from "./UserSettings/UserSettings";
+import Notifications from "./Notifications/Notifications";
 
 const DashboardSidebar = () => {
   const { username, role } = useUser();
@@ -75,13 +76,19 @@ const DashboardSidebar = () => {
         </button>
 
         <div className="flex items-center gap-4">
+          {/* Back button */}
           <button
             onClick={() => router.back()}
             className="rounded-full p-2 hover:bg-neutral-200 dark:hover:bg-neutral-800"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
+
+          {/* Theme toggle */}
           <ThemeToggle />
+
+          {/* Notifications */}
+          <Notifications />
 
           {/* User avatar */}
           <div className="relative" ref={mobileUserDivRef}>
@@ -155,10 +162,12 @@ const DashboardSidebar = () => {
         </nav>
 
         {/* Bottom section: theme toggle + avatar */}
-        <div className="mt-auto flex flex-col items-center gap-3">
-          <div className="flex items-center justify-center">
-            <ThemeToggle />
-          </div>
+        <div className="mt-auto flex flex-col items-center gap-4">
+          {/* The theme toggle */}
+          <ThemeToggle />
+
+          {/* The notification bell icon */}
+          <Notifications />
 
           {/* User avatar */}
           <div
