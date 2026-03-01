@@ -1,19 +1,22 @@
 "use client";
 
-import { X, GitCommitHorizontal, CircleDot } from "lucide-react";
+import { X, GitCommitHorizontal, CircleDot, CheckCheck } from "lucide-react";
 import ClientPortal from "@/components/Modules/ClientPortal";
 import { dateFormatter } from "@/public/assets";
 import { IssueValueTypes } from "@/contexts/IssuesDataContext";
 import { ChangelogItem } from "./Notifications";
+import { Dispatch, SetStateAction } from "react";
 
 type NotificationModalProps = {
-  closeModal: () => void;
+  closeModal: () => Promise<void>;
+  setIsModalOpen: Dispatch<SetStateAction<boolean>>;
   changelogs: ChangelogItem[];
   issues: Record<string, IssueValueTypes>[];
 };
 
 const NotificationModal = ({
   closeModal,
+  setIsModalOpen,
   changelogs,
   issues,
 }: NotificationModalProps) => {
@@ -35,11 +38,11 @@ const NotificationModal = ({
         <div className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-neutral-200 px-6 py-4 dark:border-neutral-800">
-            <h2 className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
+            <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
               Notifications
             </h2>
             <button
-              onClick={closeModal}
+              onClick={() => setIsModalOpen(false)}
               className="rounded-full p-1.5 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
             >
               <X className="h-4 w-4" />
@@ -149,6 +152,17 @@ const NotificationModal = ({
                 </ul>
               </section>
             )}
+          </div>
+
+          {/* Footer */}
+          <div className="flex items-center justify-end border-t border-neutral-200 px-6 py-4 dark:border-neutral-800">
+            <button
+              onClick={closeModal}
+              className="inline-flex items-center gap-2 rounded-xl bg-black px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-300"
+            >
+              <CheckCheck className="h-4 w-4" />
+              <span>Mark all as read</span>
+            </button>
           </div>
         </div>
       </div>
