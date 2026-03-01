@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     const { email, password } = await request.json();
 
     // Find user by email
-    const query1 = `SELECT user_id, email, password, username, department, role
+    const query1 = `SELECT user_id, email, password, username, department, role, is_user_active
                     FROM users
                     WHERE email = $1 LIMIT 1`;
     const params1 = [email];
@@ -28,6 +28,16 @@ export async function POST(request: NextRequest) {
 
     // Assign result to user
     const user = result1[0];
+
+    // User account is inactive/disabled
+    const isActive = user.is_user_active;
+
+    if (!isActive) {
+      return NextResponse.json(
+        { message: "Account is disabled, contact administrator" },
+        { status: 403 },
+      );
+    }
 
     // Verify password
     const isValid = await verifyPassword(password, user.password);
