@@ -15,7 +15,7 @@ export default function HydrationGuard({
 
   if (!mounted) {
     return (
-      <div className="fixed inset-0 z-9999 flex items-center justify-center bg-white/80 backdrop-blur-sm dark:bg-black/80">
+      <div className="fixed inset-0 z-9999 flex items-center justify-center bg-white dark:bg-black">
         {/* Tailwind border illusion */}
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-neutral-900 dark:border-neutral-700 dark:border-t-neutral-100" />
       </div>
