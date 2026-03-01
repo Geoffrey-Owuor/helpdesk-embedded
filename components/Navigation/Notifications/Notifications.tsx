@@ -5,6 +5,9 @@ import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useEffect, useState } from "react";
 import NotificationModal from "./NotificationModal";
+import { useLoadingLine } from "@/contexts/LoadingLineContext";
+import { useRouter, usePathname } from "next/navigation";
+import { RouteChangeProps } from "./NotificationModal";
 
 export interface ChangelogItem {
   changelog_id: string;
@@ -25,6 +28,32 @@ const Notifications = () => {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { issuesData } = useIssuesData();
+
+  const router = useRouter();
+
+  const { setLoadingLine } = useLoadingLine();
+  const pathname = usePathname();
+
+  const handleRouteChange = ({
+    uuid,
+    title,
+    description,
+  }: RouteChangeProps) => {
+    setIsModalOpen(false);
+
+    // Return if we already on the issue's page
+    if (`/dashboard/${uuid}` === pathname) return;
+
+    //issue type
+    const issueType = "issue";
+
+    // our dashboard path
+    const dashboardPath = `/dashboard/${uuid}?type=${issueType}&title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}`;
+
+    setLoadingLine(true);
+
+    router.push(dashboardPath);
+  };
 
   useEffect(() => {
     const fetchChangelogs = async () => {
@@ -88,6 +117,7 @@ const Notifications = () => {
           changelogs={notificationData.changelogs}
           issues={filteredIssues}
           setIsModalOpen={setIsModalOpen}
+          handleRouteChange={handleRouteChange}
           closeModal={handleCloseModal}
         />
       )}

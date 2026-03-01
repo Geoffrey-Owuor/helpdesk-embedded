@@ -7,8 +7,15 @@ import { IssueValueTypes } from "@/contexts/IssuesDataContext";
 import { ChangelogItem } from "./Notifications";
 import { Dispatch, SetStateAction } from "react";
 
+export type RouteChangeProps = {
+  uuid: IssueValueTypes;
+  title: IssueValueTypes;
+  description: IssueValueTypes;
+};
+
 type NotificationModalProps = {
   closeModal: () => Promise<void>;
+  handleRouteChange: ({ uuid, title, description }: RouteChangeProps) => void;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
   changelogs: ChangelogItem[];
   issues: Record<string, IssueValueTypes>[];
@@ -16,6 +23,7 @@ type NotificationModalProps = {
 
 const NotificationModal = ({
   closeModal,
+  handleRouteChange,
   setIsModalOpen,
   changelogs,
   issues,
@@ -69,7 +77,14 @@ const NotificationModal = ({
                   {issues.map((issue) => (
                     <li
                       key={issue.issue_uuid}
-                      className="flex items-start gap-3 px-6 py-4 hover:bg-neutral-50 dark:hover:bg-neutral-900/50"
+                      onClick={() =>
+                        handleRouteChange({
+                          uuid: issue.issue_uuid,
+                          title: issue.issue_title,
+                          description: issue.issue_description,
+                        })
+                      }
+                      className="flex cursor-pointer items-start gap-3 px-6 py-4 hover:bg-neutral-50 dark:hover:bg-neutral-900/50"
                     >
                       <div
                         className={`mt-0.5 shrink-0 ${dynamicCircleColor[issue.issue_status]}`}
@@ -114,7 +129,7 @@ const NotificationModal = ({
               <section>
                 <div className="sticky top-0 bg-neutral-50 px-6 py-2.5 dark:bg-neutral-900">
                   <span className="text-xs font-semibold tracking-widest text-neutral-400 uppercase dark:text-neutral-500">
-                    Changelogs
+                    Changelog Updates
                   </span>
                 </div>
                 <ul className="divide-y divide-neutral-100 dark:divide-neutral-800/60">
