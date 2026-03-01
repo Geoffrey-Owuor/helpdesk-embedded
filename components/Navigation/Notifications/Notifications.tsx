@@ -56,13 +56,39 @@ const Notifications = () => {
   const count =
     (notificationData?.changelogs?.length ?? 0) + filteredIssues.length;
 
+  // Handling closing the modal
+  const handleCloseModal = async () => {
+    setIsModalOpen(false);
+
+    //Nothing was viewed, skip the update
+    if (count === 0) return;
+
+    try {
+      await apiClient.patch("/notifications/patch-notifications-date");
+      // optimistically clearing the count by setting the notificationDate to now
+      setNotificationData((prev) =>
+        prev
+          ? {
+              ...prev,
+              notificationDate: new Date().toISOString(),
+              changelogs: [],
+            }
+          : null,
+      );
+    } catch (error) {
+      const errorMessage = getApiErrorMessage(error);
+      console.error("Error updating notification last viewed:", errorMessage);
+    }
+  };
+
   return (
     <>
       {isModalOpen && notificationData && (
         <NotificationModal
           changelogs={notificationData.changelogs}
           issues={filteredIssues}
-          closeModal={() => setIsModalOpen(false)}
+          setIsModalOpen={setIsModalOpen}
+          closeModal={handleCloseModal}
         />
       )}
       <button
