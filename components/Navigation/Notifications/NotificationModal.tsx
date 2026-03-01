@@ -21,6 +21,14 @@ const NotificationModal = ({
   const hasChangelogs = changelogs.length > 0;
   const isEmpty = !hasIssues && !hasChangelogs;
 
+  //circledot colors based on the issue status
+  const dynamicCircleColor: Record<string | number, string> = {
+    pending: "text-amber-700 dark:text-amber-400",
+    "in progress": "text-blue-700 dark:text-blue-400",
+    resolved: "text-emerald-700 dark:text-emerald-400",
+    unfeasible: "text-red-700 dark:text-red-400",
+  };
+
   return (
     <ClientPortal>
       <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 transition-all dark:bg-black/70">
@@ -60,12 +68,14 @@ const NotificationModal = ({
                       key={issue.issue_uuid}
                       className="flex items-start gap-3 px-6 py-4 hover:bg-neutral-50 dark:hover:bg-neutral-900/50"
                     >
-                      <div className="mt-0.5 shrink-0 text-blue-500 dark:text-blue-400">
+                      <div
+                        className={`mt-0.5 shrink-0 ${dynamicCircleColor[issue.issue_status]}`}
+                      >
                         <CircleDot className="h-4 w-4" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-medium text-neutral-400 dark:text-neutral-500">
+                        <div className="flex flex-wrap items-center gap-1">
+                          <span className="text-xs font-semibold text-neutral-400 dark:text-neutral-500">
                             {issue.issue_reference_id}
                           </span>
                           <span className="text-xs text-neutral-400 dark:text-neutral-600">
@@ -74,8 +84,14 @@ const NotificationModal = ({
                           <span className="text-xs text-neutral-400 dark:text-neutral-500">
                             {dateFormatter(issue.issue_created_at)}
                           </span>
+                          <span className="text-xs text-neutral-400 dark:text-neutral-600">
+                            ·
+                          </span>
+                          <span className="text-xs text-neutral-400 dark:text-neutral-500">
+                            {issue.issue_submitter_name}
+                          </span>
                         </div>
-                        <p className="mt-0.5 text-sm font-medium text-neutral-800 dark:text-neutral-200">
+                        <p className="mt-0.5 text-sm font-semibold text-neutral-800 dark:text-neutral-200">
                           {issue.issue_title}
                         </p>
                         {issue.issue_description && (
@@ -109,7 +125,7 @@ const NotificationModal = ({
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 capitalize dark:bg-emerald-900/30 dark:text-emerald-400">
+                          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 capitalize dark:bg-emerald-900/30 dark:text-emerald-400">
                             {changelog.changelog_type}
                           </span>
                           <span className="text-xs text-neutral-400 dark:text-neutral-600">
@@ -119,7 +135,7 @@ const NotificationModal = ({
                             {dateFormatter(changelog.changelog_updated_at)}
                           </span>
                         </div>
-                        <p className="mt-0.5 text-sm font-medium text-neutral-800 dark:text-neutral-200">
+                        <p className="mt-0.5 text-sm font-semibold text-neutral-800 dark:text-neutral-200">
                           {changelog.changelog_title}
                         </p>
                         {changelog.changelog_description && (
