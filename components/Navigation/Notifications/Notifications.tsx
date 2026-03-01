@@ -25,9 +25,9 @@ type NotificationResponse = {
 const Notifications = () => {
   const [notificationData, setNotificationData] =
     useState<NotificationResponse | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); //default to true
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { issuesData } = useIssuesData();
+  const { issuesData, loading: issuesLoading } = useIssuesData();
 
   const router = useRouter();
 
@@ -85,6 +85,9 @@ const Notifications = () => {
   const count =
     (notificationData?.changelogs?.length ?? 0) + filteredIssues.length;
 
+  // Derived isReady state - we only show count after both issues data and changelogs data is ready
+  const isDataReady = !loading && !issuesLoading;
+
   // Handling closing the modal
   const handleCloseModal = async () => {
     setIsModalOpen(false);
@@ -118,6 +121,7 @@ const Notifications = () => {
           issues={filteredIssues}
           setIsModalOpen={setIsModalOpen}
           handleRouteChange={handleRouteChange}
+          count={count}
           closeModal={handleCloseModal}
         />
       )}
@@ -128,7 +132,7 @@ const Notifications = () => {
       >
         <Bell className="bell-icon h-5 w-5" />
 
-        {count > 0 && (
+        {isDataReady && count > 0 && (
           <span className="absolute right-0.5 bottom-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] leading-none font-semibold text-white">
             {count > 9 ? "9+" : count}
           </span>
