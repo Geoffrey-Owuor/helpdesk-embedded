@@ -27,6 +27,7 @@ import { useAlert } from "@/contexts/AlertContext";
 import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
+import FormAsterisk from "@/components/Modules/FormAsterisk";
 
 type UserSettingsProps = {
   isUserSettingsOpen: boolean;
@@ -226,9 +227,12 @@ const UserSettings = ({
                 {/* Mapping through the formData to create our input values */}
                 {Object.entries(formData).map(([key, value]) => (
                   <div key={key} className="relative">
-                    <label className="mb-1.5 block text-sm font-semibold text-neutral-700 dark:text-neutral-300">
-                      {dynamicPlaceHolder[key].label}
-                    </label>
+                    <div className="flex items-center gap-1">
+                      <label className="mb-1.5 block text-sm font-semibold text-neutral-700 dark:text-neutral-300">
+                        {dynamicPlaceHolder[key].label}
+                      </label>
+                      <FormAsterisk />
+                    </div>
                     <input
                       type={showPassword ? "text" : "password"}
                       name={key}
