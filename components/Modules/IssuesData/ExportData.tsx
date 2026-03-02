@@ -1,14 +1,18 @@
+"use client";
+
 import { Download } from "lucide-react";
 import apiClient from "@/lib/AxiosClient";
 import { useState } from "react";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlert } from "@/contexts/AlertContext";
 import { useSearchLogic } from "@/contexts/SearchLogicContext";
+import { useUser } from "@/contexts/UserContext";
 
 const ExportData = ({ fetchAutomations }: { fetchAutomations: string }) => {
   const [isExporting, setIsExporting] = useState(false);
   const { fromDate, toDate, agentAdminFilter } = useSearchLogic();
   const { setAlertInfo } = useAlert();
+  const { username } = useUser();
 
   // Dynamically building our url
   let baseUrl = `/excel-export?fetchAutomations=${fetchAutomations || "issues"}`;
@@ -22,6 +26,10 @@ const ExportData = ({ fetchAutomations }: { fetchAutomations: string }) => {
   if (fromDate && toDate) {
     baseUrl += `&fromDate=${fromDate}&toDate=${toDate}`;
   }
+
+  // Dynamic excel document name with the date the document was downloaded
+  const date = new Date().toLocaleDateString("en-GB");
+  const documentName = `${fetchAutomations === "automations" ? "automations_data" : "issues_data"}_${username}_${date}.xlsx`;
 
   const handleExport = async () => {
     setIsExporting(true);
@@ -39,7 +47,7 @@ const ExportData = ({ fetchAutomations }: { fetchAutomations: string }) => {
       // Creating a temporary link element to trigger the download
       const a = document.createElement("a");
       a.href = url;
-      a.download = "issues_data.xlsx"; //file name for the downloaded file
+      a.download = documentName; //file name for the downloaded file
       document.body.appendChild(a);
       a.click(); //click the link programmatically to start the download
       a.remove(); //remove link from the body;

@@ -61,7 +61,7 @@ const NotificationModal = ({
               onClick={() => setIsModalOpen(false)}
               className="rounded-full p-1.5 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
             >
-              <X className="h-4 w-4" />
+              <X className="h-5 w-5" />
             </button>
           </div>
 

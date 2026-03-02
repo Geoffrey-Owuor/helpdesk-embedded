@@ -126,7 +126,7 @@ const Notifications = () => {
         />
       )}
       <button
-        disabled={loading}
+        disabled={loading || issuesLoading}
         onClick={() => setIsModalOpen(true)}
         className="bell-btn relative inline-flex items-center justify-center rounded-full p-2 text-neutral-700 hover:bg-neutral-200 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-800"
       >
