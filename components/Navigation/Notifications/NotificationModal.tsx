@@ -85,7 +85,7 @@ const NotificationModal = ({
             {/* Issues Section */}
             {hasIssues && (
               <section>
-                <div className="sticky top-0 bg-neutral-50 px-6 py-2.5 dark:bg-neutral-900">
+                <div className="sticky top-0 bg-neutral-100 px-6 py-2.5 dark:bg-neutral-900">
                   <span className="text-xs font-semibold tracking-widest text-neutral-400 uppercase dark:text-neutral-500">
                     New Issues
                   </span>
@@ -144,7 +144,7 @@ const NotificationModal = ({
             {/* Changelogs Section */}
             {hasChangelogs && (
               <section>
-                <div className="sticky top-0 bg-neutral-50 px-6 py-2.5 dark:bg-neutral-900">
+                <div className="sticky top-0 bg-neutral-100 px-6 py-2.5 dark:bg-neutral-900">
                   <span className="text-xs font-semibold tracking-widest text-neutral-400 uppercase dark:text-neutral-500">
                     Changelog Updates
                   </span>

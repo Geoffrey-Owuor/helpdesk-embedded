@@ -38,7 +38,7 @@ export const PromiseOverlay = () => {
           />
         )}
         {/* The text, styled for dark and light modes */}
-        <span className="text-xl text-neutral-900 dark:text-white">
+        <span className="text-base text-neutral-900 dark:text-white">
           {promiseOverlayInfo.overlaytext}...
         </span>
       </div>
