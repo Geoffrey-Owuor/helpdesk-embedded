@@ -8,6 +8,7 @@ import { dateFormatter } from "@/public/assets";
 import { AssignedAgentFormatter } from "./AssignedAgentFormatter";
 import { useRouter } from "next/navigation";
 import { useLoadingLine } from "@/contexts/LoadingLineContext";
+import IssuePriorityFormatter from "./IssuePriorityFormatter";
 
 type TableViewDataProps = {
   currentIssues: Record<string, string | number>[];
@@ -42,6 +43,11 @@ const TableViewData = ({
             {visibleColumns.type && (
               <th className="px-4 pb-2 text-xs font-semibold tracking-wider whitespace-nowrap text-gray-500 uppercase dark:text-gray-400">
                 Type
+              </th>
+            )}
+            {visibleColumns.priority && (
+              <th className="px-4 pb-2 text-xs font-semibold tracking-wider whitespace-nowrap text-gray-500 uppercase dark:text-gray-400">
+                Priority
               </th>
             )}
             {visibleColumns.submitter && (
@@ -137,6 +143,14 @@ const TableViewData = ({
                     <p className="max-w-30 truncate text-sm text-gray-900 dark:text-white">
                       {issueData.issue_type}
                     </p>
+                  </td>
+                )}
+
+                {visibleColumns.priority && (
+                  <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
+                    <IssuePriorityFormatter
+                      priority={issueData.issue_priority}
+                    />
                   </td>
                 )}
 

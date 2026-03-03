@@ -24,7 +24,7 @@ export const GET = withAuth(async ({ request }) => {
     // Simple testing version to see the nature of the api response
     let baseQuery = `
     SELECT issue_uuid, issue_submitter_id, issue_reference_id, issue_submitter_name, issue_submitter_department,
-    issue_target_department, issue_type, issue_title, issue_description, issue_created_at, issue_status,
+    issue_target_department, issue_type, issue_priority, issue_title, issue_description, issue_created_at, issue_status,
     issue_agent_name, issue_agent_email
     FROM issues_table
     `;
