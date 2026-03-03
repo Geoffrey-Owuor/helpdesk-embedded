@@ -137,7 +137,7 @@ const SearchInput = ({
     {value && (
       <button
         onClick={() => onChange("")}
-        className="absolute top-1/2 right-3 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200"
+        className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1 text-neutral-400 hover:bg-neutral-200 hover:text-neutral-600 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
       >
         <X className="h-3 w-3" />
       </button>

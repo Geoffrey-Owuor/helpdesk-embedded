@@ -7,6 +7,7 @@ import { AssignedAgentFormatter } from "./AssignedAgentFormatter";
 import { useRouter } from "next/navigation";
 import { useLoadingLine } from "@/contexts/LoadingLineContext";
 import { Calendar, Tag, AlignLeft, ArrowRight, UserRound } from "lucide-react";
+import IssuePriorityFormatter from "./IssuePriorityFormatter";
 
 type CardViewDataProps = {
   currentIssues: Record<string, string | number>[];
@@ -42,17 +43,23 @@ const CardViewData = ({
           className="group flex cursor-pointer flex-col justify-between rounded-xl border border-neutral-200 bg-white p-5 shadow-sm transition-all duration-200 hover:border-neutral-300 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900/50 dark:hover:border-neutral-700"
         >
           {/* Header: Ref ID & Status */}
-          <div className="mb-4 flex items-start justify-between gap-2">
-            <Link
-              onClick={(e) => {
-                e.stopPropagation();
-                setLoadingLine(true);
-              }}
-              href={`/dashboard/${issueData.issue_uuid}?type=${dynamicUrlParam}&title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`}
-              className="flex items-center gap-1.5 font-semibold text-neutral-500 transition-colors hover:text-blue-500 hover:underline dark:text-neutral-400"
-            >
-              {issueData.issue_reference_id}
-            </Link>
+          <div className="mb-4 flex items-center justify-between gap-2">
+            <div className="inline-flex items-center gap-3">
+              <Link
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLoadingLine(true);
+                }}
+                href={`/dashboard/${issueData.issue_uuid}?type=${dynamicUrlParam}&title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`}
+                className="flex items-center gap-1.5 font-semibold text-neutral-500 transition-colors hover:text-blue-500 hover:underline dark:text-neutral-400"
+              >
+                {issueData.issue_reference_id}
+              </Link>
+              <IssuePriorityFormatter
+                priority={issueData.issue_priority}
+                showText={false}
+              />
+            </div>
             <IssueStatusFormatter status={issueData.issue_status} />
           </div>
 
