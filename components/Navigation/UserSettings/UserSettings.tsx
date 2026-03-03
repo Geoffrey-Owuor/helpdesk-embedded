@@ -27,6 +27,7 @@ import { useAlert } from "@/contexts/AlertContext";
 import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
+import FormAsterisk from "@/components/Modules/FormAsterisk";
 
 type UserSettingsProps = {
   isUserSettingsOpen: boolean;
@@ -165,7 +166,7 @@ const UserSettings = ({
 
   return (
     <ClientPortal>
-      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm transition-all dark:bg-black/70">
+      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 transition-all dark:bg-black/70">
         <div className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-neutral-200 bg-neutral-50 px-6 py-4 dark:border-neutral-800 dark:bg-neutral-900/50">
@@ -226,9 +227,12 @@ const UserSettings = ({
                 {/* Mapping through the formData to create our input values */}
                 {Object.entries(formData).map(([key, value]) => (
                   <div key={key} className="relative">
-                    <label className="mb-1.5 block text-sm font-semibold text-neutral-700 dark:text-neutral-300">
-                      {dynamicPlaceHolder[key].label}
-                    </label>
+                    <div className="flex items-center gap-1">
+                      <label className="mb-1.5 block text-sm font-semibold text-neutral-700 dark:text-neutral-300">
+                        {dynamicPlaceHolder[key].label}
+                      </label>
+                      <FormAsterisk />
+                    </div>
                     <input
                       type={showPassword ? "text" : "password"}
                       name={key}

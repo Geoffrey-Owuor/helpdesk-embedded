@@ -63,7 +63,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
         {/* Modal Container */}
         <div className="flex h-[90vh] w-full max-w-4xl overflow-hidden rounded-2xl border border-neutral-300 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
           {/* --- LEFT SIDEBAR --- */}
-          <aside className="hidden w-60 flex-col border-r border-neutral-200 bg-neutral-50/50 p-4 md:flex dark:border-neutral-800 dark:bg-neutral-900/30">
+          <aside className="hidden w-54 flex-col border-r border-neutral-200 bg-neutral-50/50 p-4 md:flex dark:border-neutral-800 dark:bg-neutral-900/30">
             <div className="mb-8 flex items-center gap-2 px-2">
               <ShieldCheck
                 className="text-blue-600 dark:text-blue-500"
@@ -80,7 +80,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
                 className={`${baseTabStyles} ${activeTab === "agent-info" ? activeTabStyles : inactiveTabStyles}`}
               >
                 <UsersRound size={18} />
-                Agents Info
+                Agents
               </button>
 
               <button
@@ -88,7 +88,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
                 className={`${baseTabStyles} ${activeTab === "issue-info" ? activeTabStyles : inactiveTabStyles}`}
               >
                 <Bug size={18} />
-                Issue Types Info
+                Issue Types
               </button>
             </nav>
 
@@ -111,13 +111,13 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
                   <button
                     onClick={handleRefetchIssueAgents}
                     title="Refresh"
-                    className="rounded-full p-1.5 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+                    className="rounded-full p-2 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
                   >
                     <RotateCcw size={20} />
                   </button>
                   <button
                     onClick={() => setShowAdminPanel(false)}
-                    className="rounded-full p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
+                    className="rounded-full p-2 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
                   >
                     <X size={20} />
                   </button>
