@@ -46,7 +46,7 @@ const statusOptions = [
   { label: "Unfeasible", value: "unfeasible" },
 ];
 
-const priorityOptions = [
+export const priorityOptions = [
   { label: "Critical", value: "Critical" },
   { label: "High", value: "High" },
   { label: "Medium", value: "Medium" },
