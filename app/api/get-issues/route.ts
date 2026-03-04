@@ -18,6 +18,7 @@ export const GET = withAuth(async ({ user, request }) => {
   const departmentParams = searchParams.get("department");
   const agent = searchParams.get("agent");
   const issueType = searchParams.get("type");
+  const issuePriority = searchParams.get("priority");
   const submitter = searchParams.get("submitter");
   const fromDate = searchParams.get("fromDate");
   const toDate = searchParams.get("toDate");
@@ -98,6 +99,12 @@ export const GET = withAuth(async ({ user, request }) => {
     else if (selectedFilter === "type" && issueType) {
       whereClauses.push(`issue_type ILIKE $${params.length + 1}`);
       params.push(`%${issueType}%`);
+    }
+
+    // Priority filtering
+    else if (selectedFilter === "priority" && issuePriority) {
+      whereClauses.push(`issue_priority = $${params.length + 1}`);
+      params.push(issuePriority);
     }
 
     // Submitter filter
