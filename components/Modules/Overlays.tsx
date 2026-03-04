@@ -70,7 +70,7 @@ export const ConfirmationDialog = () => {
     >
       <div className="mx-auto max-w-90 min-w-80 rounded-2xl border border-neutral-200 bg-neutral-50 p-4 shadow-2xl md:max-w-md dark:border-neutral-700 dark:bg-neutral-950">
         <div className="relative mb-4 flex items-start justify-between">
-          <h3 className="text-xl font-bold text-neutral-900 dark:text-white">
+          <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">
             {confirmationDialogInfo.title}
           </h3>
           <button
