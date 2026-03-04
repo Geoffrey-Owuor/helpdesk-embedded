@@ -21,6 +21,7 @@ type SearchLogicContextTypes = {
   department: string;
   agent: string;
   issueType: string;
+  issuePriority: string;
   submitter: string;
   agentAdminFilter: string;
   isTableView: boolean;
@@ -32,6 +33,7 @@ type SearchLogicContextTypes = {
   setDepartment: Dispatch<SetStateAction<string>>;
   setAgent: Dispatch<SetStateAction<string>>;
   setIssueType: Dispatch<SetStateAction<string>>;
+  setIssuePriority: Dispatch<SetStateAction<string>>;
   setSubmitter: Dispatch<SetStateAction<string>>;
   setAgentAdminFilter: Dispatch<SetStateAction<string>>;
   setIsTableView: Dispatch<SetStateAction<boolean>>;
@@ -53,6 +55,7 @@ export const SearchLogicProvider = ({
   const [department, setDepartment] = useState("");
   const [agent, setAgent] = useState("");
   const [issueType, setIssueType] = useState("");
+  const [issuePriority, setIssuePriority] = useState("");
   const [submitter, setSubmitter] = useState("");
 
   const [agentAdminFilter, setAgentAdminFilter] = useState("");
@@ -86,6 +89,7 @@ export const SearchLogicProvider = ({
       department,
       agent,
       issueType,
+      issuePriority,
       submitter,
       agentAdminFilter,
       isTableView,
@@ -97,6 +101,7 @@ export const SearchLogicProvider = ({
       setDepartment,
       setAgent,
       setIssueType,
+      setIssuePriority,
       setSubmitter,
       setAgentAdminFilter,
       setIsTableView,
@@ -112,6 +117,7 @@ export const SearchLogicProvider = ({
       isTableView,
       agent,
       issueType,
+      issuePriority,
       submitter,
     ],
   );
