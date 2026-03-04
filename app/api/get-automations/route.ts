@@ -17,6 +17,7 @@ export const GET = withAuth(async ({ request }) => {
   const reference = searchParams.get("reference");
   const agent = searchParams.get("agent");
   const submitter = searchParams.get("submitter");
+  const issuePriority = searchParams.get("priority");
   const fromDate = searchParams.get("fromDate");
   const toDate = searchParams.get("toDate");
 
@@ -58,6 +59,12 @@ export const GET = withAuth(async ({ request }) => {
     else if (selectedFilter === "agent" && agent) {
       whereClauses.push(`issue_agent_name ILIKE $${params.length + 1}`);
       params.push(`%${agent}%`);
+    }
+
+    // Priority filtering
+    else if (selectedFilter === "priority" && issuePriority) {
+      whereClauses.push(`issue_priority = $${params.length + 1}`);
+      params.push(issuePriority);
     }
 
     // Submitter filtering

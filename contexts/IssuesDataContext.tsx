@@ -26,6 +26,7 @@ interface Options {
   department?: string;
   agent?: string;
   issueType?: string;
+  issuePriority?: string;
   submitter?: string;
   agentAdminFilter?: string;
 }
@@ -93,6 +94,11 @@ export const IssuesDataProvider = ({
           queryOptions.issueType
         ) {
           url += `&type=${encodeURIComponent(queryOptions.issueType.trim())}`;
+        } else if (
+          queryOptions.selectedFilter === "priority" &&
+          queryOptions.issuePriority
+        ) {
+          url += `&priority=${encodeURIComponent(queryOptions.issuePriority)}`;
         } else if (
           queryOptions.selectedFilter === "submitter" &&
           queryOptions.submitter

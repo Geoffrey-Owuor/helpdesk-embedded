@@ -28,6 +28,7 @@ interface Options {
   reference?: string;
   agent?: string;
   submitter?: string;
+  issuePriority?: string;
   agentAdminFilter?: string;
 }
 
@@ -85,6 +86,11 @@ export const AutomationsDataProvider = ({
           queryOptions.agent
         ) {
           apiUrl += `&agent=${encodeURIComponent(queryOptions.agent.trim())}`;
+        } else if (
+          queryOptions.selectedFilter === "priority" &&
+          queryOptions.issuePriority
+        ) {
+          apiUrl += `&priority=${encodeURIComponent(queryOptions.issuePriority)}`;
         } else if (
           queryOptions.selectedFilter === "submitter" &&
           queryOptions.submitter
