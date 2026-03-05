@@ -11,7 +11,10 @@ export const GET = withAuth(async ({ request, user }) => {
     //Our base query
     let baseQuery = `
     SELECT issue_uuid, issue_reference_id, issue_submitter_name, issue_submitter_department,
-    issue_target_department, issue_type, issue_title, issue_description, issue_created_at, issue_updated_at, issue_status,
+    issue_target_department, issue_type, issue_priority, issue_title, issue_description, 
+    TO_CHAR(issue_created_at, 'YYYY-MM-DD HH24:MI:SS') AS issue_created_at, 
+    TO_CHAR(issue_updated_at, 'YYYY-MM-DD HH24:MI:SS') AS issue_updated_at, 
+    issue_status,
     issue_agent_name, issue_agent_email, issue_assigner_name, issue_assigner_email
     FROM issues_table
     `;
@@ -88,6 +91,7 @@ export const GET = withAuth(async ({ request, user }) => {
           .join(" "),
         key: key,
         width: 20,
+        numFmt: key.includes("ated_at") ? "yyyy-mm-dd hh:mm:ss" : undefined,
       }));
 
       // Make the entire header row bold
