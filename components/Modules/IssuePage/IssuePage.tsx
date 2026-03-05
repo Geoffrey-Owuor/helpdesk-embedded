@@ -72,8 +72,6 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const { role, email, department, userId } = useUser();
 
   // Status to hold our selected status
-  const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectedPriority, setSelectedPriority] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isPriorityOpen, setIsPriorityOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -109,7 +107,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const issueData = recordsData.find((record) => record.issue_uuid === uuid);
 
   // Async function for updating the status
-  const handleUpdateStatus = async () => {
+  const handleUpdateStatus = async (status: string) => {
     setConfirmationDialogInfo((prev) => ({
       ...prev,
       showDialog: false,
@@ -123,7 +121,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
     try {
       const response = await apiClient.put("/update-status", {
         uuid,
-        status: selectedStatus,
+        status,
       });
 
       // Set a success alert
@@ -134,8 +132,6 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           response.data.message || "Issue status updated successfully",
       });
 
-      // clear selected status
-      setSelectedStatus("");
       // refetch data
       refetchData();
     } catch (error) {
@@ -154,29 +150,67 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   };
 
   // Updating the priority
-  const handleUpdatePriority = async () => {};
+  const handleUpdatePriority = async (priority: string) => {
+    setConfirmationDialogInfo((prev) => ({
+      ...prev,
+      showDialog: false,
+    }));
+
+    setPromiseOverlayInfo({
+      loading: true,
+      overlaytext: "Updating",
+    });
+
+    try {
+      const response = await apiClient.put("/update-priority", {
+        uuid,
+        priority,
+      });
+
+      // Set a success alert
+      setAlertInfo({
+        alertType: "success",
+        showAlert: true,
+        alertMessage:
+          response.data.message || "Issue priority updated successfully",
+      });
+
+      // refetch data
+      refetchData();
+    } catch (error) {
+      const errorMessage = getApiErrorMessage(error);
+      setAlertInfo({
+        alertType: "error",
+        showAlert: true,
+        alertMessage: errorMessage,
+      });
+    } finally {
+      setPromiseOverlayInfo({
+        loading: false,
+        overlaytext: "",
+      });
+    }
+  };
 
   const handleConfirmationDialog = (selectedValue: string) => {
-    setSelectedStatus(selectedValue);
     setIsOpen(false);
     // Show the dialog
     setConfirmationDialogInfo({
       showDialog: true,
       title: "Update Status",
       description: `Confirm marking of issue as ${selectedValue}.`,
-      onConfirm: handleUpdateStatus,
+      onConfirm: () => handleUpdateStatus(selectedValue),
     });
   };
 
   const handlePriorityConfirmation = (selectedValue: string) => {
-    setSelectedPriority(selectedValue);
     setIsPriorityOpen(false);
     // Show the dialog
     setConfirmationDialogInfo({
       showDialog: true,
       title: "Update Priority",
       description: `Confirm changing issue priority to ${selectedValue}.`,
-      onConfirm: handleUpdatePriority,
+      onConfirm: () => handleUpdatePriority(selectedValue),
     });
   };
 
@@ -322,7 +356,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                             className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-900"
                           >
                             {option.label}
-                            {selectedPriority === option.value && (
+                            {issueData.issue_priority === option.value && (
                               <Check className="h-4 w-4 text-blue-600" />
                             )}
                           </button>
@@ -370,7 +404,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                           className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-900"
                         >
                           {option.label}
-                          {selectedStatus === option.value && (
+                          {issueData.issue_status === option.value && (
                             <Check className="h-4 w-4 text-blue-600" />
                           )}
                         </button>
