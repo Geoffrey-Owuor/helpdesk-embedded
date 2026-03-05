@@ -115,15 +115,10 @@ export const GET = withAuth(async ({ user, request }) => {
 
     // Date filtering
     else if (selectedFilter === "date" && fromDate && toDate) {
-      whereClauses.push(`issue_created_at >= $${params.length + 1}`);
-      params.push(fromDate);
-
-      whereClauses.push(`issue_created_at <= $${params.length + 1}`);
-      // Check if it's just a date string (length 10 usually implies YYYY-MM-DD)
-      // If so, append end-of-day time. Otherwise use as is.
-      // This helps when searching issues submitted within a specific day
-      const finalToDate = toDate.length === 10 ? `${toDate} 23:59:59` : toDate;
-      params.push(finalToDate);
+      whereClauses.push(
+        `issue_created_at::date BETWEEN $${params.length + 1} AND $${params.length + 2}`,
+      );
+      params.push(fromDate, toDate);
     }
 
     if (whereClauses.length > 0) {
