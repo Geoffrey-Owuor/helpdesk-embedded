@@ -3,7 +3,18 @@
 import { ChangeEvent, Dispatch, FormEvent, SetStateAction } from "react";
 import ClientPortal from "../ClientPortal";
 import { useState } from "react";
-import { X, UserRoundCog, BotMessageSquare, ArrowUpDown } from "lucide-react";
+import {
+  X,
+  UserRoundCog,
+  BotMessageSquare,
+  ArrowUpDown,
+  Zap,
+  LucideIcon,
+  ArrowUp,
+  ArrowRight,
+  ArrowDown,
+  Ellipsis,
+} from "lucide-react";
 import { fetchedIssueAgentsMapping } from "@/serverActions/GetIssueTypes";
 import { IssueAgentMapping } from "@/serverActions/GetIssueTypes";
 import apiClient from "@/lib/AxiosClient";
@@ -19,6 +30,28 @@ import { baseDepartments } from "@/public/assets";
 import FormAsterisk from "../FormAsterisk";
 import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
 import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+
+// Priority icon types
+const priorityIcons: Record<string, LucideIcon> = {
+  Critical: Zap,
+  High: ArrowUp,
+  Medium: ArrowRight,
+  Low: ArrowDown,
+};
+
+// Dynamic Icon Helper
+const DynamicIcon = ({ priority }: { priority: string }) => {
+  // getting the icon we want
+  const IconComponent = priorityIcons[priority]
+    ? priorityIcons[priority]
+    : Ellipsis;
+
+  return (
+    <div className="rounded-full bg-blue-200 p-1 text-blue-600">
+      <IconComponent className="h-3.5 w-3.5 animate-pulse" />
+    </div>
+  );
+};
 
 type MainIssueModalProps = {
   isOpen: boolean;
@@ -299,6 +332,14 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                                     {assignmentInfo?.issue_priority || "None"}
                                   </span>
                                 </span>
+                                {/* Dynamic Icon */}
+                                <DynamicIcon
+                                  priority={
+                                    assignmentInfo?.issue_priority
+                                      ? assignmentInfo.issue_priority
+                                      : "None"
+                                  }
+                                />
                               </div>
                             </div>
                           </div>
