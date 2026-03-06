@@ -20,6 +20,7 @@ import { useAlert } from "@/contexts/AlertContext";
 import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
+import IssuePriorityFormatter from "@/components/Modules/IssuesData/IssuePriorityFormatter";
 
 const IssueTypesInfo = () => {
   // Get context data
@@ -185,6 +186,11 @@ const IssueTypesInfo = () => {
                   <h5 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
                     {item.issue_type}
                   </h5>
+                  {/* Priority Icon */}
+                  <IssuePriorityFormatter
+                    priority={item.issue_priority}
+                    showText={false}
+                  />
                 </div>
 
                 {/* Agent info */}
@@ -228,6 +234,7 @@ const IssueTypesInfo = () => {
               <EditIssueTypeInfo
                 agentEmail={item.agent_email}
                 issueType={item.issue_type}
+                issuePriority={item.issue_priority}
                 agentNames={agentNames}
                 setActiveEditId={setActiveEditId}
               />
