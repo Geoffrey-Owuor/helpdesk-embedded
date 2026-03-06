@@ -3,7 +3,7 @@
 import { ChangeEvent, Dispatch, FormEvent, SetStateAction } from "react";
 import ClientPortal from "../ClientPortal";
 import { useState } from "react";
-import { X, UserRoundCog, BotMessageSquare } from "lucide-react";
+import { X, UserRoundCog, BotMessageSquare, ArrowUpDown } from "lucide-react";
 import { fetchedIssueAgentsMapping } from "@/serverActions/GetIssueTypes";
 import { IssueAgentMapping } from "@/serverActions/GetIssueTypes";
 import apiClient from "@/lib/AxiosClient";
@@ -270,10 +270,13 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                               Based on your selection, this issue may be
                               assigned to:
                             </p>
-                            <div className="mt-1 flex items-center gap-4">
+                            <div className="mt-1 flex flex-wrap items-center gap-4">
                               <div className="flex items-center gap-1.5 font-semibold">
                                 <UserRoundCog size={14} />
-                                <span>Agent: {assignmentInfo?.agent_name}</span>
+                                <span>
+                                  Agent:{" "}
+                                  {assignmentInfo?.agent_name || "None found"}
+                                </span>
                               </div>
 
                               <div className="flex items-center gap-1.5 opacity-75">
@@ -282,7 +285,19 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                                   <span className="font-semibold">
                                     Dept Admin
                                   </span>
-                                  : {assignmentInfo?.admin_name})
+                                  : {assignmentInfo?.admin_name || "None found"}
+                                  )
+                                </span>
+                              </div>
+
+                              {/* Current issue priority */}
+                              <div className="flex items-center gap-1.5 font-semibold">
+                                <ArrowUpDown size={14} />
+                                <span>
+                                  Default priority:{" "}
+                                  <span className="font-normal">
+                                    {assignmentInfo?.issue_priority || "None"}
+                                  </span>
                                 </span>
                               </div>
                             </div>
