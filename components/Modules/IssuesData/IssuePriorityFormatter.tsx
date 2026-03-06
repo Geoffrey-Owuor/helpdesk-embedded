@@ -1,5 +1,12 @@
 import { IssueValueTypes } from "@/contexts/IssuesDataContext";
-import { LucideIcon, ArrowDown, ArrowRight, ArrowUp, Zap } from "lucide-react";
+import {
+  LucideIcon,
+  ArrowDown,
+  ArrowRight,
+  ArrowUp,
+  Zap,
+  Ellipsis,
+} from "lucide-react";
 
 interface IssuePriorityProps {
   priority: IssueValueTypes;
@@ -39,7 +46,7 @@ const priorityColorFormatting: Record<
 const defaultPriorityStyle = {
   text: "text-gray-700 dark:text-gray-300",
   bg: "bg-gray-100 dark:bg-gray-800",
-  icon: ArrowRight,
+  icon: Ellipsis,
 };
 
 const IssuePriorityFormatter = ({
