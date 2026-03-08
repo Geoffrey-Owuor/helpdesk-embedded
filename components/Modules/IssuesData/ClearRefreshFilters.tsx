@@ -17,6 +17,7 @@ const ClearRefreshFilters = ({ handleRefetchIssues }: ClearRefreshProps) => {
     setDepartment,
     setAgent,
     setIssueType,
+    setIssuePriority,
     setSubmitter,
   } = useSearchLogic();
 
@@ -30,6 +31,7 @@ const ClearRefreshFilters = ({ handleRefetchIssues }: ClearRefreshProps) => {
     setDepartment("");
     setAgent("");
     setIssueType("");
+    setIssuePriority("");
     setSubmitter("");
   };
 

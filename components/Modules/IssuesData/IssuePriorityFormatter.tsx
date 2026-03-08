@@ -1,0 +1,75 @@
+import { IssueValueTypes } from "@/contexts/IssuesDataContext";
+import {
+  LucideIcon,
+  ArrowDown,
+  ArrowRight,
+  ArrowUp,
+  Zap,
+  Ellipsis,
+} from "lucide-react";
+
+interface IssuePriorityProps {
+  priority: IssueValueTypes;
+  showText?: boolean;
+}
+
+const priorityColorFormatting: Record<
+  string,
+  {
+    text: string;
+    bg: string;
+    icon: LucideIcon;
+  }
+> = {
+  Low: {
+    text: "text-violet-700 dark:text-violet-400",
+    bg: "bg-violet-50 dark:bg-violet-900/30",
+    icon: ArrowDown,
+  },
+  Medium: {
+    text: "text-sky-700 dark:text-sky-400",
+    bg: "bg-sky-50 dark:bg-sky-900/30",
+    icon: ArrowRight,
+  },
+  High: {
+    text: "text-orange-700 dark:text-orange-400",
+    bg: "bg-orange-50 dark:bg-orange-900/30",
+    icon: ArrowUp,
+  },
+  Critical: {
+    text: "text-rose-700 dark:text-rose-400",
+    bg: "bg-rose-50 dark:bg-rose-900/30",
+    icon: Zap,
+  },
+};
+
+const defaultPriorityStyle = {
+  text: "text-gray-700 dark:text-gray-300",
+  bg: "bg-gray-100 dark:bg-gray-800",
+  icon: Ellipsis,
+};
+
+const IssuePriorityFormatter = ({
+  priority,
+  showText = true,
+}: IssuePriorityProps) => {
+  const config = priorityColorFormatting[priority] || defaultPriorityStyle;
+  const Icon = config.icon;
+
+  return (
+    <div
+      className={`inline-flex items-center ${!showText ? "justify-center rounded-full p-2" : "w-22 rounded-lg px-3 py-1"} text-xs font-semibold ${config.bg} ${config.text} `}
+    >
+      <Icon
+        size={12}
+        className={`${showText ? "mr-1.5" : ""} shrink-0 ${config.text} animate-pulse`}
+      />
+
+      <span className={`truncate ${!showText ? "hidden" : ""}`}>
+        {priority}
+      </span>
+    </div>
+  );
+};
+
+export default IssuePriorityFormatter;

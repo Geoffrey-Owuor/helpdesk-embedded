@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect, Dispatch, SetStateAction } from "react";
-import { Check, ChevronDown, UserRound, Bug, Save } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  UserRound,
+  Bug,
+  Save,
+  ArrowUpDown,
+} from "lucide-react";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlert } from "@/contexts/AlertContext";
@@ -9,9 +16,11 @@ import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
 import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
 import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
+import { priorityOptions } from "@/components/Modules/IssuePage/IssuePage";
 
 type EditIssueTypeInfoProps = {
   issueType: string;
+  issuePriority: string;
   agentNames: { agentName: string; agentEmail: string }[];
   agentEmail: string;
   setActiveEditId: Dispatch<SetStateAction<string | null>>;
@@ -19,27 +28,40 @@ type EditIssueTypeInfoProps = {
 
 const EditIssueTypeInfo = ({
   issueType,
+  issuePriority,
   agentNames,
   agentEmail,
   setActiveEditId,
 }: EditIssueTypeInfoProps) => {
   const [selectedType, setSelectedType] = useState(issueType || "");
+  const [selectedPriority, setSelectedPriority] = useState(issuePriority || "");
   const [selectedEmail, setSelectedEmail] = useState(agentEmail || "");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isPriorityDropdownOpen, setIsPriorityDropdownOpen] = useState(false);
   const { setAlertInfo } = useAlert();
   const { setPromiseOverlayInfo } = usePromiseOverlay();
   const { setConfirmationDialogInfo } = useConfirmationDialog();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const priorityDropDownRef = useRef<HTMLDivElement>(null);
   const { refetchAgentsInfo } = useAgentsInfo();
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // Agents dropdown
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
         setIsDropdownOpen(false);
+      }
+
+      // Priority dropdown
+      if (
+        priorityDropDownRef.current &&
+        !priorityDropDownRef.current.contains(event.target as Node)
+      ) {
+        setIsPriorityDropdownOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -61,9 +83,12 @@ const EditIssueTypeInfo = ({
 
     // Do nothing if no data has changed
     if (
-      (agentEmail === selectedEmail && issueType === selectedType) ||
+      (agentEmail === selectedEmail &&
+        issueType === selectedType &&
+        issuePriority === selectedPriority) ||
       !selectedEmail ||
-      !selectedType
+      !selectedType ||
+      !selectedPriority
     ) {
       setAlertInfo({
         alertType: "error",
@@ -84,6 +109,7 @@ const EditIssueTypeInfo = ({
         selectedEmail,
         selectedType,
         issueType,
+        selectedPriority,
       });
 
       // Show alert on success
@@ -210,14 +236,72 @@ const EditIssueTypeInfo = ({
           </div>
         </div>
 
+        {/* Priority selection Dropdown */}
+        <div className="space-y-1.5" ref={priorityDropDownRef}>
+          <label className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
+            <ArrowUpDown size={12} />
+            <div className="inline-flex items-center gap-1">
+              <span>Issue Priority</span>
+              <FormAsterisk />
+            </div>
+          </label>
+
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setIsPriorityDropdownOpen(!isPriorityDropdownOpen)}
+              className="flex w-full items-center justify-between rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm transition-all hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800"
+            >
+              <span
+                className={
+                  selectedName
+                    ? "text-neutral-900 dark:text-neutral-100"
+                    : "text-neutral-400"
+                }
+              >
+                {selectedPriority || "Select a priority"}
+              </span>
+              <ChevronDown
+                size={16}
+                className={`text-neutral-400 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+
+            {isPriorityDropdownOpen && (
+              <div className="absolute left-0 z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-lg border border-neutral-200 bg-white p-2 shadow-xl dark:border-neutral-700 dark:bg-neutral-800">
+                {priorityOptions.map((priority) => (
+                  <button
+                    key={priority.value}
+                    onClick={() => {
+                      setSelectedPriority(priority.value);
+                      setIsPriorityDropdownOpen(false);
+                    }}
+                    className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                  >
+                    <span className="text-neutral-900 dark:text-neutral-100">
+                      {priority.label}
+                    </span>
+                    {selectedPriority === priority.value && (
+                      <Check size={14} className="text-blue-500" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* 3. Action Buttons */}
         <div className="flex items-center justify-end gap-2 pt-2">
           <button
             onClick={handleConfirmationDialog}
             disabled={
-              (agentEmail === selectedEmail && issueType === selectedType) ||
+              (agentEmail === selectedEmail &&
+                issueType === selectedType &&
+                issuePriority === selectedPriority) ||
               !selectedEmail ||
-              !selectedType
+              !selectedType ||
+              !selectedPriority
             } //We will also repeat this logic in our handleUpdate function for double security
             className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50"
           >

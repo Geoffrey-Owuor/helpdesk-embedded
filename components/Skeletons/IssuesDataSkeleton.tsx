@@ -56,8 +56,11 @@ const IssuesDataSkeleton = ({ isTableView }: { isTableView: boolean }) => {
               className="flex flex-col justify-between rounded-xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/50"
             >
               {/* Header Skeleton */}
-              <div className="mb-4 flex items-start justify-between">
-                <SkeletonBox className="h-4 w-20 rounded" />
+              <div className="mb-4 flex items-center justify-between">
+                <div className="inline-flex items-center gap-3">
+                  <SkeletonBox className="h-4 w-20 rounded" />
+                  <SkeletonBox className="h-6 w-6 rounded-full" />
+                </div>
                 <SkeletonBox className="h-6 w-24 rounded-full" />
               </div>
 

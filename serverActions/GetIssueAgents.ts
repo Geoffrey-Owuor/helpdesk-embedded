@@ -6,6 +6,7 @@ export interface IssueAgents {
   issue_type: string;
   agent_name: string;
   agent_email: string;
+  issue_priority: string;
 }
 
 const getIssueAgents = async (department: string) => {
@@ -14,8 +15,9 @@ const getIssueAgents = async (department: string) => {
       SELECT 
         agents.username AS agent_name,
         agents.email AS agent_email,
-        -- If issue_type is NULL, display 'No Issues Assigned' instead
-        COALESCE(m.issue_type, 'No Issues Assigned') AS issue_type
+        -- If issue_type or issue_priority is NULL, display 'No Issues Assigned or None' instead
+        COALESCE(m.issue_type, 'No Issues Assigned') AS issue_type,
+        COALESCE(m.issue_priority, 'None') AS issue_priority
         FROM users as agents
         LEFT JOIN issues_mapping as m ON agents.user_id = m.agent_id
         WHERE (agents.role = 'agent' OR agents.role = 'admin') AND agents.department = $1

@@ -12,6 +12,7 @@ const filterOptions = [
   { label: "Department", value: "department" },
   { label: "Agent", value: "agent" },
   { label: "Issue Type", value: "type" },
+  { label: "Issue Priority", value: "priority" },
   { label: "Submitter", value: "submitter" },
 ];
 

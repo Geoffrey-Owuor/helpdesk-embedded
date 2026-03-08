@@ -7,6 +7,7 @@ type ColumnVisibilityState = {
   ref: boolean;
   status: boolean;
   type: boolean;
+  priority: boolean;
   submitter: boolean;
   date: boolean;
   subDept: boolean; // Submitter Department
@@ -21,6 +22,7 @@ const defaultVisibility: ColumnVisibilityState = {
   ref: true,
   status: true,
   type: true,
+  priority: true,
   submitter: true,
   date: true,
   subDept: true,
@@ -35,6 +37,7 @@ export const columnLabels: Record<keyof ColumnVisibilityState, string> = {
   ref: "Reference ID",
   status: "Status",
   type: "Issue Type",
+  priority: "Issue Priority",
   submitter: "Submitter Name",
   date: "Date Submitted",
   subDept: "Submitter Dept",
