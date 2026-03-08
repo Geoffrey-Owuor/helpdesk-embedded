@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { assets } from "@/public/assets";
 import { currentYear } from "@/public/assets";
+import { Sparkles } from "lucide-react";
 
 const footerLinks = {
   product: [
@@ -103,9 +104,18 @@ const Footer = () => {
 
         {/* Bottom Bar - Centered */}
         <div className="mt-16 border-t border-neutral-100 pt-8 text-center dark:border-neutral-900">
-          <p className="text-base leading-5 text-neutral-500 dark:text-neutral-500">
-            &copy; {currentYear} Issue Desk. All rights reserved.
-          </p>
+          <span className="inline-flex items-center gap-2 text-sm leading-5 text-neutral-500">
+            <span> &copy; {currentYear} Issue Desk. Built by</span>
+            <a
+              href="https://jeff-portfolio-web.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 font-semibold text-neutral-700 hover:underline dark:text-neutral-300"
+            >
+              <Sparkles className="h-4 w-4" />
+              Jeff
+            </a>
+          </span>
         </div>
       </div>
     </footer>
