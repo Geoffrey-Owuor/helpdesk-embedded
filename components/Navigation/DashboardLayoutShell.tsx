@@ -6,7 +6,7 @@ import { AutomationCardsProvider } from "@/contexts/AutomationCardsContext";
 import { AutomationsDataProvider } from "@/contexts/AutomationsDataContext";
 import { ColumnVisibilityProvider } from "@/contexts/ColumnVisibilityContext";
 import { AgentsInfoProvider } from "@/contexts/AgentsInfoContext";
-import { currentYear } from "@/public/assets";
+import DashboardFooter from "./DashboardFooter";
 
 const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -28,9 +28,8 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
                         {children}
                       </main>
 
-                      <footer className="flex justify-center px-6 py-4 text-sm text-neutral-500">
-                        &copy; {currentYear} Issue Desk. All rights reserved.
-                      </footer>
+                      {/* Footer */}
+                      <DashboardFooter />
                     </div>
                   </div>
                 </AgentsInfoProvider>

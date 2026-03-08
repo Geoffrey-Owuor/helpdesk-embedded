@@ -1,6 +1,7 @@
 import ThemeToggle from "../Themes/ThemeToggle";
 import { currentYear } from "@/public/assets";
 import HomePagesLogo from "../Modules/HomePagesLogo";
+import { Sparkles } from "lucide-react";
 
 const AuthShell = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -23,9 +24,18 @@ const AuthShell = ({ children }: { children: React.ReactNode }) => {
 
       {/* Bottom Footer */}
       <div className="p-4">
-        <p className="text-sm text-neutral-500">
-          &copy; {currentYear} Issue Desk. All rights reserved.
-        </p>
+        <span className="inline-flex items-center gap-2 text-sm leading-5 text-neutral-500">
+          <span> &copy; {currentYear} Issue Desk. Built by</span>
+          <a
+            href="https://jeff-portfolio-web.vercel.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 font-semibold text-neutral-700 hover:underline dark:text-neutral-300"
+          >
+            <Sparkles className="h-4 w-4" />
+            Jeff
+          </a>
+        </span>
       </div>
     </div>
   );
