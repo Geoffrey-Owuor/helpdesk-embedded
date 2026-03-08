@@ -1,27 +1,14 @@
-import Image from "next/image";
-import { assets } from "@/public/assets";
 import ThemeToggle from "../Themes/ThemeToggle";
-import Link from "next/link";
 import { currentYear } from "@/public/assets";
+import HomePagesLogo from "../Modules/HomePagesLogo";
 
 const AuthShell = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex min-h-screen flex-col items-center">
       {/* Logo */}
       <div className="custom:left-8 fixed top-4 left-4">
-        <Link href="/" className="flex items-center gap-0.5">
-          <div className="relative h-8 w-8">
-            <Image
-              src={assets.issue_desk_image}
-              alt="Issue Desk Lo go"
-              sizes="32px"
-              className="object-contain dark:invert"
-            />
-          </div>
-          <span className="hidden text-xl font-semibold text-black sm:flex dark:text-white">
-            Issue Desk
-          </span>
-        </Link>
+        {/* App logo */}
+        <HomePagesLogo />
       </div>
 
       {/* Theme Toggle */}

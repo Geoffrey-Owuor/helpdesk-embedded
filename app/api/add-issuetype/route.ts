@@ -44,7 +44,7 @@ export const POST = withAuth(async ({ user, request }) => {
     const insertQuery = `
         INSERT INTO issues_mapping(issue_type, issue_priority, admin_id, agent_id)
         VALUES
-        ($1, $2, $3, (SELECT user_id FROM users WHERE email = $3 LIMIT 1))
+        ($1, $2, $3, (SELECT user_id FROM users WHERE email = $4 LIMIT 1))
         `;
 
     // Execute the query
