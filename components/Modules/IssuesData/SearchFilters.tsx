@@ -34,6 +34,7 @@ const SearchFilters = ({ recordType }: FilterProps) => {
     department,
     agent,
     issueType,
+    issuePriority,
     submitter,
   } = useSearchLogic();
 
@@ -46,6 +47,7 @@ const SearchFilters = ({ recordType }: FilterProps) => {
     department,
     agent,
     issueType,
+    issuePriority,
     submitter,
   ];
   // Check if any of them has a value
@@ -64,6 +66,7 @@ const SearchFilters = ({ recordType }: FilterProps) => {
     department,
     agent,
     issueType,
+    issuePriority,
     submitter,
   };
 

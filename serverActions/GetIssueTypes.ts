@@ -11,6 +11,7 @@ export interface IssueOption {
 export interface IssueAgentMapping {
   agent_name: string;
   admin_name: string;
+  issue_priority: string;
 }
 
 const getIssueTypes = async (department: string) => {
@@ -34,7 +35,8 @@ const getIssueTypes = async (department: string) => {
 const getIssueAgentsMapping = async (issueType: string, department: string) => {
   const baseQuery = `SELECT
                      agents.username AS agent_name,
-                     admins.username AS admin_name
+                     admins.username AS admin_name,
+                     m.issue_priority AS issue_priority
                      FROM issues_mapping AS m
                      JOIN users AS agents ON m.agent_id = agents.user_id
                      JOIN users AS admins ON m.admin_id = admins.user_id

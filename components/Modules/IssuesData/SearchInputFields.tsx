@@ -3,8 +3,9 @@ import { useState, useRef, useEffect } from "react";
 import { Search, ChevronDown, Check, X } from "lucide-react";
 import { useSearchLogic } from "@/contexts/SearchLogicContext";
 import { baseDepartments } from "@/public/assets";
+import { priorityOptions } from "../IssuePage/IssuePage";
 
-// --- Mock Data Options ---
+// --- Status Options ---
 const statusOptions = [
   { label: "Pending", value: "pending" },
   { label: "In Progress", value: "in progress" },
@@ -137,7 +138,7 @@ const SearchInput = ({
     {value && (
       <button
         onClick={() => onChange("")}
-        className="absolute top-1/2 right-3 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200"
+        className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1 text-neutral-400 hover:bg-neutral-200 hover:text-neutral-600 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
       >
         <X className="h-3 w-3" />
       </button>
@@ -157,6 +158,7 @@ const SearchInputFields = () => {
     department,
     agent,
     issueType,
+    issuePriority,
     submitter,
     // Setters
     setStatus,
@@ -166,6 +168,7 @@ const SearchInputFields = () => {
     setDepartment,
     setAgent,
     setIssueType,
+    setIssuePriority,
     setSubmitter,
   } = useSearchLogic();
 
@@ -237,6 +240,16 @@ const SearchInputFields = () => {
             value={issueType}
             onChange={setIssueType}
             placeholder="Search Issue Type..."
+          />
+        );
+
+      case "priority":
+        return (
+          <CustomDropdown
+            options={priorityOptions}
+            value={issuePriority}
+            onChange={setIssuePriority}
+            placeholder="Select Issue Priority..."
           />
         );
 

@@ -15,10 +15,10 @@ export const POST = withAuth(async ({ user, request }) => {
   }
 
   try {
-    const { issueType, agentEmail } = await request.json();
+    const { issueType, agentEmail, issuePriority } = await request.json();
 
     // Bad request
-    if (!issueType || !agentEmail) {
+    if (!issueType || !agentEmail || !issuePriority) {
       return NextResponse.json(
         { message: "Missing some required info" },
         { status: 400 },
@@ -42,13 +42,13 @@ export const POST = withAuth(async ({ user, request }) => {
 
     // Everything is ok - perform the insert query
     const insertQuery = `
-        INSERT INTO issues_mapping(issue_type, admin_id, agent_id)
+        INSERT INTO issues_mapping(issue_type, issue_priority, admin_id, agent_id)
         VALUES
-        ($1, $2, (SELECT user_id FROM users WHERE email = $3 LIMIT 1))
+        ($1, $2, $3, (SELECT user_id FROM users WHERE email = $3 LIMIT 1))
         `;
 
     // Execute the query
-    await query(insertQuery, [issueType, userId, agentEmail]);
+    await query(insertQuery, [issueType, issuePriority, userId, agentEmail]);
 
     // Revalidate the cache tags
     revalidateTag("GetIssueAgents", { expire: 0 });

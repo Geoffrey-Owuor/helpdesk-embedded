@@ -1,6 +1,13 @@
 "use client";
 
-import { Bug, Check, ChevronDown, Plus, UserRound } from "lucide-react";
+import {
+  ArrowUpDown,
+  Bug,
+  Check,
+  ChevronDown,
+  Plus,
+  UserRound,
+} from "lucide-react";
 import { useEffect, useState, useRef, Dispatch, SetStateAction } from "react";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
@@ -9,21 +16,26 @@ import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
 import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
 import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+import { priorityOptions } from "@/components/Modules/IssuePage/IssuePage";
 
 type AddIssueTypeProps = {
   showAddIssueModal: boolean;
   setShowAddIssueModal: Dispatch<SetStateAction<boolean>>;
   agentNames: { agentName: string; agentEmail: string }[];
 };
+
 const AddIssueType = ({
   showAddIssueModal,
   setShowAddIssueModal,
   agentNames,
 }: AddIssueTypeProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isPriorityDropdownOpen, setIsPriorityDropdownOpen] = useState(false);
   const [issueType, setIssueType] = useState("");
+  const [issuePriority, setIssuePriority] = useState("");
   const [agentEmail, setAgentEmail] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const priorityDropDownRef = useRef<HTMLDivElement>(null);
   const { setAlertInfo } = useAlert();
   const { setConfirmationDialogInfo } = useConfirmationDialog();
   const { setPromiseOverlayInfo } = usePromiseOverlay();
@@ -39,11 +51,20 @@ const AddIssueType = ({
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // Agents dropdown
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
         setIsDropdownOpen(false);
+      }
+
+      // Priority dropdown
+      if (
+        priorityDropDownRef.current &&
+        !priorityDropDownRef.current.contains(event.target as Node)
+      ) {
+        setIsPriorityDropdownOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -57,7 +78,7 @@ const AddIssueType = ({
       showDialog: false,
     }));
 
-    if (!issueType || !agentEmail) {
+    if (!issueType || !agentEmail || !issuePriority) {
       setAlertInfo({
         showAlert: true,
         alertType: "error",
@@ -75,6 +96,7 @@ const AddIssueType = ({
     try {
       const response = await apiClient.post("/add-issuetype", {
         issueType,
+        issuePriority,
         agentEmail,
       });
 
@@ -200,11 +222,67 @@ const AddIssueType = ({
           </div>
         </div>
 
+        {/* 2. Priority Selection Dropdown */}
+        <div className="space-y-1.5" ref={priorityDropDownRef}>
+          <label className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
+            <ArrowUpDown size={12} />
+            <div className="inline-flex items-center gap-1">
+              <span>Issue Priority</span>
+              <FormAsterisk />
+            </div>
+          </label>
+
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setIsPriorityDropdownOpen(!isPriorityDropdownOpen)}
+              className="flex w-full items-center justify-between rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm transition-all hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800"
+            >
+              <span
+                className={
+                  issuePriority
+                    ? "text-neutral-900 dark:text-neutral-100"
+                    : "text-neutral-400"
+                }
+              >
+                {issuePriority || "Select a priority"}
+              </span>
+              <ChevronDown
+                size={16}
+                className={`text-neutral-400 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+
+            {isPriorityDropdownOpen && (
+              <div className="absolute left-0 z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-lg border border-neutral-200 bg-white p-2 shadow-xl dark:border-neutral-700 dark:bg-neutral-800">
+                {priorityOptions.map((priority) => (
+                  <button
+                    key={priority.value}
+                    onClick={() => {
+                      setIssuePriority(priority.value);
+                      setIsPriorityDropdownOpen(false);
+                    }}
+                    className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                  >
+                    <span className="text-neutral-900 dark:text-neutral-100">
+                      {priority.label}
+                    </span>
+
+                    {issuePriority === priority.value && (
+                      <Check size={14} className="text-blue-500" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* 3. Action Buttons */}
         <div className="flex items-center justify-end gap-2 pt-2">
           <button
             onClick={handleConfirmSubmit}
-            disabled={!issueType || !agentEmail} //We will also repeat this logic in our handleSubmit function for double security
+            disabled={!issueType || !agentEmail || !issuePriority} //We will also repeat this logic in our handleSubmit function for double security
             className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50"
           >
             <Plus size={16} />

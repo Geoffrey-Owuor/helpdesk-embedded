@@ -18,9 +18,10 @@ export const PUT = withAuth(async ({ request, user }) => {
   }
 
   try {
-    const { selectedType, selectedEmail, issueType } = await request.json();
+    const { selectedType, selectedEmail, issueType, selectedPriority } =
+      await request.json();
 
-    if (!selectedType || !selectedEmail || !issueType) {
+    if (!selectedType || !selectedEmail || !issueType || !selectedPriority) {
       return NextResponse.json(
         { message: "Missing some required payload information" },
         { status: 403 },
@@ -52,13 +53,15 @@ export const PUT = withAuth(async ({ request, user }) => {
     const updateQuery = `
        UPDATE issues_mapping
        SET issue_type = $1,
-       agent_id = (SELECT user_id FROM users WHERE email = $2 LIMIT 1)
-       WHERE issue_type = $3 AND admin_id = $4
+       issue_priority = $2,
+       agent_id = (SELECT user_id FROM users WHERE email = $3 LIMIT 1)
+       WHERE issue_type = $4 AND admin_id = $5
     `;
 
     // Run the query
     await client.query(updateQuery, [
       selectedType,
+      selectedPriority,
       selectedEmail,
       issueType,
       userId,
