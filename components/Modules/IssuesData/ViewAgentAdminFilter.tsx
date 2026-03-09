@@ -1,37 +1,16 @@
 "use client";
-import { useSearchLogic } from "@/contexts/SearchLogicContext";
+import { useSearchStore } from "@/store/SearchLogicStore";
 import { Building2, Send } from "lucide-react";
 
 const ViewAgentAdminFilter = () => {
-  const {
-    agentAdminFilter,
-    setSelectedFilter,
-    setAgentAdminFilter,
-    setStatus,
-    setReference,
-    setFromDate,
-    setToDate,
-    setDepartment,
-    setAgent,
-    setIssueType,
-    setSubmitter,
-  } = useSearchLogic();
+  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
+  const setAgentAdminFilter = useSearchStore(
+    (state) => state.setAgentAdminFilter,
+  );
+  const resetFilters = useSearchStore((state) => state.resetFilters);
 
   // Check is filter has been applied
   const filterApplied = agentAdminFilter === "agentAdminFilter";
-
-  // function for clearing default filters and sets current page to one
-  const clearDefaultFilters = () => {
-    setSelectedFilter("status");
-    setStatus("");
-    setReference("");
-    setFromDate("");
-    setToDate("");
-    setDepartment("");
-    setAgent("");
-    setIssueType("");
-    setSubmitter("");
-  };
 
   // Incoming Issues
   const handleDefaultIssues = () => {
@@ -40,8 +19,8 @@ const ViewAgentAdminFilter = () => {
     // Reset agentAdminFilter
     setAgentAdminFilter("");
 
-    // Call the default resetter
-    clearDefaultFilters();
+    // reset Filters
+    resetFilters();
   };
 
   // Personal submissions
@@ -51,8 +30,8 @@ const ViewAgentAdminFilter = () => {
     // Set agentAdminFilter
     setAgentAdminFilter("agentAdminFilter");
 
-    //Call the default resetter
-    clearDefaultFilters();
+    // reset filters
+    resetFilters();
   };
 
   return (

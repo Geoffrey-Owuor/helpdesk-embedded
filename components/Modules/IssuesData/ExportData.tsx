@@ -5,14 +5,18 @@ import apiClient from "@/lib/AxiosClient";
 import { useState } from "react";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlert } from "@/contexts/AlertContext";
-import { useSearchLogic } from "@/contexts/SearchLogicContext";
+import { useSearchStore } from "@/store/SearchLogicStore";
 import { useUser } from "@/contexts/UserContext";
 
 const ExportData = ({ fetchAutomations }: { fetchAutomations: string }) => {
   const [isExporting, setIsExporting] = useState(false);
-  const { fromDate, toDate, agentAdminFilter } = useSearchLogic();
   const { setAlertInfo } = useAlert();
   const { username } = useUser();
+
+  // Getting the data needed from the store
+  const fromDate = useSearchStore((state) => state.fromDate);
+  const toDate = useSearchStore((state) => state.toDate);
+  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
 
   // Dynamically building our url
   let baseUrl = `/excel-export?fetchAutomations=${fetchAutomations || "issues"}`;

@@ -1,10 +1,11 @@
 "use client";
 
-import { useSearchLogic } from "@/contexts/SearchLogicContext";
+import { useSearchStore } from "@/store/SearchLogicStore";
 import { LayoutGrid, List } from "lucide-react";
 
 const ToggleTableView = () => {
-  const { isTableView, setIsTableView } = useSearchLogic();
+  const isTableView = useSearchStore((state) => state.isTableView);
+  const setIsTableView = useSearchStore((state) => state.setIsTableView);
 
   // Base styles for the buttons to keep the JSX clean
   const baseBtnStyles =

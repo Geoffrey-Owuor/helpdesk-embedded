@@ -10,7 +10,8 @@ import {
 } from "react";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useSearchLogic } from "./SearchLogicContext";
+
+import { useSearchStore } from "@/store/SearchLogicStore";
 
 // OUR DEFAULT FETCH OPTIONS
 const DEFAULT_FETCH_OPTIONS = { selectedFilter: "status", status: "" };
@@ -45,8 +46,7 @@ export const IssuesDataProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  // Get the agent admin filter
-  const { agentAdminFilter } = useSearchLogic();
+  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
 
   const [issuesData, setIssuesData] = useState([]);
   const [loading, setLoading] = useState(false);

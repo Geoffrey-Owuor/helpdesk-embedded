@@ -3,7 +3,7 @@
 import IssuesCardsSkeleton from "@/components/Skeletons/IssuesCardsSkeleton";
 import { useIssuesCards } from "@/contexts/IssuesCardsContext";
 import { useAutomations } from "@/contexts/AutomationCardsContext";
-import { useSearchLogic } from "@/contexts/SearchLogicContext";
+import { useSearchStore } from "@/store/SearchLogicStore";
 import {
   Clock,
   Activity,
@@ -25,7 +25,7 @@ const IssuesCards = ({ type }: { type: string }) => {
     loading: automationLoading,
   } = useAutomations();
   const { role, department } = useUser();
-  const { agentAdminFilter } = useSearchLogic();
+  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
 
   // Call srolling top hook
   useScrollToTop();

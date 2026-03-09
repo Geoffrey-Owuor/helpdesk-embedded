@@ -1,7 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { Search, ChevronDown, Check, X } from "lucide-react";
-import { useSearchLogic } from "@/contexts/SearchLogicContext";
+import { useSearchStore } from "@/store/SearchLogicStore";
 import { baseDepartments } from "@/public/assets";
 import { priorityOptions } from "../IssuePage/IssuePage";
 
@@ -148,29 +148,28 @@ const SearchInput = ({
 
 // --- Main Component ---
 const SearchInputFields = () => {
-  const {
-    selectedFilter,
-    // Getters
-    status,
-    reference,
-    fromDate,
-    toDate,
-    department,
-    agent,
-    issueType,
-    issuePriority,
-    submitter,
-    // Setters
-    setStatus,
-    setReference,
-    setFromDate,
-    setToDate,
-    setDepartment,
-    setAgent,
-    setIssueType,
-    setIssuePriority,
-    setSubmitter,
-  } = useSearchLogic();
+  //The getters
+  const selectedFilter = useSearchStore((state) => state.selectedFilter);
+  const status = useSearchStore((state) => state.status);
+  const reference = useSearchStore((state) => state.reference);
+  const fromDate = useSearchStore((state) => state.fromDate);
+  const toDate = useSearchStore((state) => state.toDate);
+  const department = useSearchStore((state) => state.department);
+  const agent = useSearchStore((state) => state.agent);
+  const issueType = useSearchStore((state) => state.issueType);
+  const issuePriority = useSearchStore((state) => state.issuePriority);
+  const submitter = useSearchStore((state) => state.submitter);
+
+  //The setters
+  const setStatus = useSearchStore((state) => state.setStatus);
+  const setReference = useSearchStore((state) => state.setReference);
+  const setFromDate = useSearchStore((state) => state.setFromDate);
+  const setToDate = useSearchStore((state) => state.setToDate);
+  const setDepartment = useSearchStore((state) => state.setDepartment);
+  const setAgent = useSearchStore((state) => state.setAgent);
+  const setIssueType = useSearchStore((state) => state.setIssueType);
+  const setIssuePriority = useSearchStore((state) => state.setIssuePriority);
+  const setSubmitter = useSearchStore((state) => state.setSubmitter);
 
   // Render logic based on selectedFilter
   const renderInput = () => {

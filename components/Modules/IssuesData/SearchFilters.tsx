@@ -1,5 +1,5 @@
 "use client";
-import { useSearchLogic } from "@/contexts/SearchLogicContext";
+import { useSearchStore } from "@/store/SearchLogicStore";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
 import { useAutomationsData } from "@/contexts/AutomationsDataContext";
 import { Search } from "lucide-react";
@@ -23,20 +23,16 @@ const SearchFilters = ({ recordType }: FilterProps) => {
       break;
   }
 
-  // Get the filter data
-  const {
-    selectedFilter,
-    // Getters
-    status,
-    reference,
-    fromDate,
-    toDate,
-    department,
-    agent,
-    issueType,
-    issuePriority,
-    submitter,
-  } = useSearchLogic();
+  const selectedFilter = useSearchStore((state) => state.selectedFilter);
+  const status = useSearchStore((state) => state.status);
+  const reference = useSearchStore((state) => state.reference);
+  const fromDate = useSearchStore((state) => state.fromDate);
+  const toDate = useSearchStore((state) => state.toDate);
+  const department = useSearchStore((state) => state.department);
+  const agent = useSearchStore((state) => state.agent);
+  const issueType = useSearchStore((state) => state.issueType);
+  const issuePriority = useSearchStore((state) => state.issuePriority);
+  const submitter = useSearchStore((state) => state.submitter);
 
   // An array of our active filters
   const activeFilters = [
