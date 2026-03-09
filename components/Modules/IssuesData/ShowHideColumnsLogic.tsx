@@ -1,16 +1,14 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { Columns2, ChevronDown, Check, X } from "lucide-react";
-import {
-  useColumnVisibility,
-  columnLabels,
-} from "@/contexts/ColumnVisibilityContext";
+import { useColumnStore, columnLabels } from "@/store/useColumnStore";
 import { useSearchStore } from "@/store/useSearchStore";
 
 const ShowHideColumnsLogic = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { visibleColumns, toggleColumn, resetColumns } = useColumnVisibility();
+
+  const { visibleColumns, toggleColumn, resetColumns } = useColumnStore();
 
   const isTableView = useSearchStore((state) => state.isTableView);
 
