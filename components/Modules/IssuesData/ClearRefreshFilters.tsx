@@ -1,5 +1,5 @@
 "use client";
-import { useSearchStore } from "@/store/SearchLogicStore";
+import { useSearchStore } from "@/store/useSearchStore";
 import { RotateCcw, XCircle } from "lucide-react";
 
 type ClearRefreshProps = {

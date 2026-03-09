@@ -10,7 +10,7 @@ import ClearRefreshFilters from "./ClearRefreshFilters";
 import { useAutomations } from "@/contexts/AutomationCardsContext";
 import SearchFilters from "./SearchFilters";
 import { useState, useEffect } from "react";
-import { useSearchStore } from "@/store/SearchLogicStore";
+import { useSearchStore } from "@/store/useSearchStore";
 import ViewAgentAdminFilter from "./ViewAgentAdminFilter";
 import Pagination from "./Pagination";
 import ToggleTableView from "./ToggleTableView";

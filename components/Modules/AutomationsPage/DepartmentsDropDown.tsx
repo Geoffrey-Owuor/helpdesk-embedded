@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { Check, ChevronDown, Building2 } from "lucide-react"; // Using Building2 for departments
 import { baseDepartments } from "@/public/assets";
 import { useAutomations } from "@/contexts/AutomationCardsContext";
-import { useSearchStore } from "@/store/SearchLogicStore";
+import { useSearchStore } from "@/store/useSearchStore";
 
 // Map the data as requested
 const departments = baseDepartments.map((department) => ({

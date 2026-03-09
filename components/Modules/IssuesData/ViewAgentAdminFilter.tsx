@@ -1,5 +1,5 @@
 "use client";
-import { useSearchStore } from "@/store/SearchLogicStore";
+import { useSearchStore } from "@/store/useSearchStore";
 import { Building2, Send } from "lucide-react";
 
 const ViewAgentAdminFilter = () => {

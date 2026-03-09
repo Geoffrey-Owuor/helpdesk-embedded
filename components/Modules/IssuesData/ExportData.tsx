@@ -5,7 +5,7 @@ import apiClient from "@/lib/AxiosClient";
 import { useState } from "react";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlert } from "@/contexts/AlertContext";
-import { useSearchStore } from "@/store/SearchLogicStore";
+import { useSearchStore } from "@/store/useSearchStore";
 import { useUser } from "@/contexts/UserContext";
 
 const ExportData = ({ fetchAutomations }: { fetchAutomations: string }) => {

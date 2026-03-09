@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchStore } from "@/store/SearchLogicStore";
+import { useSearchStore } from "@/store/useSearchStore";
 import { LayoutGrid, List } from "lucide-react";
 
 const ToggleTableView = () => {
