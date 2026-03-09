@@ -1,13 +1,16 @@
 "use client";
 
-import { useLoadingLine } from "@/contexts/LoadingLineContext";
+import { useLoadingStore } from "@/store/useLoadingStore";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 const LoadingLine = () => {
-  const { loadingLine, setLoadingLine } = useLoadingLine();
   const pathname = usePathname();
   const [progress, setProgress] = useState(0);
+
+  // Loading store data
+  const loadingLine = useLoadingStore((state) => state.loadingLine);
+  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
 
   // 1. Reset on route change
   useEffect(() => {

@@ -17,7 +17,7 @@ import MobileSideBar from "./MobileSideBar";
 import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
 import { DashBoardLogo } from "../Modules/DashBoardLogo";
 import { usePathname, useRouter } from "next/navigation";
-import { useLoadingLine } from "@/contexts/LoadingLineContext";
+import { useLoadingStore } from "@/store/useLoadingStore";
 import AdminPanel from "./AdminFunctions/AdminPanel";
 import UserSettings from "./UserSettings/UserSettings";
 import Notifications from "./Notifications/Notifications";
@@ -36,7 +36,7 @@ const DashboardSidebar = () => {
   const mobileUserDivRef = useRef<HTMLDivElement>(null);
   const desktopUserDivRef = useRef<HTMLDivElement>(null);
 
-  const { setLoadingLine } = useLoadingLine();
+  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
   const pathname = usePathname();
   const router = useRouter();
 
