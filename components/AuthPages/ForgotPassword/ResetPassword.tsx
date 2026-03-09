@@ -2,7 +2,7 @@
 
 import { useState, FormEvent, ChangeEvent } from "react";
 import Link from "next/link";
-import { useAlert } from "@/contexts/AlertContext";
+import { useAlertStore } from "@/store/useAlertStore";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Lock,
@@ -28,7 +28,9 @@ const ResetPassword = ({ isValid }: { isValid: boolean }) => {
 
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { alertInfo, setAlertInfo } = useAlert();
+
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
+  const alertType = useAlertStore((state) => state.alertType);
 
   // Derived State to check if passwords are matching
   const passwordsMatch =
@@ -53,11 +55,7 @@ const ResetPassword = ({ isValid }: { isValid: boolean }) => {
     e.preventDefault();
 
     if (!passwordsMatch) {
-      setAlertInfo({
-        showAlert: true,
-        alertType: "error",
-        alertMessage: "Passwords do not match",
-      });
+      triggerAlert("error", "Passwords do not match");
       return;
     }
 
@@ -77,11 +75,7 @@ const ResetPassword = ({ isValid }: { isValid: boolean }) => {
       router.push("/login?reset=success");
     } catch (error) {
       if (error instanceof Error) {
-        setAlertInfo({
-          showAlert: true,
-          alertType: "error",
-          alertMessage: error.message,
-        });
+        triggerAlert("error", error.message);
       }
       setLoading(false);
     }
@@ -215,7 +209,7 @@ const ResetPassword = ({ isValid }: { isValid: boolean }) => {
             type="submit"
             disabled={loading || passwordsMismatch || !formData.password}
             className={`flex w-full items-center ${
-              alertInfo.alertType === "error"
+              alertType === "error"
                 ? "bg-red-500 text-white hover:bg-red-400 focus:ring-red-500 dark:ring-offset-neutral-950"
                 : "bg-neutral-900 text-white hover:bg-neutral-800 focus:ring-neutral-600 dark:bg-white dark:text-neutral-950 dark:ring-offset-neutral-950 dark:hover:bg-neutral-200 dark:focus:ring-neutral-300"
             } justify-center gap-2 rounded-full px-4 py-3 font-semibold ring-offset-2 focus:ring-1 focus:outline-none disabled:opacity-50`}

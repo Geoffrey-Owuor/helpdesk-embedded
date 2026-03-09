@@ -16,7 +16,7 @@ import IssueTypesInfoSkeleton from "@/components/Skeletons/IssueTypesInfoSkeleto
 import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 import AddIssueType from "./AddIssueType";
 import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
-import { useAlert } from "@/contexts/AlertContext";
+import { useAlertStore } from "@/store/useAlertStore";
 import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
@@ -35,8 +35,8 @@ const IssueTypesInfo = () => {
   // State for showing the AddIssueType Modal
   const [showAddIssueModal, setShowAddIssueModal] = useState(false);
 
-  // context hooks
-  const { setAlertInfo } = useAlert();
+  // state stores
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const { setConfirmationDialogInfo } = useConfirmationDialog();
   const { setPromiseOverlayInfo } = usePromiseOverlay();
 
@@ -75,11 +75,7 @@ const IssueTypesInfo = () => {
 
     // Check if issue type is provided
     if (!issueType) {
-      setAlertInfo({
-        showAlert: true,
-        alertMessage: "Selected action has no selected issue type",
-        alertType: "error",
-      });
+      triggerAlert("error", "Selected action has no selected issue type");
     }
 
     // Show the promise overlay
@@ -97,20 +93,12 @@ const IssueTypesInfo = () => {
       // Refetch agents data
       refetchAgentsInfo();
 
-      // Show alert on success
-      setAlertInfo({
-        showAlert: true,
-        alertType: "success",
-        alertMessage: response.data.message,
-      });
+      // Trigger alert on success
+      triggerAlert("success", response.data.message);
     } catch (error) {
       const apiError = getApiErrorMessage(error);
-      // show alert Error
-      setAlertInfo({
-        showAlert: true,
-        alertType: "error",
-        alertMessage: apiError,
-      });
+      // trigger alert Error
+      triggerAlert("error", apiError);
 
       // Log the error
       console.error("Error while deleting issue type:", apiError);

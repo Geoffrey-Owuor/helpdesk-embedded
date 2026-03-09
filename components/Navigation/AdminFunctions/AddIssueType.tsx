@@ -11,7 +11,7 @@ import {
 import { useEffect, useState, useRef, Dispatch, SetStateAction } from "react";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useAlert } from "@/contexts/AlertContext";
+import { useAlertStore } from "@/store/useAlertStore";
 import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
 import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
@@ -36,7 +36,9 @@ const AddIssueType = ({
   const [agentEmail, setAgentEmail] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const priorityDropDownRef = useRef<HTMLDivElement>(null);
-  const { setAlertInfo } = useAlert();
+
+  // state stores
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const { setConfirmationDialogInfo } = useConfirmationDialog();
   const { setPromiseOverlayInfo } = usePromiseOverlay();
   const { refetchAgentsInfo } = useAgentsInfo();
@@ -79,11 +81,7 @@ const AddIssueType = ({
     }));
 
     if (!issueType || !agentEmail || !issuePriority) {
-      setAlertInfo({
-        showAlert: true,
-        alertType: "error",
-        alertMessage: "Missing some required form information",
-      });
+      triggerAlert("error", "Missing some required form information");
 
       return;
     }
@@ -100,12 +98,8 @@ const AddIssueType = ({
         agentEmail,
       });
 
-      // show alert on success
-      setAlertInfo({
-        showAlert: true,
-        alertType: "success",
-        alertMessage: response.data.message || "Issue type added successfully",
-      });
+      // Trigger alert on success
+      triggerAlert("success", response.data.message);
 
       //refetch agents data
       refetchAgentsInfo();
@@ -114,11 +108,9 @@ const AddIssueType = ({
       setShowAddIssueModal(false);
     } catch (error) {
       const errorMessage = getApiErrorMessage(error);
-      setAlertInfo({
-        showAlert: true,
-        alertType: "error",
-        alertMessage: errorMessage,
-      });
+
+      // Trigger alert on error
+      triggerAlert("error", errorMessage);
 
       console.error("Error while trying to add the issue type:", error);
     } finally {

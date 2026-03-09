@@ -11,7 +11,7 @@ import AddAgent from "./AddAgent";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
-import { useAlert } from "@/contexts/AlertContext";
+import { useAlertStore } from "@/store/useAlertStore";
 import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
 
 const AgentsInfo = () => {
@@ -23,9 +23,9 @@ const AgentsInfo = () => {
   } = useAgentsInfo();
   const [showAddAgentModal, setShowAddAgentModal] = useState(false);
 
-  // context hooks
+  // state stores
   const { setConfirmationDialogInfo } = useConfirmationDialog();
-  const { setAlertInfo } = useAlert();
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const { email: adminEmail } = useUser();
   const { setPromiseOverlayInfo } = usePromiseOverlay();
 
@@ -53,11 +53,7 @@ const AgentsInfo = () => {
 
     // Check if we have an agent email provided
     if (!agentEmail) {
-      setAlertInfo({
-        showAlert: true,
-        alertMessage: "Selected action has no selected agent email",
-        alertType: "error",
-      });
+      triggerAlert("error", "Selected action has no selected agent email");
     }
 
     // Show the promise overlay
@@ -75,19 +71,11 @@ const AgentsInfo = () => {
       // Refetch agents info on success
       refetchAgentsInfo();
 
-      // Show alert
-      setAlertInfo({
-        showAlert: true,
-        alertType: "success",
-        alertMessage: response.data.message,
-      });
+      // Trigger alert on success
+      triggerAlert("success", response.data.message);
     } catch (error) {
       const apiError = getApiErrorMessage(error);
-      setAlertInfo({
-        showAlert: true,
-        alertType: "error",
-        alertMessage: apiError,
-      });
+      triggerAlert("error", apiError);
 
       // Log the error
       console.error("Error while deleting an agent:", apiError);

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ApiHandler } from "@/utils/ApiHandler";
 import AuthShell from "./AuthShell";
 import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
-import { useAlert } from "@/contexts/AlertContext";
+import { useAlertStore } from "@/store/useAlertStore";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -15,7 +15,8 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setAlertInfo } = useAlert();
+
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,11 +48,7 @@ export default function LoginPage() {
   useEffect(() => {
     // Only trigger logic if the specific param exists
     if (searchParams.get("reset") === "success") {
-      setAlertInfo({
-        showAlert: true, // Hardcode true, don't rely on the param comparison anymore
-        alertType: "success",
-        alertMessage: "Your password has been reset successfully",
-      });
+      triggerAlert("success", "Your password has been reset successfully");
 
       // Now clean the URL
       const newUrl = window.location.pathname;
@@ -60,7 +57,7 @@ export default function LoginPage() {
     // If the param is NOT 'success', we do nothing.
     // This leaves the alert visible until the user manually closes it
     // or the AlertContext handles the timeout.
-  }, [searchParams, setAlertInfo]);
+  }, [searchParams, triggerAlert]);
 
   return (
     <AuthShell>

@@ -24,7 +24,7 @@ import {
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import { dateFormatter } from "@/public/assets";
 import { useState, useRef, useEffect } from "react";
-import { useAlert } from "@/contexts/AlertContext";
+import { useAlertStore } from "@/store/useAlertStore";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAutomations } from "@/contexts/AutomationCardsContext";
@@ -66,7 +66,8 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
   const router = useRouter();
-  const { setAlertInfo } = useAlert();
+
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const { setPromiseOverlayInfo } = usePromiseOverlay();
   const { setConfirmationDialogInfo } = useConfirmationDialog();
   const { role, email, department, userId } = useUser();
@@ -124,23 +125,14 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
         status,
       });
 
-      // Set a success alert
-      setAlertInfo({
-        alertType: "success",
-        showAlert: true,
-        alertMessage:
-          response.data.message || "Issue status updated successfully",
-      });
+      // Trigger a success alert
+      triggerAlert("success", response.data.message);
 
       // refetch data
       refetchData();
     } catch (error) {
       const errorMessage = getApiErrorMessage(error);
-      setAlertInfo({
-        alertType: "error",
-        showAlert: true,
-        alertMessage: errorMessage,
-      });
+      triggerAlert("error", errorMessage);
     } finally {
       setPromiseOverlayInfo({
         loading: false,
@@ -167,23 +159,14 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
         priority,
       });
 
-      // Set a success alert
-      setAlertInfo({
-        alertType: "success",
-        showAlert: true,
-        alertMessage:
-          response.data.message || "Issue priority updated successfully",
-      });
+      // Trigger a success alert
+      triggerAlert("success", response.data.message);
 
       // refetch data
       refetchData();
     } catch (error) {
       const errorMessage = getApiErrorMessage(error);
-      setAlertInfo({
-        alertType: "error",
-        showAlert: true,
-        alertMessage: errorMessage,
-      });
+      triggerAlert("error", errorMessage);
     } finally {
       setPromiseOverlayInfo({
         loading: false,

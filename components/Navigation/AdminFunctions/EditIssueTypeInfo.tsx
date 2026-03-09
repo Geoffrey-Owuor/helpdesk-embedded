@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useAlert } from "@/contexts/AlertContext";
+import { useAlertStore } from "@/store/useAlertStore";
 import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
 import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
@@ -38,7 +38,9 @@ const EditIssueTypeInfo = ({
   const [selectedEmail, setSelectedEmail] = useState(agentEmail || "");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isPriorityDropdownOpen, setIsPriorityDropdownOpen] = useState(false);
-  const { setAlertInfo } = useAlert();
+
+  // State stores
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const { setPromiseOverlayInfo } = usePromiseOverlay();
   const { setConfirmationDialogInfo } = useConfirmationDialog();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -90,12 +92,7 @@ const EditIssueTypeInfo = ({
       !selectedType ||
       !selectedPriority
     ) {
-      setAlertInfo({
-        alertType: "error",
-        showAlert: true,
-        alertMessage: "Missing required info or same information passed",
-      });
-
+      triggerAlert("error", "Missing required info or same information passed");
       return;
     }
 
@@ -112,13 +109,8 @@ const EditIssueTypeInfo = ({
         selectedPriority,
       });
 
-      // Show alert on success
-      setAlertInfo({
-        alertType: "success",
-        showAlert: true,
-        alertMessage:
-          response.data.message || "Issue type info updated successfully",
-      });
+      // Trigger alert on success
+      triggerAlert("success", response.data.message);
 
       // Close the EditIssueTypeInfo Modal
       setActiveEditId(null);
@@ -132,11 +124,8 @@ const EditIssueTypeInfo = ({
         errorMessage,
       );
 
-      setAlertInfo({
-        alertType: "error",
-        showAlert: true,
-        alertMessage: errorMessage,
-      });
+      // Trigger alert on error
+      triggerAlert("error", errorMessage);
     } finally {
       setPromiseOverlayInfo({
         loading: false,

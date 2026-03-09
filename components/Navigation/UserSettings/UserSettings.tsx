@@ -23,7 +23,7 @@ import {
   EyeOff,
 } from "lucide-react";
 import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
-import { useAlert } from "@/contexts/AlertContext";
+import { useAlertStore } from "@/store/useAlertStore";
 import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
@@ -39,7 +39,7 @@ const UserSettings = ({
   setIsUserSettingsOpen,
 }: UserSettingsProps) => {
   const { username, email, department, role } = useUser();
-  const { setAlertInfo } = useAlert();
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const { setPromiseOverlayInfo } = usePromiseOverlay();
   const { setConfirmationDialogInfo } = useConfirmationDialog();
 
@@ -128,12 +128,8 @@ const UserSettings = ({
     try {
       const response = await apiClient.put("/update-password", formData);
 
-      // Show alert info on success
-      setAlertInfo({
-        showAlert: true,
-        alertType: "success",
-        alertMessage: response.data.message,
-      });
+      // Trigger alert on success
+      triggerAlert("success", response.data.message);
 
       // Clear form data
       setFormData({
@@ -143,12 +139,8 @@ const UserSettings = ({
       });
     } catch (error) {
       const errorMessage = getApiErrorMessage(error);
-      // Show alert info and log the error
-      setAlertInfo({
-        showAlert: true,
-        alertType: "error",
-        alertMessage: errorMessage,
-      });
+      // Trigger alert on error
+      triggerAlert("error", errorMessage);
 
       console.error(
         "An error occurred while trying to update the password:",
