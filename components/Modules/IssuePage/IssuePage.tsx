@@ -36,7 +36,7 @@ import { DetailCard } from "./HelperComponents/DetailCard";
 import { InfoBlock } from "./HelperComponents/InfoBlock";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import CommentsSection from "./CommentsSection";
-import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
+import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import IssuePriorityFormatter from "../IssuesData/IssuePriorityFormatter";
 
@@ -70,7 +70,8 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
-  const { setConfirmationDialogInfo } = useConfirmationDialog();
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
   const { role, email, department, userId } = useUser();
 
   // Status to hold our selected status
@@ -110,10 +111,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
 
   // Async function for updating the status
   const handleUpdateStatus = async (status: string) => {
-    setConfirmationDialogInfo((prev) => ({
-      ...prev,
-      showDialog: false,
-    }));
+    hideDialog();
 
     showOverlay("Updating");
 
@@ -138,10 +136,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
 
   // Updating the priority
   const handleUpdatePriority = async (priority: string) => {
-    setConfirmationDialogInfo((prev) => ({
-      ...prev,
-      showDialog: false,
-    }));
+    hideDialog();
 
     showOverlay("Updating");
 
@@ -167,8 +162,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const handleConfirmationDialog = (selectedValue: string) => {
     setIsOpen(false);
     // Show the dialog
-    setConfirmationDialogInfo({
-      showDialog: true,
+    triggerDialog({
       title: "Update Status",
       description: `Confirm marking of issue as ${selectedValue}.`,
       onConfirm: () => handleUpdateStatus(selectedValue),
@@ -178,8 +172,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const handlePriorityConfirmation = (selectedValue: string) => {
     setIsPriorityOpen(false);
     // Show the dialog
-    setConfirmationDialogInfo({
-      showDialog: true,
+    triggerDialog({
       title: "Update Priority",
       description: `Confirm changing issue priority to ${selectedValue}.`,
       onConfirm: () => handleUpdatePriority(selectedValue),

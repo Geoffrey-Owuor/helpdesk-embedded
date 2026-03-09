@@ -22,7 +22,8 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
+
+import { useConfirmStore } from "@/store/useConfirmStore";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import apiClient from "@/lib/AxiosClient";
@@ -42,7 +43,8 @@ const UserSettings = ({
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
-  const { setConfirmationDialogInfo } = useConfirmationDialog();
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
 
   const [formData, setFormData] = useState({
     previousPassword: "",
@@ -104,8 +106,7 @@ const UserSettings = ({
   // Handle submission confirmation
   const handleConfirmSubmit = (e: FormEvent) => {
     e.preventDefault();
-    setConfirmationDialogInfo({
-      showDialog: true,
+    triggerDialog({
       title: "Change Password",
       description: "Confirm changing your current password",
       onConfirm: handleSubmit,
@@ -114,10 +115,7 @@ const UserSettings = ({
 
   const handleSubmit = async () => {
     // Hide confirmation dialog
-    setConfirmationDialogInfo((prev) => ({
-      ...prev,
-      showDialog: false,
-    }));
+    hideDialog();
 
     // Show promise overlay
     showOverlay("Updating");

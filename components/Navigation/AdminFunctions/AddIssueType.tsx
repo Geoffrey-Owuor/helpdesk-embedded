@@ -14,7 +14,7 @@ import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
-import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
+import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { priorityOptions } from "@/components/Modules/IssuePage/IssuePage";
 
@@ -39,7 +39,8 @@ const AddIssueType = ({
 
   // state stores
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
-  const { setConfirmationDialogInfo } = useConfirmationDialog();
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const { refetchAgentsInfo } = useAgentsInfo();
@@ -76,10 +77,7 @@ const AddIssueType = ({
 
   //Handle submit function
   const handleSubmit = async () => {
-    setConfirmationDialogInfo((prev) => ({
-      ...prev,
-      showDialog: false,
-    }));
+    hideDialog();
 
     if (!issueType || !agentEmail || !issuePriority) {
       triggerAlert("error", "Missing some required form information");
@@ -117,8 +115,7 @@ const AddIssueType = ({
   };
 
   const handleConfirmSubmit = () => {
-    setConfirmationDialogInfo({
-      showDialog: true,
+    triggerDialog({
       title: "Add Issue Type",
       description: `Confirm adding of new issue type: ${issueType}`,
       onConfirm: handleSubmit,

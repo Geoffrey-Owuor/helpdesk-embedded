@@ -4,7 +4,6 @@ import "../css/globals.css";
 import Alert from "@/components/Modules/Alert";
 import Provider from "@/components/Themes/Provider";
 import LoadingLine from "@/components/Modules/LoadingLine";
-import { ConfirmationDialogProvider } from "@/contexts/ConfirmationDialogContext";
 import {
   ConfirmationDialog,
   PromiseOverlay,
@@ -40,13 +39,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} bg-gray-50 antialiased dark:bg-neutral-950`}
       >
         <Provider>
-          <ConfirmationDialogProvider>
-            <LoadingLine />
-            <Alert />
-            <PromiseOverlay />
-            <ConfirmationDialog />
-            {children}
-          </ConfirmationDialogProvider>
+          <LoadingLine />
+          <Alert />
+          <PromiseOverlay />
+          <ConfirmationDialog />
+          {children}
         </Provider>
       </body>
     </html>

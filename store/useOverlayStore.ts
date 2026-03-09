@@ -19,6 +19,7 @@ interface OverlayStore {
   hideOverlay: () => void;
 }
 
+// creating the store
 export const useOverlayStore = create<OverlayStore>()((set) => ({
   // states
   loading: false,
