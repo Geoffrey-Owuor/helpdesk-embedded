@@ -7,7 +7,7 @@ import IssueStatusFormatter from "./IssueStatusFormatter";
 import { dateFormatter } from "@/public/assets";
 import { AssignedAgentFormatter } from "./AssignedAgentFormatter";
 import { useRouter } from "next/navigation";
-import { useLoadingLine } from "@/contexts/LoadingLineContext";
+import { useLoadingStore } from "@/store/useLoadingStore";
 import IssuePriorityFormatter from "./IssuePriorityFormatter";
 
 type TableViewDataProps = {
@@ -21,7 +21,7 @@ const TableViewData = ({
 }: TableViewDataProps) => {
   const { visibleColumns } = useColumnVisibility();
   const router = useRouter();
-  const { setLoadingLine } = useLoadingLine();
+  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
 
   return (
     <div className="w-full overflow-x-auto rounded-xl bg-gray-100/50 px-4 py-2 dark:bg-neutral-900/50">

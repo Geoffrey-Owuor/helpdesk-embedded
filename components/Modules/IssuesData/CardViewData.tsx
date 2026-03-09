@@ -5,7 +5,7 @@ import Link from "next/link";
 import IssueStatusFormatter from "./IssueStatusFormatter";
 import { AssignedAgentFormatter } from "./AssignedAgentFormatter";
 import { useRouter } from "next/navigation";
-import { useLoadingLine } from "@/contexts/LoadingLineContext";
+import { useLoadingStore } from "@/store/useLoadingStore";
 import { Calendar, Tag, AlignLeft, ArrowRight, UserRound } from "lucide-react";
 import IssuePriorityFormatter from "./IssuePriorityFormatter";
 
@@ -19,7 +19,7 @@ const CardViewData = ({
   dynamicUrlParam,
 }: CardViewDataProps) => {
   const router = useRouter();
-  const { setLoadingLine } = useLoadingLine();
+  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
 
   if (currentIssues.length === 0) {
     return (

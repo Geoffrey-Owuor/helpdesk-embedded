@@ -5,7 +5,7 @@ import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useEffect, useState } from "react";
 import NotificationModal from "./NotificationModal";
-import { useLoadingLine } from "@/contexts/LoadingLineContext";
+import { useLoadingStore } from "@/store/useLoadingStore";
 import { useRouter, usePathname } from "next/navigation";
 import { RouteChangeProps } from "./NotificationModal";
 
@@ -31,7 +31,7 @@ const Notifications = () => {
 
   const router = useRouter();
 
-  const { setLoadingLine } = useLoadingLine();
+  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
   const pathname = usePathname();
 
   const handleRouteChange = ({
