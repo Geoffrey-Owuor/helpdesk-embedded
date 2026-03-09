@@ -1,6 +1,6 @@
 "use client";
 
-import { useColumnVisibility } from "@/contexts/ColumnVisibilityContext";
+import { useColumnStore } from "@/store/useColumnStore";
 import { titleHelper } from "@/public/assets";
 import Link from "next/link";
 import IssueStatusFormatter from "./IssueStatusFormatter";
@@ -19,7 +19,7 @@ const TableViewData = ({
   currentIssues,
   dynamicUrlParam,
 }: TableViewDataProps) => {
-  const { visibleColumns } = useColumnVisibility();
+  const visibleColumns = useColumnStore((state) => state.visibleColumns);
   const router = useRouter();
   const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
 

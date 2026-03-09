@@ -99,7 +99,7 @@ export const ConfirmationDialog = () => {
     </div>
   );
 
-  if (showDialog) return null;
+  if (!showDialog) return null;
 
   return content;
 };
