@@ -15,7 +15,7 @@ import { useAlertStore } from "@/store/useAlertStore";
 import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
 import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+import { useOverlayStore } from "@/store/useOverlayStore";
 import { priorityOptions } from "@/components/Modules/IssuePage/IssuePage";
 
 type AddIssueTypeProps = {
@@ -40,7 +40,8 @@ const AddIssueType = ({
   // state stores
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const { setConfirmationDialogInfo } = useConfirmationDialog();
-  const { setPromiseOverlayInfo } = usePromiseOverlay();
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const { refetchAgentsInfo } = useAgentsInfo();
 
   // get agent name from the mapping to display in the button
@@ -86,10 +87,7 @@ const AddIssueType = ({
       return;
     }
 
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Adding",
-    });
+    showOverlay("Adding");
 
     try {
       const response = await apiClient.post("/add-issuetype", {
@@ -114,10 +112,7 @@ const AddIssueType = ({
 
       console.error("Error while trying to add the issue type:", error);
     } finally {
-      setPromiseOverlayInfo({
-        loading: false,
-        overlaytext: "",
-      });
+      hideOverlay();
     }
   };
 

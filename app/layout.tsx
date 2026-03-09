@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../css/globals.css";
-import { AlertProvider } from "@/contexts/AlertContext";
 import Alert from "@/components/Modules/Alert";
 import Provider from "@/components/Themes/Provider";
 import LoadingLine from "@/components/Modules/LoadingLine";
-import { PromiseOverlayProvider } from "@/contexts/PromiseOverlayContext";
 import { ConfirmationDialogProvider } from "@/contexts/ConfirmationDialogContext";
 import {
   ConfirmationDialog,
@@ -42,17 +40,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} bg-gray-50 antialiased dark:bg-neutral-950`}
       >
         <Provider>
-          <AlertProvider>
-            <PromiseOverlayProvider>
-              <ConfirmationDialogProvider>
-                <LoadingLine />
-                <Alert />
-                <PromiseOverlay />
-                <ConfirmationDialog />
-                {children}
-              </ConfirmationDialogProvider>
-            </PromiseOverlayProvider>
-          </AlertProvider>
+          <ConfirmationDialogProvider>
+            <LoadingLine />
+            <Alert />
+            <PromiseOverlay />
+            <ConfirmationDialog />
+            {children}
+          </ConfirmationDialogProvider>
         </Provider>
       </body>
     </html>

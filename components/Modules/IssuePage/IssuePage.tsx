@@ -37,7 +37,7 @@ import { InfoBlock } from "./HelperComponents/InfoBlock";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import CommentsSection from "./CommentsSection";
 import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+import { useOverlayStore } from "@/store/useOverlayStore";
 import IssuePriorityFormatter from "../IssuesData/IssuePriorityFormatter";
 
 const statusOptions = [
@@ -68,7 +68,8 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const router = useRouter();
 
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
-  const { setPromiseOverlayInfo } = usePromiseOverlay();
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const { setConfirmationDialogInfo } = useConfirmationDialog();
   const { role, email, department, userId } = useUser();
 
@@ -114,10 +115,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
       showDialog: false,
     }));
 
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Updating",
-    });
+    showOverlay("Updating");
 
     try {
       const response = await apiClient.put("/update-status", {
@@ -134,10 +132,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
     } finally {
-      setPromiseOverlayInfo({
-        loading: false,
-        overlaytext: "",
-      });
+      hideOverlay();
     }
   };
 
@@ -148,10 +143,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
       showDialog: false,
     }));
 
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Updating",
-    });
+    showOverlay("Updating");
 
     try {
       const response = await apiClient.put("/update-priority", {
@@ -168,10 +160,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
     } finally {
-      setPromiseOverlayInfo({
-        loading: false,
-        overlaytext: "",
-      });
+      hideOverlay();
     }
   };
 

@@ -12,7 +12,7 @@ import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
 import { useAlertStore } from "@/store/useAlertStore";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+import { useOverlayStore } from "@/store/useOverlayStore";
 
 const AgentsInfo = () => {
   // Get context data
@@ -27,7 +27,8 @@ const AgentsInfo = () => {
   const { setConfirmationDialogInfo } = useConfirmationDialog();
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const { email: adminEmail } = useUser();
-  const { setPromiseOverlayInfo } = usePromiseOverlay();
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
 
   // Grouping the flattened array
   const agentsInfo = arrayReducer(agentsFlatInfo);
@@ -57,10 +58,7 @@ const AgentsInfo = () => {
     }
 
     // Show the promise overlay
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Deleting",
-    });
+    showOverlay("Deleting");
 
     // Api call
     try {
@@ -80,10 +78,7 @@ const AgentsInfo = () => {
       // Log the error
       console.error("Error while deleting an agent:", apiError);
     } finally {
-      setPromiseOverlayInfo({
-        loading: false,
-        overlaytext: "",
-      });
+      hideOverlay();
     }
   };
 

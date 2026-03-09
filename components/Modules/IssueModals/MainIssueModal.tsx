@@ -29,7 +29,7 @@ import OptionsDropDown from "./OptionsDropDown";
 import { baseDepartments } from "@/public/assets";
 import FormAsterisk from "../FormAsterisk";
 import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+import { useOverlayStore } from "@/store/useOverlayStore";
 
 // Priority icon types
 const priorityIcons: Record<string, LucideIcon> = {
@@ -74,7 +74,8 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   // State Data
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const alertType = useAlertStore((state) => state.alertType);
-  const { setPromiseOverlayInfo } = usePromiseOverlay();
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const { setConfirmationDialogInfo } = useConfirmationDialog();
   const { refetchIssues } = useIssuesData();
   const { refetchAutomations } = useAutomationsData();
@@ -150,10 +151,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       showDialog: false,
     }));
 
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Adding",
-    });
+    showOverlay("Adding");
 
     try {
       // post issue api endpoint
@@ -187,10 +185,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       triggerAlert("error", errorMessage);
       console.error("Error submitting the issue:", error);
     } finally {
-      setPromiseOverlayInfo({
-        loading: false,
-        overlaytext: "",
-      });
+      hideOverlay();
     }
   };
 

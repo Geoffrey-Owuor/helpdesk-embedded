@@ -17,7 +17,7 @@ import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 import AddIssueType from "./AddIssueType";
 import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
 import { useAlertStore } from "@/store/useAlertStore";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+import { useOverlayStore } from "@/store/useOverlayStore";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import IssuePriorityFormatter from "@/components/Modules/IssuesData/IssuePriorityFormatter";
@@ -38,7 +38,8 @@ const IssueTypesInfo = () => {
   // state stores
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const { setConfirmationDialogInfo } = useConfirmationDialog();
-  const { setPromiseOverlayInfo } = usePromiseOverlay();
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
 
   const handleToggleEdit = (id: string) => {
     // If clicking the same one, close it, otherwise open a new one
@@ -79,10 +80,7 @@ const IssueTypesInfo = () => {
     }
 
     // Show the promise overlay
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Deleting",
-    });
+    showOverlay("Deleting");
 
     // Api call
     try {
@@ -103,10 +101,7 @@ const IssueTypesInfo = () => {
       // Log the error
       console.error("Error while deleting issue type:", apiError);
     } finally {
-      setPromiseOverlayInfo({
-        loading: false,
-        overlaytext: "",
-      });
+      hideOverlay();
     }
   };
 

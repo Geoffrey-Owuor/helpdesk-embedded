@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
 import { useAlertStore } from "@/store/useAlertStore";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+import { useOverlayStore } from "@/store/useOverlayStore";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
@@ -40,7 +40,8 @@ const UserSettings = ({
 }: UserSettingsProps) => {
   const { username, email, department, role } = useUser();
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
-  const { setPromiseOverlayInfo } = usePromiseOverlay();
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const { setConfirmationDialogInfo } = useConfirmationDialog();
 
   const [formData, setFormData] = useState({
@@ -119,10 +120,7 @@ const UserSettings = ({
     }));
 
     // Show promise overlay
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Changing",
-    });
+    showOverlay("Updating");
 
     //Api call
     try {
@@ -147,10 +145,7 @@ const UserSettings = ({
         errorMessage,
       );
     } finally {
-      setPromiseOverlayInfo({
-        loading: false,
-        overlaytext: "",
-      });
+      hideOverlay();
     }
   };
 

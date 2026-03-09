@@ -27,7 +27,7 @@ import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 import { NameValidator, NameValidationResult } from "@/utils/Validators";
 import NameRulesCard from "@/components/Modules/NameRulesCard";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+import { useOverlayStore } from "@/store/useOverlayStore";
 import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
 
 type AddAgentProps = {
@@ -41,7 +41,8 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
   // state data
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const { setConfirmationDialogInfo } = useConfirmationDialog();
-  const { setPromiseOverlayInfo } = usePromiseOverlay();
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const { refetchAgentsInfo } = useAgentsInfo();
 
   const [formData, setFormData] = useState({
@@ -113,10 +114,7 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
       return;
     }
 
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Adding",
-    });
+    showOverlay("Adding");
     try {
       const response = await apiClient.post("/add-agent", formData);
 
@@ -135,10 +133,7 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
       // log the error
       console.error("Error while trying to add an agent:", errorMessage);
     } finally {
-      setPromiseOverlayInfo({
-        loading: false,
-        overlaytext: "",
-      });
+      hideOverlay();
     }
   };
 
