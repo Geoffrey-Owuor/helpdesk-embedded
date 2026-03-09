@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Check, ChevronDown, Filter } from "lucide-react";
-import { useSearchLogic } from "@/contexts/SearchLogicContext";
+import { useSearchStore } from "@/store/SearchLogicStore";
 import { useUser } from "@/contexts/UserContext";
 
 // Define options outside component to keep it clean
@@ -19,8 +19,12 @@ const filterOptions = [
 const SearchFilterLogic = ({ recordType }: { recordType: string }) => {
   // State for the filter dropdown
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const { selectedFilter, agentAdminFilter, setSelectedFilter } =
-    useSearchLogic();
+
+  // Store state
+  const selectedFilter = useSearchStore((state) => state.selectedFilter);
+  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
+  const setSelectedFilter = useSearchStore((state) => state.setSelectedFilter);
+
   const filterRef = useRef<HTMLDivElement>(null);
 
   // Get the user's role

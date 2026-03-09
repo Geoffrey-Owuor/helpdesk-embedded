@@ -1,16 +1,16 @@
 import DashboardSidebar from "./DashboardSidebar";
 import { IssuesDataProvider } from "@/contexts/IssuesDataContext";
-import { SearchLogicProvider } from "@/contexts/SearchLogicContext";
 import { IssuesCardsProvider } from "@/contexts/IssuesCardsContext";
 import { AutomationCardsProvider } from "@/contexts/AutomationCardsContext";
 import { AutomationsDataProvider } from "@/contexts/AutomationsDataContext";
 import { ColumnVisibilityProvider } from "@/contexts/ColumnVisibilityContext";
 import { AgentsInfoProvider } from "@/contexts/AgentsInfoContext";
+import HydrationGuard from "../Modules/HydrationGuard";
 import DashboardFooter from "./DashboardFooter";
 
 const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
   return (
-    <SearchLogicProvider>
+    <HydrationGuard>
       <AutomationCardsProvider>
         <IssuesDataProvider>
           <AutomationsDataProvider>
@@ -38,7 +38,7 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
           </AutomationsDataProvider>
         </IssuesDataProvider>
       </AutomationCardsProvider>
-    </SearchLogicProvider>
+    </HydrationGuard>
   );
 };
 

@@ -5,13 +5,14 @@ import {
   useColumnVisibility,
   columnLabels,
 } from "@/contexts/ColumnVisibilityContext";
-import { useSearchLogic } from "@/contexts/SearchLogicContext";
+import { useSearchStore } from "@/store/SearchLogicStore";
 
 const ShowHideColumnsLogic = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { visibleColumns, toggleColumn, resetColumns } = useColumnVisibility();
-  const { isTableView } = useSearchLogic();
+
+  const isTableView = useSearchStore((state) => state.isTableView);
 
   // Close dropdown when clicking outside
   useEffect(() => {

@@ -10,7 +10,7 @@ import ClearRefreshFilters from "./ClearRefreshFilters";
 import { useAutomations } from "@/contexts/AutomationCardsContext";
 import SearchFilters from "./SearchFilters";
 import { useState, useEffect } from "react";
-import { useSearchLogic } from "@/contexts/SearchLogicContext";
+import { useSearchStore } from "@/store/SearchLogicStore";
 import ViewAgentAdminFilter from "./ViewAgentAdminFilter";
 import Pagination from "./Pagination";
 import ToggleTableView from "./ToggleTableView";
@@ -26,7 +26,10 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
     refetchAutomations,
   } = useAutomationsData();
   const { role, department } = useUser();
-  const { agentAdminFilter, isTableView } = useSearchLogic();
+
+  // useSearchStore Data
+  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
+  const isTableView = useSearchStore((state) => state.isTableView);
   const { selectedDepartment } = useAutomations();
 
   // Defining our variables based on record type

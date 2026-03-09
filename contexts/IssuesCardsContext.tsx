@@ -11,7 +11,7 @@ import {
 } from "react";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useSearchLogic } from "./SearchLogicContext";
+import { useSearchStore } from "@/store/SearchLogicStore";
 
 interface IssuesCounts {
   totals: number;
@@ -43,7 +43,7 @@ export const IssuesCardsProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [issuesCounts, setIssuesCounts] = useState<IssuesCounts>(defaultCounts);
 
-  const { agentAdminFilter } = useSearchLogic();
+  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
 
   const fetchIssuesCounts = useCallback(async () => {
     setLoading(true);
