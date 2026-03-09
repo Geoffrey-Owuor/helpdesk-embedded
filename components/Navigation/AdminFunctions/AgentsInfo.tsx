@@ -10,7 +10,7 @@ import { useUser } from "@/contexts/UserContext";
 import AddAgent from "./AddAgent";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
+import { useConfirmStore } from "@/store/useConfirmStore";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 
@@ -24,7 +24,8 @@ const AgentsInfo = () => {
   const [showAddAgentModal, setShowAddAgentModal] = useState(false);
 
   // state stores
-  const { setConfirmationDialogInfo } = useConfirmationDialog();
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const { email: adminEmail } = useUser();
   const showOverlay = useOverlayStore((state) => state.showOverlay);
@@ -36,8 +37,7 @@ const AgentsInfo = () => {
   // Confirm Agent deletion
   const handleConfirmDeletion = (agentEmail: string, agentName: string) => {
     // Show confirmation dialog
-    setConfirmationDialogInfo({
-      showDialog: true,
+    triggerDialog({
       title: "Delete Agent",
       description: `Confirm deletion of agent: ${agentName}`,
       onConfirm: () => handleDeletion(agentEmail),
@@ -47,10 +47,7 @@ const AgentsInfo = () => {
   // Handle the real deletion
   const handleDeletion = async (agentEmail: string) => {
     // hide confirmation dialog
-    setConfirmationDialogInfo((prev) => ({
-      ...prev,
-      showDialog: false,
-    }));
+    hideDialog();
 
     // Check if we have an agent email provided
     if (!agentEmail) {

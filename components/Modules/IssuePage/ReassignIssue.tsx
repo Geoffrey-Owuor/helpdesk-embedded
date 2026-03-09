@@ -23,7 +23,7 @@ import { useIssuesCards } from "@/contexts/IssuesCardsContext";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
 import { useAutomationsData } from "@/contexts/AutomationsDataContext";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
+import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 
 type ReassignIssueProps = {
@@ -45,7 +45,8 @@ const ReassignIssue = ({
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
-  const { setConfirmationDialogInfo } = useConfirmationDialog();
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
   const [issueAgents, setIssueAgents] = useState<IssueAgents[]>([]);
   const [agentEmail, setAgentEmail] = useState(""); //will be sent to the api
   const [agentName, setAgentName] = useState(""); //will be sent to the api
@@ -90,10 +91,7 @@ const ReassignIssue = ({
 
   //function for calling the api endpoint to handle reassigning
   const handleReAssigning = async () => {
-    setConfirmationDialogInfo((prev) => ({
-      ...prev,
-      showDialog: false,
-    }));
+    hideDialog();
 
     showOverlay("Reassigning");
 
@@ -128,8 +126,7 @@ const ReassignIssue = ({
   };
 
   const handleConfirmationDialog = () => {
-    setConfirmationDialogInfo({
-      showDialog: true,
+    triggerDialog({
       title: "Reassign Issue",
       description: `Confirm reassigning of issue to ${agentName}`,
       onConfirm: handleReAssigning,

@@ -11,7 +11,7 @@ import { useAutomations } from "@/contexts/AutomationCardsContext";
 import { X } from "lucide-react";
 import { IssueValueTypes } from "@/contexts/IssuesDataContext";
 import FormAsterisk from "../FormAsterisk";
-import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
+import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 
 type TitleDescriptionModalProps = {
@@ -37,7 +37,8 @@ const TitleDescriptionModal = ({
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
-  const { setConfirmationDialogInfo } = useConfirmationDialog();
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
   const { refetchIssues } = useIssuesData();
   const { refetchAutomations } = useAutomationsData();
   const { refetchIssuesCounts } = useIssuesCards();
@@ -65,10 +66,7 @@ const TitleDescriptionModal = ({
 
   // the handle submit function
   const handleSubmit = async () => {
-    setConfirmationDialogInfo((prev) => ({
-      ...prev,
-      showDialog: false,
-    }));
+    hideDialog();
 
     showOverlay("Updating");
 
@@ -105,9 +103,7 @@ const TitleDescriptionModal = ({
 
   const handleConfirmSubmit = (e: FormEvent) => {
     e.preventDefault();
-
-    setConfirmationDialogInfo({
-      showDialog: true,
+    triggerDialog({
       title: "Update Issue Info",
       description: "Confirm the changes made.",
       onConfirm: handleSubmit,

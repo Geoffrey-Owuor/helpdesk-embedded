@@ -15,7 +15,7 @@ import { useAlertStore } from "@/store/useAlertStore";
 import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
 import { useOverlayStore } from "@/store/useOverlayStore";
-import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
+import { useConfirmStore } from "@/store/useConfirmStore";
 import { priorityOptions } from "@/components/Modules/IssuePage/IssuePage";
 
 type EditIssueTypeInfoProps = {
@@ -43,7 +43,8 @@ const EditIssueTypeInfo = ({
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
-  const { setConfirmationDialogInfo } = useConfirmationDialog();
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const priorityDropDownRef = useRef<HTMLDivElement>(null);
   const { refetchAgentsInfo } = useAgentsInfo();
@@ -79,10 +80,7 @@ const EditIssueTypeInfo = ({
   const selectedName = selectedNameObject?.agentName;
 
   const handleUpdate = async () => {
-    setConfirmationDialogInfo((prev) => ({
-      ...prev,
-      showDialog: false,
-    }));
+    hideDialog();
 
     // Do nothing if no data has changed
     if (
@@ -130,8 +128,7 @@ const EditIssueTypeInfo = ({
   };
 
   const handleConfirmationDialog = () => {
-    setConfirmationDialogInfo({
-      showDialog: true,
+    triggerDialog({
       title: "Edit Issue Type Info",
       description: "Confirm editing of issue info.",
       onConfirm: handleUpdate,

@@ -28,7 +28,7 @@ import { useAutomations } from "@/contexts/AutomationCardsContext";
 import OptionsDropDown from "./OptionsDropDown";
 import { baseDepartments } from "@/public/assets";
 import FormAsterisk from "../FormAsterisk";
-import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
+import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 
 // Priority icon types
@@ -76,7 +76,8 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   const alertType = useAlertStore((state) => state.alertType);
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
-  const { setConfirmationDialogInfo } = useConfirmationDialog();
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
   const { refetchIssues } = useIssuesData();
   const { refetchAutomations } = useAutomationsData();
   const { refetchAutomationCounts } = useAutomations();
@@ -146,10 +147,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
 
   // Function for handling issue submission
   const handleFormSubmit = async () => {
-    setConfirmationDialogInfo((prev) => ({
-      ...prev,
-      showDialog: false,
-    }));
+    hideDialog();
 
     showOverlay("Adding");
 
@@ -196,8 +194,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     if (!formData.target_department || !formData.issue_type) {
       triggerAlert("error", "Missing some required fields");
     } else {
-      setConfirmationDialogInfo({
-        showDialog: true,
+      triggerDialog({
         title: "Submit Issue",
         description: "Confirm submission of the issue.",
         onConfirm: handleFormSubmit,

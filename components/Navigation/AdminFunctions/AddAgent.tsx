@@ -28,7 +28,7 @@ import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 import { NameValidator, NameValidationResult } from "@/utils/Validators";
 import NameRulesCard from "@/components/Modules/NameRulesCard";
 import { useOverlayStore } from "@/store/useOverlayStore";
-import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
+import { useConfirmStore } from "@/store/useConfirmStore";
 
 type AddAgentProps = {
   showAgentModal: boolean;
@@ -40,7 +40,8 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
 
   // state data
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
-  const { setConfirmationDialogInfo } = useConfirmationDialog();
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const { refetchAgentsInfo } = useAgentsInfo();
@@ -100,10 +101,7 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
       : null;
 
   const handleSubmit = async () => {
-    setConfirmationDialogInfo((prev) => ({
-      ...prev,
-      showDialog: false,
-    }));
+    hideDialog();
 
     //password validation logic
     if (
@@ -138,8 +136,7 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
   };
 
   const handleConfirmationDialog = () => {
-    setConfirmationDialogInfo({
-      showDialog: true,
+    triggerDialog({
       title: "Add Agent",
       description: "Confirm adding of new agent.",
       onConfirm: handleSubmit,
