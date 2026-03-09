@@ -24,7 +24,7 @@ import { useIssuesData } from "@/contexts/IssuesDataContext";
 import { useAutomationsData } from "@/contexts/AutomationsDataContext";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+import { useOverlayStore } from "@/store/useOverlayStore";
 
 type ReassignIssueProps = {
   uuid: string;
@@ -43,7 +43,8 @@ const ReassignIssue = ({
   const { department } = useUser();
 
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
-  const { setPromiseOverlayInfo } = usePromiseOverlay();
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const { setConfirmationDialogInfo } = useConfirmationDialog();
   const [issueAgents, setIssueAgents] = useState<IssueAgents[]>([]);
   const [agentEmail, setAgentEmail] = useState(""); //will be sent to the api
@@ -94,10 +95,7 @@ const ReassignIssue = ({
       showDialog: false,
     }));
 
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Reassigning",
-    });
+    showOverlay("Reassigning");
 
     try {
       const response = await apiClient.put("/reassign-issue", {
@@ -125,10 +123,7 @@ const ReassignIssue = ({
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
     } finally {
-      setPromiseOverlayInfo({
-        loading: false,
-        overlaytext: "",
-      });
+      hideOverlay();
     }
   };
 

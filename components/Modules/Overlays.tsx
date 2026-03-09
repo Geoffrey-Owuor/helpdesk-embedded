@@ -4,29 +4,28 @@ import { ArrowRight, Loader, Loader2, X } from "lucide-react";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+import { useOverlayStore } from "@/store/useOverlayStore";
 
 // Overlay displayed when performing crud operations or logging out
 export const PromiseOverlay = () => {
-  const { promiseOverlayInfo, setPromiseOverlayInfo } = usePromiseOverlay();
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
+  const overlaytext = useOverlayStore((state) => state.overlaytext);
+  const loading = useOverlayStore((state) => state.loading);
   const pathname = usePathname();
 
-  // reset promise overlay when pathname changes
+  // reset promise overlay when pathname changes (useful for logging out)
   useEffect(() => {
-    setPromiseOverlayInfo({
-      loading: false,
-      overlaytext: "",
-    });
-  }, [pathname, setPromiseOverlayInfo]);
+    hideOverlay();
+  }, [pathname, hideOverlay]);
 
   const content = (
     <div
-      className={`fixed inset-0 z-9999 flex h-screen items-center justify-center ${promiseOverlayInfo.overlaytext === "Logging out" ? "bg-white dark:bg-black" : "bg-black/30 dark:bg-black/60"}`}
+      className={`fixed inset-0 z-9999 flex h-screen items-center justify-center ${overlaytext === "Logging out" ? "bg-white dark:bg-black" : "bg-black/30 dark:bg-black/60"}`}
     >
       {/* Container to align the spinner and text horizontally */}
       <div className="flex items-center space-x-2">
         {/* The Lucide Loader spinner */}
-        {promiseOverlayInfo.overlaytext === "Logging out" ? (
+        {overlaytext === "Logging out" ? (
           <Loader
             className="h-9 w-9 animate-spin text-neutral-900 dark:text-white"
             aria-label="overlay text"
@@ -39,13 +38,13 @@ export const PromiseOverlay = () => {
         )}
         {/* The text, styled for dark and light modes */}
         <span className="text-base text-neutral-900 dark:text-white">
-          {promiseOverlayInfo.overlaytext}...
+          {overlaytext}...
         </span>
       </div>
     </div>
   );
 
-  if (!promiseOverlayInfo.loading) return null;
+  if (!loading) return null;
 
   return content;
 };

@@ -7,7 +7,6 @@ import IssueTypesInfo from "./IssueTypesInfo";
 import ClientPortal from "@/components/Modules/ClientPortal";
 import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 import { handleRefetchIssueAgentsData } from "@/serverActions/refetchIssueAgentsData";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
 
 type AdminPanelProps = {
   showAdminPanel: boolean;
@@ -19,24 +18,11 @@ type TabId = "agent-info" | "issue-info";
 const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   const [activeTab, setActiveTab] = useState<TabId>("agent-info");
   const { refetchAgentsInfo } = useAgentsInfo();
-  const { setPromiseOverlayInfo } = usePromiseOverlay();
 
   // Refetch agents and issue types data
   const handleRefetchIssueAgents = async () => {
-    // Show our promise overlay
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Refreshing",
-    });
-
     // We call our server action here
     await handleRefetchIssueAgentsData();
-
-    // After it's complete - we hide our promise overlay
-    setPromiseOverlayInfo({
-      loading: false,
-      overlaytext: "",
-    });
 
     // refetch data after revalidation
     refetchAgentsInfo();

@@ -14,7 +14,7 @@ import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+import { useOverlayStore } from "@/store/useOverlayStore";
 import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
 import { priorityOptions } from "@/components/Modules/IssuePage/IssuePage";
 
@@ -41,7 +41,8 @@ const EditIssueTypeInfo = ({
 
   // State stores
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
-  const { setPromiseOverlayInfo } = usePromiseOverlay();
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const { setConfirmationDialogInfo } = useConfirmationDialog();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const priorityDropDownRef = useRef<HTMLDivElement>(null);
@@ -96,10 +97,7 @@ const EditIssueTypeInfo = ({
       return;
     }
 
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Editing",
-    });
+    showOverlay("Updating");
 
     try {
       const response = await apiClient.put("/update-issuetype", {
@@ -127,10 +125,7 @@ const EditIssueTypeInfo = ({
       // Trigger alert on error
       triggerAlert("error", errorMessage);
     } finally {
-      setPromiseOverlayInfo({
-        loading: false,
-        overlaytext: "",
-      });
+      hideOverlay();
     }
   };
 

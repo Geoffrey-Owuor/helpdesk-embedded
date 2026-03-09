@@ -12,7 +12,7 @@ import { X } from "lucide-react";
 import { IssueValueTypes } from "@/contexts/IssuesDataContext";
 import FormAsterisk from "../FormAsterisk";
 import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+import { useOverlayStore } from "@/store/useOverlayStore";
 
 type TitleDescriptionModalProps = {
   title: IssueValueTypes;
@@ -35,7 +35,8 @@ const TitleDescriptionModal = ({
 
   // state data
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
-  const { setPromiseOverlayInfo } = usePromiseOverlay();
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const { setConfirmationDialogInfo } = useConfirmationDialog();
   const { refetchIssues } = useIssuesData();
   const { refetchAutomations } = useAutomationsData();
@@ -69,10 +70,7 @@ const TitleDescriptionModal = ({
       showDialog: false,
     }));
 
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Editing",
-    });
+    showOverlay("Updating");
 
     // compile our data into one object
     const payload = {
@@ -101,10 +99,7 @@ const TitleDescriptionModal = ({
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
     } finally {
-      setPromiseOverlayInfo({
-        loading: false,
-        overlaytext: "",
-      });
+      hideOverlay();
     }
   };
 
