@@ -5,7 +5,7 @@ import {
   useColumnVisibility,
   columnLabels,
 } from "@/contexts/ColumnVisibilityContext";
-import { useSearchStore } from "@/store/SearchLogicStore";
+import { useSearchStore } from "@/store/useSearchStore";
 
 const ShowHideColumnsLogic = () => {
   const [isOpen, setIsOpen] = useState(false);

@@ -3,7 +3,7 @@
 import IssuesCardsSkeleton from "@/components/Skeletons/IssuesCardsSkeleton";
 import { useIssuesCards } from "@/contexts/IssuesCardsContext";
 import { useAutomations } from "@/contexts/AutomationCardsContext";
-import { useSearchStore } from "@/store/SearchLogicStore";
+import { useSearchStore } from "@/store/useSearchStore";
 import {
   Clock,
   Activity,

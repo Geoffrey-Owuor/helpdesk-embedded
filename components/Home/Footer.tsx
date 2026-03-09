@@ -117,7 +117,7 @@ const Footer = () => {
             </a>
           </span>
 
-          <span className="text-center text-6xl leading-none font-black tracking-tighter text-neutral-300 select-none md:text-9xl dark:text-neutral-800">
+          <span className="text-center font-mono text-6xl leading-none font-black tracking-tighter text-neutral-300 select-none md:text-9xl dark:text-neutral-800">
             ISSUEDESK
           </span>
         </div>

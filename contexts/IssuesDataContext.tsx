@@ -11,7 +11,7 @@ import {
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 
-import { useSearchStore } from "@/store/SearchLogicStore";
+import { useSearchStore } from "@/store/useSearchStore";
 
 // OUR DEFAULT FETCH OPTIONS
 const DEFAULT_FETCH_OPTIONS = { selectedFilter: "status", status: "" };

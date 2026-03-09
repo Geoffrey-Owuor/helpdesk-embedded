@@ -1,5 +1,5 @@
 "use client";
-import { useSearchStore } from "@/store/SearchLogicStore";
+import { useSearchStore } from "@/store/useSearchStore";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
 import { useAutomationsData } from "@/contexts/AutomationsDataContext";
 import { Search } from "lucide-react";

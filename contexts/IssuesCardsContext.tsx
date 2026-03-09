@@ -11,7 +11,7 @@ import {
 } from "react";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useSearchStore } from "@/store/SearchLogicStore";
+import { useSearchStore } from "@/store/useSearchStore";
 
 interface IssuesCounts {
   totals: number;

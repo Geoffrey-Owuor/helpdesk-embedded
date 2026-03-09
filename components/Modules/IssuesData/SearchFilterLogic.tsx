@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Check, ChevronDown, Filter } from "lucide-react";
-import { useSearchStore } from "@/store/SearchLogicStore";
+import { useSearchStore } from "@/store/useSearchStore";
 import { useUser } from "@/contexts/UserContext";
 
 // Define options outside component to keep it clean
