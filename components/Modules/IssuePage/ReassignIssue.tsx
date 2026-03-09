@@ -3,7 +3,7 @@
 import { useState, useEffect, MouseEvent } from "react";
 import { fetchedIssueAgents } from "@/serverActions/GetIssueAgents";
 import { IssueAgents } from "@/serverActions/GetIssueAgents";
-import { useAlert } from "@/contexts/AlertContext";
+import { useAlertStore } from "@/store/useAlertStore";
 import apiClient from "@/lib/AxiosClient";
 import { IssueAgentsSkeleton } from "@/components/Skeletons/IssueAgentsSkeleton";
 import { useUser } from "@/contexts/UserContext";
@@ -41,7 +41,8 @@ const ReassignIssue = ({
 }: ReassignIssueProps) => {
   const [loading, setLoading] = useState(false);
   const { department } = useUser();
-  const { setAlertInfo } = useAlert();
+
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const { setPromiseOverlayInfo } = usePromiseOverlay();
   const { setConfirmationDialogInfo } = useConfirmationDialog();
   const [issueAgents, setIssueAgents] = useState<IssueAgents[]>([]);
@@ -106,11 +107,7 @@ const ReassignIssue = ({
       });
 
       // Show the alert on success
-      setAlertInfo({
-        alertType: "success",
-        showAlert: true,
-        alertMessage: response.data.message || "Agent Updated Successfully",
-      });
+      triggerAlert("success", response.data.message);
 
       //   clear data
       setAgentEmail("");
@@ -126,11 +123,7 @@ const ReassignIssue = ({
       closeModal();
     } catch (error) {
       const errorMessage = getApiErrorMessage(error);
-      setAlertInfo({
-        alertType: "error",
-        showAlert: true,
-        alertMessage: errorMessage,
-      });
+      triggerAlert("error", errorMessage);
     } finally {
       setPromiseOverlayInfo({
         loading: false,

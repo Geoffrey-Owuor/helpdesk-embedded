@@ -1,6 +1,6 @@
 "use client";
 import { ChangeEvent, FormEvent, useState } from "react";
-import { useAlert } from "@/contexts/AlertContext";
+import { useAlertStore } from "@/store/useAlertStore";
 import ClientPortal from "../ClientPortal";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import apiClient from "@/lib/AxiosClient";
@@ -33,8 +33,8 @@ const TitleDescriptionModal = ({
     issue_description: description || "",
   });
 
-  // context data
-  const { setAlertInfo } = useAlert();
+  // state data
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const { setPromiseOverlayInfo } = usePromiseOverlay();
   const { setConfirmationDialogInfo } = useConfirmationDialog();
   const { refetchIssues } = useIssuesData();
@@ -84,13 +84,8 @@ const TitleDescriptionModal = ({
     try {
       const response = await apiClient.put("/update-issueinfo", payload);
 
-      // Set a success alert
-      setAlertInfo({
-        alertType: "success",
-        showAlert: true,
-        alertMessage:
-          response.data.message || "Issue status updated successfully",
-      });
+      // Trigger a success alert
+      triggerAlert("success", response.data.message);
 
       // clear the form data
       setFormData({ issue_title: "", issue_description: "" });
@@ -104,11 +99,7 @@ const TitleDescriptionModal = ({
       closeModal();
     } catch (error) {
       const errorMessage = getApiErrorMessage(error);
-      setAlertInfo({
-        alertType: "error",
-        showAlert: true,
-        alertMessage: errorMessage,
-      });
+      triggerAlert("error", errorMessage);
     } finally {
       setPromiseOverlayInfo({
         loading: false,

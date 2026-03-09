@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
 import { useUser } from "@/contexts/UserContext";
-import { useAlert } from "@/contexts/AlertContext";
+import { useAlertStore } from "@/store/useAlertStore";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
@@ -37,10 +37,13 @@ type AddAgentProps = {
 
 const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
   const { department } = useUser();
-  const { setAlertInfo } = useAlert();
+
+  // state data
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const { setConfirmationDialogInfo } = useConfirmationDialog();
   const { setPromiseOverlayInfo } = usePromiseOverlay();
   const { refetchAgentsInfo } = useAgentsInfo();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -106,12 +109,7 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
       formData.password.length < 8 ||
       formData.password !== formData.confirmPassword
     ) {
-      setAlertInfo({
-        showAlert: true,
-        alertType: "error",
-        alertMessage: "Short password or mismatched passwords",
-      });
-
+      triggerAlert("error", "Short password or mismatched passwords");
       return;
     }
 
@@ -123,11 +121,7 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
       const response = await apiClient.post("/add-agent", formData);
 
       // On success, show toast alert
-      setAlertInfo({
-        showAlert: true,
-        alertType: "success",
-        alertMessage: response.data.message || "Agent registered successfully",
-      });
+      triggerAlert("success", response.data.message);
 
       // refetch agents data
       refetchAgentsInfo();
@@ -136,11 +130,7 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
       setShowAgentModal(false);
     } catch (error) {
       const errorMessage = getApiErrorMessage(error);
-      setAlertInfo({
-        showAlert: true,
-        alertType: "error",
-        alertMessage: errorMessage,
-      });
+      triggerAlert("error", errorMessage);
 
       // log the error
       console.error("Error while trying to add an agent:", errorMessage);

@@ -20,7 +20,7 @@ import { IssueAgentMapping } from "@/serverActions/GetIssueTypes";
 import apiClient from "@/lib/AxiosClient";
 import DynamicIssueTypes from "./DynamicIssueTypes";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useAlert } from "@/contexts/AlertContext";
+import { useAlertStore } from "@/store/useAlertStore";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
 import { useAutomationsData } from "@/contexts/AutomationsDataContext";
 import { useIssuesCards } from "@/contexts/IssuesCardsContext";
@@ -71,7 +71,9 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     useState<IssueAgentMapping | null>(null);
   const [isFetchingAssignment, setIsFetchingAssignment] = useState(false);
 
-  const { setAlertInfo, alertInfo } = useAlert();
+  // State Data
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
+  const alertType = useAlertStore((state) => state.alertType);
   const { setPromiseOverlayInfo } = usePromiseOverlay();
   const { setConfirmationDialogInfo } = useConfirmationDialog();
   const { refetchIssues } = useIssuesData();
@@ -80,7 +82,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   const { refetchIssuesCounts } = useIssuesCards();
 
   // set options error
-  const optionsError = alertInfo.alertType === "error";
+  const optionsError = alertType === "error";
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -157,11 +159,8 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       // post issue api endpoint
       const response = await apiClient.post("/post-issue", formData);
 
-      setAlertInfo({
-        showAlert: true,
-        alertType: "success",
-        alertMessage: response.data.message || "Issue Submitted Successfully",
-      });
+      // Trigger alert on success
+      triggerAlert("success", response.data.message);
 
       // Clear form data
       setFormData({
@@ -184,12 +183,8 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     } catch (error) {
       // Call the error helper
       const errorMessage = getApiErrorMessage(error);
-      // 4. Update the UI with the error
-      setAlertInfo({
-        showAlert: true,
-        alertType: "error",
-        alertMessage: errorMessage,
-      });
+      // 4. Trigger alert on error
+      triggerAlert("error", errorMessage);
       console.error("Error submitting the issue:", error);
     } finally {
       setPromiseOverlayInfo({
@@ -204,11 +199,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     e.preventDefault();
 
     if (!formData.target_department || !formData.issue_type) {
-      setAlertInfo({
-        showAlert: true,
-        alertType: "error",
-        alertMessage: "Missing some required fields",
-      });
+      triggerAlert("error", "Missing some required fields");
     } else {
       setConfirmationDialogInfo({
         showDialog: true,

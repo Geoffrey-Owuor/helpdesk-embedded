@@ -9,7 +9,7 @@ interface LoadingLineState {
 }
 
 // Creating the store
-export const useLoadingStore = create<LoadingLineState>((set) => ({
+export const useLoadingStore = create<LoadingLineState>()((set) => ({
   // Initial state
   loadingLine: false,
   // Action
