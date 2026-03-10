@@ -13,7 +13,7 @@ import { useState } from "react";
 import EditIssueTypeInfo from "./EditIssueTypeInfo";
 import { arrayReducer } from "@/utils/ArrayReducer";
 import IssueTypesInfoSkeleton from "@/components/Skeletons/IssueTypesInfoSkeleton";
-import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
+import { useAgentsInfo } from "@/hooks/useAgentsInfo";
 import AddIssueType from "./AddIssueType";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useAlertStore } from "@/store/useAlertStore";
