@@ -24,7 +24,7 @@ import { useUser } from "@/contexts/UserContext";
 import { useAlertStore } from "@/store/useAlertStore";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useAgentsInfo } from "@/hooks/useAgentsInfo";
+
 import { NameValidator, NameValidationResult } from "@/utils/Validators";
 import NameRulesCard from "@/components/Modules/NameRulesCard";
 import { useOverlayStore } from "@/store/useOverlayStore";
@@ -32,10 +32,15 @@ import { useConfirmStore } from "@/store/useConfirmStore";
 
 type AddAgentProps = {
   showAgentModal: boolean;
+  refetchAgentsInfo: () => Promise<void>;
   setShowAgentModal: Dispatch<SetStateAction<boolean>>;
 };
 
-const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
+const AddAgent = ({
+  setShowAgentModal,
+  refetchAgentsInfo,
+  showAgentModal,
+}: AddAgentProps) => {
   const { department } = useUser();
 
   // state data
@@ -44,7 +49,6 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
   const hideDialog = useConfirmStore((state) => state.hideDialog);
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
-  const { refetchAgentsInfo } = useAgentsInfo();
 
   const [formData, setFormData] = useState({
     name: "",
