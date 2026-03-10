@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { AuthJWTPayload } from "@/lib/Auth";
 
 // Shape of the context value
@@ -14,13 +14,16 @@ type UserProviderProps = {
 const UserContext = createContext<UserContextValue>(null);
 
 export const UserProvider = ({ children, user }: UserProviderProps) => {
-  const value = {
-    userId: user.userId,
-    email: user.email,
-    username: user.username,
-    role: user.role,
-    department: user.department,
-  };
+  const value = useMemo(
+    () => ({
+      userId: user.userId,
+      email: user.email,
+      username: user.username,
+      role: user.role,
+      department: user.department,
+    }),
+    [user.userId, user.email, user.username, user.role, user.department],
+  );
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
 

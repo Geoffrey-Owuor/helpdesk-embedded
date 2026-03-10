@@ -12,7 +12,6 @@ import { useEffect, useState, useRef, Dispatch, SetStateAction } from "react";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlertStore } from "@/store/useAlertStore";
-import { useAgentsInfo } from "@/hooks/useAgentsInfo";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
@@ -20,6 +19,7 @@ import { priorityOptions } from "@/components/Modules/IssuePage/IssuePage";
 
 type AddIssueTypeProps = {
   showAddIssueModal: boolean;
+  refetchAgentsInfo: () => Promise<void>;
   setShowAddIssueModal: Dispatch<SetStateAction<boolean>>;
   agentNames: { agentName: string; agentEmail: string }[];
 };
@@ -27,6 +27,7 @@ type AddIssueTypeProps = {
 const AddIssueType = ({
   showAddIssueModal,
   setShowAddIssueModal,
+  refetchAgentsInfo,
   agentNames,
 }: AddIssueTypeProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -43,7 +44,6 @@ const AddIssueType = ({
   const hideDialog = useConfirmStore((state) => state.hideDialog);
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
-  const { refetchAgentsInfo } = useAgentsInfo();
 
   // get agent name from the mapping to display in the button
   const selectedNameObject = agentNames.find(

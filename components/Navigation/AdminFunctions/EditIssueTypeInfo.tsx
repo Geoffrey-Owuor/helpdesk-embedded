@@ -12,7 +12,6 @@ import {
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlertStore } from "@/store/useAlertStore";
-import { useAgentsInfo } from "@/hooks/useAgentsInfo";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useConfirmStore } from "@/store/useConfirmStore";
@@ -23,6 +22,7 @@ type EditIssueTypeInfoProps = {
   issuePriority: string;
   agentNames: { agentName: string; agentEmail: string }[];
   agentEmail: string;
+  refetchAgentsInfo: () => Promise<void>;
   setActiveEditId: Dispatch<SetStateAction<string | null>>;
 };
 
@@ -31,6 +31,7 @@ const EditIssueTypeInfo = ({
   issuePriority,
   agentNames,
   agentEmail,
+  refetchAgentsInfo,
   setActiveEditId,
 }: EditIssueTypeInfoProps) => {
   const [selectedType, setSelectedType] = useState(issueType || "");
@@ -47,7 +48,6 @@ const EditIssueTypeInfo = ({
   const hideDialog = useConfirmStore((state) => state.hideDialog);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const priorityDropDownRef = useRef<HTMLDivElement>(null);
-  const { refetchAgentsInfo } = useAgentsInfo();
 
   // Close dropdown when clicking outside
   useEffect(() => {
