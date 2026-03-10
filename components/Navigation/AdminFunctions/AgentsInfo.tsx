@@ -4,7 +4,7 @@ import { Mail, Tag, Info, UserRoundPlus, Trash2 } from "lucide-react";
 import { arrayReducer } from "@/utils/ArrayReducer";
 import { abbreviateUserName } from "@/public/assets";
 import AgentsInfoSkeleton from "@/components/Skeletons/AgentsInfoSkeleton";
-import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
+import { useAgentsInfo } from "@/hooks/useAgentsInfo";
 import { useState } from "react";
 import { useUser } from "@/contexts/UserContext";
 import AddAgent from "./AddAgent";

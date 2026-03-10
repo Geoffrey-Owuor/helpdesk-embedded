@@ -5,7 +5,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import AgentsInfo from "./AgentsInfo";
 import IssueTypesInfo from "./IssueTypesInfo";
 import ClientPortal from "@/components/Modules/ClientPortal";
-import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
+import { useAgentsInfo } from "@/hooks/useAgentsInfo";
 import { handleRefetchIssueAgentsData } from "@/serverActions/refetchIssueAgentsData";
 
 type AdminPanelProps = {

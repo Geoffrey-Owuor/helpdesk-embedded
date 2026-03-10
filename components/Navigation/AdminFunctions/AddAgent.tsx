@@ -24,7 +24,7 @@ import { useUser } from "@/contexts/UserContext";
 import { useAlertStore } from "@/store/useAlertStore";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
+import { useAgentsInfo } from "@/hooks/useAgentsInfo";
 import { NameValidator, NameValidationResult } from "@/utils/Validators";
 import NameRulesCard from "@/components/Modules/NameRulesCard";
 import { useOverlayStore } from "@/store/useOverlayStore";

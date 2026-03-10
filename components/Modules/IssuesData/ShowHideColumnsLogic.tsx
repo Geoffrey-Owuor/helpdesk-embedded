@@ -8,7 +8,9 @@ const ShowHideColumnsLogic = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const { visibleColumns, toggleColumn, resetColumns } = useColumnStore();
+  const visibleColumns = useColumnStore((state) => state.visibleColumns);
+  const toggleColumn = useColumnStore((state) => state.toggleColumn);
+  const resetColumns = useColumnStore((state) => state.resetColumns);
 
   const isTableView = useSearchStore((state) => state.isTableView);
 

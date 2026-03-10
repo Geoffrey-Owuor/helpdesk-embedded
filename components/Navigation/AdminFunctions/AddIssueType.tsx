@@ -12,7 +12,7 @@ import { useEffect, useState, useRef, Dispatch, SetStateAction } from "react";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlertStore } from "@/store/useAlertStore";
-import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
+import { useAgentsInfo } from "@/hooks/useAgentsInfo";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
