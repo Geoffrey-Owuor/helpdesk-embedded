@@ -17,7 +17,7 @@ export const useAgentsStore = create<AgentsStore>()((set) => ({
   agentsInfo: [],
 
   // Action - Zustand natively handles async actions
-  fetchAgentsInfo: async (department: string) => {
+  fetchAgentsInfo: async (department) => {
     if (!department) return;
 
     set({ loading: true });

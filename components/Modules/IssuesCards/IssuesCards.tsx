@@ -2,7 +2,6 @@
 
 import IssuesCardsSkeleton from "@/components/Skeletons/IssuesCardsSkeleton";
 import { useIssuesCards } from "@/contexts/IssuesCardsContext";
-import { useAutomations } from "@/contexts/AutomationCardsContext";
 import { useSearchStore } from "@/store/useSearchStore";
 import {
   Clock,
@@ -16,19 +15,29 @@ import { useUser } from "@/contexts/UserContext";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import DepartmentsDropDown from "../AutomationsPage/DepartmentsDropDown";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
+import { useAutomationCardsStore } from "@/store/useAutomationCardsStore";
+import { useEffect } from "react";
 
 const IssuesCards = ({ type }: { type: string }) => {
   const { issuesCounts, refetchIssuesCounts, loading } = useIssuesCards();
-  const {
-    automationCounts,
-    refetchAutomationCounts,
-    loading: automationLoading,
-  } = useAutomations();
+
+  const automationCounts = useAutomationCardsStore(
+    (state) => state.automationCounts,
+  );
+  const refetchAutomationCounts = useAutomationCardsStore(
+    (state) => state.fetchAutomationCounts,
+  );
+  const automationLoading = useAutomationCardsStore((state) => state.loading);
   const { role, department } = useUser();
   const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
 
   // Call srolling top hook
   useScrollToTop();
+
+  // useEffect to fetch Automation counts on mount
+  useEffect(() => {
+    refetchAutomationCounts();
+  }, [refetchAutomationCounts]);
 
   // Defining our card variables
   let cardCounts;

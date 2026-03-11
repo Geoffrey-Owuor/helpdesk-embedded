@@ -46,7 +46,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
     await handleRefetchIssueAgentsData();
 
     // refetch data after revalidation
-    fetchAgentsInfo();
+    await fetchAgentsInfo();
   };
 
   if (!showAdminPanel) return null;

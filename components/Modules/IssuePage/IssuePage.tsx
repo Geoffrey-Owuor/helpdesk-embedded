@@ -27,7 +27,6 @@ import { useState, useRef, useEffect } from "react";
 import { useAlertStore } from "@/store/useAlertStore";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useAutomations } from "@/contexts/AutomationCardsContext";
 import { useIssuesCards } from "@/contexts/IssuesCardsContext";
 import { useUser } from "@/contexts/UserContext";
 import TitleDescriptionModal from "./TitleDescriptionModal";
@@ -61,7 +60,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
     loading: automationsLoading,
     refetchAutomations,
   } = useAutomationsData();
-  const { refetchAutomationCounts } = useAutomations();
+
   const { refetchIssuesCounts } = useIssuesCards();
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
@@ -89,7 +88,6 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const refetchData = () => {
     refetchIssues();
     refetchAutomations();
-    refetchAutomationCounts();
     refetchIssuesCounts();
   };
 

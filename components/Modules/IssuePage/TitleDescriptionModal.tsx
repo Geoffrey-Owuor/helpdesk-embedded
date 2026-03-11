@@ -7,7 +7,6 @@ import apiClient from "@/lib/AxiosClient";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
 import { useAutomationsData } from "@/contexts/AutomationsDataContext";
 import { useIssuesCards } from "@/contexts/IssuesCardsContext";
-import { useAutomations } from "@/contexts/AutomationCardsContext";
 import { X } from "lucide-react";
 import { IssueValueTypes } from "@/contexts/IssuesDataContext";
 import FormAsterisk from "../FormAsterisk";
@@ -42,7 +41,6 @@ const TitleDescriptionModal = ({
   const { refetchIssues } = useIssuesData();
   const { refetchAutomations } = useAutomationsData();
   const { refetchIssuesCounts } = useIssuesCards();
-  const { refetchAutomationCounts } = useAutomations();
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -85,10 +83,10 @@ const TitleDescriptionModal = ({
 
       // clear the form data
       setFormData({ issue_title: "", issue_description: "" });
+
       // refetch data
       refetchIssues();
       refetchAutomations();
-      refetchAutomationCounts();
       refetchIssuesCounts();
 
       // close the modal

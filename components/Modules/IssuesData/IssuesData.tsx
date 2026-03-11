@@ -7,7 +7,7 @@ import ShowHideColumnsLogic from "./ShowHideColumnsLogic";
 import SearchFilterLogic from "./SearchFilterLogic";
 import SearchInputFields from "./SearchInputFields";
 import ClearRefreshFilters from "./ClearRefreshFilters";
-import { useAutomations } from "@/contexts/AutomationCardsContext";
+import { useAutomationCardsStore } from "@/store/useAutomationCardsStore";
 import SearchFilters from "./SearchFilters";
 import { useState, useEffect } from "react";
 import { useSearchStore } from "@/store/useSearchStore";
@@ -30,7 +30,9 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
   // useSearchStore Data
   const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
   const isTableView = useSearchStore((state) => state.isTableView);
-  const { selectedDepartment } = useAutomations();
+  const selectedDepartment = useAutomationCardsStore(
+    (state) => state.selectedDepartment,
+  );
 
   // Defining our variables based on record type
   let recordsData;
