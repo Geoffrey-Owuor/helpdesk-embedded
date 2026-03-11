@@ -21,8 +21,8 @@ import apiClient from "@/lib/AxiosClient";
 import DynamicIssueTypes from "./DynamicIssueTypes";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlertStore } from "@/store/useAlertStore";
-import { useIssuesData } from "@/contexts/IssuesDataContext";
-import { useAutomationsData } from "@/contexts/AutomationsDataContext";
+import { useIssuesStore } from "@/store/useIssuesStore";
+import { useAutomationsStore } from "@/store/useAutomationsStore";
 import { useIssueCardsStore } from "@/store/useIssueCardsStore";
 import { useAutomationCardsStore } from "@/store/useAutomationCardsStore";
 import OptionsDropDown from "./OptionsDropDown";
@@ -79,8 +79,10 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
-  const { refetchIssues } = useIssuesData();
-  const { refetchAutomations } = useAutomationsData();
+  const refetchIssues = useIssuesStore((state) => state.refetchIssues);
+  const refetchAutomations = useAutomationsStore(
+    (state) => state.refetchAutomations,
+  );
   const refetchAutomationCounts = useAutomationCardsStore(
     (state) => state.fetchAutomationCounts,
   );
@@ -89,6 +91,14 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   );
 
   const pathname = usePathname();
+
+  const refetchData =
+    pathname === "/dashboard"
+      ? refetchIssues
+      : pathname === "/dashboard/automations"
+        ? refetchAutomations
+        : () => {}; // Default: do nothing
+
   const refetchCounts =
     pathname === "/dashboard"
       ? refetchIssueCounts
@@ -182,8 +192,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       setAssignmentInfo(null); // Clear assignment info
 
       // refetch all data
-      refetchIssues();
-      refetchAutomations();
+      refetchData();
       refetchCounts();
 
       // Close issue modal

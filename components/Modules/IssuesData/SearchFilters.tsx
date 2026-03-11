@@ -1,27 +1,20 @@
 "use client";
 import { useSearchStore } from "@/store/useSearchStore";
-import { useIssuesData } from "@/contexts/IssuesDataContext";
-import { useAutomationsData } from "@/contexts/AutomationsDataContext";
+import { useIssuesStore } from "@/store/useIssuesStore";
+import { useAutomationsStore } from "@/store/useAutomationsStore";
 import { Search } from "lucide-react";
 
 type FilterProps = {
   recordType: string;
 };
 const SearchFilters = ({ recordType }: FilterProps) => {
-  // The the fetch issues function
-  const { fetchIssues } = useIssuesData();
-  const { fetchAutomations } = useAutomationsData();
+  const fetchIssues = useIssuesStore((state) => state.fetchIssues);
+  const fetchAutomations = useAutomationsStore(
+    (state) => state.fetchAutomations,
+  );
 
-  let fetchData;
-
-  switch (recordType) {
-    case "automations":
-      fetchData = fetchAutomations;
-      break;
-    default:
-      fetchData = fetchIssues;
-      break;
-  }
+  const fetchData =
+    recordType === "automations" ? fetchAutomations : fetchIssues;
 
   const selectedFilter = useSearchStore((state) => state.selectedFilter);
   const status = useSearchStore((state) => state.status);

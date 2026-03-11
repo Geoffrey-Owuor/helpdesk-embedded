@@ -1,6 +1,6 @@
 "use client";
-import { useIssuesData } from "@/contexts/IssuesDataContext";
-import { useAutomationsData } from "@/contexts/AutomationsDataContext";
+import { useIssuesStore } from "@/store/useIssuesStore";
+import { useAutomationsStore } from "@/store/useAutomationsStore";
 import IssuesDataSkeleton from "@/components/Skeletons/IssuesDataSkeleton";
 import { useUser } from "@/contexts/UserContext";
 import ShowHideColumnsLogic from "./ShowHideColumnsLogic";
@@ -19,12 +19,16 @@ import CardViewData from "./CardViewData";
 import ExportData from "./ExportData";
 
 const IssuesData = ({ recordType }: { recordType: string }) => {
-  const { issuesData, loading, refetchIssues } = useIssuesData();
-  const {
-    automationsData,
-    loading: automationsLoading,
-    refetchAutomations,
-  } = useAutomationsData();
+  const issuesData = useIssuesStore((state) => state.issuesData);
+  const loading = useIssuesStore((state) => state.loading);
+  const refetchIssues = useIssuesStore((state) => state.refetchIssues);
+
+  const automationsData = useAutomationsStore((state) => state.automationsData);
+  const automationsLoading = useAutomationsStore((state) => state.loading);
+  const refetchAutomations = useAutomationsStore(
+    (state) => state.refetchAutomations,
+  );
+
   const { role, department } = useUser();
 
   // useSearchStore Data
@@ -33,6 +37,15 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
   const selectedDepartment = useAutomationCardsStore(
     (state) => state.selectedDepartment,
   );
+
+  // Our useEffects will go here - fetching initial data on mount
+  useEffect(() => {
+    if (recordType !== "automations") refetchIssues();
+  }, [recordType, refetchIssues, agentAdminFilter]);
+
+  useEffect(() => {
+    if (recordType === "automations") refetchAutomations();
+  }, [recordType, refetchAutomations, selectedDepartment]);
 
   // Defining our variables based on record type
   let recordsData;

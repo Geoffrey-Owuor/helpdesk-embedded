@@ -18,8 +18,8 @@ import {
 } from "lucide-react";
 import { arrayReducer } from "@/utils/ArrayReducer";
 import { IssueValueTypes } from "@/store/useIssuesStore";
-import { useIssuesData } from "@/contexts/IssuesDataContext";
-import { useAutomationsData } from "@/contexts/AutomationsDataContext";
+import { useAutomationsStore } from "@/store/useAutomationsStore";
+import { useIssuesStore } from "@/store/useIssuesStore";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
@@ -27,6 +27,7 @@ import { useOverlayStore } from "@/store/useOverlayStore";
 type ReassignIssueProps = {
   uuid: string;
   closeModal: () => void;
+  type: string | null;
   issueType: IssueValueTypes;
   issueAgentEmail: IssueValueTypes;
 };
@@ -35,6 +36,7 @@ const ReassignIssue = ({
   uuid,
   closeModal,
   issueType,
+  type,
   issueAgentEmail,
 }: ReassignIssueProps) => {
   const [loading, setLoading] = useState(false);
@@ -50,8 +52,13 @@ const ReassignIssue = ({
   const [agentName, setAgentName] = useState(""); //will be sent to the api
 
   //The refetch functions - called after successful reassigning
-  const { refetchAutomations } = useAutomationsData();
-  const { refetchIssues } = useIssuesData();
+  const refetchAutomations = useAutomationsStore(
+    (state) => state.refetchAutomations,
+  );
+  const refetchIssues = useIssuesStore((state) => state.refetchIssues);
+
+  const refetchData =
+    type === "automation" ? refetchAutomations : refetchIssues;
 
   useEffect(() => {
     const fetchAgents = async () => {
@@ -106,9 +113,7 @@ const ReassignIssue = ({
       setAgentName("");
 
       //   Refetch data
-      refetchAutomations();
-      refetchIssues();
-
+      refetchData();
       // close the modal
       closeModal();
     } catch (error) {
