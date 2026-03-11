@@ -1,6 +1,6 @@
 "use client";
 import { Bell } from "lucide-react";
-import { useIssuesData } from "@/contexts/IssuesDataContext";
+import { useIssuesStore } from "@/store/useIssuesStore";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useEffect, useState } from "react";
@@ -27,12 +27,16 @@ const Notifications = () => {
     useState<NotificationResponse | null>(null);
   const [loading, setLoading] = useState(true); //default to true
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { issuesData, loading: issuesLoading } = useIssuesData();
+
+  const pathname = usePathname();
+
+  const defaultData = useIssuesStore((state) => state.issuesData);
+  const defaultLoading = useIssuesStore((state) => state.loading);
+  const type = "issue";
 
   const router = useRouter();
 
   const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
-  const pathname = usePathname();
 
   const handleRouteChange = ({
     uuid,
@@ -44,11 +48,8 @@ const Notifications = () => {
     // Return if we already on the issue's page
     if (`/dashboard/${uuid}` === pathname) return;
 
-    //issue type
-    const issueType = "issue";
-
     // our dashboard path
-    const dashboardPath = `/dashboard/${uuid}?type=${issueType}&title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}`;
+    const dashboardPath = `/dashboard/${uuid}?type=${type}&title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}`;
 
     setLoadingLine(true);
 
@@ -74,8 +75,8 @@ const Notifications = () => {
 
   // Filter issuesData to only those created on or after notificationDate
   const filteredIssues =
-    notificationData?.notificationDate && issuesData
-      ? issuesData.filter(
+    notificationData?.notificationDate && defaultData
+      ? defaultData.filter(
           (issue) =>
             new Date(issue.issue_created_at) >
             new Date(notificationData.notificationDate),
@@ -86,7 +87,7 @@ const Notifications = () => {
     (notificationData?.changelogs?.length ?? 0) + filteredIssues.length;
 
   // Derived isReady state - we only show count after both issues data and changelogs data is ready
-  const isDataReady = !loading && !issuesLoading;
+  const isDataReady = !loading && !defaultLoading;
 
   // Handling closing the modal
   const handleCloseModal = async () => {
@@ -126,7 +127,7 @@ const Notifications = () => {
         />
       )}
       <button
-        disabled={loading || issuesLoading}
+        disabled={loading || defaultLoading}
         onClick={() => setIsModalOpen(true)}
         className="bell-btn relative inline-flex items-center justify-center rounded-full p-2 text-neutral-700 hover:bg-neutral-200 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-800"
       >

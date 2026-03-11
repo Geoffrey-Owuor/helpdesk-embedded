@@ -1,7 +1,7 @@
 "use client";
 
-import { useIssuesData } from "@/contexts/IssuesDataContext";
-import { useAutomationsData } from "@/contexts/AutomationsDataContext";
+import { useIssuesStore } from "@/store/useIssuesStore";
+import { useAutomationsStore } from "@/store/useAutomationsStore";
 import { useSearchParams } from "next/navigation";
 import IssueDetailsSkeleton from "@/components/Skeletons/IssueDetailsSkeleton";
 import { useRouter } from "next/navigation";
@@ -53,12 +53,15 @@ export const priorityOptions = [
 
 export const IssuePage = ({ uuid }: { uuid: string }) => {
   // Get our data
-  const { issuesData, loading, refetchIssues } = useIssuesData();
-  const {
-    automationsData,
-    loading: automationsLoading,
-    refetchAutomations,
-  } = useAutomationsData();
+  const issuesData = useIssuesStore((state) => state.issuesData);
+  const loading = useIssuesStore((state) => state.loading);
+  const refetchIssues = useIssuesStore((state) => state.refetchIssues);
+
+  const automationsData = useAutomationsStore((state) => state.automationsData);
+  const automationsLoading = useAutomationsStore((state) => state.loading);
+  const refetchAutomations = useAutomationsStore(
+    (state) => state.refetchAutomations,
+  );
 
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
@@ -83,10 +86,8 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   useScrollToTop();
 
   // Helper function for refetching data
-  const refetchData = () => {
-    refetchIssues();
-    refetchAutomations();
-  };
+  const refetchData =
+    type === "automation" ? refetchAutomations : refetchIssues;
 
   let recordsData;
   let recordsLoading;
@@ -223,6 +224,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           description={issueData.issue_description}
           closeModal={() => setIsEditModalOpen(false)}
           uuid={uuid}
+          type={type}
           userId={issueData.issue_submitter_id}
         />
       )}
@@ -232,6 +234,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           uuid={uuid}
           closeModal={() => setIsReassignModalOpen(false)}
           issueType={issueData.issue_type}
+          type={type}
           issueAgentEmail={issueData.issue_agent_email}
         />
       )}
