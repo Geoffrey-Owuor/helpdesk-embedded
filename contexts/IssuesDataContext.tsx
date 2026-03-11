@@ -10,7 +10,7 @@ import {
 } from "react";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { IssueValueTypes } from "@/store/useIssuesDataStore";
+import { IssueValueTypes } from "@/store/useIssuesStore";
 import { useSearchStore } from "@/store/useSearchStore";
 
 // OUR DEFAULT FETCH OPTIONS

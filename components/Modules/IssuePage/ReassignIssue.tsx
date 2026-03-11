@@ -17,7 +17,7 @@ import {
   X,
 } from "lucide-react";
 import { arrayReducer } from "@/utils/ArrayReducer";
-import { IssueValueTypes } from "@/store/useIssuesDataStore";
+import { IssueValueTypes } from "@/store/useIssuesStore";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
 import { useAutomationsData } from "@/contexts/AutomationsDataContext";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
