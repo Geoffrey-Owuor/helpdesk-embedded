@@ -10,13 +10,11 @@ import {
 } from "react";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-
+import { IssueValueTypes } from "@/store/useIssuesDataStore";
 import { useSearchStore } from "@/store/useSearchStore";
 
 // OUR DEFAULT FETCH OPTIONS
 const DEFAULT_FETCH_OPTIONS = { selectedFilter: "status", status: "" };
-
-export type IssueValueTypes<T extends string | number = string | number> = T;
 
 interface Options {
   selectedFilter?: string;

@@ -1,4 +1,4 @@
-import { IssueValueTypes } from "@/contexts/IssuesDataContext";
+import { IssueValueTypes } from "@/store/useIssuesDataStore";
 import { UserRoundCheck, UserRoundX } from "lucide-react";
 
 interface AssignedAgentFormatterProps {
