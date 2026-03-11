@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import { arrayReducer } from "@/utils/ArrayReducer";
 import { IssueValueTypes } from "@/contexts/IssuesDataContext";
-import { useAutomations } from "@/contexts/AutomationCardsContext";
 import { useIssuesCards } from "@/contexts/IssuesCardsContext";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
 import { useAutomationsData } from "@/contexts/AutomationsDataContext";
@@ -52,7 +51,6 @@ const ReassignIssue = ({
   const [agentName, setAgentName] = useState(""); //will be sent to the api
 
   //The refetch functions - called after successful reassigning
-  const { refetchAutomationCounts } = useAutomations();
   const { refetchAutomations } = useAutomationsData();
   const { refetchIssuesCounts } = useIssuesCards();
   const { refetchIssues } = useIssuesData();
@@ -110,7 +108,6 @@ const ReassignIssue = ({
       setAgentName("");
 
       //   Refetch data
-      refetchAutomationCounts();
       refetchAutomations();
       refetchIssuesCounts();
       refetchIssues();

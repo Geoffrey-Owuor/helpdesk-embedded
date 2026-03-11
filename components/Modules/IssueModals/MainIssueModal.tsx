@@ -24,7 +24,7 @@ import { useAlertStore } from "@/store/useAlertStore";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
 import { useAutomationsData } from "@/contexts/AutomationsDataContext";
 import { useIssuesCards } from "@/contexts/IssuesCardsContext";
-import { useAutomations } from "@/contexts/AutomationCardsContext";
+import { useAutomationCardsStore } from "@/store/useAutomationCardsStore";
 import OptionsDropDown from "./OptionsDropDown";
 import { baseDepartments } from "@/public/assets";
 import FormAsterisk from "../FormAsterisk";
@@ -80,7 +80,9 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   const hideDialog = useConfirmStore((state) => state.hideDialog);
   const { refetchIssues } = useIssuesData();
   const { refetchAutomations } = useAutomationsData();
-  const { refetchAutomationCounts } = useAutomations();
+  const refetchAutomationCounts = useAutomationCardsStore(
+    (state) => state.fetchAutomationCounts,
+  );
   const { refetchIssuesCounts } = useIssuesCards();
 
   // set options error
