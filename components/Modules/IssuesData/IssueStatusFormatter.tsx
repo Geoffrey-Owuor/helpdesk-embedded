@@ -6,7 +6,7 @@ import {
   HelpCircle,
   LucideIcon,
 } from "lucide-react";
-import { IssueValueTypes } from "@/store/useIssuesDataStore";
+import { IssueValueTypes } from "@/store/useIssuesStore";
 
 interface IssueStatusProps {
   status: IssueValueTypes;

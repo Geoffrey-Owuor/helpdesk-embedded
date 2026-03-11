@@ -1,6 +1,6 @@
 import issue_desk_logo from "./web-app-manifest-512x512.png";
 import issue_desk_image from "./issue_desk_light.png";
-import { IssueValueTypes } from "@/store/useIssuesDataStore";
+import { IssueValueTypes } from "@/store/useIssuesStore";
 
 export const assets = {
   issue_desk_logo,

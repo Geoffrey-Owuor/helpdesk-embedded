@@ -12,7 +12,7 @@ import {
 import apiClient from "@/lib/AxiosClient";
 import { useAutomationCardsStore } from "@/store/useAutomationCardsStore";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { IssueValueTypes } from "@/store/useIssuesDataStore";
+import { IssueValueTypes } from "@/store/useIssuesStore";
 
 // Defining our default fetch options
 const DEFAULT_FETCH_OPTIONS = {

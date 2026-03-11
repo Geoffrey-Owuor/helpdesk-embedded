@@ -1,7 +1,7 @@
 // A function that uses the javascript reduce method
 // to create an organized list from a query result array
 import { IssueAgents } from "@/serverActions/GetIssueAgents";
-import { IssueValueTypes } from "@/store/useIssuesDataStore";
+import { IssueValueTypes } from "@/store/useIssuesStore";
 
 // 1. Define the shape of the new, grouped agent object
 export interface AgentWithSkills {

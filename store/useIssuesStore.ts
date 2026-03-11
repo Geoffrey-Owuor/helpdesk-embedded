@@ -7,7 +7,7 @@ export const DEFAULT_FETCH_OPTIONS = { selectedFilter: "status", status: "" };
 
 export type IssueValueTypes<T extends string | number = string | number> = T;
 
-interface Options {
+export interface Options {
   selectedFilter?: string;
   fromDate?: string;
   toDate?: string;
@@ -28,7 +28,7 @@ interface IssuesDataStore {
   refetchIssues: () => Promise<void>;
 }
 
-export const useIssuesDataStore = create<IssuesDataStore>()((set, get) => ({
+export const useIssuesStore = create<IssuesDataStore>()((set, get) => ({
   // states
   loading: false,
   issuesData: [],
