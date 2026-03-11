@@ -2,7 +2,7 @@ import { create } from "zustand";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 
-interface AutomationCounts {
+export interface DataCounts {
   totals: number;
   pending: number;
   inProgress: number;
@@ -10,7 +10,7 @@ interface AutomationCounts {
   unfeasible: number;
 }
 
-const defaultCounts: AutomationCounts = {
+export const defaultCounts: DataCounts = {
   totals: 0,
   pending: 0,
   inProgress: 0,
@@ -20,7 +20,7 @@ const defaultCounts: AutomationCounts = {
 
 interface AutomationCardsStore {
   loading: boolean;
-  automationCounts: AutomationCounts;
+  automationCounts: DataCounts;
   selectedDepartment: string;
 
   setSelectedDepartment: (department: string) => void;

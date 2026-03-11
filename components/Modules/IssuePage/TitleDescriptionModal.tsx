@@ -6,7 +6,6 @@ import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import apiClient from "@/lib/AxiosClient";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
 import { useAutomationsData } from "@/contexts/AutomationsDataContext";
-import { useIssuesCards } from "@/contexts/IssuesCardsContext";
 import { X } from "lucide-react";
 import { IssueValueTypes } from "@/contexts/IssuesDataContext";
 import FormAsterisk from "../FormAsterisk";
@@ -40,7 +39,6 @@ const TitleDescriptionModal = ({
   const hideDialog = useConfirmStore((state) => state.hideDialog);
   const { refetchIssues } = useIssuesData();
   const { refetchAutomations } = useAutomationsData();
-  const { refetchIssuesCounts } = useIssuesCards();
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -87,7 +85,6 @@ const TitleDescriptionModal = ({
       // refetch data
       refetchIssues();
       refetchAutomations();
-      refetchIssuesCounts();
 
       // close the modal
       closeModal();

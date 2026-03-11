@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import { arrayReducer } from "@/utils/ArrayReducer";
 import { IssueValueTypes } from "@/contexts/IssuesDataContext";
-import { useIssuesCards } from "@/contexts/IssuesCardsContext";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
 import { useAutomationsData } from "@/contexts/AutomationsDataContext";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
@@ -52,7 +51,6 @@ const ReassignIssue = ({
 
   //The refetch functions - called after successful reassigning
   const { refetchAutomations } = useAutomationsData();
-  const { refetchIssuesCounts } = useIssuesCards();
   const { refetchIssues } = useIssuesData();
 
   useEffect(() => {
@@ -109,7 +107,6 @@ const ReassignIssue = ({
 
       //   Refetch data
       refetchAutomations();
-      refetchIssuesCounts();
       refetchIssues();
 
       // close the modal

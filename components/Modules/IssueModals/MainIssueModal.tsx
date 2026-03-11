@@ -23,13 +23,14 @@ import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useIssuesData } from "@/contexts/IssuesDataContext";
 import { useAutomationsData } from "@/contexts/AutomationsDataContext";
-import { useIssuesCards } from "@/contexts/IssuesCardsContext";
+import { useIssueCardsStore } from "@/store/useIssueCardsStore";
 import { useAutomationCardsStore } from "@/store/useAutomationCardsStore";
 import OptionsDropDown from "./OptionsDropDown";
 import { baseDepartments } from "@/public/assets";
 import FormAsterisk from "../FormAsterisk";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
+import { usePathname } from "next/navigation";
 
 // Priority icon types
 const priorityIcons: Record<string, LucideIcon> = {
@@ -83,7 +84,17 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   const refetchAutomationCounts = useAutomationCardsStore(
     (state) => state.fetchAutomationCounts,
   );
-  const { refetchIssuesCounts } = useIssuesCards();
+  const refetchIssueCounts = useIssueCardsStore(
+    (state) => state.fetchIssueCounts,
+  );
+
+  const pathname = usePathname();
+  const refetchCounts =
+    pathname === "/dashboard"
+      ? refetchIssueCounts
+      : pathname === "/dashboard/automations"
+        ? refetchAutomationCounts
+        : () => {}; // Default: do nothing
 
   // set options error
   const optionsError = alertType === "error";
@@ -173,8 +184,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       // refetch all data
       refetchIssues();
       refetchAutomations();
-      refetchAutomationCounts();
-      refetchIssuesCounts();
+      refetchCounts();
 
       // Close issue modal
       setIsOpen(false);

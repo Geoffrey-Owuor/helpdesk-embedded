@@ -1,7 +1,6 @@
 "use client";
 
 import IssuesCardsSkeleton from "@/components/Skeletons/IssuesCardsSkeleton";
-import { useIssuesCards } from "@/contexts/IssuesCardsContext";
 import { useSearchStore } from "@/store/useSearchStore";
 import {
   Clock,
@@ -16,10 +15,15 @@ import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import DepartmentsDropDown from "../AutomationsPage/DepartmentsDropDown";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { useAutomationCardsStore } from "@/store/useAutomationCardsStore";
+import { useIssueCardsStore } from "@/store/useIssueCardsStore";
 import { useEffect } from "react";
 
 const IssuesCards = ({ type }: { type: string }) => {
-  const { issuesCounts, refetchIssuesCounts, loading } = useIssuesCards();
+  const issueCounts = useIssueCardsStore((state) => state.issueCounts);
+  const refetchIssueCounts = useIssueCardsStore(
+    (state) => state.fetchIssueCounts,
+  );
+  const loading = useIssueCardsStore((state) => state.loading);
 
   const automationCounts = useAutomationCardsStore(
     (state) => state.automationCounts,
@@ -27,6 +31,10 @@ const IssuesCards = ({ type }: { type: string }) => {
   const refetchAutomationCounts = useAutomationCardsStore(
     (state) => state.fetchAutomationCounts,
   );
+  const selectedDepartment = useAutomationCardsStore(
+    (state) => state.selectedDepartment,
+  );
+
   const automationLoading = useAutomationCardsStore((state) => state.loading);
   const { role, department } = useUser();
   const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
@@ -34,10 +42,15 @@ const IssuesCards = ({ type }: { type: string }) => {
   // Call srolling top hook
   useScrollToTop();
 
-  // useEffect to fetch Automation counts on mount
+  // useEffect to fetch Issue counts on mount or when agent admin filter changes
   useEffect(() => {
-    refetchAutomationCounts();
-  }, [refetchAutomationCounts]);
+    if (type !== "automations") refetchIssueCounts();
+  }, [refetchIssueCounts, agentAdminFilter, type]);
+
+  // useEffect to fetch Automation counts on mount or when selected department changes
+  useEffect(() => {
+    if (type === "automations") refetchAutomationCounts();
+  }, [refetchAutomationCounts, selectedDepartment, type]);
 
   // Defining our card variables
   let cardCounts;
@@ -51,8 +64,8 @@ const IssuesCards = ({ type }: { type: string }) => {
       cardLoading = automationLoading;
       break;
     default:
-      cardCounts = issuesCounts;
-      refetchCardCounts = refetchIssuesCounts;
+      cardCounts = issueCounts;
+      refetchCardCounts = refetchIssueCounts;
       cardLoading = loading;
       break;
   }
