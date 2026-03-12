@@ -20,16 +20,17 @@ import { IssueAgentMapping } from "@/serverActions/GetIssueTypes";
 import apiClient from "@/lib/AxiosClient";
 import DynamicIssueTypes from "./DynamicIssueTypes";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useAlert } from "@/contexts/AlertContext";
-import { useIssuesData } from "@/contexts/IssuesDataContext";
-import { useAutomationsData } from "@/contexts/AutomationsDataContext";
-import { useIssuesCards } from "@/contexts/IssuesCardsContext";
-import { useAutomations } from "@/contexts/AutomationCardsContext";
+import { useAlertStore } from "@/store/useAlertStore";
+import { useIssuesStore } from "@/store/useIssuesStore";
+import { useAutomationsStore } from "@/store/useAutomationsStore";
+import { useIssueCardsStore } from "@/store/useIssueCardsStore";
+import { useAutomationCardsStore } from "@/store/useAutomationCardsStore";
 import OptionsDropDown from "./OptionsDropDown";
 import { baseDepartments } from "@/public/assets";
 import FormAsterisk from "../FormAsterisk";
-import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+import { useConfirmStore } from "@/store/useConfirmStore";
+import { useOverlayStore } from "@/store/useOverlayStore";
+import { usePathname } from "next/navigation";
 
 // Priority icon types
 const priorityIcons: Record<string, LucideIcon> = {
@@ -71,16 +72,42 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     useState<IssueAgentMapping | null>(null);
   const [isFetchingAssignment, setIsFetchingAssignment] = useState(false);
 
-  const { setAlertInfo, alertInfo } = useAlert();
-  const { setPromiseOverlayInfo } = usePromiseOverlay();
-  const { setConfirmationDialogInfo } = useConfirmationDialog();
-  const { refetchIssues } = useIssuesData();
-  const { refetchAutomations } = useAutomationsData();
-  const { refetchAutomationCounts } = useAutomations();
-  const { refetchIssuesCounts } = useIssuesCards();
+  // State Data
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
+  const alertType = useAlertStore((state) => state.alertType);
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
+  const refetchIssues = useIssuesStore((state) => state.refetchIssues);
+  const refetchAutomations = useAutomationsStore(
+    (state) => state.refetchAutomations,
+  );
+  const refetchAutomationCounts = useAutomationCardsStore(
+    (state) => state.fetchAutomationCounts,
+  );
+  const refetchIssueCounts = useIssueCardsStore(
+    (state) => state.fetchIssueCounts,
+  );
+
+  const pathname = usePathname();
+
+  const refetchData =
+    pathname === "/dashboard"
+      ? refetchIssues
+      : pathname === "/dashboard/automations"
+        ? refetchAutomations
+        : () => {}; // Default: do nothing
+
+  const refetchCounts =
+    pathname === "/dashboard"
+      ? refetchIssueCounts
+      : pathname === "/dashboard/automations"
+        ? refetchAutomationCounts
+        : () => {}; // Default: do nothing
 
   // set options error
-  const optionsError = alertInfo.alertType === "error";
+  const optionsError = alertType === "error";
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -143,25 +170,16 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
 
   // Function for handling issue submission
   const handleFormSubmit = async () => {
-    setConfirmationDialogInfo((prev) => ({
-      ...prev,
-      showDialog: false,
-    }));
+    hideDialog();
 
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Adding",
-    });
+    showOverlay("Adding");
 
     try {
       // post issue api endpoint
       const response = await apiClient.post("/post-issue", formData);
 
-      setAlertInfo({
-        showAlert: true,
-        alertType: "success",
-        alertMessage: response.data.message || "Issue Submitted Successfully",
-      });
+      // Trigger alert on success
+      triggerAlert("success", response.data.message);
 
       // Clear form data
       setFormData({
@@ -174,28 +192,19 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       setAssignmentInfo(null); // Clear assignment info
 
       // refetch all data
-      refetchIssues();
-      refetchAutomations();
-      refetchAutomationCounts();
-      refetchIssuesCounts();
+      refetchData();
+      refetchCounts();
 
       // Close issue modal
       setIsOpen(false);
     } catch (error) {
       // Call the error helper
       const errorMessage = getApiErrorMessage(error);
-      // 4. Update the UI with the error
-      setAlertInfo({
-        showAlert: true,
-        alertType: "error",
-        alertMessage: errorMessage,
-      });
+      // 4. Trigger alert on error
+      triggerAlert("error", errorMessage);
       console.error("Error submitting the issue:", error);
     } finally {
-      setPromiseOverlayInfo({
-        loading: false,
-        overlaytext: "",
-      });
+      hideOverlay();
     }
   };
 
@@ -204,14 +213,9 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     e.preventDefault();
 
     if (!formData.target_department || !formData.issue_type) {
-      setAlertInfo({
-        showAlert: true,
-        alertType: "error",
-        alertMessage: "Missing some required fields",
-      });
+      triggerAlert("error", "Missing some required fields");
     } else {
-      setConfirmationDialogInfo({
-        showDialog: true,
+      triggerDialog({
         title: "Submit Issue",
         description: "Confirm submission of the issue.",
         onConfirm: handleFormSubmit,

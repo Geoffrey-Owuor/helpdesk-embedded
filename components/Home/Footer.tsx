@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { assets } from "@/public/assets";
 import { currentYear } from "@/public/assets";
+import { Sparkles } from "lucide-react";
 
 const footerLinks = {
   product: [
@@ -24,14 +25,14 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="flex max-w-sm flex-col gap-4">
             <div className="flex items-center gap-0.5">
-              <Link href="/" className="relative h-8 w-8">
+              <div className="relative h-8 w-8">
                 <Image
                   src={assets.issue_desk_image}
                   alt="Issue Desk Logo"
                   className="object-contain dark:invert"
                   fill
                 />
-              </Link>
+              </div>
               <span className="text-xl font-bold text-neutral-900 dark:text-white">
                 Issue Desk
               </span>
@@ -102,10 +103,23 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar - Centered */}
-        <div className="mt-16 border-t border-neutral-100 pt-8 text-center dark:border-neutral-900">
-          <p className="text-base leading-5 text-neutral-500 dark:text-neutral-500">
-            &copy; {currentYear} Issue Desk. All rights reserved.
-          </p>
+        <div className="mt-16 flex flex-col items-center gap-8 border-t border-neutral-100 pt-8 dark:border-neutral-900">
+          <span className="inline-flex items-center gap-2 text-sm leading-5 text-neutral-500">
+            <span> &copy; {currentYear} Issue Desk. Built by</span>
+            <a
+              href="https://jeff-portfolio-web.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 font-semibold text-neutral-700 hover:underline dark:text-neutral-300"
+            >
+              <Sparkles className="h-4 w-4" />
+              Jeff
+            </a>
+          </span>
+
+          <span className="text-center font-mono text-6xl leading-none font-black tracking-tighter text-neutral-300 select-none md:text-9xl dark:text-neutral-800">
+            ISSUEDESK
+          </span>
         </div>
       </div>
     </footer>

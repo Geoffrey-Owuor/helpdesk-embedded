@@ -1,9 +1,8 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import ThemeToggle from "../Themes/ThemeToggle";
-import { assets } from "@/public/assets";
+import HomePagesLogo from "../Modules/HomePagesLogo";
 
 const HomeNavBar = () => {
   const [scrolledUp, setScrolledUp] = useState(true); // Track if user scrolled up
@@ -29,19 +28,8 @@ const HomeNavBar = () => {
       className={`fixed top-0 right-0 left-0 z-50 transition-all duration-200 ${scrolledUp ? "translate-y-0" : "-translate-y-full"} ${isScrolled ? "custom-blur bg-white/70 dark:bg-neutral-950/70" : "bg-transparent"}`}
     >
       <nav className="custom:px-8 mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-0.5">
-          <div className="relative h-8 w-8">
-            <Image
-              src={assets.issue_desk_image}
-              alt="Issue Desk Logo"
-              sizes="32px"
-              className="object-contain dark:invert"
-            />
-          </div>
-          <span className="hidden text-xl font-semibold text-black sm:flex dark:text-white">
-            Issue Desk
-          </span>
-        </Link>
+        {/* App Logo */}
+        <HomePagesLogo />
         <div className="flex items-center gap-4">
           <ThemeToggle />
           <div className="flex items-center gap-2">

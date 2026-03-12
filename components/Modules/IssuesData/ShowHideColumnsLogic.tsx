@@ -1,17 +1,18 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { Columns2, ChevronDown, Check, X } from "lucide-react";
-import {
-  useColumnVisibility,
-  columnLabels,
-} from "@/contexts/ColumnVisibilityContext";
-import { useSearchLogic } from "@/contexts/SearchLogicContext";
+import { useColumnStore, columnLabels } from "@/store/useColumnStore";
+import { useSearchStore } from "@/store/useSearchStore";
 
 const ShowHideColumnsLogic = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { visibleColumns, toggleColumn, resetColumns } = useColumnVisibility();
-  const { isTableView } = useSearchLogic();
+
+  const visibleColumns = useColumnStore((state) => state.visibleColumns);
+  const toggleColumn = useColumnStore((state) => state.toggleColumn);
+  const resetColumns = useColumnStore((state) => state.resetColumns);
+
+  const isTableView = useSearchStore((state) => state.isTableView);
 
   // Close dropdown when clicking outside
   useEffect(() => {

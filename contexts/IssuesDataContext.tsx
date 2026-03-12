@@ -10,12 +10,11 @@ import {
 } from "react";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useSearchLogic } from "./SearchLogicContext";
+import { IssueValueTypes } from "@/store/useIssuesStore";
+import { useSearchStore } from "@/store/useSearchStore";
 
 // OUR DEFAULT FETCH OPTIONS
 const DEFAULT_FETCH_OPTIONS = { selectedFilter: "status", status: "" };
-
-export type IssueValueTypes<T extends string | number = string | number> = T;
 
 interface Options {
   selectedFilter?: string;
@@ -45,8 +44,7 @@ export const IssuesDataProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  // Get the agent admin filter
-  const { agentAdminFilter } = useSearchLogic();
+  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
 
   const [issuesData, setIssuesData] = useState([]);
   const [loading, setLoading] = useState(false);

@@ -1,4 +1,4 @@
-import { IssueValueTypes } from "@/contexts/IssuesDataContext";
+import { IssueValueTypes } from "@/store/useIssuesStore";
 import {
   LucideIcon,
   ArrowDown,

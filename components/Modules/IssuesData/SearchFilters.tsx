@@ -1,42 +1,31 @@
 "use client";
-import { useSearchLogic } from "@/contexts/SearchLogicContext";
-import { useIssuesData } from "@/contexts/IssuesDataContext";
-import { useAutomationsData } from "@/contexts/AutomationsDataContext";
+import { useSearchStore } from "@/store/useSearchStore";
+import { useIssuesStore } from "@/store/useIssuesStore";
+import { useAutomationsStore } from "@/store/useAutomationsStore";
 import { Search } from "lucide-react";
 
 type FilterProps = {
   recordType: string;
 };
 const SearchFilters = ({ recordType }: FilterProps) => {
-  // The the fetch issues function
-  const { fetchIssues } = useIssuesData();
-  const { fetchAutomations } = useAutomationsData();
+  const fetchIssues = useIssuesStore((state) => state.fetchIssues);
+  const fetchAutomations = useAutomationsStore(
+    (state) => state.fetchAutomations,
+  );
 
-  let fetchData;
+  const fetchData =
+    recordType === "automations" ? fetchAutomations : fetchIssues;
 
-  switch (recordType) {
-    case "automations":
-      fetchData = fetchAutomations;
-      break;
-    default:
-      fetchData = fetchIssues;
-      break;
-  }
-
-  // Get the filter data
-  const {
-    selectedFilter,
-    // Getters
-    status,
-    reference,
-    fromDate,
-    toDate,
-    department,
-    agent,
-    issueType,
-    issuePriority,
-    submitter,
-  } = useSearchLogic();
+  const selectedFilter = useSearchStore((state) => state.selectedFilter);
+  const status = useSearchStore((state) => state.status);
+  const reference = useSearchStore((state) => state.reference);
+  const fromDate = useSearchStore((state) => state.fromDate);
+  const toDate = useSearchStore((state) => state.toDate);
+  const department = useSearchStore((state) => state.department);
+  const agent = useSearchStore((state) => state.agent);
+  const issueType = useSearchStore((state) => state.issueType);
+  const issuePriority = useSearchStore((state) => state.issuePriority);
+  const submitter = useSearchStore((state) => state.submitter);
 
   // An array of our active filters
   const activeFilters = [

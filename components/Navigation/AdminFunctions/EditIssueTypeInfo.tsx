@@ -11,11 +11,10 @@ import {
 } from "lucide-react";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useAlert } from "@/contexts/AlertContext";
-import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
+import { useAlertStore } from "@/store/useAlertStore";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
-import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
+import { useOverlayStore } from "@/store/useOverlayStore";
+import { useConfirmStore } from "@/store/useConfirmStore";
 import { priorityOptions } from "@/components/Modules/IssuePage/IssuePage";
 
 type EditIssueTypeInfoProps = {
@@ -23,6 +22,7 @@ type EditIssueTypeInfoProps = {
   issuePriority: string;
   agentNames: { agentName: string; agentEmail: string }[];
   agentEmail: string;
+  refetchAgentsInfo: () => Promise<void>;
   setActiveEditId: Dispatch<SetStateAction<string | null>>;
 };
 
@@ -31,6 +31,7 @@ const EditIssueTypeInfo = ({
   issuePriority,
   agentNames,
   agentEmail,
+  refetchAgentsInfo,
   setActiveEditId,
 }: EditIssueTypeInfoProps) => {
   const [selectedType, setSelectedType] = useState(issueType || "");
@@ -38,12 +39,15 @@ const EditIssueTypeInfo = ({
   const [selectedEmail, setSelectedEmail] = useState(agentEmail || "");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isPriorityDropdownOpen, setIsPriorityDropdownOpen] = useState(false);
-  const { setAlertInfo } = useAlert();
-  const { setPromiseOverlayInfo } = usePromiseOverlay();
-  const { setConfirmationDialogInfo } = useConfirmationDialog();
+
+  // State stores
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const priorityDropDownRef = useRef<HTMLDivElement>(null);
-  const { refetchAgentsInfo } = useAgentsInfo();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -76,10 +80,7 @@ const EditIssueTypeInfo = ({
   const selectedName = selectedNameObject?.agentName;
 
   const handleUpdate = async () => {
-    setConfirmationDialogInfo((prev) => ({
-      ...prev,
-      showDialog: false,
-    }));
+    hideDialog();
 
     // Do nothing if no data has changed
     if (
@@ -90,19 +91,11 @@ const EditIssueTypeInfo = ({
       !selectedType ||
       !selectedPriority
     ) {
-      setAlertInfo({
-        alertType: "error",
-        showAlert: true,
-        alertMessage: "Missing required info or same information passed",
-      });
-
+      triggerAlert("error", "Missing required info or same information passed");
       return;
     }
 
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Editing",
-    });
+    showOverlay("Updating");
 
     try {
       const response = await apiClient.put("/update-issuetype", {
@@ -112,13 +105,8 @@ const EditIssueTypeInfo = ({
         selectedPriority,
       });
 
-      // Show alert on success
-      setAlertInfo({
-        alertType: "success",
-        showAlert: true,
-        alertMessage:
-          response.data.message || "Issue type info updated successfully",
-      });
+      // Trigger alert on success
+      triggerAlert("success", response.data.message);
 
       // Close the EditIssueTypeInfo Modal
       setActiveEditId(null);
@@ -132,22 +120,15 @@ const EditIssueTypeInfo = ({
         errorMessage,
       );
 
-      setAlertInfo({
-        alertType: "error",
-        showAlert: true,
-        alertMessage: errorMessage,
-      });
+      // Trigger alert on error
+      triggerAlert("error", errorMessage);
     } finally {
-      setPromiseOverlayInfo({
-        loading: false,
-        overlaytext: "",
-      });
+      hideOverlay();
     }
   };
 
   const handleConfirmationDialog = () => {
-    setConfirmationDialogInfo({
-      showDialog: true,
+    triggerDialog({
       title: "Edit Issue Type Info",
       description: "Confirm editing of issue info.",
       onConfirm: handleUpdate,

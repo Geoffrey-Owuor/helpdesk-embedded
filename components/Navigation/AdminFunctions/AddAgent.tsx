@@ -21,26 +21,35 @@ import {
 } from "lucide-react";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
 import { useUser } from "@/contexts/UserContext";
-import { useAlert } from "@/contexts/AlertContext";
+import { useAlertStore } from "@/store/useAlertStore";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
+
 import { NameValidator, NameValidationResult } from "@/utils/Validators";
 import NameRulesCard from "@/components/Modules/NameRulesCard";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
-import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
+import { useOverlayStore } from "@/store/useOverlayStore";
+import { useConfirmStore } from "@/store/useConfirmStore";
 
 type AddAgentProps = {
   showAgentModal: boolean;
+  refetchAgentsInfo: () => Promise<void>;
   setShowAgentModal: Dispatch<SetStateAction<boolean>>;
 };
 
-const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
+const AddAgent = ({
+  setShowAgentModal,
+  refetchAgentsInfo,
+  showAgentModal,
+}: AddAgentProps) => {
   const { department } = useUser();
-  const { setAlertInfo } = useAlert();
-  const { setConfirmationDialogInfo } = useConfirmationDialog();
-  const { setPromiseOverlayInfo } = usePromiseOverlay();
-  const { refetchAgentsInfo } = useAgentsInfo();
+
+  // state data
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -96,38 +105,23 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
       : null;
 
   const handleSubmit = async () => {
-    setConfirmationDialogInfo((prev) => ({
-      ...prev,
-      showDialog: false,
-    }));
+    hideDialog();
 
     //password validation logic
     if (
       formData.password.length < 8 ||
       formData.password !== formData.confirmPassword
     ) {
-      setAlertInfo({
-        showAlert: true,
-        alertType: "error",
-        alertMessage: "Short password or mismatched passwords",
-      });
-
+      triggerAlert("error", "Short password or mismatched passwords");
       return;
     }
 
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Adding",
-    });
+    showOverlay("Adding");
     try {
       const response = await apiClient.post("/add-agent", formData);
 
       // On success, show toast alert
-      setAlertInfo({
-        showAlert: true,
-        alertType: "success",
-        alertMessage: response.data.message || "Agent registered successfully",
-      });
+      triggerAlert("success", response.data.message);
 
       // refetch agents data
       refetchAgentsInfo();
@@ -136,25 +130,17 @@ const AddAgent = ({ setShowAgentModal, showAgentModal }: AddAgentProps) => {
       setShowAgentModal(false);
     } catch (error) {
       const errorMessage = getApiErrorMessage(error);
-      setAlertInfo({
-        showAlert: true,
-        alertType: "error",
-        alertMessage: errorMessage,
-      });
+      triggerAlert("error", errorMessage);
 
       // log the error
       console.error("Error while trying to add an agent:", errorMessage);
     } finally {
-      setPromiseOverlayInfo({
-        loading: false,
-        overlaytext: "",
-      });
+      hideOverlay();
     }
   };
 
   const handleConfirmationDialog = () => {
-    setConfirmationDialogInfo({
-      showDialog: true,
+    triggerDialog({
       title: "Add Agent",
       description: "Confirm adding of new agent.",
       onConfirm: handleSubmit,

@@ -1,13 +1,19 @@
 "use client";
 
 import { X, Bug, ShieldCheck, UsersRound, RotateCcw } from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import AgentsInfo from "./AgentsInfo";
 import IssueTypesInfo from "./IssueTypesInfo";
 import ClientPortal from "@/components/Modules/ClientPortal";
-import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
+import { useAgentsStore } from "@/store/useAgentsStore";
+import { useUser } from "@/contexts/UserContext";
 import { handleRefetchIssueAgentsData } from "@/serverActions/refetchIssueAgentsData";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
 
 type AdminPanelProps = {
   showAdminPanel: boolean;
@@ -18,28 +24,29 @@ type TabId = "agent-info" | "issue-info";
 
 const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   const [activeTab, setActiveTab] = useState<TabId>("agent-info");
-  const { refetchAgentsInfo } = useAgentsInfo();
-  const { setPromiseOverlayInfo } = usePromiseOverlay();
+
+  const { department } = useUser();
+  const agentsInfo = useAgentsStore((state) => state.agentsInfo);
+  const loading = useAgentsStore((state) => state.loading);
+  const fetchAction = useAgentsStore((state) => state.fetchAgentsInfo);
+
+  // fetch agents action
+  const fetchAgentsInfo = useCallback(async () => {
+    if (department) await fetchAction(department);
+  }, [fetchAction, department]);
+
+  // UseEffect for fetching on mount
+  useEffect(() => {
+    fetchAgentsInfo();
+  }, [fetchAgentsInfo]);
 
   // Refetch agents and issue types data
   const handleRefetchIssueAgents = async () => {
-    // Show our promise overlay
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Refreshing",
-    });
-
     // We call our server action here
     await handleRefetchIssueAgentsData();
 
-    // After it's complete - we hide our promise overlay
-    setPromiseOverlayInfo({
-      loading: false,
-      overlaytext: "",
-    });
-
     // refetch data after revalidation
-    refetchAgentsInfo();
+    await fetchAgentsInfo();
   };
 
   if (!showAdminPanel) return null;
@@ -146,9 +153,21 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
 
             {/* Tab Content Rendering */}
             <main className="flex-1 overflow-y-auto p-6">
-              {activeTab === "agent-info" && <AgentsInfo />}
+              {activeTab === "agent-info" && (
+                <AgentsInfo
+                  loading={loading}
+                  refetchAgentsInfo={fetchAgentsInfo}
+                  agentsFlatInfo={agentsInfo}
+                />
+              )}
 
-              {activeTab === "issue-info" && <IssueTypesInfo />}
+              {activeTab === "issue-info" && (
+                <IssueTypesInfo
+                  loading={loading}
+                  refetchAgentsInfo={fetchAgentsInfo}
+                  agentsFlatInfo={agentsInfo}
+                />
+              )}
             </main>
           </div>
         </div>
