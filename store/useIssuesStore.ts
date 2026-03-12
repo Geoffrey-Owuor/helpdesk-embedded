@@ -30,7 +30,7 @@ interface IssuesDataStore {
 
 export const useIssuesStore = create<IssuesDataStore>()((set, get) => ({
   // states
-  loading: false,
+  loading: true,
   issuesData: [],
 
   // Actions

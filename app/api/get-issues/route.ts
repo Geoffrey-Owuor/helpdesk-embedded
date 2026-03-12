@@ -135,7 +135,7 @@ export const GET = withAuth(async ({ user, request }) => {
     // return a response
     return NextResponse.json(issuesData, { status: 200 });
   } catch (error) {
-    console.error("Error retrieving the issue data", error);
+    console.error("Error retrieving issues data", error);
     return NextResponse.json(
       { message: "Error retreiving the issues data" },
       { status: 500 },
