@@ -1,23 +1,22 @@
 "use client";
 import { ChangeEvent, FormEvent, useState } from "react";
-import { useAlert } from "@/contexts/AlertContext";
+import { useAlertStore } from "@/store/useAlertStore";
 import ClientPortal from "../ClientPortal";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import apiClient from "@/lib/AxiosClient";
-import { useIssuesData } from "@/contexts/IssuesDataContext";
-import { useAutomationsData } from "@/contexts/AutomationsDataContext";
-import { useIssuesCards } from "@/contexts/IssuesCardsContext";
-import { useAutomations } from "@/contexts/AutomationCardsContext";
+import { useIssuesStore } from "@/store/useIssuesStore";
+import { useAutomationsStore } from "@/store/useAutomationsStore";
 import { X } from "lucide-react";
-import { IssueValueTypes } from "@/contexts/IssuesDataContext";
+import { IssueValueTypes } from "@/store/useIssuesStore";
 import FormAsterisk from "../FormAsterisk";
-import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+import { useConfirmStore } from "@/store/useConfirmStore";
+import { useOverlayStore } from "@/store/useOverlayStore";
 
 type TitleDescriptionModalProps = {
   title: IssueValueTypes;
   description: IssueValueTypes;
   uuid: string;
+  type: string | null;
   userId: IssueValueTypes;
   closeModal: () => void;
 };
@@ -25,6 +24,7 @@ const TitleDescriptionModal = ({
   title,
   description,
   uuid,
+  type,
   userId,
   closeModal,
 }: TitleDescriptionModalProps) => {
@@ -33,14 +33,20 @@ const TitleDescriptionModal = ({
     issue_description: description || "",
   });
 
-  // context data
-  const { setAlertInfo } = useAlert();
-  const { setPromiseOverlayInfo } = usePromiseOverlay();
-  const { setConfirmationDialogInfo } = useConfirmationDialog();
-  const { refetchIssues } = useIssuesData();
-  const { refetchAutomations } = useAutomationsData();
-  const { refetchIssuesCounts } = useIssuesCards();
-  const { refetchAutomationCounts } = useAutomations();
+  // state data
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
+
+  const refetchIssues = useIssuesStore((state) => state.refetchIssues);
+  const refetchAutomations = useAutomationsStore(
+    (state) => state.refetchAutomations,
+  );
+
+  const refetchData =
+    type === "automation" ? refetchAutomations : refetchIssues;
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -64,15 +70,9 @@ const TitleDescriptionModal = ({
 
   // the handle submit function
   const handleSubmit = async () => {
-    setConfirmationDialogInfo((prev) => ({
-      ...prev,
-      showDialog: false,
-    }));
+    hideDialog();
 
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Editing",
-    });
+    showOverlay("Updating");
 
     // compile our data into one object
     const payload = {
@@ -84,44 +84,28 @@ const TitleDescriptionModal = ({
     try {
       const response = await apiClient.put("/update-issueinfo", payload);
 
-      // Set a success alert
-      setAlertInfo({
-        alertType: "success",
-        showAlert: true,
-        alertMessage:
-          response.data.message || "Issue status updated successfully",
-      });
+      // Trigger a success alert
+      triggerAlert("success", response.data.message);
 
       // clear the form data
       setFormData({ issue_title: "", issue_description: "" });
+
       // refetch data
-      refetchIssues();
-      refetchAutomations();
-      refetchAutomationCounts();
-      refetchIssuesCounts();
+      refetchData();
 
       // close the modal
       closeModal();
     } catch (error) {
       const errorMessage = getApiErrorMessage(error);
-      setAlertInfo({
-        alertType: "error",
-        showAlert: true,
-        alertMessage: errorMessage,
-      });
+      triggerAlert("error", errorMessage);
     } finally {
-      setPromiseOverlayInfo({
-        loading: false,
-        overlaytext: "",
-      });
+      hideOverlay();
     }
   };
 
   const handleConfirmSubmit = (e: FormEvent) => {
     e.preventDefault();
-
-    setConfirmationDialogInfo({
-      showDialog: true,
+    triggerDialog({
       title: "Update Issue Info",
       description: "Confirm the changes made.",
       onConfirm: handleSubmit,

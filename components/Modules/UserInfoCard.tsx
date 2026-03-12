@@ -4,7 +4,7 @@ import { Settings, LogOut, Shield } from "lucide-react";
 import apiClient from "@/lib/AxiosClient";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/contexts/UserContext";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+import { useOverlayStore } from "@/store/useOverlayStore";
 import { useEffect, RefObject } from "react";
 
 type UserCardProps = {
@@ -25,7 +25,9 @@ const UserInfoCard = ({
   const router = useRouter();
 
   const { role, username, email } = useUser();
-  const { setPromiseOverlayInfo } = usePromiseOverlay();
+
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
 
   //Automatically close user card when a user clicks outside
   useEffect(() => {
@@ -45,10 +47,7 @@ const UserInfoCard = ({
   }, [isUserCardOpen, closeUserCard, triggerRef]);
 
   const handleLogout = async () => {
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Logging out",
-    });
+    showOverlay("Logging out");
     try {
       await apiClient.post("/logout");
       // Redirect to login and refresh the page state
@@ -56,10 +55,7 @@ const UserInfoCard = ({
       router.refresh();
     } catch (error) {
       console.error("Logout failed", error);
-      setPromiseOverlayInfo({
-        loading: false,
-        overlaytext: "",
-      });
+      hideOverlay();
     }
   };
 

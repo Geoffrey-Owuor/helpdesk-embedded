@@ -10,9 +10,9 @@ import {
   ReactNode,
 } from "react";
 import apiClient from "@/lib/AxiosClient";
-import { useAutomations } from "./AutomationCardsContext";
+import { useAutomationCardsStore } from "@/store/useAutomationCardsStore";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { IssueValueTypes } from "./IssuesDataContext";
+import { IssueValueTypes } from "@/store/useIssuesStore";
 
 // Defining our default fetch options
 const DEFAULT_FETCH_OPTIONS = {
@@ -48,7 +48,9 @@ export const AutomationsDataProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const { selectedDepartment } = useAutomations();
+  const selectedDepartment = useAutomationCardsStore(
+    (state) => state.selectedDepartment,
+  );
 
   const [automationsData, setAutomationsData] = useState([]);
   const [loading, setLoading] = useState(false);

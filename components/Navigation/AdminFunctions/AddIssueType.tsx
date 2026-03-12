@@ -11,15 +11,15 @@ import {
 import { useEffect, useState, useRef, Dispatch, SetStateAction } from "react";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useAlert } from "@/contexts/AlertContext";
-import { useAgentsInfo } from "@/contexts/AgentsInfoContext";
+import { useAlertStore } from "@/store/useAlertStore";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
-import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+import { useConfirmStore } from "@/store/useConfirmStore";
+import { useOverlayStore } from "@/store/useOverlayStore";
 import { priorityOptions } from "@/components/Modules/IssuePage/IssuePage";
 
 type AddIssueTypeProps = {
   showAddIssueModal: boolean;
+  refetchAgentsInfo: () => Promise<void>;
   setShowAddIssueModal: Dispatch<SetStateAction<boolean>>;
   agentNames: { agentName: string; agentEmail: string }[];
 };
@@ -27,6 +27,7 @@ type AddIssueTypeProps = {
 const AddIssueType = ({
   showAddIssueModal,
   setShowAddIssueModal,
+  refetchAgentsInfo,
   agentNames,
 }: AddIssueTypeProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -36,10 +37,13 @@ const AddIssueType = ({
   const [agentEmail, setAgentEmail] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const priorityDropDownRef = useRef<HTMLDivElement>(null);
-  const { setAlertInfo } = useAlert();
-  const { setConfirmationDialogInfo } = useConfirmationDialog();
-  const { setPromiseOverlayInfo } = usePromiseOverlay();
-  const { refetchAgentsInfo } = useAgentsInfo();
+
+  // state stores
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
 
   // get agent name from the mapping to display in the button
   const selectedNameObject = agentNames.find(
@@ -73,25 +77,15 @@ const AddIssueType = ({
 
   //Handle submit function
   const handleSubmit = async () => {
-    setConfirmationDialogInfo((prev) => ({
-      ...prev,
-      showDialog: false,
-    }));
+    hideDialog();
 
     if (!issueType || !agentEmail || !issuePriority) {
-      setAlertInfo({
-        showAlert: true,
-        alertType: "error",
-        alertMessage: "Missing some required form information",
-      });
+      triggerAlert("error", "Missing some required form information");
 
       return;
     }
 
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Adding",
-    });
+    showOverlay("Adding");
 
     try {
       const response = await apiClient.post("/add-issuetype", {
@@ -100,12 +94,8 @@ const AddIssueType = ({
         agentEmail,
       });
 
-      // show alert on success
-      setAlertInfo({
-        showAlert: true,
-        alertType: "success",
-        alertMessage: response.data.message || "Issue type added successfully",
-      });
+      // Trigger alert on success
+      triggerAlert("success", response.data.message);
 
       //refetch agents data
       refetchAgentsInfo();
@@ -114,26 +104,20 @@ const AddIssueType = ({
       setShowAddIssueModal(false);
     } catch (error) {
       const errorMessage = getApiErrorMessage(error);
-      setAlertInfo({
-        showAlert: true,
-        alertType: "error",
-        alertMessage: errorMessage,
-      });
+
+      // Trigger alert on error
+      triggerAlert("error", errorMessage);
 
       console.error("Error while trying to add the issue type:", error);
     } finally {
-      setPromiseOverlayInfo({
-        loading: false,
-        overlaytext: "",
-      });
+      hideOverlay();
     }
   };
 
   const handleConfirmSubmit = () => {
-    setConfirmationDialogInfo({
-      showDialog: true,
+    triggerDialog({
       title: "Add Issue Type",
-      description: "Confirm adding of new issue type.",
+      description: `Confirm adding of new issue type: ${issueType}`,
       onConfirm: handleSubmit,
     });
   };

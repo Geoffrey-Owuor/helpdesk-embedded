@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import AuthShell from "../AuthShell";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useAlert } from "@/contexts/AlertContext";
+import { useAlertStore } from "@/store/useAlertStore";
 import { ApiHandler } from "@/utils/ApiHandler";
 import NameRulesCard from "@/components/Modules/NameRulesCard";
 import { NameValidator, NameValidationResult } from "@/utils/Validators";
@@ -42,7 +42,9 @@ const CompleteRegistration = ({ email }: { email: string }) => {
 
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { alertInfo, setAlertInfo } = useAlert();
+
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
+  const alertType = useAlertStore((state) => state.alertType);
 
   // Derived State to check if passwords are matching
   const passwordsMatch =
@@ -56,12 +58,7 @@ const CompleteRegistration = ({ email }: { email: string }) => {
   useEffect(() => {
     // Only trigger logic if the specific param exists
     if (searchParams.get("sent") === "true") {
-      setAlertInfo({
-        showAlert: true, // Hardcode true, don't rely on the param comparison anymore
-        alertType: "success",
-        alertMessage: "Your password has been reset successfully",
-      });
-
+      triggerAlert("success", "Your password has been reset successfully");
       // Now clean the URL
       const newUrl = window.location.pathname;
       window.history.replaceState(null, "", newUrl);
@@ -69,7 +66,7 @@ const CompleteRegistration = ({ email }: { email: string }) => {
     // If the param is NOT 'success', we do nothing.
     // This leaves the alert visible until the user manually closes it
     // or the AlertContext handles the timeout.
-  }, [searchParams, setAlertInfo]);
+  }, [searchParams, triggerAlert]);
 
   // Handle input changes
   const handleChange = (
@@ -102,20 +99,12 @@ const CompleteRegistration = ({ email }: { email: string }) => {
 
     // Add Name Validation Guard
     if (!nameValidation.isValid) {
-      setAlertInfo({
-        showAlert: true,
-        alertType: "error",
-        alertMessage: "Please fix the name format errors.",
-      });
+      triggerAlert("error", "Please fix the name format errors.");
       return;
     }
 
     if (!passwordsMatch) {
-      setAlertInfo({
-        showAlert: true,
-        alertType: "error",
-        alertMessage: "Passwords do not match",
-      });
+      triggerAlert("error", "Passwords do not match");
       return;
     }
 
@@ -142,12 +131,7 @@ const CompleteRegistration = ({ email }: { email: string }) => {
       router.push("/dashboard");
       router.refresh(); //Refresh server components
     } catch (error) {
-      if (error instanceof Error)
-        setAlertInfo({
-          showAlert: true,
-          alertType: "error",
-          alertMessage: error.message,
-        });
+      if (error instanceof Error) triggerAlert("error", error.message);
       setLoading(false);
       console.error("Failed to register the user:", error);
     }
@@ -356,7 +340,7 @@ const CompleteRegistration = ({ email }: { email: string }) => {
           <button
             type="submit"
             disabled={loading || passwordsMismatch || !nameValidation.isValid}
-            className={`flex w-full items-center ${alertInfo.alertType === "error" ? "bg-red-500 text-white hover:bg-red-400 focus:ring-red-500 dark:ring-offset-neutral-950" : "bg-neutral-900 text-white hover:bg-neutral-800 focus:ring-neutral-600 dark:bg-white dark:text-neutral-950 dark:ring-offset-neutral-950 dark:hover:bg-neutral-200 dark:focus:ring-neutral-300"} justify-center gap-2 rounded-full px-4 py-3 font-semibold ring-offset-2 focus:ring-1 focus:outline-none disabled:opacity-50`}
+            className={`flex w-full items-center ${alertType === "error" ? "bg-red-500 text-white hover:bg-red-400 focus:ring-red-500 dark:ring-offset-neutral-950" : "bg-neutral-900 text-white hover:bg-neutral-800 focus:ring-neutral-600 dark:bg-white dark:text-neutral-950 dark:ring-offset-neutral-950 dark:hover:bg-neutral-200 dark:focus:ring-neutral-300"} justify-center gap-2 rounded-full px-4 py-3 font-semibold ring-offset-2 focus:ring-1 focus:outline-none disabled:opacity-50`}
           >
             {loading ? (
               <>

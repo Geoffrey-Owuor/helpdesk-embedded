@@ -1,5 +1,5 @@
 "use client";
-import { useSearchLogic } from "@/contexts/SearchLogicContext";
+import { useSearchStore } from "@/store/useSearchStore";
 import { RotateCcw, XCircle } from "lucide-react";
 
 type ClearRefreshProps = {
@@ -7,42 +7,16 @@ type ClearRefreshProps = {
 };
 
 const ClearRefreshFilters = ({ handleRefetchIssues }: ClearRefreshProps) => {
-  // Get search setters from userSearch
-  const {
-    setSelectedFilter,
-    setStatus,
-    setReference,
-    setFromDate,
-    setToDate,
-    setDepartment,
-    setAgent,
-    setIssueType,
-    setIssuePriority,
-    setSubmitter,
-  } = useSearchLogic();
-
-  const clearFilters = () => {
-    // clear the values in each setter - we clear filters without refetching the data
-    setSelectedFilter("");
-    setStatus("");
-    setReference("");
-    setFromDate("");
-    setToDate("");
-    setDepartment("");
-    setAgent("");
-    setIssueType("");
-    setIssuePriority("");
-    setSubmitter("");
-  };
+  const resetFilters = useSearchStore((state) => state.resetFilters);
 
   const refetchIssues = () => {
-    clearFilters();
+    resetFilters();
     handleRefetchIssues();
   };
   return (
     <div className="flex items-center gap-4">
       <button
-        onClick={clearFilters}
+        onClick={resetFilters}
         title="Clear filters"
         className="flex h-9.5 items-center gap-1.5 rounded-xl bg-neutral-200 px-3 text-sm text-neutral-900 transition-colors duration-200 hover:bg-neutral-200/60 dark:bg-neutral-700/50 dark:text-neutral-100 dark:hover:bg-neutral-800/70"
       >

@@ -22,9 +22,10 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
-import { useAlert } from "@/contexts/AlertContext";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+
+import { useConfirmStore } from "@/store/useConfirmStore";
+import { useAlertStore } from "@/store/useAlertStore";
+import { useOverlayStore } from "@/store/useOverlayStore";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
@@ -39,9 +40,11 @@ const UserSettings = ({
   setIsUserSettingsOpen,
 }: UserSettingsProps) => {
   const { username, email, department, role } = useUser();
-  const { setAlertInfo } = useAlert();
-  const { setPromiseOverlayInfo } = usePromiseOverlay();
-  const { setConfirmationDialogInfo } = useConfirmationDialog();
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
 
   const [formData, setFormData] = useState({
     previousPassword: "",
@@ -103,8 +106,7 @@ const UserSettings = ({
   // Handle submission confirmation
   const handleConfirmSubmit = (e: FormEvent) => {
     e.preventDefault();
-    setConfirmationDialogInfo({
-      showDialog: true,
+    triggerDialog({
       title: "Change Password",
       description: "Confirm changing your current password",
       onConfirm: handleSubmit,
@@ -113,27 +115,17 @@ const UserSettings = ({
 
   const handleSubmit = async () => {
     // Hide confirmation dialog
-    setConfirmationDialogInfo((prev) => ({
-      ...prev,
-      showDialog: false,
-    }));
+    hideDialog();
 
     // Show promise overlay
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Changing",
-    });
+    showOverlay("Updating");
 
     //Api call
     try {
       const response = await apiClient.put("/update-password", formData);
 
-      // Show alert info on success
-      setAlertInfo({
-        showAlert: true,
-        alertType: "success",
-        alertMessage: response.data.message,
-      });
+      // Trigger alert on success
+      triggerAlert("success", response.data.message);
 
       // Clear form data
       setFormData({
@@ -143,22 +135,15 @@ const UserSettings = ({
       });
     } catch (error) {
       const errorMessage = getApiErrorMessage(error);
-      // Show alert info and log the error
-      setAlertInfo({
-        showAlert: true,
-        alertType: "error",
-        alertMessage: errorMessage,
-      });
+      // Trigger alert on error
+      triggerAlert("error", errorMessage);
 
       console.error(
         "An error occurred while trying to update the password:",
         errorMessage,
       );
     } finally {
-      setPromiseOverlayInfo({
-        loading: false,
-        overlaytext: "",
-      });
+      hideOverlay();
     }
   };
 

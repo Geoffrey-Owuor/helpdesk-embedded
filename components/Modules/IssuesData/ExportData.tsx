@@ -4,15 +4,19 @@ import { Download } from "lucide-react";
 import apiClient from "@/lib/AxiosClient";
 import { useState } from "react";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useAlert } from "@/contexts/AlertContext";
-import { useSearchLogic } from "@/contexts/SearchLogicContext";
+import { useAlertStore } from "@/store/useAlertStore";
+import { useSearchStore } from "@/store/useSearchStore";
 import { useUser } from "@/contexts/UserContext";
 
 const ExportData = ({ fetchAutomations }: { fetchAutomations: string }) => {
   const [isExporting, setIsExporting] = useState(false);
-  const { fromDate, toDate, agentAdminFilter } = useSearchLogic();
-  const { setAlertInfo } = useAlert();
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const { username } = useUser();
+
+  // Getting the data needed from the store
+  const fromDate = useSearchStore((state) => state.fromDate);
+  const toDate = useSearchStore((state) => state.toDate);
+  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
 
   // Dynamically building our url
   let baseUrl = `/excel-export?fetchAutomations=${fetchAutomations || "issues"}`;
@@ -58,11 +62,8 @@ const ExportData = ({ fetchAutomations }: { fetchAutomations: string }) => {
         "Error while trying to export issues data to excel:",
         errorMessage,
       );
-      setAlertInfo({
-        showAlert: true,
-        alertType: "error",
-        alertMessage: "Error exporting data to excel",
-      });
+
+      triggerAlert("error", "Error exporting data to excel");
     } finally {
       setIsExporting(false);
     }

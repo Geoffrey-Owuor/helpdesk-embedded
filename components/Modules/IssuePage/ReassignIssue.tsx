@@ -3,7 +3,7 @@
 import { useState, useEffect, MouseEvent } from "react";
 import { fetchedIssueAgents } from "@/serverActions/GetIssueAgents";
 import { IssueAgents } from "@/serverActions/GetIssueAgents";
-import { useAlert } from "@/contexts/AlertContext";
+import { useAlertStore } from "@/store/useAlertStore";
 import apiClient from "@/lib/AxiosClient";
 import { IssueAgentsSkeleton } from "@/components/Skeletons/IssueAgentsSkeleton";
 import { useUser } from "@/contexts/UserContext";
@@ -17,18 +17,17 @@ import {
   X,
 } from "lucide-react";
 import { arrayReducer } from "@/utils/ArrayReducer";
-import { IssueValueTypes } from "@/contexts/IssuesDataContext";
-import { useAutomations } from "@/contexts/AutomationCardsContext";
-import { useIssuesCards } from "@/contexts/IssuesCardsContext";
-import { useIssuesData } from "@/contexts/IssuesDataContext";
-import { useAutomationsData } from "@/contexts/AutomationsDataContext";
+import { IssueValueTypes } from "@/store/useIssuesStore";
+import { useAutomationsStore } from "@/store/useAutomationsStore";
+import { useIssuesStore } from "@/store/useIssuesStore";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useConfirmationDialog } from "@/contexts/ConfirmationDialogContext";
-import { usePromiseOverlay } from "@/contexts/PromiseOverlayContext";
+import { useConfirmStore } from "@/store/useConfirmStore";
+import { useOverlayStore } from "@/store/useOverlayStore";
 
 type ReassignIssueProps = {
   uuid: string;
   closeModal: () => void;
+  type: string | null;
   issueType: IssueValueTypes;
   issueAgentEmail: IssueValueTypes;
 };
@@ -37,22 +36,29 @@ const ReassignIssue = ({
   uuid,
   closeModal,
   issueType,
+  type,
   issueAgentEmail,
 }: ReassignIssueProps) => {
   const [loading, setLoading] = useState(false);
   const { department } = useUser();
-  const { setAlertInfo } = useAlert();
-  const { setPromiseOverlayInfo } = usePromiseOverlay();
-  const { setConfirmationDialogInfo } = useConfirmationDialog();
+
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
   const [issueAgents, setIssueAgents] = useState<IssueAgents[]>([]);
   const [agentEmail, setAgentEmail] = useState(""); //will be sent to the api
   const [agentName, setAgentName] = useState(""); //will be sent to the api
 
   //The refetch functions - called after successful reassigning
-  const { refetchAutomationCounts } = useAutomations();
-  const { refetchAutomations } = useAutomationsData();
-  const { refetchIssuesCounts } = useIssuesCards();
-  const { refetchIssues } = useIssuesData();
+  const refetchAutomations = useAutomationsStore(
+    (state) => state.refetchAutomations,
+  );
+  const refetchIssues = useIssuesStore((state) => state.refetchIssues);
+
+  const refetchData =
+    type === "automation" ? refetchAutomations : refetchIssues;
 
   useEffect(() => {
     const fetchAgents = async () => {
@@ -88,15 +94,9 @@ const ReassignIssue = ({
 
   //function for calling the api endpoint to handle reassigning
   const handleReAssigning = async () => {
-    setConfirmationDialogInfo((prev) => ({
-      ...prev,
-      showDialog: false,
-    }));
+    hideDialog();
 
-    setPromiseOverlayInfo({
-      loading: true,
-      overlaytext: "Reassigning",
-    });
+    showOverlay("Reassigning");
 
     try {
       const response = await apiClient.put("/reassign-issue", {
@@ -106,42 +106,26 @@ const ReassignIssue = ({
       });
 
       // Show the alert on success
-      setAlertInfo({
-        alertType: "success",
-        showAlert: true,
-        alertMessage: response.data.message || "Agent Updated Successfully",
-      });
+      triggerAlert("success", response.data.message);
 
       //   clear data
       setAgentEmail("");
       setAgentName("");
 
       //   Refetch data
-      refetchAutomationCounts();
-      refetchAutomations();
-      refetchIssuesCounts();
-      refetchIssues();
-
+      refetchData();
       // close the modal
       closeModal();
     } catch (error) {
       const errorMessage = getApiErrorMessage(error);
-      setAlertInfo({
-        alertType: "error",
-        showAlert: true,
-        alertMessage: errorMessage,
-      });
+      triggerAlert("error", errorMessage);
     } finally {
-      setPromiseOverlayInfo({
-        loading: false,
-        overlaytext: "",
-      });
+      hideOverlay();
     }
   };
 
   const handleConfirmationDialog = () => {
-    setConfirmationDialogInfo({
-      showDialog: true,
+    triggerDialog({
       title: "Reassign Issue",
       description: `Confirm reassigning of issue to ${agentName}`,
       onConfirm: handleReAssigning,

@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import ClientPortal from "@/components/Modules/ClientPortal";
 import { dateFormatter } from "@/public/assets";
-import { IssueValueTypes } from "@/contexts/IssuesDataContext";
+import { IssueValueTypes } from "@/store/useIssuesStore";
 import { ChangelogItem } from "./Notifications";
 import { Dispatch, SetStateAction } from "react";
 

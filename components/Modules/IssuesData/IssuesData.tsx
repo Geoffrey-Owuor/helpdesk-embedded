@@ -1,16 +1,16 @@
 "use client";
-import { useIssuesData } from "@/contexts/IssuesDataContext";
-import { useAutomationsData } from "@/contexts/AutomationsDataContext";
+import { useIssuesStore } from "@/store/useIssuesStore";
+import { useAutomationsStore } from "@/store/useAutomationsStore";
 import IssuesDataSkeleton from "@/components/Skeletons/IssuesDataSkeleton";
 import { useUser } from "@/contexts/UserContext";
 import ShowHideColumnsLogic from "./ShowHideColumnsLogic";
 import SearchFilterLogic from "./SearchFilterLogic";
 import SearchInputFields from "./SearchInputFields";
 import ClearRefreshFilters from "./ClearRefreshFilters";
-import { useAutomations } from "@/contexts/AutomationCardsContext";
+import { useAutomationCardsStore } from "@/store/useAutomationCardsStore";
 import SearchFilters from "./SearchFilters";
 import { useState, useEffect } from "react";
-import { useSearchLogic } from "@/contexts/SearchLogicContext";
+import { useSearchStore } from "@/store/useSearchStore";
 import ViewAgentAdminFilter from "./ViewAgentAdminFilter";
 import Pagination from "./Pagination";
 import ToggleTableView from "./ToggleTableView";
@@ -19,15 +19,33 @@ import CardViewData from "./CardViewData";
 import ExportData from "./ExportData";
 
 const IssuesData = ({ recordType }: { recordType: string }) => {
-  const { issuesData, loading, refetchIssues } = useIssuesData();
-  const {
-    automationsData,
-    loading: automationsLoading,
-    refetchAutomations,
-  } = useAutomationsData();
+  const issuesData = useIssuesStore((state) => state.issuesData);
+  const loading = useIssuesStore((state) => state.loading);
+  const refetchIssues = useIssuesStore((state) => state.refetchIssues);
+
+  const automationsData = useAutomationsStore((state) => state.automationsData);
+  const automationsLoading = useAutomationsStore((state) => state.loading);
+  const refetchAutomations = useAutomationsStore(
+    (state) => state.refetchAutomations,
+  );
+
   const { role, department } = useUser();
-  const { agentAdminFilter, isTableView } = useSearchLogic();
-  const { selectedDepartment } = useAutomations();
+
+  // useSearchStore Data
+  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
+  const isTableView = useSearchStore((state) => state.isTableView);
+  const selectedDepartment = useAutomationCardsStore(
+    (state) => state.selectedDepartment,
+  );
+
+  // Our useEffects will go here - fetching initial data on mount
+  useEffect(() => {
+    if (recordType !== "automations") refetchIssues();
+  }, [recordType, refetchIssues, agentAdminFilter]);
+
+  useEffect(() => {
+    if (recordType === "automations") refetchAutomations();
+  }, [recordType, refetchAutomations, selectedDepartment]);
 
   // Defining our variables based on record type
   let recordsData;

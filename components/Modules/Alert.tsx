@@ -2,41 +2,45 @@
 
 import { XIcon, AlertCircle, CheckCircle } from "lucide-react";
 import { useEffect, useCallback, useState } from "react";
-import { useAlert } from "@/contexts/AlertContext";
+import { useAlertStore } from "@/store/useAlertStore";
 
 const Alert = () => {
-  const { alertInfo, setAlertInfo } = useAlert();
+  // Alert store states
+  const hideAlert = useAlertStore((state) => state.hideAlert);
+  const showAlert = useAlertStore((state) => state.showAlert);
+  const alertType = useAlertStore((state) => state.alertType);
+  const alertMessage = useAlertStore((state) => state.alertMessage);
+
   const [isClosing, setIsClosing] = useState(false);
 
   const handleClose = useCallback(() => {
     setIsClosing(true);
     setTimeout(() => {
-      setAlertInfo({ showAlert: false, alertType: "", alertMessage: "" });
+      hideAlert();
       setIsClosing(false); //reset isClosing after it animates out so that it animates in on next render
     }, 200); // Match this with animation duration
-  }, [setAlertInfo]);
+  }, [hideAlert]);
 
   // The auto close after 6 seconds
   useEffect(() => {
     // FIX 2: Reset timer whenever alertInfo changes (e.g., new message comes in)
     let timer: NodeJS.Timeout;
-    if (alertInfo.showAlert) {
+    if (showAlert) {
       timer = setTimeout(handleClose, 6000);
     }
 
     return () => clearTimeout(timer);
-  }, [alertInfo.showAlert, handleClose]);
+  }, [showAlert, handleClose]);
 
   // Don't render anything if there's no alert and we aren't currently animating out
-  if (!alertInfo.showAlert && !isClosing) return null;
+  if (!showAlert && !isClosing) return null;
 
   // Determine which icon to display based on type
-  const IconComponent =
-    alertInfo.alertType === "success" ? CheckCircle : AlertCircle;
+  const IconComponent = alertType === "success" ? CheckCircle : AlertCircle;
 
   // Determine icon color
   const iconColorClass =
-    alertInfo.alertType === "success"
+    alertType === "success"
       ? "text-green-500 dark:text-green-700"
       : "text-red-500 dark:text-red-700";
 
@@ -53,7 +57,7 @@ const Alert = () => {
           {/* Render the appropriate icon */}
           <IconComponent className={`h-5 w-5 shrink-0 ${iconColorClass}`} />
           <p className="max-w-70 truncate text-sm text-nowrap">
-            {alertInfo.alertMessage}
+            {alertMessage}
           </p>
         </div>
         <button
