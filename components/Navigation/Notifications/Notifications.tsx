@@ -86,9 +86,6 @@ const Notifications = () => {
   const count =
     (notificationData?.changelogs?.length ?? 0) + filteredIssues.length;
 
-  // Derived isReady state - we only show count after both issues data and changelogs data is ready
-  const isDataReady = !loading && !defaultLoading;
-
   // Handling closing the modal
   const handleCloseModal = async () => {
     setIsModalOpen(false);
@@ -129,15 +126,13 @@ const Notifications = () => {
       <button
         disabled={loading || defaultLoading}
         onClick={() => setIsModalOpen(true)}
-        className="bell-btn relative inline-flex items-center justify-center rounded-full p-2 text-neutral-700 hover:bg-neutral-200 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-800"
+        className="bell-btn relative inline-flex items-center justify-center rounded-full p-2 text-neutral-700 hover:bg-neutral-200 dark:text-neutral-300 dark:hover:bg-neutral-800"
       >
         <Bell className="bell-icon h-5 w-5" />
 
-        {isDataReady && count > 0 && (
-          <span className="absolute right-0.5 bottom-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] leading-none font-semibold text-white">
-            {count > 9 ? "9+" : count}
-          </span>
-        )}
+        <span className="absolute right-0.5 bottom-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] leading-none font-semibold text-white">
+          {count > 9 ? "9+" : count}
+        </span>
       </button>
     </>
   );

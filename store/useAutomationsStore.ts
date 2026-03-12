@@ -16,7 +16,7 @@ interface AutomationsDataStore {
 export const useAutomationsStore = create<AutomationsDataStore>()(
   (set, get) => ({
     // states
-    loading: false,
+    loading: true,
     automationsData: [],
 
     // Actions
