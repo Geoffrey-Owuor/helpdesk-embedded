@@ -1,6 +1,5 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import IssueDetailsSkeleton from "@/components/Skeletons/IssueDetailsSkeleton";
 import { useRouter } from "next/navigation";
 import { AssignedAgentFormatter } from "../IssuesData/AssignedAgentFormatter";
@@ -61,8 +60,6 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
     if (uuid) await fetchIssueData(uuid);
   }, [fetchIssueData, uuid]);
 
-  const searchParams = useSearchParams();
-  const type = searchParams.get("type");
   const router = useRouter();
 
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
@@ -222,7 +219,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                   description={issueData.issue_description}
                   closeModal={() => setIsEditModalOpen(false)}
                   uuid={uuid}
-                  type={type}
+                  refetchData={refetchData}
                   userId={issueData.issue_submitter_id}
                 />
               )}
@@ -232,7 +229,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                   uuid={uuid}
                   closeModal={() => setIsReassignModalOpen(false)}
                   issueType={issueData.issue_type}
-                  type={type}
+                  refetchData={refetchData}
                   issueAgentEmail={issueData.issue_agent_email}
                 />
               )}

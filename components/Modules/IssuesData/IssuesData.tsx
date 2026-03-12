@@ -72,7 +72,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
 
   // Pagination states and logic
   const [currentPage, setCurrentPage] = useState(1);
-  const [issuesPerPage, setIssuesPerPage] = useState(8);
+  const [issuesPerPage, setIssuesPerPage] = useState(6);
   const totalPages = Math.ceil(recordsData.length / issuesPerPage);
   const indexOfLastIssue = currentPage * issuesPerPage;
   const indexOfFirstIssue = indexOfLastIssue - issuesPerPage;
