@@ -62,7 +62,7 @@ const ViewAgentAdminFilter = () => {
           }`}
         >
           <Send className="h-4 w-4" />
-          <span className="custom:inline-flex hidden">My Submissions</span>
+          <span className="custom:inline-flex hidden">Submissions</span>
         </button>
       </div>
     </div>

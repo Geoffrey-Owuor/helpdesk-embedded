@@ -4,8 +4,6 @@ import { useAlertStore } from "@/store/useAlertStore";
 import ClientPortal from "../ClientPortal";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import apiClient from "@/lib/AxiosClient";
-import { useIssuesStore } from "@/store/useIssuesStore";
-import { useAutomationsStore } from "@/store/useAutomationsStore";
 import { X } from "lucide-react";
 import { IssueValueTypes } from "@/store/useIssuesStore";
 import FormAsterisk from "../FormAsterisk";
@@ -16,7 +14,7 @@ type TitleDescriptionModalProps = {
   title: IssueValueTypes;
   description: IssueValueTypes;
   uuid: string;
-  type: string | null;
+  refetchData: () => Promise<void>;
   userId: IssueValueTypes;
   closeModal: () => void;
 };
@@ -24,7 +22,7 @@ const TitleDescriptionModal = ({
   title,
   description,
   uuid,
-  type,
+  refetchData,
   userId,
   closeModal,
 }: TitleDescriptionModalProps) => {
@@ -39,14 +37,6 @@ const TitleDescriptionModal = ({
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
-
-  const refetchIssues = useIssuesStore((state) => state.refetchIssues);
-  const refetchAutomations = useAutomationsStore(
-    (state) => state.refetchAutomations,
-  );
-
-  const refetchData =
-    type === "automation" ? refetchAutomations : refetchIssues;
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -91,7 +81,7 @@ const TitleDescriptionModal = ({
       setFormData({ issue_title: "", issue_description: "" });
 
       // refetch data
-      refetchData();
+      await refetchData();
 
       // close the modal
       closeModal();

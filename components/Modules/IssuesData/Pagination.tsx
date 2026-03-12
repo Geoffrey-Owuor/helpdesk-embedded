@@ -34,7 +34,7 @@ const Pagination = ({
   const perPageRef = useRef<HTMLDivElement>(null);
 
   // Options for rows per page
-  const perPageOptions = [4, 8, 16, 32, 64, 128];
+  const perPageOptions = [6, 12, 24, 48, 96, 192];
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -74,22 +74,21 @@ const Pagination = ({
         </div>
       )}
       <div className="hidden md:flex md:flex-1 md:items-center md:justify-center lg:justify-between">
-        {totalPages >= 1 && (
-          <div className="flex items-center gap-4">
-            <div className="hidden pr-3 lg:flex">
-              <p className="text-sm text-neutral-700 dark:text-neutral-400">
-                Showing{" "}
-                <span className="font-semibold">{indexOfFirstIssue + 1}</span>{" "}
-                to{" "}
-                <span className="font-semibold">
-                  {Math.min(indexOfLastIssue, issuesLength)}
-                </span>{" "}
-                of <span className="font-semibold">{issuesLength}</span>{" "}
-                {`result${issuesLength > 1 ? "s" : ""}`}
-              </p>
-            </div>
+        <div className="flex items-center gap-4">
+          <div className="hidden pr-3 lg:flex">
+            <p className="text-sm text-neutral-700 dark:text-neutral-400">
+              Showing{" "}
+              <span className="font-semibold">{indexOfFirstIssue + 1}</span> to{" "}
+              <span className="font-semibold">
+                {Math.min(indexOfLastIssue, issuesLength)}
+              </span>{" "}
+              of <span className="font-semibold">{issuesLength}</span>{" "}
+              {`result${issuesLength > 1 ? "s" : ""}`}
+            </p>
+          </div>
 
-            {/* The button to set issues per page */}
+          {/* The button to set issues per page */}
+          {issuesLength > 6 && (
             <div className="flex items-center gap-2" ref={perPageRef}>
               <span className="text-sm text-neutral-600 dark:text-neutral-400">
                 Records:
@@ -141,8 +140,8 @@ const Pagination = ({
                 )}
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {totalPages > 1 && (
           <nav className="flex items-center justify-center gap-1">
