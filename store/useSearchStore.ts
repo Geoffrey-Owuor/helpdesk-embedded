@@ -13,6 +13,7 @@ interface SearchState {
   issueType: string;
   issuePriority: string;
   submitter: string;
+  superAdminFilter: boolean;
   agentAdminFilter: string;
   isTableView: boolean;
 }
@@ -29,6 +30,7 @@ interface SearchActions {
   setIssueType: (value: string) => void;
   setIssuePriority: (value: string) => void;
   setSubmitter: (value: string) => void;
+  setSuperAdminFilter: (value: boolean) => void;
   setAgentAdminFilter: (value: string) => void;
   setIsTableView: (value: boolean) => void;
 
@@ -51,6 +53,7 @@ export const useSearchStore = create<SearchState & SearchActions>()(
       issueType: "",
       issuePriority: "",
       submitter: "",
+      superAdminFilter: false,
       agentAdminFilter: "",
       isTableView: false,
 
@@ -66,6 +69,7 @@ export const useSearchStore = create<SearchState & SearchActions>()(
       setIssuePriority: (issuePriority) => set({ issuePriority }),
       setSubmitter: (submitter) => set({ submitter }),
       setAgentAdminFilter: (agentAdminFilter) => set({ agentAdminFilter }),
+      setSuperAdminFilter: (superAdminFilter) => set({ superAdminFilter }),
       setIsTableView: (isTableView) => set({ isTableView }),
 
       resetFilters: () =>
@@ -80,7 +84,7 @@ export const useSearchStore = create<SearchState & SearchActions>()(
           issueType: "",
           issuePriority: "",
           submitter: "",
-          //  We do not reset agentAdminFilter and isTableView for UX reasons
+          //  We do not reset agentAdminFilter, superAdminFilter, and isTableView for UX reasons
         }),
     }),
     {
@@ -89,6 +93,7 @@ export const useSearchStore = create<SearchState & SearchActions>()(
       partialize: (state) => ({
         agentAdminFilter: state.agentAdminFilter,
         isTableView: state.isTableView,
+        superAdminFilter: state.superAdminFilter,
       }),
     },
   ),

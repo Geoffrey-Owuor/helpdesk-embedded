@@ -37,8 +37,9 @@ const IssuesCards = ({ type }: { type: string }) => {
   );
 
   const automationLoading = useAutomationCardsStore((state) => state.loading);
-  const { role, department } = useUser();
+  const { role, department, isSuper } = useUser();
   const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
+  const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
 
   // Call srolling top hook
   useScrollToTop();
@@ -46,7 +47,7 @@ const IssuesCards = ({ type }: { type: string }) => {
   // useEffect to fetch Issue counts on mount or when agent admin filter changes
   useEffect(() => {
     if (type !== "automations") refetchIssueCounts();
-  }, [refetchIssueCounts, agentAdminFilter, type]);
+  }, [refetchIssueCounts, agentAdminFilter, type, superAdminFilter]);
 
   // useEffect to fetch Automation counts on mount or when selected department changes
   useEffect(() => {
@@ -131,7 +132,7 @@ const IssuesCards = ({ type }: { type: string }) => {
             </span>
           </div>
           {type === "automations" && <DepartmentsDropDown />}
-          {type !== "automations" && <SuperAdminFilter />}
+          {type !== "automations" && isSuper && <SuperAdminFilter />}
         </div>
         <div className="flex items-center gap-4">
           <button
