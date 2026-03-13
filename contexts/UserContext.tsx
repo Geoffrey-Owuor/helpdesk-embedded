@@ -21,8 +21,16 @@ export const UserProvider = ({ children, user }: UserProviderProps) => {
       username: user.username,
       role: user.role,
       department: user.department,
+      isSuper: user.isSuper,
     }),
-    [user.userId, user.email, user.username, user.role, user.department],
+    [
+      user.userId,
+      user.email,
+      user.username,
+      user.role,
+      user.department,
+      user.isSuper,
+    ],
   );
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };

@@ -62,6 +62,7 @@ export async function POST(request: NextRequest) {
       role: role,
       department: department,
       email: email,
+      isSuper: false,
     };
 
     //Generate access and refresh tokens

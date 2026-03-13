@@ -48,6 +48,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if the user is a super admin
+    const superAdmins = await query(
+      `
+      SELECT super_admin_id FROM super_admins 
+      WHERE super_admin_id = $1 LIMIT 1
+      `,
+      [user.user_id],
+    );
+
+    const isSuperAdmin = superAdmins.length > 0;
+
     // Define the payload
     const payload = {
       userId: user.user_id,
@@ -55,6 +66,7 @@ export async function POST(request: NextRequest) {
       role: user.role,
       department: user.department,
       email: user.email,
+      isSuper: isSuperAdmin,
     };
     //Generate access tokens
     const accessToken = await signAccessToken(payload);

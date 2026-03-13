@@ -39,13 +39,19 @@ export const useIssuesStore = create<IssuesDataStore>()((set, get) => ({
     const queryOptions = options || DEFAULT_FETCH_OPTIONS;
 
     const agentAdminFilter = useSearchStore.getState().agentAdminFilter;
+    const superAdminFilter = useSearchStore.getState().superAdminFilter;
 
     set({ loading: true });
 
     try {
       let url = `/get-issues/?selectedFilter=${queryOptions.selectedFilter || "status"}`;
 
-      // First we check if we have the agent admin filter enabled
+      // Check if the super admin filter is enabled
+      if (superAdminFilter) {
+        const filterValue = "superAdminFilter";
+        url += `&superAdminFilter=${filterValue}`;
+      }
+      // Check if we have the agent admin filter enabled
       if (agentAdminFilter === "agentAdminFilter") {
         url += `&agentAdminFilter=${agentAdminFilter}`;
       }

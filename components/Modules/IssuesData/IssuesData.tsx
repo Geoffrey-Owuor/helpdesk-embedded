@@ -33,6 +33,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
 
   // useSearchStore Data
   const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
+  const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
   const isTableView = useSearchStore((state) => state.isTableView);
   const selectedDepartment = useAutomationCardsStore(
     (state) => state.selectedDepartment,
@@ -41,7 +42,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
   // Our useEffects will go here - fetching initial data on mount
   useEffect(() => {
     if (recordType !== "automations") refetchIssues();
-  }, [recordType, refetchIssues, agentAdminFilter]);
+  }, [recordType, refetchIssues, agentAdminFilter, superAdminFilter]);
 
   useEffect(() => {
     if (recordType === "automations") refetchAutomations();

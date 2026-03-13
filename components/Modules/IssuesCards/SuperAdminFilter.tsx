@@ -1,12 +1,16 @@
 "use client";
-import { useState } from "react";
 import { ShieldPlus } from "lucide-react";
+import { useSearchStore } from "@/store/useSearchStore";
 
 export default function SuperAdminFilter() {
-  const [enabled, setEnabled] = useState(false);
+  const enabled = useSearchStore((state) => state.superAdminFilter);
+  const setEnabled = useSearchStore((state) => state.setSuperAdminFilter);
 
   return (
-    <div className="inline-flex items-center gap-3 rounded-xl border border-neutral-200 px-4 py-2 transition-colors duration-200 dark:border-neutral-700">
+    <div
+      className="inline-flex items-center gap-3 rounded-full border border-neutral-200 px-4 py-2 shadow-2xs transition-colors duration-200 dark:border-neutral-700"
+      title="View all submitted issues"
+    >
       {/* Icon */}
       <ShieldPlus
         size={18}
@@ -33,7 +37,7 @@ export default function SuperAdminFilter() {
         role="switch"
         aria-checked={enabled}
         aria-label="Toggle super-admin filter"
-        onClick={() => setEnabled((prev) => !prev)}
+        onClick={() => setEnabled(!enabled)}
         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out focus-visible:ring-2 focus-visible:ring-neutral-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:outline-none dark:focus-visible:ring-neutral-400 dark:focus-visible:ring-offset-neutral-900 ${
           enabled
             ? "bg-neutral-800 dark:bg-neutral-100"
