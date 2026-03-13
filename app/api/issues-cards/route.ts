@@ -6,6 +6,7 @@ export const GET = withAuth(async ({ user, request }) => {
   const { userId, role, email, department } = user;
   const searchParams = request.nextUrl.searchParams;
   const agentAdminFilter = searchParams.get("agentAdminFilter");
+  const superAdminFilter = searchParams.get("superAdminFilter");
 
   // 1. Determine Dynamic Column & Value (Same as before)
   let filterColumn = "issue_submitter_id";
@@ -28,20 +29,22 @@ export const GET = withAuth(async ({ user, request }) => {
 
   // 2. The Optimized Query: "The Pivot"
   // We scan the table ONCE. As we look at each row, we decide which "bucket" it counts towards.
-  const sql = `
+  let sql = `
     SELECT 
       COUNT(*) AS totals,
       COUNT(*) FILTER (WHERE issue_status = 'pending') AS pending,
       COUNT(*) FILTER (WHERE issue_status = 'in progress') AS in_progress,
       COUNT(*) FILTER (WHERE issue_status = 'resolved') AS resolved,
       COUNT(*) FILTER (WHERE issue_status = 'unfeasible') AS unfeasible
-    FROM issues_table 
-    WHERE ${filterColumn} = $1
+    FROM issues_table
   `;
+
+  if (!superAdminFilter) sql += ` WHERE ${filterColumn} = $1`;
+  const params = superAdminFilter ? [] : [filterValue];
 
   try {
     // 3. Execute ONE query
-    const result = await query(sql, [filterValue]);
+    const result = await query(sql, params);
     const row = result[0]; // We expect exactly one row with 5 columns
 
     // 4. Return Data
