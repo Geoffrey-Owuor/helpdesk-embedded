@@ -51,7 +51,7 @@ const DepartmentsDropDown = () => {
     departments.find((d) => d.value === selectedDepartment)?.label || "All";
 
   return (
-    <div className="relative mt-3 w-fit" ref={dropdownRef}>
+    <div className="relative w-fit" ref={dropdownRef}>
       <button
         type="button" // Prevent form submission if inside a form
         onClick={() => setIsOpen(!isOpen)}
