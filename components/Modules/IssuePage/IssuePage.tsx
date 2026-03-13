@@ -241,7 +241,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                       {issueData.issue_title}
                     </h1>
                     <div className="flex flex-wrap items-center gap-3 text-sm">
-                      <span className="font-mono text-lg font-semibold text-blue-600 dark:text-blue-400">
+                      <span className="font-mono font-semibold text-blue-600 dark:text-blue-400">
                         {issueData.issue_reference_id}
                       </span>
                       <span className="h-1 w-1 rounded-full bg-neutral-300 dark:bg-neutral-600"></span>
