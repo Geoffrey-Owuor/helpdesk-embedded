@@ -112,7 +112,7 @@ const DashboardSidebar = () => {
       </div>
 
       {/* Left sidebar — visible on md+ screens */}
-      <aside className="absolute top-0 bottom-0 left-0 z-50 hidden w-20 flex-col items-center border-neutral-200 py-4 md:flex dark:border-neutral-800">
+      <aside className="fixed top-0 bottom-0 left-0 z-50 hidden w-20 flex-col items-center border-neutral-200 py-4 md:flex dark:border-neutral-800">
         {/* Logo at the top */}
         <div className="mb-6 flex items-center justify-center">
           <DashBoardLogo />
