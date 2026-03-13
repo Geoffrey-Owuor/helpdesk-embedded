@@ -6,7 +6,6 @@ import { IssueAgents } from "@/serverActions/GetIssueAgents";
 import { useAlertStore } from "@/store/useAlertStore";
 import apiClient from "@/lib/AxiosClient";
 import { IssueAgentsSkeleton } from "@/components/Skeletons/IssueAgentsSkeleton";
-import { useUser } from "@/contexts/UserContext";
 import ClientPortal from "../ClientPortal";
 import {
   AlertCircle,
@@ -26,6 +25,7 @@ type ReassignIssueProps = {
   uuid: string;
   closeModal: () => void;
   issueType: IssueValueTypes;
+  targetDepartment: IssueValueTypes;
   refetchData: () => Promise<void>;
   issueAgentEmail: IssueValueTypes;
 };
@@ -35,10 +35,11 @@ const ReassignIssue = ({
   closeModal,
   issueType,
   refetchData,
+  targetDepartment,
   issueAgentEmail,
 }: ReassignIssueProps) => {
   const [loading, setLoading] = useState(false);
-  const { department } = useUser();
+  const department = targetDepartment.toString();
 
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const showOverlay = useOverlayStore((state) => state.showOverlay);

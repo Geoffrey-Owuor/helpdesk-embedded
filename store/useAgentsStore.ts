@@ -13,7 +13,7 @@ interface AgentsStore {
 }
 
 export const useAgentsStore = create<AgentsStore>()((set) => ({
-  loading: false,
+  loading: true,
   agentsInfo: [],
 
   // Action - Zustand natively handles async actions

@@ -6,10 +6,10 @@ import { PoolClient } from "pg";
 export const PUT = withAuth(async ({ request, user }) => {
   let client: PoolClient | undefined;
 
-  const { username, role, email, userId } = user;
+  const { username, role, email, userId, isSuper } = user;
 
   //Check if user is authorized to perform this operation
-  if (role !== "admin") {
+  if (role !== "admin" && !isSuper) {
     return NextResponse.json(
       { message: "You are not authorized to perform this action" },
       { status: 403 },
@@ -66,21 +66,46 @@ export const PUT = withAuth(async ({ request, user }) => {
       );
     }
 
+    // Get the agent id who is being re-assigned this issue
+    const { rows: agentInfo } = await client.query(
+      `SELECT user_id FROM users WHERE email = $1`,
+      [agentEmail],
+    );
+
+    if (agentInfo.length === 0) {
+      await client.query("ROLLBACK");
+      return NextResponse.json(
+        { message: `Select agent: ${agentName} not found` },
+        { status: 404 },
+      );
+    }
+
+    // Get the returned agent id
+    const agentId = agentInfo[0].user_id;
+
     // Otherwise let's perform our update
     const updateQuery = `
     UPDATE issues_table SET 
-    issue_agent_id = NULL,
-    issue_agent_name = $1,
-    issue_agent_email = $2,
-    issue_assigner_id = $3,
-    issue_assigner_name = $4,
-    issue_assigner_email = $5,
+    issue_agent_id = $1,
+    issue_agent_name = $2,
+    issue_agent_email = $3,
+    issue_assigner_id = $4,
+    issue_assigner_name = $5,
+    issue_assigner_email = $6,
     issue_updated_at = CURRENT_TIMESTAMP
-    WHERE issue_uuid = $6
+    WHERE issue_uuid = $7
     `;
 
     // Our params
-    const updateParams = [agentName, agentEmail, userId, username, email, uuid];
+    const updateParams = [
+      agentId,
+      agentName,
+      agentEmail,
+      userId,
+      username,
+      email,
+      uuid,
+    ];
 
     // run the query
     await client.query(updateQuery, updateParams);
