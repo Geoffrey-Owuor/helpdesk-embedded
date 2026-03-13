@@ -49,7 +49,7 @@ export default function SuperAdminFilter() {
           className={`absolute left-1 h-4 w-4 rounded-full shadow-md transition-transform duration-200 ease-in-out ${
             enabled
               ? "translate-x-5 bg-white dark:bg-neutral-900"
-              : "translate-x-0 bg-neutral-400 dark:bg-neutral-300"
+              : "translate-x-0 bg-neutral-400 hover:bg-neutral-500 dark:bg-neutral-300 dark:hover:bg-white"
           } `}
         />
       </button>
