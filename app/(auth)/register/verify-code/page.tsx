@@ -3,6 +3,12 @@ import { jwtVerify } from "jose";
 import { query } from "@/lib/Db";
 import { redirect } from "next/navigation";
 import VerifyCode from "@/components/AuthPages/Register/VerifyCode";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Verify Code",
+  description: "Verify your email",
+};
 
 const page = async () => {
   const cookieStore = await cookies();
