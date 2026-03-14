@@ -34,6 +34,7 @@ import { useScrollToTop } from "@/hooks/useScrollToTop";
 import CommentsSection from "./CommentsSection";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
+import IssueTypeModal from "./IssueTypeModal";
 import IssuePriorityFormatter from "../IssuesData/IssuePriorityFormatter";
 
 const statusOptions = [
@@ -298,7 +299,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                           >
                             <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300">
                               <ArrowUpDown className="h-4 w-4" />
-                              <span className="font-semibold text-neutral-500 dark:text-neutral-300">
+                              <span className="font-semibold text-neutral-700 dark:text-neutral-300">
                                 Change Priority:
                               </span>
                             </div>
@@ -352,7 +353,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                         >
                           <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300">
                             <SquareCheckBig className="h-4 w-4" />
-                            <span className="font-semibold text-neutral-500 dark:text-neutral-300">
+                            <span className="font-semibold text-neutral-700 dark:text-neutral-300">
                               Update Status:
                             </span>
                           </div>
@@ -426,10 +427,19 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
 
                   {/* Card 3: System Info */}
                   <DetailCard title="Issue Data" icon={Hash}>
-                    <InfoBlock
-                      label="Issue Type"
-                      value={issueData.issue_type}
-                    />
+                    <div className="flex justify-between">
+                      <InfoBlock
+                        label="Issue Type"
+                        value={issueData.issue_type}
+                      />
+                      {isSuper && (
+                        <IssueTypeModal
+                          refetchData={refetchData}
+                          targetDepartment={issueData.issue_target_department}
+                          currentType={issueData.issue_type}
+                        />
+                      )}
+                    </div>
                     <InfoBlock label="UUID" value={issueData.issue_uuid} />
                   </DetailCard>
                 </div>
