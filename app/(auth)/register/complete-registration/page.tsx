@@ -3,6 +3,12 @@ import { jwtVerify } from "jose";
 import { query } from "@/lib/Db";
 import { redirect } from "next/navigation";
 import CompleteRegistration from "@/components/AuthPages/Register/CompleteRegistration";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Complete Registration",
+  description: "Complete your registration",
+};
 
 const page = async () => {
   const cookieStore = await cookies();
