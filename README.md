@@ -10,7 +10,7 @@ Quick start
 
 Tech
 
-- Next.js (App Router), React, Tailwind CSS, PostgreSQL
+- Next.js 16 (App Router), React, Tailwind CSS, PostgreSQL, Nodemailer, Zustand
 
 Scripts
 

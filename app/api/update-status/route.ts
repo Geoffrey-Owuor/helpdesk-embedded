@@ -6,7 +6,7 @@ import { PoolClient } from "pg";
 export const PUT = withAuth(async ({ user, request }) => {
   let client: PoolClient | undefined;
 
-  const { role, username, userId, email } = user;
+  const { role } = user;
 
   //Check if the user is authorized to perform this transaction
   if (role === "user") {
@@ -65,17 +65,14 @@ export const PUT = withAuth(async ({ user, request }) => {
     }
 
     // Group our params
-    const queryParams = [status, userId, email, username, uuid];
+    const queryParams = [status, uuid];
 
     // Issue is not resolved, so we can continue
     await client.query(
       `UPDATE issues_table 
         SET issue_status = $1,
-        issue_agent_id = $2,
-        issue_agent_email = $3,
-        issue_agent_name = $4,
         issue_updated_at = CURRENT_TIMESTAMP
-        WHERE issue_uuid = $5`,
+        WHERE issue_uuid = $2`,
       queryParams,
     );
 

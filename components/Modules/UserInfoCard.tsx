@@ -2,7 +2,6 @@
 
 import { Settings, LogOut, Shield } from "lucide-react";
 import apiClient from "@/lib/AxiosClient";
-import { useRouter } from "next/navigation";
 import { useUser } from "@/contexts/UserContext";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useEffect, RefObject } from "react";
@@ -22,8 +21,6 @@ const UserInfoCard = ({
   openUserSettings,
   triggerRef,
 }: UserCardProps) => {
-  const router = useRouter();
-
   const { role, username, email } = useUser();
 
   const showOverlay = useOverlayStore((state) => state.showOverlay);
@@ -51,8 +48,7 @@ const UserInfoCard = ({
     try {
       await apiClient.post("/logout");
       // Redirect to login and refresh the page state
-      router.push("/login");
-      router.refresh();
+      window.location.href = "/login";
     } catch (error) {
       console.error("Logout failed", error);
       hideOverlay();

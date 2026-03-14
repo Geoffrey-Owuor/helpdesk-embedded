@@ -20,7 +20,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "IssueDesk",
+  title: {
+    default: "IssueDesk",
+    template: `%s - IssueDesk`,
+  },
   description:
     "A centralized internal issue tracking tool that enables teams to manage user-reported issues with clear ownership and status updates.",
 };

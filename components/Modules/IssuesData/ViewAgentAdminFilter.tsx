@@ -4,6 +4,7 @@ import { Building2, Send } from "lucide-react";
 
 const ViewAgentAdminFilter = () => {
   const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
+  const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
   const setAgentAdminFilter = useSearchStore(
     (state) => state.setAgentAdminFilter,
   );
@@ -36,11 +37,13 @@ const ViewAgentAdminFilter = () => {
 
   return (
     <div className="flex items-center justify-center">
-      <div className="flex rounded-xl border border-neutral-300 bg-neutral-100 p-1 dark:border-neutral-800 dark:bg-neutral-950">
+      <div
+        className={`flex rounded-xl ${superAdminFilter ? "opacity-50" : ""} border border-neutral-300 bg-neutral-100 p-1 dark:border-neutral-800 dark:bg-neutral-950`}
+      >
         {/* Button 1: Default View */}
         <button
           onClick={handleDefaultIssues}
-          disabled={!filterApplied}
+          disabled={!filterApplied || superAdminFilter}
           className={`flex items-center justify-center gap-2 rounded-lg px-4 py-1.5 text-sm font-semibold ${
             !filterApplied
               ? "bg-neutral-900 text-white shadow-sm dark:bg-white dark:text-neutral-900"
@@ -54,7 +57,7 @@ const ViewAgentAdminFilter = () => {
         {/* Button 2: Agent/Admin Submitted View */}
         <button
           onClick={fetchAgentAdminIssues}
-          disabled={filterApplied}
+          disabled={filterApplied || superAdminFilter}
           className={`flex items-center justify-center gap-2 rounded-lg px-4 py-1.5 text-sm font-semibold ${
             filterApplied
               ? "bg-neutral-900 text-white shadow-sm dark:bg-white dark:text-neutral-900"
@@ -62,7 +65,7 @@ const ViewAgentAdminFilter = () => {
           }`}
         >
           <Send className="h-4 w-4" />
-          <span className="custom:inline-flex hidden">My Submissions</span>
+          <span className="custom:inline-flex hidden">Submissions</span>
         </button>
       </div>
     </div>

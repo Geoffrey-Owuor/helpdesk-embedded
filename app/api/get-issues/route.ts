@@ -12,6 +12,7 @@ export const GET = withAuth(async ({ user, request }) => {
   // Extract query parameters from the request url
   const searchParams = request.nextUrl.searchParams;
   const selectedFilter = searchParams.get("selectedFilter");
+  const superAdminFilter = searchParams.get("superAdminFilter");
   const agentAdminFilter = searchParams.get("agentAdminFilter");
   const status = searchParams.get("status");
   const reference = searchParams.get("reference");
@@ -37,24 +38,27 @@ export const GET = withAuth(async ({ user, request }) => {
 
     //construct clauses based on role
     // Users see only what they are allowed to see
-    if (role === "user") {
-      whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
-      params.push(userId);
-    } else if (role === "admin") {
-      if (agentAdminFilter === "agentAdminFilter") {
+    // If the superAdminFilter toggle is not active
+    if (!superAdminFilter) {
+      if (role === "user") {
         whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
         params.push(userId);
-      } else {
-        whereClauses.push(`issue_target_department = $${params.length + 1}`);
-        params.push(department);
-      }
-    } else if (role === "agent") {
-      if (agentAdminFilter === "agentAdminFilter") {
-        whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
-        params.push(userId);
-      } else {
-        whereClauses.push(`issue_agent_email = $${params.length + 1}`);
-        params.push(email);
+      } else if (role === "admin") {
+        if (agentAdminFilter === "agentAdminFilter") {
+          whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
+          params.push(userId);
+        } else {
+          whereClauses.push(`issue_target_department = $${params.length + 1}`);
+          params.push(department);
+        }
+      } else if (role === "agent") {
+        if (agentAdminFilter === "agentAdminFilter") {
+          whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
+          params.push(userId);
+        } else {
+          whereClauses.push(`issue_agent_email = $${params.length + 1}`);
+          params.push(email);
+        }
       }
     }
 

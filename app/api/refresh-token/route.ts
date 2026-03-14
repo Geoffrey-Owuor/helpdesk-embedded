@@ -48,6 +48,17 @@ export async function POST() {
     const role = rows[0].role;
     const department = rows[0].department;
 
+    // Check if the user is a super admin
+    const superAdmins = await query(
+      `
+      SELECT super_admin_id FROM super_admins 
+      WHERE super_admin_id = $1 LIMIT 1
+      `,
+      [userId],
+    );
+
+    const isSuper = superAdmins.length > 0;
+
     if (!hashedToken) {
       cookieStore.delete("accessToken");
       cookieStore.delete("refreshToken");
@@ -78,6 +89,7 @@ export async function POST() {
       username,
       role,
       department,
+      isSuper,
     };
 
     const newAccessToken = await signAccessToken(newPayload);
