@@ -16,6 +16,7 @@ import DepartmentsDropDown from "../AutomationsPage/DepartmentsDropDown";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { useAutomationCardsStore } from "@/store/useAutomationCardsStore";
 import { useIssueCardsStore } from "@/store/useIssueCardsStore";
+import SuperAdminFilter from "./SuperAdminFilter";
 import { useEffect } from "react";
 
 const IssuesCards = ({ type }: { type: string }) => {
@@ -36,8 +37,9 @@ const IssuesCards = ({ type }: { type: string }) => {
   );
 
   const automationLoading = useAutomationCardsStore((state) => state.loading);
-  const { role, department } = useUser();
+  const { role, department, isSuper } = useUser();
   const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
+  const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
 
   // Call srolling top hook
   useScrollToTop();
@@ -45,7 +47,7 @@ const IssuesCards = ({ type }: { type: string }) => {
   // useEffect to fetch Issue counts on mount or when agent admin filter changes
   useEffect(() => {
     if (type !== "automations") refetchIssueCounts();
-  }, [refetchIssueCounts, agentAdminFilter, type]);
+  }, [refetchIssueCounts, agentAdminFilter, type, superAdminFilter]);
 
   // useEffect to fetch Automation counts on mount or when selected department changes
   useEffect(() => {
@@ -117,17 +119,20 @@ const IssuesCards = ({ type }: { type: string }) => {
   return (
     <div className="py-6 md:py-3.5">
       <div className="mb-4 flex items-center justify-between">
-        <div className="inline-flex flex-col">
-          <span className="text-xl font-semibold">
-            {type === "automations" ? "Automations" : "Issues"} Summary
-          </span>
-          <span className="text-sm text-neutral-800 dark:text-neutral-400">
-            {type === "automations"
-              ? "Department Automations"
-              : `${subtitleMapping[role]} Issues`}{" "}
-            Overview
-          </span>
+        <div className="flex flex-col items-center gap-4 md:flex-row md:gap-6">
+          <div className="inline-flex flex-col">
+            <span className="text-xl font-semibold">
+              {type === "automations" ? "Automations" : "Issues"} Summary
+            </span>
+            <span className="text-sm text-neutral-800 dark:text-neutral-400">
+              {type === "automations"
+                ? "Department Automations"
+                : `${subtitleMapping[role]} Issues`}{" "}
+              Overview
+            </span>
+          </div>
           {type === "automations" && <DepartmentsDropDown />}
+          {type !== "automations" && isSuper && <SuperAdminFilter />}
         </div>
         <div className="flex items-center gap-4">
           <button

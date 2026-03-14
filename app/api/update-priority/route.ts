@@ -6,10 +6,10 @@ import { PoolClient } from "pg";
 export const PUT = withAuth(async ({ user, request }) => {
   let client: PoolClient | undefined;
 
-  const { role, username, userId, email } = user;
+  const { role, username, userId, email, isSuper } = user;
 
   //  Admin functionality only
-  if (role !== "admin") {
+  if (role !== "admin" && !isSuper) {
     return NextResponse.json(
       { message: "You are not authorized to perform this action" },
       { status: 403 },

@@ -30,6 +30,7 @@ import { baseDepartments } from "@/public/assets";
 import FormAsterisk from "../FormAsterisk";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
+import { useUser } from "@/contexts/UserContext";
 import { usePathname } from "next/navigation";
 
 // Priority icon types
@@ -66,6 +67,8 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     issue_title: "",
     issue_description: "",
   });
+
+  const { role } = useUser();
 
   // State for the Assignment Bot Card
   const [assignmentInfo, setAssignmentInfo] =
@@ -105,6 +108,13 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       : pathname === "/dashboard/automations"
         ? refetchAutomationCounts
         : () => {}; // Default: do nothing
+
+  // Function to refetch data for normal users - role is user
+  const refetchInfo = async () => {
+    if (role !== "user") return;
+    refetchData();
+    refetchCounts();
+  };
 
   // set options error
   const optionsError = alertType === "error";
@@ -192,8 +202,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       setAssignmentInfo(null); // Clear assignment info
 
       // refetch all data
-      refetchData();
-      refetchCounts();
+      await refetchInfo();
 
       // Close issue modal
       setIsOpen(false);

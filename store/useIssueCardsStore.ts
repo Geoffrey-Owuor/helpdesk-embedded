@@ -15,13 +15,25 @@ export const useIssueCardsStore = create<IssueCardsStore>()((set) => ({
   issueCounts: defaultCounts,
   fetchIssueCounts: async () => {
     const agentAdminFilter = useSearchStore.getState().agentAdminFilter;
+    const superAdminFilter = useSearchStore.getState().superAdminFilter;
 
     set({ loading: true });
 
     try {
       let apiUrl = `/issues-cards`;
+
+      const filters = [];
+
+      if (superAdminFilter) {
+        filters.push("superAdminFilter=superAdminFilter");
+      }
+
       if (agentAdminFilter === "agentAdminFilter") {
-        apiUrl += `?agentAdminFilter=${agentAdminFilter}`;
+        filters.push(`agentAdminFilter=${agentAdminFilter}`);
+      }
+
+      if (filters.length) {
+        apiUrl += `?${filters.join("&")}`;
       }
       const response = await apiClient.get(apiUrl);
       set({ issueCounts: response.data });

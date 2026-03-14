@@ -6,7 +6,6 @@ import { IssueAgents } from "@/serverActions/GetIssueAgents";
 import { useAlertStore } from "@/store/useAlertStore";
 import apiClient from "@/lib/AxiosClient";
 import { IssueAgentsSkeleton } from "@/components/Skeletons/IssueAgentsSkeleton";
-import { useUser } from "@/contexts/UserContext";
 import ClientPortal from "../ClientPortal";
 import {
   AlertCircle,
@@ -18,8 +17,6 @@ import {
 } from "lucide-react";
 import { arrayReducer } from "@/utils/ArrayReducer";
 import { IssueValueTypes } from "@/store/useIssuesStore";
-import { useAutomationsStore } from "@/store/useAutomationsStore";
-import { useIssuesStore } from "@/store/useIssuesStore";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
@@ -27,8 +24,9 @@ import { useOverlayStore } from "@/store/useOverlayStore";
 type ReassignIssueProps = {
   uuid: string;
   closeModal: () => void;
-  type: string | null;
   issueType: IssueValueTypes;
+  targetDepartment: IssueValueTypes;
+  refetchData: () => Promise<void>;
   issueAgentEmail: IssueValueTypes;
 };
 
@@ -36,11 +34,12 @@ const ReassignIssue = ({
   uuid,
   closeModal,
   issueType,
-  type,
+  refetchData,
+  targetDepartment,
   issueAgentEmail,
 }: ReassignIssueProps) => {
   const [loading, setLoading] = useState(false);
-  const { department } = useUser();
+  const department = targetDepartment.toString();
 
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const showOverlay = useOverlayStore((state) => state.showOverlay);
@@ -50,15 +49,6 @@ const ReassignIssue = ({
   const [issueAgents, setIssueAgents] = useState<IssueAgents[]>([]);
   const [agentEmail, setAgentEmail] = useState(""); //will be sent to the api
   const [agentName, setAgentName] = useState(""); //will be sent to the api
-
-  //The refetch functions - called after successful reassigning
-  const refetchAutomations = useAutomationsStore(
-    (state) => state.refetchAutomations,
-  );
-  const refetchIssues = useIssuesStore((state) => state.refetchIssues);
-
-  const refetchData =
-    type === "automation" ? refetchAutomations : refetchIssues;
 
   useEffect(() => {
     const fetchAgents = async () => {
@@ -113,7 +103,7 @@ const ReassignIssue = ({
       setAgentName("");
 
       //   Refetch data
-      refetchData();
+      await refetchData();
       // close the modal
       closeModal();
     } catch (error) {
