@@ -2,10 +2,10 @@ import { IssueValueTypes } from "@/store/useIssuesStore";
 import {
   LucideIcon,
   ArrowDown,
-  ArrowRight,
   ArrowUp,
   Zap,
   Ellipsis,
+  MoveHorizontal,
 } from "lucide-react";
 
 interface IssuePriorityProps {
@@ -32,7 +32,7 @@ const priorityColorFormatting: Record<
     text: "text-sky-700 dark:text-sky-400",
     bg: "bg-sky-50 dark:bg-sky-900/30",
     border: "border-sky-100 dark:border-sky-950",
-    icon: ArrowRight,
+    icon: MoveHorizontal,
   },
   High: {
     text: "text-orange-700 dark:text-orange-400",

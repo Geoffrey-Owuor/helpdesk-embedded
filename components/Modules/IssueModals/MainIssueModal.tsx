@@ -11,9 +11,9 @@ import {
   Zap,
   LucideIcon,
   ArrowUp,
-  ArrowRight,
   ArrowDown,
   Ellipsis,
+  MoveHorizontal,
 } from "lucide-react";
 import { fetchedIssueAgentsMapping } from "@/serverActions/GetIssueTypes";
 import { IssueAgentMapping } from "@/serverActions/GetIssueTypes";
@@ -37,7 +37,7 @@ import { usePathname } from "next/navigation";
 const priorityIcons: Record<string, LucideIcon> = {
   Critical: Zap,
   High: ArrowUp,
-  Medium: ArrowRight,
+  Medium: MoveHorizontal,
   Low: ArrowDown,
 };
 
