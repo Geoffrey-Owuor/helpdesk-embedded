@@ -3,27 +3,37 @@ import { Bug, Check, ChevronDown, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { IssueOption } from "@/serverActions/GetIssueTypes";
 import { fetchedIssueTypes } from "@/serverActions/GetIssueTypes";
+import apiClient from "@/lib/AxiosClient";
+import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { IssueValueTypes } from "@/store/useIssuesStore";
 import { useConfirmStore } from "@/store/useConfirmStore";
+import { useAlertStore } from "@/store/useAlertStore";
+import { useOverlayStore } from "@/store/useOverlayStore";
 
 type IssueTypeModalProps = {
   refetchData: () => Promise<void>;
   targetDepartment: IssueValueTypes;
   currentType: IssueValueTypes;
+  uuid: string;
 };
 const IssueTypeModal = ({
   targetDepartment,
   refetchData,
+  uuid,
   currentType,
 }: IssueTypeModalProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [selectedType, setSelectedType] = useState(currentType);
   const [options, setOptions] = useState<IssueOption[]>([]);
 
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
+
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
+
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
 
   const fetchOptions = useCallback(async () => {
     try {
@@ -57,16 +67,37 @@ const IssueTypeModal = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleIssueTypeUpdate = async () => {};
+  const handleIssueTypeUpdate = async (value: string) => {
+    hideDialog();
+    showOverlay("Updating");
+
+    try {
+      const response = await apiClient.patch("/patch-issuetype", {
+        type: value,
+        uuid: uuid,
+      });
+
+      // Trigger alert on success
+      triggerAlert("success", response.data.message);
+
+      // Refetch the data
+      await refetchData();
+    } catch (error) {
+      const errorMessage = getApiErrorMessage(error);
+      console.error("Error while trying to patch issue type:", errorMessage);
+      triggerAlert("error", errorMessage);
+    } finally {
+      hideOverlay();
+    }
+  };
 
   const handleSelect = (value: string) => {
     setIsOpen(false);
-    setSelectedType(value);
 
     triggerDialog({
       title: "Change Issue Type",
       description: `Confirm changing the issue type to ${value}`,
-      onConfirm: handleIssueTypeUpdate,
+      onConfirm: () => handleIssueTypeUpdate(value),
     });
   };
   return (
