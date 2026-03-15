@@ -119,7 +119,7 @@ const DashboardSidebar = () => {
         </div>
 
         {/* Nav items — grow to fill space */}
-        <nav className="flex w-full flex-1 flex-col items-center gap-1 px-2">
+        <nav className="sidebar-nav mb-2 flex w-full flex-1 flex-col items-center gap-1 px-2">
           {/* New Issue */}
           <SidebarButton
             onClick={() => setIsIssueModalOpen(true)}
@@ -140,7 +140,7 @@ const DashboardSidebar = () => {
           <SidebarLink
             href="/dashboard/automations"
             icon={<Bot className="h-5 w-5" />}
-            label="Workflows"
+            label="Automate"
             onClick={() => handleRouteChange("/dashboard/automations")}
           />
 

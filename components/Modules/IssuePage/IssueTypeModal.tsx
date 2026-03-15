@@ -105,7 +105,7 @@ const IssueTypeModal = ({
       <button
         type="button" // Prevent form submission if inside a form
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex h-9.5 w-full min-w-43 items-center justify-between rounded-full border bg-white px-3 text-sm transition-all sm:w-auto dark:bg-neutral-950 ${
+        className={`flex h-9.5 w-full min-w-43 items-center justify-between rounded-xl border bg-white px-3 text-sm transition-all sm:w-auto dark:bg-neutral-950 ${
           isOpen
             ? "border-blue-500 ring-2 ring-blue-500/20"
             : "border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900"

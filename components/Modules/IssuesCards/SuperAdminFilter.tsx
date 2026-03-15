@@ -8,7 +8,7 @@ export default function SuperAdminFilter() {
 
   return (
     <div
-      className="inline-flex items-center gap-3 rounded-full border border-neutral-200 px-4 py-2 shadow-2xs transition-colors duration-200 dark:border-neutral-700"
+      className="inline-flex items-center gap-3 rounded-xl border border-neutral-200 px-4 py-2 shadow-2xs transition-colors duration-200 dark:border-neutral-700"
       title="View all submitted issues"
     >
       {/* Icon */}
