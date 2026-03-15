@@ -4,7 +4,7 @@ import { ArrowRight, CheckCircle2, ShieldCheck, Zap } from "lucide-react";
 
 const Hero = () => {
   return (
-    <section className="custom:pt-40 custom:pb-24 overflow-hidden pt-32 pb-16">
+    <section className="flex h-full items-center justify-center overflow-hidden py-16">
       <div className="custom:px-8 px-4">
         <div className="mx-auto max-w-3xl text-center">
           {/* Badge */}
