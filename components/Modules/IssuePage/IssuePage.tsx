@@ -432,10 +432,11 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                         label="Issue Type"
                         value={issueData.issue_type}
                       />
-                      {isSuper && (
+                      {isSuper && issueData.issue_status !== "resolved" && (
                         <IssueTypeModal
                           refetchData={refetchData}
                           targetDepartment={issueData.issue_target_department}
+                          uuid={uuid}
                           currentType={issueData.issue_type}
                         />
                       )}
