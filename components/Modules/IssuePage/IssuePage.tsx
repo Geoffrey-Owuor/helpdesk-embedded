@@ -273,62 +273,114 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
 
                     {/* Reassigning an issue and changing the issue priority */}
                     {((role === "admin" &&
-                      issueData.issue_status !== "resolved" &&
                       issueData.issue_target_department === department) ||
-                      isSuper) && (
-                      <div className="inline-flex items-center gap-2">
-                        <button
-                          onClick={() => setIsReassignModalOpen(true)}
-                          className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold transition-colors duration-200 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-transparent dark:hover:bg-neutral-900"
-                        >
-                          <UserRoundPen className="h-4 w-4" />
-                          <span>Reassign</span>
-                        </button>
-                        <div
-                          className="relative w-fit"
-                          ref={priorityDropDownRef}
-                        >
+                      isSuper) &&
+                      issueData.issue_status !== "resolved" && (
+                        <div className="inline-flex items-center gap-2">
                           <button
-                            type="button"
-                            onClick={() => setIsPriorityOpen(!isPriorityOpen)}
+                            onClick={() => setIsReassignModalOpen(true)}
+                            className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold transition-colors duration-200 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-transparent dark:hover:bg-neutral-900"
+                          >
+                            <UserRoundPen className="h-4 w-4" />
+                            <span>Reassign</span>
+                          </button>
+                          <div
+                            className="relative w-fit"
+                            ref={priorityDropDownRef}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => setIsPriorityOpen(!isPriorityOpen)}
+                              className={`flex h-9.5 w-full min-w-43 items-center justify-between rounded-xl border bg-white px-3 text-sm transition-all sm:w-auto dark:bg-neutral-950 ${
+                                isPriorityOpen
+                                  ? "border-blue-500 ring-2 ring-blue-500/20"
+                                  : "border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900"
+                              }`}
+                            >
+                              <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300">
+                                <ArrowUpDown className="h-4 w-4" />
+                                <span className="font-semibold text-neutral-700 dark:text-neutral-300">
+                                  Change Priority:
+                                </span>
+                              </div>
+                              <ChevronDown
+                                className={`h-4 w-4 text-neutral-400 transition-transform ${
+                                  isPriorityOpen ? "rotate-180" : ""
+                                }`}
+                              />
+                            </button>
+                            {/* Dropdown Menu */}
+                            {isPriorityOpen && (
+                              <div className="absolute top-full right-0 z-20 mt-2 max-h-80 w-full min-w-50 origin-top-right overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-950 dark:shadow-none">
+                                <div className="px-2 py-2 text-xs font-semibold text-neutral-500 uppercase">
+                                  Priority options
+                                </div>
+                                {priorityOptions.map((option) => (
+                                  <button
+                                    key={option.value}
+                                    onClick={() =>
+                                      handlePriorityConfirmation(option.value)
+                                    }
+                                    disabled={
+                                      option.value === issueData.issue_priority
+                                    }
+                                    className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-900"
+                                  >
+                                    {option.label}
+                                    {issueData.issue_priority ===
+                                      option.value && (
+                                      <Check className="h-4 w-4 text-blue-600" />
+                                    )}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    {(issueData.issue_agent_email === email || isSuper) &&
+                      issueData.issue_status !== "resolved" && (
+                        <div className="relative w-fit" ref={dropdownRef}>
+                          <button
+                            type="button" // Prevent form submission if inside a form
+                            onClick={() => setIsOpen(!isOpen)}
                             className={`flex h-9.5 w-full min-w-43 items-center justify-between rounded-xl border bg-white px-3 text-sm transition-all sm:w-auto dark:bg-neutral-950 ${
-                              isPriorityOpen
+                              isOpen
                                 ? "border-blue-500 ring-2 ring-blue-500/20"
                                 : "border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900"
                             }`}
                           >
                             <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300">
-                              <ArrowUpDown className="h-4 w-4" />
+                              <SquareCheckBig className="h-4 w-4" />
                               <span className="font-semibold text-neutral-700 dark:text-neutral-300">
-                                Change Priority:
+                                Update Status:
                               </span>
                             </div>
                             <ChevronDown
                               className={`h-4 w-4 text-neutral-400 transition-transform ${
-                                isPriorityOpen ? "rotate-180" : ""
+                                isOpen ? "rotate-180" : ""
                               }`}
                             />
                           </button>
                           {/* Dropdown Menu */}
-                          {isPriorityOpen && (
+                          {isOpen && (
                             <div className="absolute top-full right-0 z-20 mt-2 max-h-80 w-full min-w-50 origin-top-right overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-950 dark:shadow-none">
                               <div className="px-2 py-2 text-xs font-semibold text-neutral-500 uppercase">
-                                Priority options
+                                Status options
                               </div>
-                              {priorityOptions.map((option) => (
+                              {statusOptions.map((option) => (
                                 <button
                                   key={option.value}
                                   onClick={() =>
-                                    handlePriorityConfirmation(option.value)
+                                    handleConfirmationDialog(option.value)
                                   }
                                   disabled={
-                                    option.value === issueData.issue_priority
+                                    option.value === issueData.issue_status
                                   }
                                   className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-900"
                                 >
                                   {option.label}
-                                  {issueData.issue_priority ===
-                                    option.value && (
+                                  {issueData.issue_status === option.value && (
                                     <Check className="h-4 w-4 text-blue-600" />
                                   )}
                                 </button>
@@ -336,60 +388,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                             </div>
                           )}
                         </div>
-                      </div>
-                    )}
-                    {((issueData.issue_agent_email === email &&
-                      issueData.issue_status !== "resolved") ||
-                      isSuper) && (
-                      <div className="relative w-fit" ref={dropdownRef}>
-                        <button
-                          type="button" // Prevent form submission if inside a form
-                          onClick={() => setIsOpen(!isOpen)}
-                          className={`flex h-9.5 w-full min-w-43 items-center justify-between rounded-xl border bg-white px-3 text-sm transition-all sm:w-auto dark:bg-neutral-950 ${
-                            isOpen
-                              ? "border-blue-500 ring-2 ring-blue-500/20"
-                              : "border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900"
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300">
-                            <SquareCheckBig className="h-4 w-4" />
-                            <span className="font-semibold text-neutral-700 dark:text-neutral-300">
-                              Update Status:
-                            </span>
-                          </div>
-                          <ChevronDown
-                            className={`h-4 w-4 text-neutral-400 transition-transform ${
-                              isOpen ? "rotate-180" : ""
-                            }`}
-                          />
-                        </button>
-                        {/* Dropdown Menu */}
-                        {isOpen && (
-                          <div className="absolute top-full right-0 z-20 mt-2 max-h-80 w-full min-w-50 origin-top-right overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-950 dark:shadow-none">
-                            <div className="px-2 py-2 text-xs font-semibold text-neutral-500 uppercase">
-                              Status options
-                            </div>
-                            {statusOptions.map((option) => (
-                              <button
-                                key={option.value}
-                                onClick={() =>
-                                  handleConfirmationDialog(option.value)
-                                }
-                                disabled={
-                                  option.value === issueData.issue_status
-                                }
-                                className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-900"
-                              >
-                                {option.label}
-                                {issueData.issue_status === option.value && (
-                                  <Check className="h-4 w-4 text-blue-600" />
-                                )}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
+                      )}
                   </div>
                 </div>
 
@@ -454,17 +453,16 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                       </div>
                       Description
                     </h2>
-                    {((userId === issueData.issue_submitter_id &&
-                      issueData.issue_status !== "resolved") ||
-                      isSuper) && (
-                      <button
-                        type="button"
-                        onClick={() => setIsEditModalOpen(true)}
-                        className="group rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-white"
-                      >
-                        <PenLine className="h-4 w-4" />
-                      </button>
-                    )}
+                    {(userId === issueData.issue_submitter_id || isSuper) &&
+                      issueData.issue_status !== "resolved" && (
+                        <button
+                          type="button"
+                          onClick={() => setIsEditModalOpen(true)}
+                          className="group rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-white"
+                        >
+                          <PenLine className="h-4 w-4" />
+                        </button>
+                      )}
                   </div>
                   <div className="prose prose-neutral dark:prose-invert max-w-none">
                     <p className="leading-relaxed whitespace-pre-wrap text-neutral-600 dark:text-neutral-300">
