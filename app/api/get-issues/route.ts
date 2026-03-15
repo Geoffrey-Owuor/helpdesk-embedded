@@ -4,7 +4,7 @@ import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 
 export const GET = withAuth(async ({ user, request }) => {
   // destructure user details
-  const { userId, email, role, department } = user;
+  const { userId, email, role, department, isSuper } = user;
 
   // Define our query limit
   const limit = 500;
@@ -38,8 +38,8 @@ export const GET = withAuth(async ({ user, request }) => {
 
     //construct clauses based on role
     // Users see only what they are allowed to see
-    // If the superAdminFilter toggle is not active
-    if (!superAdminFilter) {
+    // SuperAdmin filter only applys to super users
+    if (!superAdminFilter || !isSuper) {
       if (role === "user") {
         whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
         params.push(userId);
