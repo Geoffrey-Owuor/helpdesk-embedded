@@ -127,7 +127,9 @@ const IssuesCards = ({ type }: { type: string }) => {
             <span className="text-sm text-neutral-800 dark:text-neutral-400">
               {type === "automations"
                 ? "Department Automations"
-                : `${subtitleMapping[role]} Issues`}{" "}
+                : superAdminFilter && isSuper
+                  ? "All Submitted Issues"
+                  : `${subtitleMapping[role]} Issues`}{" "}
               Overview
             </span>
           </div>
