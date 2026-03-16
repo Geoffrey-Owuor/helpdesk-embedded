@@ -11,16 +11,22 @@ import { useUser } from "@/contexts/UserContext";
 const ExportData = ({ fetchAutomations }: { fetchAutomations: string }) => {
   const [isExporting, setIsExporting] = useState(false);
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
-  const { username } = useUser();
+  const { username, isSuper } = useUser();
 
   // Getting the data needed from the store
   const fromDate = useSearchStore((state) => state.fromDate);
   const toDate = useSearchStore((state) => state.toDate);
   const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
+  const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
 
   // Dynamically building our url
   let baseUrl = `/excel-export?fetchAutomations=${fetchAutomations || "issues"}`;
 
+  // Adding the super admin filter
+  if (isSuper && superAdminFilter) {
+    const filterValue = "superAdminFilter";
+    baseUrl += `&superAdminFilter=${filterValue}`;
+  }
   // Adding the agent admin filter
   if (agentAdminFilter === "agentAdminFilter") {
     baseUrl += `&agentAdminFilter=${agentAdminFilter}`;

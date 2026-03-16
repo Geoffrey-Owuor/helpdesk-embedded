@@ -1,10 +1,9 @@
 import DashboardSidebar from "./DashboardSidebar";
-import HydrationGuard from "../Modules/HydrationGuard";
 import DashboardFooter from "./DashboardFooter";
 
 const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
   return (
-    <HydrationGuard>
+    <>
       <DashboardSidebar />
       <div
         id="main-content"
@@ -20,7 +19,7 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
           <DashboardFooter />
         </div>
       </div>
-    </HydrationGuard>
+    </>
   );
 };
 

@@ -5,7 +5,7 @@ import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 
 export const GET = withAuth(async ({ request, user }) => {
   // user information we need
-  const { role, department, userId, email } = user;
+  const { role, department, userId, email, isSuper } = user;
 
   try {
     //Our base query
@@ -26,6 +26,7 @@ export const GET = withAuth(async ({ request, user }) => {
     const toDate = searchParams.get("toDate");
     const fetchAutomations = searchParams.get("fetchAutomations");
     const agentAdminFilter = searchParams.get("agentAdminFilter");
+    const superAdminFilter = searchParams.get("superAdminFilter");
 
     const whereClauses: string[] = [];
     const params: (string | number)[] = [];
@@ -37,25 +38,30 @@ export const GET = withAuth(async ({ request, user }) => {
     } else {
       // get issues without the automations flag
       // Constructing clauses based on role
-      if (role === "admin") {
-        if (agentAdminFilter === "agentAdminFilter") {
+      // And if the super admin filter is enabled
+      if (!isSuper || !superAdminFilter) {
+        if (role === "admin") {
+          if (agentAdminFilter === "agentAdminFilter") {
+            whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
+            params.push(userId);
+          } else {
+            whereClauses.push(
+              `issue_target_department = $${params.length + 1}`,
+            );
+            params.push(department);
+          }
+        } else if (role === "agent") {
+          if (agentAdminFilter === "agentAdminFilter") {
+            whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
+            params.push(userId);
+          } else {
+            whereClauses.push(`issue_agent_email = $${params.length + 1}`);
+            params.push(email);
+          }
+        } else if (role === "user") {
           whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
           params.push(userId);
-        } else {
-          whereClauses.push(`issue_target_department = $${params.length + 1}`);
-          params.push(department);
         }
-      } else if (role === "agent") {
-        if (agentAdminFilter === "agentAdminFilter") {
-          whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
-          params.push(userId);
-        } else {
-          whereClauses.push(`issue_agent_email = $${params.length + 1}`);
-          params.push(email);
-        }
-      } else if (role === "user") {
-        whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
-        params.push(userId);
       }
     }
 
