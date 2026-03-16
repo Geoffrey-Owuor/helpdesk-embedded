@@ -338,7 +338,10 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                           </div>
                         </div>
                       )}
-                    {(issueData.issue_agent_email === email || isSuper) &&
+                    {(issueData.issue_agent_email === email ||
+                      isSuper ||
+                      (role === "admin" &&
+                        issueData.issue_target_department === department)) &&
                       issueData.issue_status !== "resolved" && (
                         <div className="relative w-fit" ref={dropdownRef}>
                           <button
