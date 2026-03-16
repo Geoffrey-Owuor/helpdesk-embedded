@@ -4,6 +4,7 @@ import { Search, ChevronDown, Check, X } from "lucide-react";
 import { useSearchStore } from "@/store/useSearchStore";
 import { baseDepartments } from "@/public/assets";
 import { priorityOptions } from "../IssuePage/IssuePage";
+import { DatePicker } from "../DatePicker";
 
 // --- Status Options ---
 const statusOptions = [
@@ -94,7 +95,7 @@ const CustomDropdown = ({
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 z-20 mt-2 max-h-60 w-full overflow-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-950 dark:shadow-none">
+        <div className="default-scrollbar absolute top-full left-0 z-20 mt-2 max-h-60 w-full overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-950 dark:shadow-none">
           {options.map((option) => (
             <button
               key={option.value}
@@ -196,20 +197,16 @@ const SearchInputFields = () => {
       case "date":
         return (
           <div className="flex items-center gap-2">
-            <input
-              type="date"
+            <DatePicker
               value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
-              className="dark:color-scheme-dark h-10 w-full rounded-xl border border-neutral-300 bg-white px-3 text-sm text-neutral-600 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300"
+              onChange={setFromDate}
+              placeholder="Enter From Date"
             />
-
             <span className="self-center text-sm text-neutral-400">to</span>
-
-            <input
-              type="date"
+            <DatePicker
               value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
-              className="dark:color-scheme-dark h-10 w-full rounded-xl border border-neutral-300 bg-white px-3 text-sm text-neutral-600 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300"
+              onChange={setToDate}
+              placeholder="Enter To Date"
             />
           </div>
         );
