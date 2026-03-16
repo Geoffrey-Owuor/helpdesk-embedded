@@ -83,7 +83,9 @@ export const POST = withAuth(async ({ request, user }) => {
     agents.email AS agent_email,
     admins.username AS admin_name,
     admins.email AS admin_email,
-    m.issue_priority AS issue_priority
+    m.issue_priority AS issue_priority,
+    m.admin_id AS admin_id,
+    m.agent_id AS agent_id
     FROM issues_mapping AS m
     JOIN users AS agents ON m.agent_id = agents.user_id
     JOIN users AS admins ON m.admin_id = admins.user_id
@@ -106,8 +108,8 @@ export const POST = withAuth(async ({ request, user }) => {
         `
         UPDATE issues_table
         SET issue_agent_email = $1, issue_agent_name = $2, issue_assigner_name = $3, issue_assigner_email = $4,
-        issue_priority = $5
-        WHERE issue_id = $6
+        issue_priority = $5, issue_agent_id = $6, issue_assigner_id = $7
+        WHERE issue_id = $8
         `,
         [
           agentInfo.agent_email,
@@ -115,6 +117,8 @@ export const POST = withAuth(async ({ request, user }) => {
           agentInfo.admin_name,
           agentInfo.admin_email,
           agentInfo.issue_priority,
+          agentInfo.agent_id,
+          agentInfo.admin_id,
           resultantId,
         ],
       );

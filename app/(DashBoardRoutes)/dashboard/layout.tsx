@@ -13,8 +13,8 @@ export const generateMetadata = async (): Promise<Metadata> => {
 
   return {
     title: {
-      default: `${user.username}'s Dashboard - ${role}`,
-      template: `%s - ${user.username}'s Dashboard`,
+      default: `${user.username}'s Dashboard | ${role}`,
+      template: `%s | ${user.username}'s Dashboard`,
     },
     description: "The default user dashboard page",
   };

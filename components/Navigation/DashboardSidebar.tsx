@@ -119,7 +119,7 @@ const DashboardSidebar = () => {
         </div>
 
         {/* Nav items — grow to fill space */}
-        <nav className="flex w-full flex-1 flex-col items-center gap-1 px-2">
+        <nav className="sidebar-nav mb-2 flex w-full flex-1 flex-col items-center gap-1 px-2">
           {/* New Issue */}
           <SidebarButton
             onClick={() => setIsIssueModalOpen(true)}
@@ -219,7 +219,7 @@ const SidebarButton = ({
     className={`flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-semibold transition-colors ${
       highlight
         ? "text-neutral-600 hover:bg-blue-500/20 dark:text-neutral-400"
-        : "text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+        : "text-neutral-600 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800"
     }`}
   >
     {icon}
@@ -238,7 +238,7 @@ const SidebarLink = ({ href, icon, label, onClick }: SidebarLinkProps) => (
   <Link
     href={href}
     onClick={onClick}
-    className="flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-semibold text-neutral-600 transition-colors hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+    className="flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-semibold text-neutral-600 transition-colors hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800"
   >
     {icon}
     <span>{label}</span>
