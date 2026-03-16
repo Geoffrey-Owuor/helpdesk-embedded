@@ -144,7 +144,7 @@ const ReassignIssue = ({
           {loading ? (
             <IssueAgentsSkeleton />
           ) : (
-            <div className="flex flex-wrap items-center gap-3 overflow-y-auto">
+            <div className="default-scrollbar flex flex-wrap items-center gap-3 overflow-y-auto">
               {organizedIssueAgents.length === 0 ? (
                 // Empty State - Added subtle blue background
                 <div className="flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-blue-800 dark:border-blue-900/30 dark:bg-blue-950/20 dark:text-blue-300">

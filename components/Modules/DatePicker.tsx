@@ -5,6 +5,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronDown,
+  X,
 } from "lucide-react";
 
 const DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
@@ -68,7 +69,7 @@ function CustomDropdown({ options, value, onChange }: CustomDropdownProps) {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-0.5 rounded-lg px-1.5 py-1 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 hover:text-blue-500 dark:text-neutral-200 dark:hover:bg-neutral-800"
+        className="flex items-center gap-1 rounded-lg px-1.5 py-1 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 hover:text-blue-500 dark:text-neutral-200 dark:hover:bg-neutral-800"
       >
         {selectedLabel}
         <ChevronDown
@@ -80,7 +81,7 @@ function CustomDropdown({ options, value, onChange }: CustomDropdownProps) {
       {open && (
         <ul
           ref={listRef}
-          className="absolute top-full left-1/2 z-60 mt-1 max-h-48 w-32 -translate-x-1/2 overflow-y-auto rounded-xl border border-neutral-200 bg-white p-1 py-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
+          className="default-scrollbar absolute top-full left-1/2 z-60 mt-1 max-h-48 w-32 -translate-x-1/2 overflow-y-auto rounded-xl border border-neutral-200 bg-white p-1 py-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
         >
           {options.map((opt) => {
             const isActive = opt.value === value;
@@ -194,10 +195,20 @@ export function DatePicker({
           onClick={() => setOpen((o) => !o)}
           className="h-10 w-full cursor-pointer rounded-xl border border-neutral-300 bg-white py-2 pr-10 pl-3 text-sm text-neutral-600 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300"
         />
+
+        {value && (
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="absolute right-12 cursor-pointer rounded-full p-0.5 hover:bg-neutral-300 dark:hover:bg-neutral-700"
+          >
+            <X className="h-3 w-3 text-neutral-500" />
+          </button>
+        )}
         <button
           type="button"
           onClick={() => setOpen((o) => !o)}
-          className="absolute right-3 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
+          className="absolute right-4 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
           tabIndex={-1}
         >
           <CalendarDays size={16} />

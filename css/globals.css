@@ -141,6 +141,17 @@ html {
   overflow: hidden;
 }
 
+/* Default scrollbar styles */
+.default-scrollbar {
+  scrollbar-color: #a3a3a3 transparent;
+  scrollbar-width: thin;
+}
+
+[data-theme="dark"] .default-scrollbar {
+  scrollbar-color: #484848 transparent;
+}
+
+/* Sidebar navigation styles */
 .sidebar-nav {
   scrollbar-gutter: stable both-edges;
   overflow-y: auto;

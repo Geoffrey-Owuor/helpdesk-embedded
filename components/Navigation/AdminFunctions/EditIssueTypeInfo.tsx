@@ -189,7 +189,7 @@ const EditIssueTypeInfo = ({
             </button>
 
             {isDropdownOpen && (
-              <div className="absolute left-0 z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-lg border border-neutral-200 bg-white p-2 shadow-xl dark:border-neutral-700 dark:bg-neutral-800">
+              <div className="default-scrollbar absolute left-0 z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-lg border border-neutral-200 bg-white p-2 shadow-xl dark:border-neutral-700 dark:bg-neutral-800">
                 {agentNames.map((agent) => (
                   <button
                     key={agent.agentEmail}
@@ -249,7 +249,7 @@ const EditIssueTypeInfo = ({
             </button>
 
             {isPriorityDropdownOpen && (
-              <div className="absolute left-0 z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-lg border border-neutral-200 bg-white p-2 shadow-xl dark:border-neutral-700 dark:bg-neutral-800">
+              <div className="default-scrollbar absolute left-0 z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-lg border border-neutral-200 bg-white p-2 shadow-xl dark:border-neutral-700 dark:bg-neutral-800">
                 {priorityOptions.map((priority) => (
                   <button
                     key={priority.value}
