@@ -200,13 +200,13 @@ const SearchInputFields = () => {
             <DatePicker
               value={fromDate}
               onChange={setFromDate}
-              placeholder="From date"
+              placeholder="Enter From Date"
             />
             <span className="self-center text-sm text-neutral-400">to</span>
             <DatePicker
               value={toDate}
               onChange={setToDate}
-              placeholder="To date"
+              placeholder="Enter To Date"
             />
           </div>
         );

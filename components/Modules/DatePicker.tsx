@@ -1,6 +1,11 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+} from "lucide-react";
 
 const DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 const MONTHS = [
@@ -24,6 +29,87 @@ interface DatePickerProps {
   placeholder?: string;
 }
 
+interface CustomDropdownProps {
+  options: { label: string; value: number }[];
+  value: number;
+  onChange: (value: number) => void;
+}
+
+function CustomDropdown({ options, value, onChange }: CustomDropdownProps) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+
+  // Close on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  // Scroll selected item into view when dropdown opens
+  useEffect(() => {
+    if (open && listRef.current) {
+      const selected = listRef.current.querySelector("[data-selected='true']");
+      if (selected) {
+        selected.scrollIntoView({ block: "nearest" });
+      }
+    }
+  }, [open]);
+
+  const selectedLabel = options.find((o) => o.value === value)?.label ?? "";
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex items-center gap-0.5 rounded-lg px-1.5 py-1 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 hover:text-blue-500 dark:text-neutral-200 dark:hover:bg-neutral-800"
+      >
+        {selectedLabel}
+        <ChevronDown
+          size={12}
+          className={`mt-px text-neutral-400 transition-transform duration-150 ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      {open && (
+        <ul
+          ref={listRef}
+          className="absolute top-full left-1/2 z-60 mt-1 max-h-48 w-32 -translate-x-1/2 overflow-y-auto rounded-xl border border-neutral-200 bg-white p-1 py-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
+        >
+          {options.map((opt) => {
+            const isActive = opt.value === value;
+            return (
+              <li key={opt.value}>
+                <button
+                  type="button"
+                  data-selected={isActive}
+                  onClick={() => {
+                    onChange(opt.value);
+                    setOpen(false);
+                  }}
+                  className={`w-full rounded-lg px-3 py-1.5 text-left text-sm transition ${
+                    isActive
+                      ? "bg-blue-500 font-medium text-white"
+                      : "text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 export function DatePicker({
   value,
   onChange,
@@ -35,6 +121,7 @@ export function DatePicker({
   });
 
   const ref = useRef<HTMLDivElement>(null);
+  const today = new Date();
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -66,6 +153,12 @@ export function DatePicker({
   const prevMonth = () => setViewDate(new Date(year, month - 1, 1));
   const nextMonth = () => setViewDate(new Date(year, month + 1, 1));
 
+  const monthOptions = MONTHS.map((label, i) => ({ label, value: i }));
+  const yearOptions = Array.from({ length: 101 }, (_, i) => {
+    const y = today.getFullYear() - 50 + i;
+    return { label: String(y), value: y };
+  });
+
   const selectDay = (day: number) => {
     const iso = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
     onChange(iso);
@@ -80,7 +173,6 @@ export function DatePicker({
       })
     : "";
 
-  const today = new Date();
   const isToday = (day: number) =>
     day === today.getDate() &&
     month === today.getMonth() &&
@@ -122,9 +214,21 @@ export function DatePicker({
             >
               <ChevronLeft size={14} />
             </button>
-            <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
-              {MONTHS[month]} {year}
-            </span>
+
+            {/* Custom dropdowns for Month and Year */}
+            <div className="flex items-center gap-0.5">
+              <CustomDropdown
+                options={monthOptions}
+                value={month}
+                onChange={(m) => setViewDate(new Date(year, m, 1))}
+              />
+              <CustomDropdown
+                options={yearOptions}
+                value={year}
+                onChange={(y) => setViewDate(new Date(y, month, 1))}
+              />
+            </div>
+
             <button
               type="button"
               onClick={nextMonth}
@@ -173,8 +277,7 @@ export function DatePicker({
             <button
               type="button"
               onClick={() => {
-                const now = new Date();
-                const iso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+                const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
                 onChange(iso);
                 setOpen(false);
               }}
