@@ -34,7 +34,7 @@ export const PUT = withAuth(async ({ user, request }) => {
 
     //check if the issue is already marked as resolved
     const { rows } = await client.query(
-      `SELECT issue_status FROM issues_table WHERE issue_uuid = $1 FOR UPDATE`,
+      `SELECT issue_status, issue_agent_id FROM issues_table WHERE issue_uuid = $1 FOR UPDATE`,
       [uuid],
     );
 
@@ -45,6 +45,7 @@ export const PUT = withAuth(async ({ user, request }) => {
 
     //our current issue status
     const currentStatus = rows[0].issue_status;
+    const assignedAgentId = rows[0].issue_agent_id;
 
     // Issue is already resolved
     if (currentStatus === "resolved") {
@@ -60,6 +61,17 @@ export const PUT = withAuth(async ({ user, request }) => {
       await client.query("ROLLBACK");
       return NextResponse.json(
         { message: `This issue is already marked as ${status}` },
+        { status: 409 },
+      );
+    }
+
+    // Don't update the status if there's no agent assigned to the issue
+    if (!assignedAgentId) {
+      await client.query("ROLLBACK");
+      return NextResponse.json(
+        {
+          message: "Can't update the status of an unassigned issue",
+        },
         { status: 409 },
       );
     }
