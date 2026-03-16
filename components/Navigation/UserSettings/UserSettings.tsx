@@ -174,7 +174,7 @@ const UserSettings = ({
           </div>
 
           {/* Scrollable Content Body */}
-          <div className="default-scrollbar flex-1 space-y-8 overflow-y-auto p-6">
+          <div className="layout-scrollbar flex-1 space-y-8 overflow-y-auto p-6">
             {/* User Profile Section */}
             <section>
               <div className="mb-4 flex items-center gap-2 text-neutral-900 dark:text-neutral-100">

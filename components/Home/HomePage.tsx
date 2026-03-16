@@ -6,7 +6,7 @@ const HomePage = () => {
   return (
     <div
       id="home-container"
-      className="h-screen overflow-y-auto [scrollbar-color:#a3a3a3_transparent] dark:[scrollbar-color:#484848_transparent]"
+      className="layout-scrollbar h-screen overflow-y-auto"
     >
       <div className="mx-auto max-w-7xl">
         <HomeNavBar />
