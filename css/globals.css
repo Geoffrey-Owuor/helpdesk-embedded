@@ -151,6 +151,14 @@ html {
   scrollbar-color: #484848 transparent;
 }
 
+.layout-scrollbar {
+  scrollbar-color: #a3a3a3 transparent;
+}
+
+[data-theme="dark"] .layout-scrollbar {
+  scrollbar-color: #484848 transparent;
+}
+
 /* Sidebar navigation styles */
 .sidebar-nav {
   scrollbar-gutter: stable both-edges;

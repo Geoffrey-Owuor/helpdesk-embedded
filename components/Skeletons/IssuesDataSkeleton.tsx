@@ -18,7 +18,7 @@ const IssuesDataSkeleton = ({ isTableView }: { isTableView: boolean }) => {
     <div>
       {isTableView ? (
         /* --- Table View Skeleton --- */
-        <div className="default-scrollbar w-full overflow-x-auto rounded-xl bg-gray-100/50 p-4 dark:bg-neutral-900/50">
+        <div className="layout-scrollbar w-full overflow-x-auto rounded-xl bg-gray-100/50 p-4 dark:bg-neutral-900/50">
           <div className="min-w-max space-y-2">
             <div className="flex items-center gap-4 px-4 pb-2">
               {Object.values(colWidths).map((width, i) => (
