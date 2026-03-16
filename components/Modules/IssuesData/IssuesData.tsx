@@ -29,7 +29,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
     (state) => state.refetchAutomations,
   );
 
-  const { role, department } = useUser();
+  const { role, department, isSuper } = useUser();
 
   // useSearchStore Data
   const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
@@ -123,8 +123,10 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
             </span>
             <span className="text-sm text-neutral-800 dark:text-neutral-400">
               {recordType === "automations"
-                ? `${selectedDepartment} Automations Summary`
-                : `Issues ${generatedSubtitle()}`}
+                ? `${selectedDepartment || "All"} Automations Summary`
+                : superAdminFilter && isSuper
+                  ? "All department submitted issues"
+                  : `Issues ${generatedSubtitle()}`}
             </span>
 
             <span className="text-xs text-neutral-500">

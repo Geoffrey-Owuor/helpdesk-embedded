@@ -2,10 +2,10 @@ import { IssueValueTypes } from "@/store/useIssuesStore";
 import {
   LucideIcon,
   ArrowDown,
-  ArrowRight,
   ArrowUp,
   Zap,
   Ellipsis,
+  MoveHorizontal,
 } from "lucide-react";
 
 interface IssuePriorityProps {
@@ -18,27 +18,32 @@ const priorityColorFormatting: Record<
   {
     text: string;
     bg: string;
+    border: string;
     icon: LucideIcon;
   }
 > = {
   Low: {
     text: "text-violet-700 dark:text-violet-400",
     bg: "bg-violet-50 dark:bg-violet-900/30",
+    border: "border-violet-100 dark:border-violet-950",
     icon: ArrowDown,
   },
   Medium: {
     text: "text-sky-700 dark:text-sky-400",
     bg: "bg-sky-50 dark:bg-sky-900/30",
-    icon: ArrowRight,
+    border: "border-sky-100 dark:border-sky-950",
+    icon: MoveHorizontal,
   },
   High: {
     text: "text-orange-700 dark:text-orange-400",
     bg: "bg-orange-50 dark:bg-orange-900/30",
+    border: "border-orange-100 dark:border-orange-950",
     icon: ArrowUp,
   },
   Critical: {
     text: "text-rose-700 dark:text-rose-400",
     bg: "bg-rose-50 dark:bg-rose-900/30",
+    border: "border-rose-100 dark:border-rose-950",
     icon: Zap,
   },
 };
@@ -46,6 +51,7 @@ const priorityColorFormatting: Record<
 const defaultPriorityStyle = {
   text: "text-gray-700 dark:text-gray-300",
   bg: "bg-gray-100 dark:bg-gray-800",
+  border: "border-gray-100 dark:border-gray-950",
   icon: Ellipsis,
 };
 
@@ -58,7 +64,7 @@ const IssuePriorityFormatter = ({
 
   return (
     <div
-      className={`inline-flex items-center ${!showText ? "justify-center rounded-full p-2" : "w-22 rounded-lg px-3 py-1"} text-xs font-semibold ${config.bg} ${config.text} `}
+      className={`inline-flex items-center ${!showText ? "justify-center rounded-full p-2" : "w-22 rounded-lg px-3 py-1"} border text-xs ${config.border} font-semibold ${config.bg} ${config.text} `}
     >
       <Icon
         size={12}

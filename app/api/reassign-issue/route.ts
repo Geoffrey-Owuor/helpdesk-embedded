@@ -75,7 +75,7 @@ export const PUT = withAuth(async ({ request, user }) => {
     if (agentInfo.length === 0) {
       await client.query("ROLLBACK");
       return NextResponse.json(
-        { message: `Select agent: ${agentName} not found` },
+        { message: `Selected agent: ${agentName} not found` },
         { status: 404 },
       );
     }

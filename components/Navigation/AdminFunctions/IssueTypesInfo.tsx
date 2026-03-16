@@ -163,7 +163,7 @@ const IssueTypesInfo = ({
                       <div className="rounded-lg bg-neutral-100 p-2 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
                         <Bug className="transition-colors group-hover:text-red-500" />
                       </div>
-                      <h5 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                      <h5 className="max-w-22.5 truncate text-sm font-semibold text-neutral-900 sm:max-w-none dark:text-neutral-100">
                         {item.issue_type}
                       </h5>
                       {/* Priority Icon */}

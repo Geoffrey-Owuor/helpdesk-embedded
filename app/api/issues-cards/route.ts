@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 
 export const GET = withAuth(async ({ user, request }) => {
-  const { userId, role, email, department } = user;
+  const { userId, role, email, department, isSuper } = user;
   const searchParams = request.nextUrl.searchParams;
   const agentAdminFilter = searchParams.get("agentAdminFilter");
   const superAdminFilter = searchParams.get("superAdminFilter");
@@ -39,8 +39,8 @@ export const GET = withAuth(async ({ user, request }) => {
     FROM issues_table
   `;
 
-  if (!superAdminFilter) sql += ` WHERE ${filterColumn} = $1`;
-  const params = superAdminFilter ? [] : [filterValue];
+  if (!superAdminFilter || !isSuper) sql += ` WHERE ${filterColumn} = $1`;
+  const params = superAdminFilter && isSuper ? [] : [filterValue];
 
   try {
     // 3. Execute ONE query

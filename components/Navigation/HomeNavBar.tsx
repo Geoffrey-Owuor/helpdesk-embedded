@@ -10,22 +10,36 @@ const HomeNavBar = () => {
   const lastScrollY = useRef(0);
 
   useEffect(() => {
+    const container = document.getElementById("home-container");
+    if (!container) return;
+
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
+      const currentScrollY = container.scrollTop;
       setIsScrolled(currentScrollY > 0);
-      setScrolledUp(currentScrollY < lastScrollY.current);
+
+      // 2. Safely determine scroll direction
+      if (currentScrollY <= 0) {
+        // Always show the navbar when at the absolute top
+        setScrolledUp(true);
+      } else if (currentScrollY > lastScrollY.current) {
+        // Scrolling DOWN -> Hide the navbar
+        setScrolledUp(false);
+      } else if (currentScrollY < lastScrollY.current) {
+        // Scrolling UP -> Show the navbar
+        setScrolledUp(true);
+      }
       lastScrollY.current = currentScrollY;
     };
 
-    window.addEventListener("scroll", handleScroll);
+    container.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      container.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
   return (
     <div
-      className={`fixed top-0 right-0 left-0 z-50 transition-all duration-200 ${scrolledUp ? "translate-y-0" : "-translate-y-full"} ${isScrolled ? "custom-blur bg-white/70 dark:bg-neutral-950/70" : "bg-transparent"}`}
+      className={`sticky top-0 right-0 left-0 z-50 transition-all duration-200 ${scrolledUp ? "translate-y-0" : "-translate-y-full"} ${isScrolled ? "custom-blur bg-white/70 dark:bg-neutral-950/70" : "bg-transparent"}`}
     >
       <nav className="custom:px-8 mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         {/* App Logo */}
