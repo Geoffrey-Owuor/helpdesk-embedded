@@ -21,6 +21,7 @@ import {
   UserRoundPen,
   Eye,
   EyeOff,
+  ShieldPlus,
 } from "lucide-react";
 
 import { useConfirmStore } from "@/store/useConfirmStore";
@@ -39,7 +40,7 @@ const UserSettings = ({
   isUserSettingsOpen,
   setIsUserSettingsOpen,
 }: UserSettingsProps) => {
-  const { username, email, department, role } = useUser();
+  const { username, email, department, role, isSuper } = useUser();
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
@@ -173,7 +174,7 @@ const UserSettings = ({
           </div>
 
           {/* Scrollable Content Body */}
-          <div className="flex-1 space-y-8 overflow-y-auto p-6">
+          <div className="default-scrollbar flex-1 space-y-8 overflow-y-auto p-6">
             {/* User Profile Section */}
             <section>
               <div className="mb-4 flex items-center gap-2 text-neutral-900 dark:text-neutral-100">
@@ -190,7 +191,11 @@ const UserSettings = ({
                   label="Department"
                   value={department}
                 />
-                <InfoCard Icon={Shield} label="Role" value={role} />
+                <InfoCard
+                  Icon={isSuper ? ShieldPlus : Shield}
+                  label="Role"
+                  value={isSuper ? "Super Admin" : role}
+                />
               </div>
             </section>
 
@@ -280,7 +285,9 @@ const InfoCard = ({
   value: string | undefined;
 }) => (
   <div className="flex items-start gap-3 rounded-xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800/60 dark:bg-neutral-900/40">
-    <div className="mt-0.5 text-neutral-400 dark:text-neutral-500">
+    <div
+      className={`mt-0.5 ${value === "Super Admin" ? "text-red-500" : "text-neutral-400 dark:text-neutral-500"}`}
+    >
       <Icon />
     </div>
     <div className="flex flex-col">

@@ -152,7 +152,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
             </div>
 
             {/* Tab Content Rendering */}
-            <main className="flex-1 overflow-y-auto p-6">
+            <main className="default-scrollbar flex-1 overflow-y-auto p-6">
               {activeTab === "agent-info" && (
                 <AgentsInfo
                   loading={loading}

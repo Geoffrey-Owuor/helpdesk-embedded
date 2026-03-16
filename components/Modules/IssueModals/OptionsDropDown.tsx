@@ -93,7 +93,7 @@ const OptionsDropDown = ({
         />
       </button>
       {isOpen && (
-        <div className="absolute top-full left-0 z-20 mt-1 max-h-60 w-full overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-900 dark:shadow-none">
+        <div className="default-scrollbar absolute top-full left-0 z-20 mt-1 max-h-60 w-full overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-900 dark:shadow-none">
           <div className="px-2 py-2 text-xs font-semibold text-neutral-500 uppercase">
             Select {dropDownType === "department" ? "Department" : "Issue Type"}
           </div>
