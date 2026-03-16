@@ -56,7 +56,10 @@ const Alert = () => {
         <div className="flex items-center gap-2">
           {/* Render the appropriate icon */}
           <IconComponent className={`h-5 w-5 shrink-0 ${iconColorClass}`} />
-          <p className="max-w-70 truncate text-sm text-nowrap">
+          <p
+            className="max-w-70 truncate text-sm md:max-w-none"
+            title={alertMessage}
+          >
             {alertMessage}
           </p>
         </div>
