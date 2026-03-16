@@ -24,7 +24,7 @@ const TableViewData = ({
   const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
 
   return (
-    <div className="w-full overflow-x-auto rounded-xl bg-gray-100/50 px-4 py-2 dark:bg-neutral-900/50">
+    <div className="layout-scrollbar w-full overflow-x-auto rounded-xl bg-gray-100/50 px-4 py-2 dark:bg-neutral-900/50">
       {/* 2. Table: 'border-separate' and 'border-spacing-y-3' create the gap between rows */}
       <table className="min-w-full border-separate border-spacing-y-3 text-left">
         {/* --- HEADER --- */}
