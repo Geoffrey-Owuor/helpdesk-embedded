@@ -14,7 +14,6 @@ const ThemeToggle = () => {
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      // Ignore if user is typing in an input, textarea, or contenteditable element
       if (
         e.target instanceof HTMLInputElement ||
         e.target instanceof HTMLTextAreaElement ||
@@ -31,15 +30,18 @@ const ThemeToggle = () => {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [setTheme, isDark]);
 
-  if (!mounted) return null;
-
   return (
     <button
-      onClick={() => setTheme(isDark ? "light" : "dark")}
+      onClick={() => mounted && setTheme(isDark ? "light" : "dark")}
       title="Toggle Theme"
       className="inline-flex items-center justify-center rounded-full p-2 text-neutral-700 hover:bg-neutral-200 dark:text-neutral-300 dark:hover:bg-neutral-800"
+      aria-label="Toggle Theme"
     >
-      {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+      {/* Placeholder keeps layout stable during SSR; icons swap in after mount */}
+      <span className="h-5 w-5" aria-hidden>
+        {mounted &&
+          (isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />)}
+      </span>
     </button>
   );
 };

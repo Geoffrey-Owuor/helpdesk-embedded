@@ -9,7 +9,7 @@ import SearchInputFields from "./SearchInputFields";
 import ClearRefreshFilters from "./ClearRefreshFilters";
 import { useAutomationCardsStore } from "@/store/useAutomationCardsStore";
 import SearchFilters from "./SearchFilters";
-import { useState, useEffect, useEffectEvent } from "react";
+import { useState, useEffect } from "react";
 import { useSearchStore } from "@/store/useSearchStore";
 import ViewAgentAdminFilter from "./ViewAgentAdminFilter";
 import Pagination from "./Pagination";
@@ -92,13 +92,9 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
     refetchRecords();
   };
 
-  // Reset current page when data changes or records per page changes
-  const resetCurrentPage = useEffectEvent((page: number) => {
-    setCurrentPage(page);
-  });
-
+  // useEffect that resets current page when data changes or records per page changes
   useEffect(() => {
-    resetCurrentPage(1);
+    Promise.resolve().then(() => setCurrentPage(1));
   }, [recordsData, issuesPerPage]);
 
   // default subtitle
