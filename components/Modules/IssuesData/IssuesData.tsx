@@ -9,7 +9,7 @@ import SearchInputFields from "./SearchInputFields";
 import ClearRefreshFilters from "./ClearRefreshFilters";
 import { useAutomationCardsStore } from "@/store/useAutomationCardsStore";
 import SearchFilters from "./SearchFilters";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useEffectEvent } from "react";
 import { useSearchStore } from "@/store/useSearchStore";
 import ViewAgentAdminFilter from "./ViewAgentAdminFilter";
 import Pagination from "./Pagination";
@@ -17,6 +17,7 @@ import ToggleTableView from "./ToggleTableView";
 import TableViewData from "./TableViewData";
 import CardViewData from "./CardViewData";
 import ExportData from "./ExportData";
+import { useRowCount } from "@/hooks/userRowCount";
 
 const IssuesData = ({ recordType }: { recordType: string }) => {
   const issuesData = useIssuesStore((state) => state.issuesData);
@@ -73,7 +74,11 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
 
   // Pagination states and logic
   const [currentPage, setCurrentPage] = useState(1);
-  const [issuesPerPage, setIssuesPerPage] = useState(6);
+  const {
+    rowsPerPage: issuesPerPage,
+    setRowsPerPage: setIssuesPerPage,
+    rowsArray: perPageOptions,
+  } = useRowCount();
   const totalPages = Math.ceil(recordsData.length / issuesPerPage);
   const indexOfLastIssue = currentPage * issuesPerPage;
   const indexOfFirstIssue = indexOfLastIssue - issuesPerPage;
@@ -87,10 +92,14 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
     refetchRecords();
   };
 
-  // useEffect that resets current page when data changes
+  // Reset current page when data changes or records per page changes
+  const resetCurrentPage = useEffectEvent((page: number) => {
+    setCurrentPage(page);
+  });
+
   useEffect(() => {
-    Promise.resolve().then(() => setCurrentPage(1));
-  }, [recordsData]);
+    resetCurrentPage(1);
+  }, [recordsData, issuesPerPage]);
 
   // default subtitle
   const defaultSubtitle = `you have submitted`;
@@ -183,9 +192,10 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
           <Pagination
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
+            totalPages={totalPages}
             issuesPerPage={issuesPerPage}
             setIssuesPerPage={setIssuesPerPage}
-            totalPages={totalPages}
+            perPageOptions={perPageOptions}
             indexOfFirstIssue={indexOfFirstIssue}
             indexOfLastIssue={indexOfLastIssue}
             issuesLength={recordsData.length}
