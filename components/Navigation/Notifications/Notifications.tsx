@@ -1,5 +1,5 @@
 "use client";
-import { Bell } from "lucide-react";
+import { Bell, Clock } from "lucide-react";
 import { useIssuesStore } from "@/store/useIssuesStore";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
@@ -130,9 +130,19 @@ const Notifications = () => {
       >
         <Bell className="bell-icon h-5 w-5" />
 
-        <span className="absolute right-0.5 bottom-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] leading-none font-semibold text-white">
-          {count > 9 ? "9+" : count}
-        </span>
+        {loading || defaultLoading ? (
+          <div className="absolute right-0.5 bottom-2 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-white">
+            <Clock strokeWidth={3} size={11} />
+          </div>
+        ) : (
+          <>
+            {count > 0 && (
+              <span className="absolute right-0.5 bottom-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] leading-none font-semibold text-white">
+                {count > 9 ? "9+" : count}
+              </span>
+            )}
+          </>
+        )}
       </button>
     </>
   );

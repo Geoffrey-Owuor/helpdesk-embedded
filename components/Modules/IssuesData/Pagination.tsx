@@ -12,9 +12,10 @@ import { Dispatch, SetStateAction, useEffect, useState, useRef } from "react";
 type PaginationProps = {
   currentPage: number;
   setCurrentPage: Dispatch<SetStateAction<number>>;
+  totalPages: number;
   issuesPerPage: number;
   setIssuesPerPage: Dispatch<SetStateAction<number>>;
-  totalPages: number;
+  perPageOptions: number[];
   indexOfFirstIssue: number;
   indexOfLastIssue: number;
   issuesLength: number;
@@ -22,9 +23,10 @@ type PaginationProps = {
 const Pagination = ({
   currentPage,
   setCurrentPage,
+  totalPages,
   issuesPerPage,
   setIssuesPerPage,
-  totalPages,
+  perPageOptions,
   indexOfFirstIssue,
   indexOfLastIssue,
   issuesLength,
@@ -32,9 +34,6 @@ const Pagination = ({
   // State for the rows per page dropdown
   const [isPerPageOpen, setIsPerPageOpen] = useState(false);
   const perPageRef = useRef<HTMLDivElement>(null);
-
-  // Options for rows per page
-  const perPageOptions = [6, 12, 24, 48, 96, 192];
 
   // Close dropdown when clicking outside
   useEffect(() => {
