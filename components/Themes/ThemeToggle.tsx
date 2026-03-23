@@ -37,10 +37,10 @@ const ThemeToggle = () => {
       className="inline-flex items-center justify-center rounded-full p-2 text-neutral-700 hover:bg-neutral-200 dark:text-neutral-300 dark:hover:bg-neutral-800"
       aria-label="Toggle Theme"
     >
-      {/* Placeholder keeps layout stable during SSR; icons swap in after mount */}
+      {/* Placeholder keeps layout stable during SSR */}
       <span className="h-5 w-5" aria-hidden>
-        {mounted &&
-          (isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />)}
+        <Sun className="block h-5 w-5 dark:hidden" />
+        <Moon className="hidden h-5 w-5 dark:block" />
       </span>
     </button>
   );
