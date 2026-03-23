@@ -2,6 +2,7 @@ import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
+import { emailSender } from "@/services/EmailSender";
 
 export const POST = withAuth(async ({ request, user }) => {
   // initialze the pool client variable
@@ -38,7 +39,7 @@ export const POST = withAuth(async ({ request, user }) => {
     INSERT INTO issues_table
     (issue_submitter_id, issue_submitter_name, issue_submitter_email, issue_submitter_department, issue_target_department, issue_type, issue_title, issue_description, issue_agent_name)
     VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
-    RETURNING issue_id
+    RETURNING issue_id, issue_uuid
     `;
 
     // construct the params
@@ -59,6 +60,7 @@ export const POST = withAuth(async ({ request, user }) => {
 
     // Get the returned id
     const resultantId = returnedId[0].issue_id;
+    const resultantUuid = returnedId[0].issue_uuid;
 
     // Craft an issue reference number
     const issueReferenceNumber = `#ISSUE-${resultantId}`;
@@ -126,6 +128,17 @@ export const POST = withAuth(async ({ request, user }) => {
 
     // COMMIT THE TRANSACTION
     await client.query("COMMIT");
+
+    // EMAIL SERVICE
+    const title = `New Issue Raised By ${user.username}`;
+    const description = `A new issue has been raised to ${target_department} by ${user.username}`;
+
+    // Fire and forget - calling the email service
+    emailSender({
+      title: title,
+      description: description,
+      uuid: resultantUuid,
+    });
 
     // Return a response to the client
     return NextResponse.json(
