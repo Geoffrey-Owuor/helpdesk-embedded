@@ -167,7 +167,7 @@ const Pagination = ({
                     <button
                       key={pageNumber}
                       onClick={() => setCurrentPage(pageNumber)}
-                      className={`inline-flex h-8 min-w-8 items-center justify-center rounded-lg text-sm font-semibold ${
+                      className={`inline-flex h-7 min-w-7 items-center justify-center rounded-lg text-sm font-semibold ${
                         currentPage === pageNumber
                           ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900"
                           : "text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
