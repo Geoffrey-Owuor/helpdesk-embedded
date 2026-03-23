@@ -1,28 +1,27 @@
 import { abbreviateUserName } from "@/public/assets";
 
-type IssueStatus = "pending" | "in_progress" | "resolved" | "unfeasible";
-type IssuePriority = "Low" | "Medium" | "High" | "Critical";
-type IssueType = string;
+type IssueEmailStatus = string;
+type IssueEmailPriority = string;
 
-interface IssueEmailComment {
+export interface IssueEmailComment {
   author: string;
   content: string;
   submittedAt: string;
 }
 
-interface IssueEmailBody {
+export interface IssueEmailBody {
   referenceNo: string;
-  type: IssueType;
+  type: string;
   agent: string;
-  priority: IssuePriority;
-  status: IssueStatus;
+  priority: IssueEmailPriority;
+  status: IssueEmailStatus;
   submitter: string;
   admin: string;
   issueTitle: string;
   issueDescription: string;
 }
 
-interface IssueNotificationEmailParams {
+export interface IssueNotificationEmailParams {
   title: string;
   description: string;
   body: IssueEmailBody;
@@ -32,7 +31,7 @@ interface IssueNotificationEmailParams {
 // ─── Badge Configs ────────────────────────────────────────────────────────────
 
 const STATUS_STYLES: Record<
-  IssueStatus,
+  IssueEmailStatus,
   { bg: string; color: string; dot: string; label: string }
 > = {
   pending: {
@@ -41,7 +40,7 @@ const STATUS_STYLES: Record<
     dot: "#f5b730",
     label: "Pending",
   },
-  in_progress: {
+  "in progress": {
     bg: "#eff6ff",
     color: "#1d4ed8",
     dot: "#3b82f6",
@@ -62,7 +61,7 @@ const STATUS_STYLES: Record<
 };
 
 const PRIORITY_STYLES: Record<
-  IssuePriority,
+  IssueEmailPriority,
   { bg: string; color: string; border: string }
 > = {
   Low: { bg: "#f8fafc", color: "#475569", border: "#cbd5e1" },
@@ -73,7 +72,7 @@ const PRIORITY_STYLES: Record<
 
 // ─── Sub-renderers ────────────────────────────────────────────────────────────
 
-function renderStatusBadge(status: IssueStatus): string {
+function renderStatusBadge(status: IssueEmailStatus): string {
   const s = STATUS_STYLES[status];
   return `
     <span style="
@@ -100,7 +99,7 @@ function renderStatusBadge(status: IssueStatus): string {
     </span>`;
 }
 
-function renderPriorityBadge(priority: IssuePriority): string {
+function renderPriorityBadge(priority: IssueEmailPriority): string {
   const p = PRIORITY_STYLES[priority];
   return `
     <span style="

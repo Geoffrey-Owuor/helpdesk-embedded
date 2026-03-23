@@ -89,7 +89,7 @@ const MobileSideBar = ({
             {/* Button: New Issue */}
             <button
               onClick={handleNewIssueOpening}
-              className="flex w-full items-center gap-2 rounded-xl bg-neutral-900 p-2 text-sm font-semibold text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+              className="flex w-full items-center gap-2 rounded-xl bg-neutral-900 p-2 text-sm font-medium text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
             >
               <CirclePlus />
               <span>New Issue</span>
@@ -99,7 +99,7 @@ const MobileSideBar = ({
             <Link
               href="/dashboard"
               onClick={() => handleMobileRouteChange("/dashboard")}
-              className="flex w-full items-center gap-2 rounded-xl p-2 text-sm font-semibold hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              className="flex w-full items-center gap-2 rounded-xl p-2 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
             >
               <Home />
               <span>Home</span>
@@ -109,7 +109,7 @@ const MobileSideBar = ({
             <Link
               href="/dashboard/automations"
               onClick={() => handleMobileRouteChange("/dashboard/automations")}
-              className="flex w-full items-center gap-2 rounded-xl p-2 text-sm font-semibold hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              className="flex w-full items-center gap-2 rounded-xl p-2 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
             >
               <Bot />
               <span>Automations</span>
@@ -119,7 +119,7 @@ const MobileSideBar = ({
             {role === "admin" && (
               <button
                 onClick={handleAdminPanelOpening}
-                className="flex w-full items-center gap-2 rounded-xl p-2 text-sm font-semibold hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                className="flex w-full items-center gap-2 rounded-xl p-2 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
               >
                 <ShieldUser />
                 <span>Admin Panel</span>
