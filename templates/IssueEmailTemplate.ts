@@ -75,28 +75,32 @@ const PRIORITY_STYLES: Record<
 function renderStatusBadge(status: IssueEmailStatus): string {
   const s = STATUS_STYLES[status];
   return `
-    <span style="
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: ${s.bg};
-      color: ${s.color};
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.3px;
-      padding: 3px 10px 3px 8px;
-      border-radius: 20px;
-      white-space: nowrap;
-    ">
-      <span style="
-        width: 7px; height: 7px;
-        background: ${s.dot};
-        border-radius: 50%;
-        display: inline-block;
-        flex-shrink: 0;
-      "></span>
-      ${s.label}
-    </span>`;
+        <span style="
+        display: inline-flex;
+        align-items: center;
+        justify-content: center; /* Ensures content is centered horizontally if width is fixed */
+        gap: 6px;
+        background: ${s.bg};
+        color: ${s.color};
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        padding: 4px 12px; /* Balanced padding */
+        border-radius: 20px;
+        white-space: nowrap;
+        line-height: 1; /* Prevents text descent from pushing the box height */
+      ">
+        <span style="
+          width: 7px;
+          height: 7px;
+          background: ${s.dot};
+          border-radius: 50%;
+          display: inline-block;
+          flex-shrink: 0;
+        "></span>
+        ${s.label}
+      </span>
+    `;
 }
 
 function renderPriorityBadge(priority: IssueEmailPriority): string {
@@ -258,9 +262,9 @@ export function generateIssueNotificationEmail(
               padding: 22px 32px;
               border-radius: 10px 10px 0 0;
             ">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
                 <tr>
-                  <td>
+                  <td align="left" style="padding-right: 10px;">
                     <span style="
                       font-size: 18px;
                       font-weight: 800;
@@ -268,14 +272,15 @@ export function generateIssueNotificationEmail(
                       letter-spacing: -0.3px;
                     ">Issue<span style="color: #a3a3a3;">Desk</span></span>
                   </td>
-                  <td align="right">
+                  
+                  <td align="right" style="padding-left: 10px;">
                     <span style="
                       font-size: 11px;
                       font-weight: 600;
                       color: #737373;
                       letter-spacing: 0.5px;
                       text-transform: uppercase;
-                    ">Issue Notification</span>
+                    ">Notification</span>
                   </td>
                 </tr>
               </table>
