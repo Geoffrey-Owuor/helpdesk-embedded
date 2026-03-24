@@ -218,6 +218,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                 <TitleDescriptionModal
                   title={issueData.issue_title}
                   description={issueData.issue_description}
+                  isModalOpen={isEditModalOpen}
                   closeModal={() => setIsEditModalOpen(false)}
                   uuid={uuid}
                   refetchData={refetchData}
@@ -229,6 +230,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                 <ReassignIssue
                   uuid={uuid}
                   closeModal={() => setIsReassignModalOpen(false)}
+                  isModalOpen={isReassignModalOpen}
                   issueType={issueData.issue_type}
                   targetDepartment={issueData.issue_target_department}
                   refetchData={refetchData}

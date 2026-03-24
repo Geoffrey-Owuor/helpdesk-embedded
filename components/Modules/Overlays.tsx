@@ -1,10 +1,11 @@
 "use client";
 
 import { ArrowRight, Loader, Loader2, X } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
+import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 
 // Overlay displayed when performing crud operations or logging out
 export const PromiseOverlay = () => {
@@ -57,11 +58,19 @@ export const ConfirmationDialog = () => {
   const title = useConfirmStore((state) => state.title);
   const showDialog = useConfirmStore((state) => state.showDialog);
 
+  const modalRef = useRef<HTMLDivElement | null>(null);
+
+  // Focus Trapping
+  useFocusTrapping(modalRef, showDialog, hideDialog);
+
   const content = (
     <div
       className={`fixed inset-0 z-9999 flex items-center justify-center bg-black/50 dark:bg-black/60`}
     >
-      <div className="mx-auto max-w-90 min-w-80 rounded-2xl border border-neutral-200 bg-neutral-50 p-4 shadow-2xl md:max-w-md dark:border-neutral-700 dark:bg-neutral-950">
+      <div
+        ref={modalRef}
+        className="mx-auto max-w-90 min-w-80 rounded-2xl border border-neutral-200 bg-neutral-50 p-4 shadow-2xl md:max-w-md dark:border-neutral-700 dark:bg-neutral-950"
+      >
         <div className="relative mb-4 flex items-start justify-between">
           <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">
             {title}
