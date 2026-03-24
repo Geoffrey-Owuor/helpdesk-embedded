@@ -88,8 +88,8 @@ export const PUT = withAuth(async ({ user, request }) => {
     await client.query("COMMIT");
 
     // EMAIL SERVICE
-    const title = `Issue ${referenceNumber} Priority Changed to ${priority}`;
-    const description = `Issue ${referenceNumber} priority has been changed to ${priority} by ${username}`;
+    const title = `${referenceNumber} Priority Changed to ${priority}`;
+    const description = `${referenceNumber} priority has been changed to ${priority} by ${username}`;
 
     // Fire and forget - Calling the email sender service
     emailSender({ title, description, uuid });
