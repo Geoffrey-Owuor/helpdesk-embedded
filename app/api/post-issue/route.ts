@@ -135,8 +135,8 @@ export const POST = withAuth(async ({ request, user }) => {
 
     // Fire and forget - calling the email sender service
     emailSender({
-      title: title,
-      description: description,
+      title,
+      description,
       uuid: resultantUuid,
     });
 

@@ -32,30 +32,26 @@ export interface IssueNotificationEmailParams {
 
 const STATUS_STYLES: Record<
   IssueEmailStatus,
-  { bg: string; color: string; dot: string; label: string }
+  { bg: string; color: string; label: string }
 > = {
   pending: {
     bg: "#fef9ec",
     color: "#92680a",
-    dot: "#f5b730",
     label: "Pending",
   },
   "in progress": {
     bg: "#eff6ff",
     color: "#1d4ed8",
-    dot: "#3b82f6",
     label: "In Progress",
   },
   resolved: {
     bg: "#f0fdf4",
     color: "#166534",
-    dot: "#22c55e",
     label: "Resolved",
   },
   unfeasible: {
     bg: "#fdf2f8",
     color: "#86198f",
-    dot: "#d946ef",
     label: "Unfeasible",
   },
 };
@@ -90,14 +86,6 @@ function renderStatusBadge(status: IssueEmailStatus): string {
         white-space: nowrap;
         line-height: 1; /* Prevents text descent from pushing the box height */
       ">
-        <span style="
-          width: 7px;
-          height: 7px;
-          background: ${s.dot};
-          border-radius: 50%;
-          display: inline-block;
-          flex-shrink: 0;
-        "></span>
         ${s.label}
       </span>
     `;
