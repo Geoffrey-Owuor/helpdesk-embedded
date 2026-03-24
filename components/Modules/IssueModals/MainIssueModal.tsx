@@ -2,7 +2,8 @@
 
 import { ChangeEvent, Dispatch, FormEvent, SetStateAction } from "react";
 import ClientPortal from "../ClientPortal";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
+import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import {
   X,
   UserRoundCog,
@@ -69,6 +70,11 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   });
 
   const { role } = useUser();
+
+  // Tab Focus Trapping
+  const closeModal = useCallback(() => setIsOpen(false), [setIsOpen]);
+  const modalRef = useRef<HTMLDivElement | null>(null);
+  useFocusTrapping(modalRef, isOpen, closeModal);
 
   // State for the Assignment Bot Card
   const [assignmentInfo, setAssignmentInfo] =
@@ -239,7 +245,10 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       {/* Backdrop */}
       <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 dark:bg-black/60">
         {/* Modal Container */}
-        <div className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-2xl border border-neutral-300 bg-neutral-50 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
+        <div
+          ref={modalRef}
+          className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-2xl border border-neutral-300 bg-neutral-50 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
+        >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-neutral-100 p-4 dark:border-neutral-900">
             <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">

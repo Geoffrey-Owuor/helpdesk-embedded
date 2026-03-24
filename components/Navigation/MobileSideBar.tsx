@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { DashBoardLogo } from "../Modules/DashBoardLogo";
 import { Dispatch, SetStateAction } from "react";
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
 import { CirclePlus, Bot, X, Home, ShieldUser } from "lucide-react";
 import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
 import { useUser } from "@/contexts/UserContext";
+import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import AdminPanel from "./AdminFunctions/AdminPanel";
 
 type MobileSideBarProps = {
@@ -23,6 +24,14 @@ const MobileSideBar = ({
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
   const { role } = useUser();
   const [showAdminOptions, setShowAdminOptions] = useState(false);
+
+  // Tab focus trapping
+  const closeSidebar = useCallback(
+    () => setSideBarOpen(false),
+    [setSideBarOpen],
+  );
+  const menuRef = useRef<HTMLElement | null>(null);
+  useFocusTrapping(menuRef, sideBarOpen, closeSidebar);
 
   // Handling mobile route change
   const handleMobileRouteChange = (route: string) => {
@@ -69,6 +78,7 @@ const MobileSideBar = ({
 
         {/* Sidebar panel */}
         <aside
+          ref={menuRef}
           className={`relative z-10 flex w-64 flex-col gap-6 border-r border-neutral-300 bg-white px-6 py-4 shadow-sm dark:border-neutral-900 dark:bg-neutral-950 ${
             sideBarOpen ? "translate-x-0" : "-translate-x-full"
           }`}

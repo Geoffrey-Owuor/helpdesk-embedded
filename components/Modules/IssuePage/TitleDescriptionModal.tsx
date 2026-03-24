@@ -1,5 +1,6 @@
 "use client";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState, useRef } from "react";
+import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import { useAlertStore } from "@/store/useAlertStore";
 import ClientPortal from "../ClientPortal";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
@@ -16,6 +17,7 @@ type TitleDescriptionModalProps = {
   uuid: string;
   refetchData: () => Promise<void>;
   userId: IssueValueTypes;
+  isModalOpen: boolean;
   closeModal: () => void;
 };
 const TitleDescriptionModal = ({
@@ -24,12 +26,17 @@ const TitleDescriptionModal = ({
   uuid,
   refetchData,
   userId,
+  isModalOpen,
   closeModal,
 }: TitleDescriptionModalProps) => {
   const [formData, setFormData] = useState({
     issue_title: title || "",
     issue_description: description || "",
   });
+
+  // Focus Trapping
+  const modalRef = useRef<HTMLDivElement | null>(null);
+  useFocusTrapping(modalRef, isModalOpen, closeModal);
 
   // state data
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
@@ -107,7 +114,10 @@ const TitleDescriptionModal = ({
       {/* Backdrop */}
       <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 dark:bg-black/60">
         {/* Modal Container */}
-        <div className="w-full max-w-lg rounded-2xl border border-neutral-300 bg-neutral-50 p-6 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
+        <div
+          ref={modalRef}
+          className="w-full max-w-lg rounded-2xl border border-neutral-300 bg-neutral-50 p-6 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
+        >
           {/* Header */}
           <div className="mb-6 flex items-center justify-between">
             <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
