@@ -2,6 +2,7 @@ import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { NextResponse } from "next/server";
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
+import { emailSender } from "@/services/EmailSender";
 
 export const PUT = withAuth(async ({ request, user }) => {
   let client: PoolClient | undefined;
@@ -34,7 +35,7 @@ export const PUT = withAuth(async ({ request, user }) => {
 
     // Check if issue is already marked as resolved
     const { rows } = await client.query(
-      `SELECT issue_status, issue_agent_email FROM issues_table WHERE issue_uuid = $1 FOR UPDATE`,
+      `SELECT issue_status, issue_reference_id, issue_agent_email FROM issues_table WHERE issue_uuid = $1 FOR UPDATE`,
       [uuid],
     );
 
@@ -47,6 +48,7 @@ export const PUT = withAuth(async ({ request, user }) => {
     // Our current issues status and current agent email
     const currentStatus = rows[0].issue_status;
     const currentAgentEmail = rows[0].issue_agent_email;
+    const referenceNumber = rows[0].issue_reference_id;
 
     // Issue is already resolved
     if (currentStatus === "resolved") {
@@ -112,6 +114,13 @@ export const PUT = withAuth(async ({ request, user }) => {
 
     // commit the transaction
     await client.query("COMMIT");
+
+    // EMAIL SERVICE
+    const title = `Issue ${referenceNumber} Reassigned to ${agentName}`;
+    const description = `Issue ${referenceNumber} has been reassigned to ${agentName} by ${username}`;
+
+    // Fire and Forget - Calling the email sender service
+    emailSender({ title, description, uuid });
 
     // return a response
     return NextResponse.json(

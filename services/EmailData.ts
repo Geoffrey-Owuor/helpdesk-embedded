@@ -30,11 +30,14 @@ export const getEmailData = async (uuid: string): Promise<EmailData> => {
     issueDescription: emailData.issue_description,
   };
 
+  // Getting an array of unique emails without any falsy values
   const issueEmails = [
-    emailData.issue_submitter_email,
-    emailData.issue_agent_email,
-    emailData.issue_assigner_email,
-  ];
+    ...new Set([
+      emailData.issue_submitter_email,
+      emailData.issue_agent_email,
+      emailData.issue_assigner_email,
+    ]),
+  ].filter(Boolean);
 
   return {
     issueData: issueData,

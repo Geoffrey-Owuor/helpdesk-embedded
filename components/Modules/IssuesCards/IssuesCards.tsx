@@ -81,6 +81,7 @@ const IssuesCards = ({ type }: { type: string }) => {
       icon: Clock,
       color: "text-amber-600 dark:text-amber-500",
       bgColor: "bg-amber-100 dark:bg-amber-900/30",
+      borderTopColor: "border-t-amber-600 dark:border-t-amber-500",
       borderColor: "border-amber-200 dark:border-amber-800/50",
     },
     {
@@ -89,6 +90,7 @@ const IssuesCards = ({ type }: { type: string }) => {
       icon: Activity,
       color: "text-blue-600 dark:text-blue-500",
       bgColor: "bg-blue-100 dark:bg-blue-900/30",
+      borderTopColor: "border-t-blue-600 dark:border-t-blue-500",
       borderColor: "border-blue-200 dark:border-blue-800/50",
     },
     {
@@ -97,6 +99,7 @@ const IssuesCards = ({ type }: { type: string }) => {
       icon: CheckCircle2,
       color: "text-emerald-600 dark:text-emerald-500",
       bgColor: "bg-emerald-100 dark:bg-emerald-900/30",
+      borderTopColor: "border-t-emerald-600 dark:border-t-emerald-500",
       borderColor: "border-emerald-200 dark:border-emerald-800/50",
     },
     {
@@ -105,6 +108,7 @@ const IssuesCards = ({ type }: { type: string }) => {
       icon: XCircle,
       color: "text-rose-600 dark:text-rose-500",
       bgColor: "bg-rose-100 dark:bg-rose-900/30",
+      borderTopColor: "border-t-rose-600 dark:border-t-rose-500",
       borderColor: "border-rose-200 dark:border-rose-800/50",
     },
   ];
@@ -162,7 +166,7 @@ const IssuesCards = ({ type }: { type: string }) => {
           {statItems.map((item, index) => (
             <div
               key={index}
-              className="group relative flex flex-col justify-between rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-950"
+              className={`group relative flex flex-col justify-between rounded-2xl border border-t-3 border-neutral-200 ${item.borderTopColor} bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-950`}
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -182,9 +186,8 @@ const IssuesCards = ({ type }: { type: string }) => {
                 </div>
               </div>
 
-              {/* Optional: Subtle decorative element or "View details" link could go here */}
               <div className="mt-4 flex items-center gap-1 text-xs text-neutral-400 dark:text-neutral-500">
-                <span className="font-semibold">
+                <span className="font-medium">
                   Total {item.label}{" "}
                   {type === "automations" ? "Automations" : "Issues"}
                 </span>

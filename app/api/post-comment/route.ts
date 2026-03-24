@@ -1,11 +1,23 @@
 import { query } from "@/lib/Db";
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
+import { emailSender } from "@/services/EmailSender";
 
 export const POST = withAuth(async ({ request, user }) => {
   try {
     const { uuid, comment } = await request.json();
     const { userId, username, email } = user;
+
+    // Getting issue reference id
+    const result = await query(
+      `
+      SELECT issue_reference_id FROM issues_table
+      WHERE issue_uuid = $1 LIMIT 1
+      `,
+      [uuid],
+    );
+
+    const referenceNumber = result[0].issue_reference_id;
 
     // Our base query
     const baseQuery = `INSERT INTO comments
@@ -17,6 +29,13 @@ export const POST = withAuth(async ({ request, user }) => {
 
     // Run the query
     await query(baseQuery, queryParams);
+
+    // EMAIL SERVICE
+    const title = `New Comment raised on Issue ${referenceNumber}`;
+    const description = `A new comment has been raised by ${username} on issue ${referenceNumber}`;
+
+    // Fire and forget - Calling the email sender service
+    emailSender({ title, description, uuid, comment, author: username });
 
     // Return a response
     return NextResponse.json(
