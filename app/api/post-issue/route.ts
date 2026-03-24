@@ -130,10 +130,10 @@ export const POST = withAuth(async ({ request, user }) => {
     await client.query("COMMIT");
 
     // EMAIL SERVICE
-    const title = `New Issue Raised By ${user.username}`;
+    const title = `New Issue ${issueReferenceNumber} Raised By ${user.username}`;
     const description = `A new issue has been raised to ${target_department} by ${user.username}`;
 
-    // Fire and forget - calling the email service
+    // Fire and forget - calling the email sender service
     emailSender({
       title: title,
       description: description,
