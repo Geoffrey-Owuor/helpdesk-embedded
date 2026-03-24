@@ -30,6 +30,9 @@ export const getEmailData = async (uuid: string): Promise<EmailData> => {
     issueDescription: emailData.issue_description,
   };
 
+  // ADDITION - IT Related Emails to be routed through the IT Group Email
+  // THEY WILL HAVE TO DECIDE ON THAT PART
+
   // Getting an array of unique emails without any falsy values
   const issueEmails = [
     ...new Set([
