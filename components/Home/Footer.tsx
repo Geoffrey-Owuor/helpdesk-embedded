@@ -30,6 +30,7 @@ const Footer = () => {
                   src={assets.issue_desk_image}
                   alt="Issue Desk Logo"
                   className="object-contain dark:invert"
+                  loading="eager"
                   sizes="32px"
                 />
               </div>
