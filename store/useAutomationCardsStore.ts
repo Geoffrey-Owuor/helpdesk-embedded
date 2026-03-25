@@ -25,6 +25,7 @@ interface AutomationCardsStore {
 
   setSelectedDepartment: (department: string) => void;
   fetchAutomationCounts: () => Promise<void>;
+  resetAutomationCounts: () => void;
 }
 
 export const useAutomationCardsStore = create<AutomationCardsStore>()(
@@ -33,8 +34,17 @@ export const useAutomationCardsStore = create<AutomationCardsStore>()(
     automationCounts: defaultCounts,
     selectedDepartment: "",
 
+    // Reset function - usually called when component unmounts
+    resetAutomationCounts: () =>
+      set({
+        loading: true,
+        automationCounts: defaultCounts,
+        selectedDepartment: "",
+      }),
+
     setSelectedDepartment: (department) =>
       set({ selectedDepartment: department }),
+
     fetchAutomationCounts: async () => {
       const currentDepartment = get().selectedDepartment;
       set({ loading: true });

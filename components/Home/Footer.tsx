@@ -30,7 +30,7 @@ const Footer = () => {
                   src={assets.issue_desk_image}
                   alt="Issue Desk Logo"
                   className="object-contain dark:invert"
-                  fill
+                  sizes="32px"
                 />
               </div>
               <span className="text-xl font-bold text-neutral-900 dark:text-white">

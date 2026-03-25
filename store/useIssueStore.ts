@@ -6,12 +6,17 @@ import { IssueValueTypes } from "./useIssuesStore";
 interface IssueStore {
   loading: boolean;
   issueData: Record<string, IssueValueTypes>;
+  resetIssueData: () => void;
   fetchIssueData: (uuid: string) => Promise<void>;
 }
 
 export const useIssueStore = create<IssueStore>()((set) => ({
   loading: true,
   issueData: {},
+
+  // Reset function - called when component unmounts
+  resetIssueData: () => set({ loading: true, issueData: {} }),
+
   fetchIssueData: async (uuid) => {
     set({ loading: true });
     try {
