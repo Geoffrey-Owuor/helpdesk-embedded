@@ -4,6 +4,7 @@ import { IssueCardsProvider } from "@/contexts/IssueCardsContext";
 import { IssuesProvider } from "@/contexts/IssuesContext";
 import { AutomationCardsProvider } from "@/contexts/AutomationCardsContext";
 import { AutomationsProvider } from "@/contexts/AutomationsContext";
+import HydrationGuard from "../Skeletons/HydrationGuard";
 
 const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -16,13 +17,15 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
         <div className="flex h-full flex-col">
           {/* Content */}
           <main className="mx-auto w-full max-w-7xl flex-1 px-4">
-            <IssueCardsProvider>
-              <IssuesProvider>
-                <AutomationCardsProvider>
-                  <AutomationsProvider>{children}</AutomationsProvider>
-                </AutomationCardsProvider>
-              </IssuesProvider>
-            </IssueCardsProvider>
+            <HydrationGuard>
+              <IssueCardsProvider>
+                <IssuesProvider>
+                  <AutomationCardsProvider>
+                    <AutomationsProvider>{children}</AutomationsProvider>
+                  </AutomationCardsProvider>
+                </IssuesProvider>
+              </IssueCardsProvider>
+            </HydrationGuard>
           </main>
 
           {/* Footer */}
