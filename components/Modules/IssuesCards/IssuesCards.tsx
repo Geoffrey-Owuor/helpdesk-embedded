@@ -166,7 +166,7 @@ const IssuesCards = ({ type }: { type: string }) => {
           {statItems.map((item, index) => (
             <div
               key={index}
-              className={`group relative flex flex-col justify-between rounded-2xl border border-t-3 border-neutral-200 ${item.borderTopColor} bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-950`}
+              className={`group relative flex flex-col justify-between rounded-2xl border border-t-2 border-neutral-200 ${item.borderTopColor} bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-950`}
             >
               <div className="flex items-center justify-between">
                 <div>

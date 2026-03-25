@@ -8,11 +8,16 @@ interface IssueCardsStore {
   loading: boolean;
   issueCounts: DataCounts;
   fetchIssueCounts: () => Promise<void>;
+  resetIssueCounts: () => void;
 }
 
 export const useIssueCardsStore = create<IssueCardsStore>()((set) => ({
   loading: true,
   issueCounts: defaultCounts,
+
+  // Reset function - Called when component unmounts
+  resetIssueCounts: () => set({ loading: true, issueCounts: defaultCounts }),
+
   fetchIssueCounts: async () => {
     const agentAdminFilter = useSearchStore.getState().agentAdminFilter;
     const superAdminFilter = useSearchStore.getState().superAdminFilter;

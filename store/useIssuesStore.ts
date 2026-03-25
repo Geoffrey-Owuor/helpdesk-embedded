@@ -25,6 +25,7 @@ interface IssuesDataStore {
   issuesData: Record<string, IssueValueTypes>[];
   loading: boolean;
   fetchIssues: (options: Options) => Promise<void>;
+  resetIssues: () => void;
   refetchIssues: () => Promise<void>;
 }
 
@@ -32,6 +33,9 @@ export const useIssuesStore = create<IssuesDataStore>()((set, get) => ({
   // states
   loading: true,
   issuesData: [],
+
+  // Reset function - called when the component unmounts
+  resetIssues: () => set({ loading: true, issuesData: [] }),
 
   // Actions
   fetchIssues: async (options) => {
