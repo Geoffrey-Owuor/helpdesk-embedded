@@ -16,10 +16,11 @@ import FormAsterisk from "@/components/Modules/FormAsterisk";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { priorityOptions } from "@/components/Modules/IssuePage/IssuePage";
+import { RefetchFunction } from "./AgentsInfo";
 
 type AddIssueTypeProps = {
   showAddIssueModal: boolean;
-  refetchAgentsInfo: () => Promise<void>;
+  refetchAgentsInfo: RefetchFunction;
   setShowAddIssueModal: Dispatch<SetStateAction<boolean>>;
   agentNames: { agentName: string; agentEmail: string }[];
 };

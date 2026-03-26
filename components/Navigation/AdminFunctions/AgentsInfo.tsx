@@ -14,10 +14,12 @@ import { useAlertStore } from "@/store/useAlertStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { IssueAgents } from "@/serverActions/GetIssueAgents";
 
+export type RefetchFunction = () => Promise<void>;
+
 export type AgentsInfoProps = {
   loading: boolean;
   agentsFlatInfo: IssueAgents[];
-  refetchAgentsInfo: () => Promise<void>;
+  refetchAgentsInfo: RefetchFunction;
 };
 
 const AgentsInfo = ({

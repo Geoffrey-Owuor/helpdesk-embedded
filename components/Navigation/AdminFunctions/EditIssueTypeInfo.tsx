@@ -16,13 +16,14 @@ import FormAsterisk from "@/components/Modules/FormAsterisk";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { priorityOptions } from "@/components/Modules/IssuePage/IssuePage";
+import { RefetchFunction } from "./AgentsInfo";
 
 type EditIssueTypeInfoProps = {
   issueType: string;
   issuePriority: string;
   agentNames: { agentName: string; agentEmail: string }[];
   agentEmail: string;
-  refetchAgentsInfo: () => Promise<void>;
+  refetchAgentsInfo: RefetchFunction;
   setActiveEditId: Dispatch<SetStateAction<string | null>>;
 };
 
