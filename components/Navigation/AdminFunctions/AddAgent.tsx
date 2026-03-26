@@ -29,10 +29,11 @@ import { NameValidator, NameValidationResult } from "@/utils/Validators";
 import NameRulesCard from "@/components/Modules/NameRulesCard";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useConfirmStore } from "@/store/useConfirmStore";
+import { RefetchFunction } from "./AgentsInfo";
 
 type AddAgentProps = {
   showAgentModal: boolean;
-  refetchAgentsInfo: () => Promise<void>;
+  refetchAgentsInfo: RefetchFunction;
   setShowAgentModal: Dispatch<SetStateAction<boolean>>;
 };
 

@@ -8,6 +8,7 @@ import {
   ConfirmationDialog,
   PromiseOverlay,
 } from "@/components/Modules/Overlays";
+import QueryProvider from "@/components/Navigation/QueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,7 +47,7 @@ export default function RootLayout({
           <Alert />
           <PromiseOverlay />
           <ConfirmationDialog />
-          {children}
+          <QueryProvider>{children}</QueryProvider>
         </Provider>
       </body>
     </html>
