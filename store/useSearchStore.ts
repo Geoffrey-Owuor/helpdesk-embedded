@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 // Defining the state interface
 interface SearchState {
@@ -38,39 +39,10 @@ interface SearchActions {
 }
 
 // Creating the store
-export const useSearchStore = create<SearchState & SearchActions>()((set) => ({
-  // Initial State
-  selectedFilter: "status",
-  fromDate: "",
-  toDate: "",
-  status: "",
-  reference: "",
-  department: "",
-  agent: "",
-  issueType: "",
-  issuePriority: "",
-  submitter: "",
-  superAdminFilter: false,
-  agentAdminFilter: "",
-  isTableView: false,
-
-  // Actions (setters)
-  setSelectedFilter: (selectedFilter) => set({ selectedFilter }),
-  setFromDate: (fromDate) => set({ fromDate }),
-  setToDate: (toDate) => set({ toDate }),
-  setStatus: (status) => set({ status }),
-  setReference: (reference) => set({ reference }),
-  setDepartment: (department) => set({ department }),
-  setAgent: (agent) => set({ agent }),
-  setIssueType: (issueType) => set({ issueType }),
-  setIssuePriority: (issuePriority) => set({ issuePriority }),
-  setSubmitter: (submitter) => set({ submitter }),
-  setAgentAdminFilter: (agentAdminFilter) => set({ agentAdminFilter }),
-  setSuperAdminFilter: (superAdminFilter) => set({ superAdminFilter }),
-  setIsTableView: (isTableView) => set({ isTableView }),
-
-  resetFilters: () =>
-    set({
+export const useSearchStore = create<SearchState & SearchActions>()(
+  persist(
+    (set) => ({
+      // Initial State
       selectedFilter: "status",
       fromDate: "",
       toDate: "",
@@ -81,6 +53,48 @@ export const useSearchStore = create<SearchState & SearchActions>()((set) => ({
       issueType: "",
       issuePriority: "",
       submitter: "",
-      //  We do not reset agentAdminFilter, superAdminFilter, and isTableView for UX reasons
+      superAdminFilter: false,
+      agentAdminFilter: "",
+      isTableView: false,
+
+      // Actions (setters)
+      setSelectedFilter: (selectedFilter) => set({ selectedFilter }),
+      setFromDate: (fromDate) => set({ fromDate }),
+      setToDate: (toDate) => set({ toDate }),
+      setStatus: (status) => set({ status }),
+      setReference: (reference) => set({ reference }),
+      setDepartment: (department) => set({ department }),
+      setAgent: (agent) => set({ agent }),
+      setIssueType: (issueType) => set({ issueType }),
+      setIssuePriority: (issuePriority) => set({ issuePriority }),
+      setSubmitter: (submitter) => set({ submitter }),
+      setAgentAdminFilter: (agentAdminFilter) => set({ agentAdminFilter }),
+      setSuperAdminFilter: (superAdminFilter) => set({ superAdminFilter }),
+      setIsTableView: (isTableView) => set({ isTableView }),
+
+      resetFilters: () =>
+        set({
+          selectedFilter: "status",
+          fromDate: "",
+          toDate: "",
+          status: "",
+          reference: "",
+          department: "",
+          agent: "",
+          issueType: "",
+          issuePriority: "",
+          submitter: "",
+          //  We do not reset agentAdminFilter, superAdminFilter, and isTableView for UX reasons
+        }),
     }),
-}));
+    {
+      name: "issuedesk-search-store",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        isTableView: state.isTableView,
+        superAdminFilter: state.superAdminFilter,
+        agentAdminFilter: state.agentAdminFilter,
+      }),
+    },
+  ),
+);

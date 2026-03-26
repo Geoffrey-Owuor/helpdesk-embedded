@@ -10,6 +10,7 @@ interface AutomationsDataStore {
   automationsData: Record<string, IssueValueTypes>[];
   loading: boolean;
   fetchAutomations: (options: Options) => Promise<void>;
+  resetAutomations: () => void;
   refetchAutomations: () => Promise<void>;
 }
 
@@ -18,6 +19,9 @@ export const useAutomationsStore = create<AutomationsDataStore>()(
     // states
     loading: true,
     automationsData: [],
+
+    // Reset function - Called when component unmounts
+    resetAutomations: () => set({ loading: true, automationsData: [] }),
 
     // Actions
     fetchAutomations: async (options) => {

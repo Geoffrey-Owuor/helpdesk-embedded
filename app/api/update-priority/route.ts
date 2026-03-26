@@ -2,6 +2,7 @@ import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { NextResponse } from "next/server";
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
+import { emailSender } from "@/services/EmailSender";
 
 export const PUT = withAuth(async ({ user, request }) => {
   let client: PoolClient | undefined;
@@ -34,7 +35,7 @@ export const PUT = withAuth(async ({ user, request }) => {
 
     //check if the issue is already marked as resolved
     const { rows } = await client.query(
-      `SELECT issue_status, issue_priority FROM issues_table WHERE issue_uuid = $1 FOR UPDATE`,
+      `SELECT issue_status, issue_reference_id, issue_priority FROM issues_table WHERE issue_uuid = $1 FOR UPDATE`,
       [uuid],
     );
 
@@ -46,6 +47,7 @@ export const PUT = withAuth(async ({ user, request }) => {
     //our current issue status
     const currentStatus = rows[0].issue_status;
     const currentPriority = rows[0].issue_priority;
+    const referenceNumber = rows[0].issue_reference_id;
 
     // Issue is already resolved
     if (currentStatus === "resolved") {
@@ -84,6 +86,13 @@ export const PUT = withAuth(async ({ user, request }) => {
 
     // Commit the transaction
     await client.query("COMMIT");
+
+    // EMAIL SERVICE
+    const title = `${referenceNumber} Priority Changed to ${priority}`;
+    const description = `${referenceNumber} priority has been changed to ${priority} by ${username}`;
+
+    // Fire and forget - Calling the email sender service
+    emailSender({ title, description, uuid });
 
     // Return a response to the user
     return NextResponse.json(

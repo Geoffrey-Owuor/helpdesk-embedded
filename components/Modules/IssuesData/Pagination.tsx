@@ -12,9 +12,10 @@ import { Dispatch, SetStateAction, useEffect, useState, useRef } from "react";
 type PaginationProps = {
   currentPage: number;
   setCurrentPage: Dispatch<SetStateAction<number>>;
+  totalPages: number;
   issuesPerPage: number;
   setIssuesPerPage: Dispatch<SetStateAction<number>>;
-  totalPages: number;
+  perPageOptions: number[];
   indexOfFirstIssue: number;
   indexOfLastIssue: number;
   issuesLength: number;
@@ -22,9 +23,10 @@ type PaginationProps = {
 const Pagination = ({
   currentPage,
   setCurrentPage,
+  totalPages,
   issuesPerPage,
   setIssuesPerPage,
-  totalPages,
+  perPageOptions,
   indexOfFirstIssue,
   indexOfLastIssue,
   issuesLength,
@@ -32,9 +34,6 @@ const Pagination = ({
   // State for the rows per page dropdown
   const [isPerPageOpen, setIsPerPageOpen] = useState(false);
   const perPageRef = useRef<HTMLDivElement>(null);
-
-  // Options for rows per page
-  const perPageOptions = [6, 12, 24, 48, 96, 192];
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -168,7 +167,7 @@ const Pagination = ({
                     <button
                       key={pageNumber}
                       onClick={() => setCurrentPage(pageNumber)}
-                      className={`inline-flex h-8 min-w-8 items-center justify-center rounded-lg text-sm font-semibold ${
+                      className={`inline-flex h-7 min-w-7 items-center justify-center rounded-lg text-sm font-semibold ${
                         currentPage === pageNumber
                           ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900"
                           : "text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
