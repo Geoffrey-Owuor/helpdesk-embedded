@@ -17,8 +17,11 @@ import ToggleTableView from "./ToggleTableView";
 import TableViewData from "./TableViewData";
 import CardViewData from "./CardViewData";
 import ExportData from "./ExportData";
+import { useRowCount } from "@/hooks/userRowCount";
 
 const IssuesData = ({ recordType }: { recordType: string }) => {
+  const isAutomations = recordType === "automations";
+
   const issuesData = useIssuesStore((state) => state.issuesData);
   const loading = useIssuesStore((state) => state.loading);
   const refetchIssues = useIssuesStore((state) => state.refetchIssues);
@@ -39,41 +42,22 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
     (state) => state.selectedDepartment,
   );
 
-  // Our useEffects will go here - fetching initial data on mount
-  useEffect(() => {
-    if (recordType !== "automations") refetchIssues();
-  }, [recordType, refetchIssues, agentAdminFilter, superAdminFilter]);
-
-  useEffect(() => {
-    if (recordType === "automations") refetchAutomations();
-  }, [recordType, refetchAutomations, selectedDepartment]);
-
   // Defining our variables based on record type
-  let recordsData;
-  let recordsLoading;
-  let refetchRecords;
-
-  // Determine which data we should use based on record type
-  switch (recordType) {
-    case "automations":
-      recordsData = automationsData;
-      recordsLoading = automationsLoading;
-      refetchRecords = refetchAutomations;
-      break;
-    default:
-      recordsData = issuesData;
-      recordsLoading = loading;
-      refetchRecords = refetchIssues;
-      break;
-  }
+  const recordsData = isAutomations ? automationsData : issuesData;
+  const recordsLoading = isAutomations ? automationsLoading : loading;
+  const refetchRecords = isAutomations ? refetchAutomations : refetchIssues;
 
   // Generate a dynamic url param that we will pass to the issue url - based on the data we are currently viewing
   // We have two sources of data, some are in issuesData,  some are in Automations (based on recordType)
-  const dynamicUrlParam = recordType === "automations" ? "automation" : "issue";
+  const dynamicUrlParam = isAutomations ? "automation" : "issue";
 
   // Pagination states and logic
   const [currentPage, setCurrentPage] = useState(1);
-  const [issuesPerPage, setIssuesPerPage] = useState(6);
+  const {
+    rowsPerPage: issuesPerPage,
+    setRowsPerPage: setIssuesPerPage,
+    rowsArray: perPageOptions,
+  } = useRowCount();
   const totalPages = Math.ceil(recordsData.length / issuesPerPage);
   const indexOfLastIssue = currentPage * issuesPerPage;
   const indexOfFirstIssue = indexOfLastIssue - issuesPerPage;
@@ -87,10 +71,10 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
     refetchRecords();
   };
 
-  // useEffect that resets current page when data changes
+  // useEffect that resets current page when data changes or records per page changes
   useEffect(() => {
     Promise.resolve().then(() => setCurrentPage(1));
-  }, [recordsData]);
+  }, [recordsData, issuesPerPage]);
 
   // default subtitle
   const defaultSubtitle = `you have submitted`;
@@ -119,10 +103,10 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
         <div className="flex items-center justify-between md:justify-center md:gap-10">
           <div className="inline-flex flex-col">
             <span className="text-xl font-semibold">
-              {recordType === "automations" ? "Automations" : "Issues"} Data
+              {isAutomations ? "Automations" : "Issues"} Data
             </span>
             <span className="text-sm text-neutral-800 dark:text-neutral-400">
-              {recordType === "automations"
+              {isAutomations
                 ? `${selectedDepartment || "All"} Automations Summary`
                 : superAdminFilter && isSuper
                   ? "All department submitted issues"
@@ -133,9 +117,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
               Total records: {recordsData.length || "none"}
             </span>
           </div>
-          {role !== "user" && recordType !== "automations" && (
-            <ViewAgentAdminFilter />
-          )}
+          {role !== "user" && !isAutomations && <ViewAgentAdminFilter />}
         </div>
 
         {/* The refresh button, clear filters, hide columns */}
@@ -183,9 +165,10 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
           <Pagination
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
+            totalPages={totalPages}
             issuesPerPage={issuesPerPage}
             setIssuesPerPage={setIssuesPerPage}
-            totalPages={totalPages}
+            perPageOptions={perPageOptions}
             indexOfFirstIssue={indexOfFirstIssue}
             indexOfLastIssue={indexOfLastIssue}
             issuesLength={recordsData.length}

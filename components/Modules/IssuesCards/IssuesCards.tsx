@@ -17,9 +17,10 @@ import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { useAutomationCardsStore } from "@/store/useAutomationCardsStore";
 import { useIssueCardsStore } from "@/store/useIssueCardsStore";
 import SuperAdminFilter from "./SuperAdminFilter";
-import { useEffect } from "react";
 
 const IssuesCards = ({ type }: { type: string }) => {
+  const isAutomations = type === "automations";
+
   const issueCounts = useIssueCardsStore((state) => state.issueCounts);
   const refetchIssueCounts = useIssueCardsStore(
     (state) => state.fetchIssueCounts,
@@ -32,9 +33,6 @@ const IssuesCards = ({ type }: { type: string }) => {
   const refetchAutomationCounts = useAutomationCardsStore(
     (state) => state.fetchAutomationCounts,
   );
-  const selectedDepartment = useAutomationCardsStore(
-    (state) => state.selectedDepartment,
-  );
 
   const automationLoading = useAutomationCardsStore((state) => state.loading);
   const { role, department, isSuper } = useUser();
@@ -44,33 +42,12 @@ const IssuesCards = ({ type }: { type: string }) => {
   // Call srolling top hook
   useScrollToTop();
 
-  // useEffect to fetch Issue counts on mount or when agent admin filter changes
-  useEffect(() => {
-    if (type !== "automations") refetchIssueCounts();
-  }, [refetchIssueCounts, agentAdminFilter, type, superAdminFilter]);
-
-  // useEffect to fetch Automation counts on mount or when selected department changes
-  useEffect(() => {
-    if (type === "automations") refetchAutomationCounts();
-  }, [refetchAutomationCounts, selectedDepartment, type]);
-
   // Defining our card variables
-  let cardCounts;
-  let refetchCardCounts;
-  let cardLoading;
-
-  switch (type) {
-    case "automations":
-      cardCounts = automationCounts;
-      refetchCardCounts = refetchAutomationCounts;
-      cardLoading = automationLoading;
-      break;
-    default:
-      cardCounts = issueCounts;
-      refetchCardCounts = refetchIssueCounts;
-      cardLoading = loading;
-      break;
-  }
+  const cardCounts = isAutomations ? automationCounts : issueCounts;
+  const refetchCardCounts = isAutomations
+    ? refetchAutomationCounts
+    : refetchIssueCounts;
+  const cardLoading = isAutomations ? automationLoading : loading;
 
   // Configuration for the cards to keep the JSX clean
   // We map specific colors to each status to make them distinct but cohesive
@@ -81,6 +58,7 @@ const IssuesCards = ({ type }: { type: string }) => {
       icon: Clock,
       color: "text-amber-600 dark:text-amber-500",
       bgColor: "bg-amber-100 dark:bg-amber-900/30",
+      borderTopColor: "border-t-amber-600 dark:border-t-amber-500",
       borderColor: "border-amber-200 dark:border-amber-800/50",
     },
     {
@@ -89,6 +67,7 @@ const IssuesCards = ({ type }: { type: string }) => {
       icon: Activity,
       color: "text-blue-600 dark:text-blue-500",
       bgColor: "bg-blue-100 dark:bg-blue-900/30",
+      borderTopColor: "border-t-blue-600 dark:border-t-blue-500",
       borderColor: "border-blue-200 dark:border-blue-800/50",
     },
     {
@@ -97,6 +76,7 @@ const IssuesCards = ({ type }: { type: string }) => {
       icon: CheckCircle2,
       color: "text-emerald-600 dark:text-emerald-500",
       bgColor: "bg-emerald-100 dark:bg-emerald-900/30",
+      borderTopColor: "border-t-emerald-600 dark:border-t-emerald-500",
       borderColor: "border-emerald-200 dark:border-emerald-800/50",
     },
     {
@@ -105,6 +85,7 @@ const IssuesCards = ({ type }: { type: string }) => {
       icon: XCircle,
       color: "text-rose-600 dark:text-rose-500",
       bgColor: "bg-rose-100 dark:bg-rose-900/30",
+      borderTopColor: "border-t-rose-600 dark:border-t-rose-500",
       borderColor: "border-rose-200 dark:border-rose-800/50",
     },
   ];
@@ -122,10 +103,10 @@ const IssuesCards = ({ type }: { type: string }) => {
         <div className="flex flex-col items-center gap-4 md:flex-row md:gap-6">
           <div className="inline-flex flex-col">
             <span className="text-xl font-semibold">
-              {type === "automations" ? "Automations" : "Issues"} Summary
+              {isAutomations ? "Automations" : "Issues"} Summary
             </span>
             <span className="text-sm text-neutral-800 dark:text-neutral-400">
-              {type === "automations"
+              {isAutomations
                 ? "Department Automations"
                 : superAdminFilter && isSuper
                   ? "All Submitted Issues"
@@ -133,8 +114,8 @@ const IssuesCards = ({ type }: { type: string }) => {
               Overview
             </span>
           </div>
-          {type === "automations" && <DepartmentsDropDown />}
-          {type !== "automations" && isSuper && <SuperAdminFilter />}
+          {isAutomations && <DepartmentsDropDown />}
+          {!isAutomations && isSuper && <SuperAdminFilter />}
         </div>
         <div className="flex items-center gap-4">
           <button
@@ -162,7 +143,7 @@ const IssuesCards = ({ type }: { type: string }) => {
           {statItems.map((item, index) => (
             <div
               key={index}
-              className="group relative flex flex-col justify-between rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-950"
+              className={`group relative flex flex-col justify-between rounded-2xl border border-t-2 border-neutral-200 ${item.borderTopColor} bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-950`}
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -182,9 +163,8 @@ const IssuesCards = ({ type }: { type: string }) => {
                 </div>
               </div>
 
-              {/* Optional: Subtle decorative element or "View details" link could go here */}
               <div className="mt-4 flex items-center gap-1 text-xs text-neutral-400 dark:text-neutral-500">
-                <span className="font-semibold">
+                <span className="font-medium">
                   Total {item.label}{" "}
                   {type === "automations" ? "Automations" : "Issues"}
                 </span>

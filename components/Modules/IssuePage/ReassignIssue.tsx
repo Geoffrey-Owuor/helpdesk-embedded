@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, MouseEvent } from "react";
+import { useState, useEffect, MouseEvent, useRef } from "react";
 import { fetchedIssueAgents } from "@/serverActions/GetIssueAgents";
 import { IssueAgents } from "@/serverActions/GetIssueAgents";
 import { useAlertStore } from "@/store/useAlertStore";
@@ -20,10 +20,12 @@ import { IssueValueTypes } from "@/store/useIssuesStore";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
+import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 
 type ReassignIssueProps = {
   uuid: string;
   closeModal: () => void;
+  isModalOpen: boolean;
   issueType: IssueValueTypes;
   targetDepartment: IssueValueTypes;
   refetchData: () => Promise<void>;
@@ -33,6 +35,7 @@ type ReassignIssueProps = {
 const ReassignIssue = ({
   uuid,
   closeModal,
+  isModalOpen,
   issueType,
   refetchData,
   targetDepartment,
@@ -40,6 +43,10 @@ const ReassignIssue = ({
 }: ReassignIssueProps) => {
   const [loading, setLoading] = useState(false);
   const department = targetDepartment.toString();
+
+  // Focus Trapping
+  const modalRef = useRef<HTMLDivElement | null>(null);
+  useFocusTrapping(modalRef, isModalOpen, closeModal);
 
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const showOverlay = useOverlayStore((state) => state.showOverlay);
@@ -127,7 +134,10 @@ const ReassignIssue = ({
       {/* Backdrop */}
       <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 dark:bg-black/60">
         {/* Modal Container*/}
-        <div className="flex max-h-120 w-full max-w-lg flex-col rounded-2xl border border-neutral-300 bg-neutral-50 p-6 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
+        <div
+          ref={modalRef}
+          className="flex max-h-120 w-full max-w-lg flex-col rounded-2xl border border-neutral-300 bg-neutral-50 p-6 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
+        >
           {/* Header */}
           <div className="mb-6 flex items-center justify-between">
             <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">

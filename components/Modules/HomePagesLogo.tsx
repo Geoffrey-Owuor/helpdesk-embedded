@@ -10,6 +10,7 @@ const HomePagesLogo = () => {
           src={assets.issue_desk_image}
           alt="Issue Desk Logo"
           sizes="32px"
+          loading="eager"
           className="object-contain dark:invert"
         />
       </div>

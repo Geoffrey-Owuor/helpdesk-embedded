@@ -6,8 +6,10 @@ import {
   SetStateAction,
   useState,
   useEffect,
+  useRef,
   useCallback,
 } from "react";
+import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import AgentsInfo from "./AgentsInfo";
 import IssueTypesInfo from "./IssueTypesInfo";
 import ClientPortal from "@/components/Modules/ClientPortal";
@@ -26,6 +28,15 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   const [activeTab, setActiveTab] = useState<TabId>("agent-info");
 
   const { department } = useUser();
+
+  // Tab focus trapping
+  const closeModal = useCallback(
+    () => setShowAdminPanel(false),
+    [setShowAdminPanel],
+  );
+  const modalRef = useRef<HTMLDivElement | null>(null);
+  useFocusTrapping(modalRef, showAdminPanel, closeModal);
+
   const agentsInfo = useAgentsStore((state) => state.agentsInfo);
   const loading = useAgentsStore((state) => state.loading);
   const fetchAction = useAgentsStore((state) => state.fetchAgentsInfo);
@@ -68,7 +79,10 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
       {/* The Backdrop */}
       <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
         {/* Modal Container */}
-        <div className="flex h-[90vh] w-full max-w-4xl overflow-hidden rounded-2xl border border-neutral-300 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
+        <div
+          ref={modalRef}
+          className="flex h-[90vh] w-full max-w-4xl overflow-hidden rounded-2xl border border-neutral-300 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
+        >
           {/* --- LEFT SIDEBAR --- */}
           <aside className="hidden w-54 flex-col border-r border-neutral-200 bg-neutral-50/50 p-4 md:flex dark:border-neutral-800 dark:bg-neutral-900/30">
             <div className="mb-8 flex items-center gap-2 px-2">
