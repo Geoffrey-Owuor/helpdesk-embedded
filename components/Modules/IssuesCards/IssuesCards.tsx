@@ -14,30 +14,41 @@ import { useUser } from "@/contexts/UserContext";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import DepartmentsDropDown from "../AutomationsPage/DepartmentsDropDown";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
-import { useAutomationCardsStore } from "@/store/useAutomationCardsStore";
-import { useIssueCardsStore } from "@/store/useIssueCardsStore";
+import { fetchIssueCards } from "@/queries/fetchIssueCards";
+import { fetchAutomationCards } from "@/queries/fetchAutomationCards";
+import { useQuery } from "@tanstack/react-query";
 import SuperAdminFilter from "./SuperAdminFilter";
+import { defaultCounts } from "@/public/assets";
 
 const IssuesCards = ({ type }: { type: string }) => {
   const isAutomations = type === "automations";
 
-  const issueCounts = useIssueCardsStore((state) => state.issueCounts);
-  const refetchIssueCounts = useIssueCardsStore(
-    (state) => state.fetchIssueCounts,
-  );
-  const loading = useIssueCardsStore((state) => state.loading);
-
-  const automationCounts = useAutomationCardsStore(
-    (state) => state.automationCounts,
-  );
-  const refetchAutomationCounts = useAutomationCardsStore(
-    (state) => state.fetchAutomationCounts,
-  );
-
-  const automationLoading = useAutomationCardsStore((state) => state.loading);
   const { role, department, isSuper } = useUser();
   const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
   const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
+  const selectedDepartment = useSearchStore(
+    (state) => state.selectedDepartment,
+  );
+
+  const {
+    data: issueCounts = defaultCounts,
+    isLoading: loading,
+    refetch: refetchIssueCounts,
+  } = useQuery({
+    queryKey: ["dashboardIssueCounts", agentAdminFilter, superAdminFilter],
+    queryFn: fetchIssueCards,
+    enabled: !isAutomations,
+  });
+
+  const {
+    data: automationCounts = defaultCounts,
+    isLoading: automationLoading,
+    refetch: refetchAutomationCounts,
+  } = useQuery({
+    queryKey: ["dashboardAutomationCounts", selectedDepartment],
+    queryFn: fetchAutomationCards,
+    enabled: isAutomations,
+  });
 
   // Call srolling top hook
   useScrollToTop();
@@ -119,7 +130,7 @@ const IssuesCards = ({ type }: { type: string }) => {
         </div>
         <div className="flex items-center gap-4">
           <button
-            onClick={refetchCardCounts}
+            onClick={() => refetchCardCounts()}
             className="rounded-full bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
           >
             <RotateCcw />
