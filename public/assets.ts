@@ -56,7 +56,7 @@ export const baseDepartments = [
 
 export const DEFAULT_FETCH_OPTIONS = { selectedFilter: "status", status: "" };
 
-export type IssueValueTypes<T extends string | number = string | number> = T;
+export type IssueValueTypes = string | number;
 
 export interface Options {
   selectedFilter?: string;

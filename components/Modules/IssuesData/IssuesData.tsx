@@ -1,6 +1,4 @@
 "use client";
-import { useIssuesStore } from "@/store/useIssuesStore";
-import { useAutomationsStore } from "@/store/useAutomationsStore";
 import IssuesDataSkeleton from "@/components/Skeletons/IssuesDataSkeleton";
 import { useUser } from "@/contexts/UserContext";
 import ShowHideColumnsLogic from "./ShowHideColumnsLogic";
@@ -18,19 +16,12 @@ import CardViewData from "./CardViewData";
 import ExportData from "./ExportData";
 import { useRowCount } from "@/hooks/userRowCount";
 import { useQuery } from "@tanstack/react-query";
+import { fetchIssues } from "@/queries/fetchIssues";
+import { fetchAutomations } from "@/queries/fetchAutomations";
+import { DEFAULT_FETCH_OPTIONS } from "@/public/assets";
 
 const IssuesData = ({ recordType }: { recordType: string }) => {
   const isAutomations = recordType === "automations";
-
-  const issuesData = useIssuesStore((state) => state.issuesData);
-  const loading = useIssuesStore((state) => state.loading);
-  const refetchIssues = useIssuesStore((state) => state.refetchIssues);
-
-  const automationsData = useAutomationsStore((state) => state.automationsData);
-  const automationsLoading = useAutomationsStore((state) => state.loading);
-  const refetchAutomations = useAutomationsStore(
-    (state) => state.refetchAutomations,
-  );
 
   const { role, department, isSuper } = useUser();
 
@@ -41,6 +32,26 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
   const selectedDepartment = useSearchStore(
     (state) => state.selectedDepartment,
   );
+
+  const {
+    data: issuesData = [],
+    isLoading: loading,
+    refetch: refetchIssues,
+  } = useQuery({
+    queryKey: ["issuesDashboardData", superAdminFilter, agentAdminFilter],
+    queryFn: () => fetchIssues(DEFAULT_FETCH_OPTIONS),
+    enabled: !isAutomations,
+  });
+
+  const {
+    data: automationsData = [],
+    isLoading: automationsLoading,
+    refetch: refetchAutomations,
+  } = useQuery({
+    queryKey: ["automationsDashboardData", selectedDepartment],
+    queryFn: () => fetchAutomations(DEFAULT_FETCH_OPTIONS),
+    enabled: isAutomations,
+  });
 
   // Defining our variables based on record type
   const recordsData = isAutomations ? automationsData : issuesData;
@@ -65,11 +76,6 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
     indexOfFirstIssue,
     Math.min(indexOfLastIssue, recordsData.length),
   );
-
-  // Handle issue refetching
-  const handleRefetchIssues = () => {
-    refetchRecords();
-  };
 
   // useEffect that resets current page when data changes or records per page changes
   useEffect(() => {
@@ -123,7 +129,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
         {/* The refresh button, clear filters, hide columns */}
         <div className="flex items-center justify-start gap-4 md:justify-center">
           {/* Clearing filters */}
-          <ClearRefreshFilters handleRefetchIssues={handleRefetchIssues} />
+          <ClearRefreshFilters handleRefetchIssues={() => refetchRecords()} />
 
           {/* Show/Hide Columns Logic */}
           <ShowHideColumnsLogic />
