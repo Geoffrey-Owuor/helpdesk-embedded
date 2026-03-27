@@ -71,3 +71,19 @@ export interface Options {
   submitter?: string;
   agentAdminFilter?: string;
 }
+
+export interface DataCounts {
+  totals: number;
+  pending: number;
+  inProgress: number;
+  resolved: number;
+  unfeasible: number;
+}
+
+export const defaultCounts: DataCounts = {
+  totals: 0,
+  pending: 0,
+  inProgress: 0,
+  resolved: 0,
+  unfeasible: 0,
+};

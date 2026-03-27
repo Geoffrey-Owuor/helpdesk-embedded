@@ -1,7 +1,5 @@
 import DashboardSidebar from "./DashboardSidebar";
 import DashboardFooter from "./DashboardFooter";
-import { IssueCardsProvider } from "@/contexts/IssueCardsContext";
-import { AutomationCardsProvider } from "@/contexts/AutomationCardsContext";
 import HydrationGuard from "../Skeletons/HydrationGuard";
 
 const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
@@ -15,11 +13,7 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
         <div className="flex h-full flex-col">
           {/* Content */}
           <main className="mx-auto w-full max-w-7xl flex-1 px-4">
-            <HydrationGuard>
-              <IssueCardsProvider>
-                <AutomationCardsProvider>{children}</AutomationCardsProvider>
-              </IssueCardsProvider>
-            </HydrationGuard>
+            <HydrationGuard>{children}</HydrationGuard>
           </main>
 
           {/* Footer */}

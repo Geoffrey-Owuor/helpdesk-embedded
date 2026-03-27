@@ -2,7 +2,7 @@ import { create } from "zustand";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useSearchStore } from "./useSearchStore";
-import { DataCounts, defaultCounts } from "./useAutomationCardsStore";
+import { DataCounts, defaultCounts } from "@/public/assets";
 
 interface IssueCardsStore {
   loading: boolean;

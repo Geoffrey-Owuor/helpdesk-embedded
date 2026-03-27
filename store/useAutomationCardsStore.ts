@@ -2,22 +2,7 @@ import { create } from "zustand";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useSearchStore } from "./useSearchStore";
-
-export interface DataCounts {
-  totals: number;
-  pending: number;
-  inProgress: number;
-  resolved: number;
-  unfeasible: number;
-}
-
-export const defaultCounts: DataCounts = {
-  totals: 0,
-  pending: 0,
-  inProgress: 0,
-  resolved: 0,
-  unfeasible: 0,
-};
+import { DataCounts, defaultCounts } from "@/public/assets";
 
 interface AutomationCardsStore {
   loading: boolean;
