@@ -1,7 +1,6 @@
 "use client";
 import { Bug, Check, ChevronDown, Loader2 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { IssueOption } from "@/serverActions/GetIssueTypes";
+import { useEffect, useRef, useState } from "react";
 import { fetchedIssueTypes } from "@/serverActions/GetIssueTypes";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
@@ -9,6 +8,7 @@ import { IssueValueTypes } from "@/store/useIssuesStore";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
+import { useQuery } from "@tanstack/react-query";
 
 type IssueTypeModalProps = {
   refetchData: () => Promise<void>;
@@ -24,8 +24,6 @@ const IssueTypeModal = ({
 }: IssueTypeModalProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [options, setOptions] = useState<IssueOption[]>([]);
 
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
@@ -35,22 +33,11 @@ const IssueTypeModal = ({
 
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
 
-  const fetchOptions = useCallback(async () => {
-    try {
-      setLoading(true);
-      const result = await fetchedIssueTypes(targetDepartment.toString());
-      setOptions(result);
-    } catch (error) {
-      console.error("Failed to fetch Issue Types:", error);
-      setOptions([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [targetDepartment]);
-
-  useEffect(() => {
-    fetchOptions();
-  }, [fetchOptions]);
+  const { data: options = [], isLoading: loading } = useQuery({
+    queryKey: ["IssuePageTypes", targetDepartment],
+    queryFn: () => fetchedIssueTypes(targetDepartment.toString()),
+    enabled: !!targetDepartment,
+  });
 
   // Close dropdown when clicking outside
   useEffect(() => {
