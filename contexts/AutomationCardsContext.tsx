@@ -1,6 +1,7 @@
 "use client";
 
 import { useAutomationCardsStore } from "@/store/useAutomationCardsStore";
+import { useSearchStore } from "@/store/useSearchStore";
 import { useEffect, createContext, ReactNode } from "react";
 
 const AutomationCardsContext = createContext(null);
@@ -10,7 +11,7 @@ export const AutomationCardsProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const selectedDepartment = useAutomationCardsStore(
+  const selectedDepartment = useSearchStore(
     (state) => state.selectedDepartment,
   );
   const fetchAutomationCounts = useAutomationCardsStore(

@@ -2,9 +2,9 @@ import { create } from "zustand";
 import { IssueValueTypes } from "./useIssuesStore";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useAutomationCardsStore } from "./useAutomationCardsStore";
 import { DEFAULT_FETCH_OPTIONS } from "./useIssuesStore";
 import { Options } from "./useIssuesStore";
+import { useSearchStore } from "./useSearchStore";
 
 interface AutomationsDataStore {
   automationsData: Record<string, IssueValueTypes>[];
@@ -28,8 +28,7 @@ export const useAutomationsStore = create<AutomationsDataStore>()(
       // Use provided options or fall back to the default options
       const queryOptions = options || DEFAULT_FETCH_OPTIONS;
 
-      const selectedDepartment =
-        useAutomationCardsStore.getState().selectedDepartment;
+      const selectedDepartment = useSearchStore.getState().selectedDepartment;
 
       set({ loading: true });
 
