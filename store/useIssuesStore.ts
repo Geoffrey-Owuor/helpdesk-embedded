@@ -2,24 +2,9 @@ import { create } from "zustand";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useSearchStore } from "./useSearchStore";
-
-export const DEFAULT_FETCH_OPTIONS = { selectedFilter: "status", status: "" };
-
-export type IssueValueTypes<T extends string | number = string | number> = T;
-
-export interface Options {
-  selectedFilter?: string;
-  fromDate?: string;
-  toDate?: string;
-  status?: string;
-  reference?: string;
-  department?: string;
-  agent?: string;
-  issueType?: string;
-  issuePriority?: string;
-  submitter?: string;
-  agentAdminFilter?: string;
-}
+import { IssueValueTypes } from "@/public/assets";
+import { Options } from "@/public/assets";
+import { DEFAULT_FETCH_OPTIONS } from "@/public/assets";
 
 interface IssuesDataStore {
   issuesData: Record<string, IssueValueTypes>[];

@@ -1,9 +1,9 @@
 import { create } from "zustand";
-import { IssueValueTypes } from "./useIssuesStore";
+import { IssueValueTypes } from "@/public/assets";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { DEFAULT_FETCH_OPTIONS } from "./useIssuesStore";
-import { Options } from "./useIssuesStore";
+import { DEFAULT_FETCH_OPTIONS } from "@/public/assets";
+import { Options } from "@/public/assets";
 import { useSearchStore } from "./useSearchStore";
 
 interface AutomationsDataStore {

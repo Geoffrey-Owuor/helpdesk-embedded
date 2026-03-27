@@ -15,7 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { arrayReducer } from "@/utils/ArrayReducer";
-import { IssueValueTypes } from "@/store/useIssuesStore";
+import { IssueValueTypes } from "@/public/assets";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
