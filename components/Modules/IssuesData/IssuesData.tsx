@@ -7,7 +7,6 @@ import ShowHideColumnsLogic from "./ShowHideColumnsLogic";
 import SearchFilterLogic from "./SearchFilterLogic";
 import SearchInputFields from "./SearchInputFields";
 import ClearRefreshFilters from "./ClearRefreshFilters";
-import { useAutomationCardsStore } from "@/store/useAutomationCardsStore";
 import SearchFilters from "./SearchFilters";
 import { useState, useEffect } from "react";
 import { useSearchStore } from "@/store/useSearchStore";
@@ -18,6 +17,7 @@ import TableViewData from "./TableViewData";
 import CardViewData from "./CardViewData";
 import ExportData from "./ExportData";
 import { useRowCount } from "@/hooks/userRowCount";
+import { useQuery } from "@tanstack/react-query";
 
 const IssuesData = ({ recordType }: { recordType: string }) => {
   const isAutomations = recordType === "automations";
@@ -38,7 +38,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
   const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
   const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
   const isTableView = useSearchStore((state) => state.isTableView);
-  const selectedDepartment = useAutomationCardsStore(
+  const selectedDepartment = useSearchStore(
     (state) => state.selectedDepartment,
   );
 

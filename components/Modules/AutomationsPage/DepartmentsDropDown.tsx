@@ -2,7 +2,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Check, ChevronDown, Building2 } from "lucide-react"; // Using Building2 for departments
 import { baseDepartments } from "@/public/assets";
-import { useAutomationCardsStore } from "@/store/useAutomationCardsStore";
 import { useSearchStore } from "@/store/useSearchStore";
 
 // Map the data as requested
@@ -15,10 +14,10 @@ const DepartmentsDropDown = () => {
   // State for visibility
   const [isOpen, setIsOpen] = useState(false);
 
-  const selectedDepartment = useAutomationCardsStore(
+  const selectedDepartment = useSearchStore(
     (state) => state.selectedDepartment,
   );
-  const setSelectedDepartment = useAutomationCardsStore(
+  const setSelectedDepartment = useSearchStore(
     (state) => state.setSelectedDepartment,
   );
 
