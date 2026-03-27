@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { fetchedIssueTypes } from "@/serverActions/GetIssueTypes";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { IssueValueTypes } from "@/store/useIssuesStore";
+import { IssueValueTypes } from "@/public/assets";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useOverlayStore } from "@/store/useOverlayStore";

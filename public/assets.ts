@@ -1,6 +1,5 @@
 import issue_desk_logo from "./web-app-manifest-512x512.png";
 import issue_desk_image from "./issue_desk_light.png";
-import { IssueValueTypes } from "@/store/useIssuesStore";
 
 export const assets = {
   issue_desk_logo,
@@ -54,3 +53,21 @@ export const baseDepartments = [
   { option: "Security", value: "Security" },
   { option: "Directorate", value: "Directorate" },
 ];
+
+export const DEFAULT_FETCH_OPTIONS = { selectedFilter: "status", status: "" };
+
+export type IssueValueTypes<T extends string | number = string | number> = T;
+
+export interface Options {
+  selectedFilter?: string;
+  fromDate?: string;
+  toDate?: string;
+  status?: string;
+  reference?: string;
+  department?: string;
+  agent?: string;
+  issueType?: string;
+  issuePriority?: string;
+  submitter?: string;
+  agentAdminFilter?: string;
+}

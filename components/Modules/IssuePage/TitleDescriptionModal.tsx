@@ -6,7 +6,7 @@ import ClientPortal from "../ClientPortal";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import apiClient from "@/lib/AxiosClient";
 import { X } from "lucide-react";
-import { IssueValueTypes } from "@/store/useIssuesStore";
+import { IssueValueTypes } from "@/public/assets";
 import FormAsterisk from "../FormAsterisk";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";

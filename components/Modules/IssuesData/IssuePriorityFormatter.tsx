@@ -1,4 +1,5 @@
-import { IssueValueTypes } from "@/store/useIssuesStore";
+import { IssueValueTypes } from "@/public/assets";
+
 import {
   LucideIcon,
   ArrowDown,
