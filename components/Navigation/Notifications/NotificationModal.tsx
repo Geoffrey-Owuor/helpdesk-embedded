@@ -20,7 +20,8 @@ export type RouteChangeProps = {
 };
 
 type NotificationModalProps = {
-  closeModal: () => Promise<void>;
+  closeModal: () => void;
+  isClosing: boolean;
   handleRouteChange: ({ uuid, title, description }: RouteChangeProps) => void;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
   changelogs: ChangelogItem[];
@@ -30,6 +31,7 @@ type NotificationModalProps = {
 
 const NotificationModal = ({
   closeModal,
+  isClosing,
   handleRouteChange,
   setIsModalOpen,
   changelogs,
@@ -191,6 +193,7 @@ const NotificationModal = ({
             <div className="flex items-center justify-end border-t border-neutral-200 px-6 py-4 dark:border-neutral-800">
               <button
                 onClick={closeModal}
+                disabled={isClosing}
                 className="inline-flex items-center gap-2 rounded-xl bg-black px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-neutral-800 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-neutral-300"
               >
                 <CheckCheck className="h-4 w-4" />

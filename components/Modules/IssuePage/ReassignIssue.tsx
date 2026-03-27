@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect, MouseEvent, useRef } from "react";
+import { useState, MouseEvent, useRef } from "react";
 import { fetchedIssueAgents } from "@/serverActions/GetIssueAgents";
-import { IssueAgents } from "@/serverActions/GetIssueAgents";
 import { useAlertStore } from "@/store/useAlertStore";
 import apiClient from "@/lib/AxiosClient";
 import { IssueAgentsSkeleton } from "@/components/Skeletons/IssueAgentsSkeleton";
@@ -21,6 +20,7 @@ import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
+import { useQuery } from "@tanstack/react-query";
 
 type ReassignIssueProps = {
   uuid: string;
@@ -41,7 +41,6 @@ const ReassignIssue = ({
   targetDepartment,
   issueAgentEmail,
 }: ReassignIssueProps) => {
-  const [loading, setLoading] = useState(false);
   const department = targetDepartment.toString();
 
   // Focus Trapping
@@ -53,27 +52,14 @@ const ReassignIssue = ({
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
-  const [issueAgents, setIssueAgents] = useState<IssueAgents[]>([]);
   const [agentEmail, setAgentEmail] = useState(""); //will be sent to the api
   const [agentName, setAgentName] = useState(""); //will be sent to the api
 
-  useEffect(() => {
-    const fetchAgents = async () => {
-      setLoading(true);
-      try {
-        const result = await fetchedIssueAgents(department);
-        setIssueAgents(result);
-      } catch (error) {
-        console.error("Error while trying to fetch Issue Agents:", error);
-        setIssueAgents([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    //Call the function
-    fetchAgents();
-  }, [department]);
+  const { data: issueAgents = [], isLoading: loading } = useQuery({
+    queryKey: ["IssuePageAgents", department],
+    queryFn: () => fetchedIssueAgents(department),
+    enabled: !!department,
+  });
 
   //Get the organized array from the Array Reducer
   const organizedIssueAgents = arrayReducer(issueAgents);

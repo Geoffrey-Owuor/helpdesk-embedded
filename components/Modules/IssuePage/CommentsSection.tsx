@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import {
   MessageCirclePlus,
   MessagesSquare,
@@ -17,51 +17,38 @@ import { dateFormatter } from "@/public/assets";
 import { abbreviateUserName } from "@/public/assets";
 import CommentsSkeleton from "@/components/Skeletons/CommentsSkeleton";
 import { useUser } from "@/contexts/UserContext";
+import { useAlertStore } from "@/store/useAlertStore";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const CommentsSection = ({ uuid }: { uuid: string }) => {
   const [comment, setComment] = useState("");
   const [showCommentsInput, setShowCommentsInput] = useState(false);
-  const [commentsLoading, setCommentsLoading] = useState(false);
-  const [commentsData, setCommentsData] = useState<commentsQuery[]>([]);
-  const [submitting, setSubmitting] = useState(false);
   const { username, email } = useUser();
 
-  // Default fetch comments function
-  const handleFetchComments = useCallback(async () => {
-    setCommentsLoading(true);
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
 
-    try {
+  const {
+    data: commentsData = [],
+    isLoading: commentsLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["comments", uuid],
+    queryFn: async () => {
       const response = await apiClient.get("/get-comments", {
         params: { uuid: uuid },
       });
+      return response.data as commentsQuery[];
+    },
+    enabled: !!uuid, //string coersion
+  });
 
-      // set response data to commentsData
-      setCommentsData(response.data);
-    } catch (error) {
-      const generatedError = getApiErrorMessage(error);
-      console.error("Error fetching comments data:", generatedError);
-      setCommentsData([]);
-    } finally {
-      setCommentsLoading(false);
-    }
-  }, [uuid]);
+  const queryClient = useQueryClient();
 
-  // useEffect for fetching our comments data on mount
-  useEffect(() => {
-    handleFetchComments();
-  }, [handleFetchComments]);
-
-  //Posting a comment
-  const postComment = async () => {
-    // Basic validation to prevent empty comments
-    if (!comment.trim()) return;
-
-    setSubmitting(true);
-    try {
-      //Posting the comment
-      await apiClient.post("/post-comment", { comment, uuid });
-
-      // create a local comment object
+  const { mutate: postComment, isPending: submitting } = useMutation({
+    mutationFn: async () =>
+      await apiClient.post("/post-comment", { comment, uuid }),
+    onSuccess: () => {
+      // Optimistic local update - no refetch needed
       const newComment: commentsQuery = {
         comment_id: Date.now(),
         comment_submitter_name: username,
@@ -70,21 +57,23 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
         comment_created_at: new Date().toISOString(),
       };
 
-      //Update the state without refetching
-      setCommentsData((prevComments) => {
-        // Add to top - newest to oldest
-        return [newComment, ...prevComments];
-      });
+      queryClient.setQueryData(
+        ["comments", uuid],
+        (prevComments: commentsQuery[] = []) => {
+          return [newComment, ...prevComments];
+        },
+      );
 
-      // clear the input
       setComment("");
-    } catch (error) {
+      setShowCommentsInput(false);
+    },
+    onError: (error) => {
       const generatedError = getApiErrorMessage(error);
-      console.error("Error while trying to post a comment", generatedError);
-    } finally {
-      setSubmitting(false);
-    }
-  };
+      console.error("Error while trying to post a comment:", generatedError);
+      triggerAlert("error", "Error while posting the comment");
+    },
+  });
+
   return (
     <div className="layout-scrollbar max-h-150 max-w-3xl overflow-y-auto rounded-xl border border-neutral-200 p-6 shadow-sm dark:border-neutral-800">
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
@@ -106,7 +95,7 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
         {/* The add comment button */}
         <div className="flex items-center gap-4">
           <button
-            onClick={handleFetchComments}
+            onClick={() => refetch()}
             className="rounded-full bg-neutral-200 p-2 transition-colors duration-200 hover:bg-neutral-300 dark:bg-neutral-900 dark:hover:bg-neutral-800"
           >
             <RotateCcw className="h-5 w-5" />
@@ -137,7 +126,7 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
           <button
             type="button"
             disabled={!comment || submitting}
-            onClick={postComment}
+            onClick={() => postComment()}
             className="absolute right-2.5 bottom-4 flex items-center justify-center rounded-full bg-blue-600 p-2 text-white transition-colors duration-200 hover:bg-blue-700 disabled:opacity-50"
           >
             <SendHorizonal className="h-5 w-5" />
