@@ -9,13 +9,13 @@ import { X } from "lucide-react";
 import { IssueValueTypes } from "@/public/assets";
 import FormAsterisk from "../FormAsterisk";
 import { useConfirmStore } from "@/store/useConfirmStore";
-import { useOverlayStore } from "@/store/useOverlayStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 type TitleDescriptionModalProps = {
   title: IssueValueTypes;
   description: IssueValueTypes;
   uuid: string;
-  refetchData: () => void;
+  activeQueryKey: (string | boolean)[];
   userId: IssueValueTypes;
   isModalOpen: boolean;
   closeModal: () => void;
@@ -24,11 +24,12 @@ const TitleDescriptionModal = ({
   title,
   description,
   uuid,
-  refetchData,
+  activeQueryKey,
   userId,
   isModalOpen,
   closeModal,
 }: TitleDescriptionModalProps) => {
+  const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
     issue_title: title || "",
     issue_description: description || "",
@@ -40,8 +41,6 @@ const TitleDescriptionModal = ({
 
   // state data
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
-  const showOverlay = useOverlayStore((state) => state.showOverlay);
-  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
 
@@ -69,7 +68,29 @@ const TitleDescriptionModal = ({
   const handleSubmit = async () => {
     hideDialog();
 
-    showOverlay("Updating");
+    // 1. Cancel any outgoing refetches so they don't overwrite our optimistic update
+    await queryClient.cancelQueries({ queryKey: activeQueryKey });
+
+    // 2. Snapshot the previous data (for rollback if the API fails)
+    const previousData = queryClient.getQueryData(activeQueryKey);
+
+    // Optimistically update the cache
+    queryClient.setQueryData(
+      activeQueryKey,
+      (oldData: Record<string, IssueValueTypes>[]) => {
+        if (!oldData) return oldData;
+        // Map through the array and update the specific issue's status
+        return oldData.map((issue: Record<string, IssueValueTypes>) =>
+          issue.issue_uuid === uuid
+            ? {
+                ...issue,
+                issue_title: formData.issue_title,
+                issue_description: formData.issue_description,
+              }
+            : issue,
+        );
+      },
+    );
 
     // compile our data into one object
     const payload = {
@@ -87,16 +108,17 @@ const TitleDescriptionModal = ({
       // clear the form data
       setFormData({ issue_title: "", issue_description: "" });
 
-      // refetch data
-      refetchData();
-
       // close the modal
       closeModal();
     } catch (error) {
+      // 5. Rollback to the snapshot if the API call fails
+      queryClient.setQueryData(activeQueryKey, previousData);
+
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
     } finally {
-      hideOverlay();
+      // 6. Always refetch in the background after error or success to sync with the server
+      queryClient.invalidateQueries({ queryKey: activeQueryKey });
     }
   };
 
