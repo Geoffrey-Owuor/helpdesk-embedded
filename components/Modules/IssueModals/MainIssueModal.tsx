@@ -22,17 +22,13 @@ import apiClient from "@/lib/AxiosClient";
 import DynamicIssueTypes from "./DynamicIssueTypes";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlertStore } from "@/store/useAlertStore";
-import { useIssuesStore } from "@/store/useIssuesStore";
-import { useAutomationsStore } from "@/store/useAutomationsStore";
-import { useIssueCardsStore } from "@/store/useIssueCardsStore";
-import { useAutomationCardsStore } from "@/store/useAutomationCardsStore";
 import OptionsDropDown from "./OptionsDropDown";
 import { baseDepartments } from "@/public/assets";
 import FormAsterisk from "../FormAsterisk";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
-import { useUser } from "@/contexts/UserContext";
-import { usePathname } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSearchStore } from "@/store/useSearchStore";
 
 // Priority icon types
 const priorityIcons: Record<string, LucideIcon> = {
@@ -62,6 +58,8 @@ type MainIssueModalProps = {
 };
 
 const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
+  const queryClient = useQueryClient();
+
   const [formData, setFormData] = useState({
     target_department: "",
     issue_type: "",
@@ -69,12 +67,16 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     issue_description: "",
   });
 
-  const { role } = useUser();
-
   // Tab Focus Trapping
   const closeModal = useCallback(() => setIsOpen(false), [setIsOpen]);
   const modalRef = useRef<HTMLDivElement | null>(null);
   useFocusTrapping(modalRef, isOpen, closeModal);
+
+  const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
+  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
+  const selectedDepartment = useSearchStore(
+    (state) => state.selectedDepartment,
+  );
 
   // State for the Assignment Bot Card
   const [assignmentInfo, setAssignmentInfo] =
@@ -88,39 +90,13 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
-  const refetchIssues = useIssuesStore((state) => state.refetchIssues);
-  const refetchAutomations = useAutomationsStore(
-    (state) => state.refetchAutomations,
-  );
-  const refetchAutomationCounts = useAutomationCardsStore(
-    (state) => state.fetchAutomationCounts,
-  );
-  const refetchIssueCounts = useIssueCardsStore(
-    (state) => state.fetchIssueCounts,
-  );
 
-  const pathname = usePathname();
-
-  const refetchData =
-    pathname === "/dashboard"
-      ? refetchIssues
-      : pathname === "/dashboard/automations"
-        ? refetchAutomations
-        : () => {}; // Default: do nothing
-
-  const refetchCounts =
-    pathname === "/dashboard"
-      ? refetchIssueCounts
-      : pathname === "/dashboard/automations"
-        ? refetchAutomationCounts
-        : () => {}; // Default: do nothing
-
-  // Function to refetch data for normal users - role is user
-  const refetchInfo = async () => {
-    if (role !== "user") return;
-    refetchData();
-    refetchCounts();
-  };
+  const activeQueryKey = [
+    "issuesDashboardData",
+    superAdminFilter,
+    agentAdminFilter,
+  ];
+  const automationsQueryKey = ["automationsDashboardData", selectedDepartment];
 
   // set options error
   const optionsError = alertType === "error";
@@ -197,6 +173,13 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       // Trigger alert on success
       triggerAlert("success", response.data.message);
 
+      // Refetch issues data in the background
+      queryClient.invalidateQueries({ queryKey: activeQueryKey });
+
+      // Refetch automations data if issue type is Automation
+      if (formData.issue_type === "Automation")
+        queryClient.invalidateQueries({ queryKey: automationsQueryKey });
+
       // Clear form data
       setFormData({
         target_department: "",
@@ -206,9 +189,6 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       });
 
       setAssignmentInfo(null); // Clear assignment info
-
-      // refetch all data
-      await refetchInfo();
 
       // Close issue modal
       setIsOpen(false);
