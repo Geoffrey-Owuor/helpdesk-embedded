@@ -69,7 +69,6 @@ export interface Options {
   issueType?: string;
   issuePriority?: string;
   submitter?: string;
-  agentAdminFilter?: string;
 }
 
 export interface DataCounts {

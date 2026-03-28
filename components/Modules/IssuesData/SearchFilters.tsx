@@ -1,22 +1,12 @@
 "use client";
 import { useSearchStore } from "@/store/useSearchStore";
-import { useIssuesStore } from "@/store/useIssuesStore";
-import { useAutomationsStore } from "@/store/useAutomationsStore";
 import { Search } from "lucide-react";
+import { Options } from "@/public/assets";
 
 type FilterProps = {
-  recordType: string;
+  onSearch: (filters: Options) => void;
 };
-const SearchFilters = ({ recordType }: FilterProps) => {
-  const fetchIssues = useIssuesStore((state) => state.fetchIssues);
-  const fetchAutomations = useAutomationsStore(
-    (state) => state.fetchAutomations,
-  );
-
-  const fetchData =
-    recordType === "automations" ? fetchAutomations : fetchIssues;
-
-  const selectedFilter = useSearchStore((state) => state.selectedFilter);
+const SearchFilters = ({ onSearch }: FilterProps) => {
   const status = useSearchStore((state) => state.status);
   const reference = useSearchStore((state) => state.reference);
   const fromDate = useSearchStore((state) => state.fromDate);
@@ -47,7 +37,6 @@ const SearchFilters = ({ recordType }: FilterProps) => {
 
   // Compile options into one object
   const filterOptions = {
-    selectedFilter,
     status,
     reference,
     fromDate,
@@ -63,7 +52,7 @@ const SearchFilters = ({ recordType }: FilterProps) => {
   const handleFilterSearch = () => {
     // Do not run if button is disabled
     if (buttonDisabled) return;
-    fetchData(filterOptions);
+    onSearch(filterOptions);
   };
   return (
     <button
