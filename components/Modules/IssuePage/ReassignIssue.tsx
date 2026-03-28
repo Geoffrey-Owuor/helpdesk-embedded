@@ -18,9 +18,8 @@ import { arrayReducer } from "@/utils/ArrayReducer";
 import { IssueValueTypes } from "@/public/assets";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useConfirmStore } from "@/store/useConfirmStore";
-import { useOverlayStore } from "@/store/useOverlayStore";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 type ReassignIssueProps = {
   uuid: string;
@@ -28,7 +27,7 @@ type ReassignIssueProps = {
   isModalOpen: boolean;
   issueType: IssueValueTypes;
   targetDepartment: IssueValueTypes;
-  refetchData: () => void;
+  activeQueryKey: (string | boolean)[];
   issueAgentEmail: IssueValueTypes;
 };
 
@@ -37,10 +36,11 @@ const ReassignIssue = ({
   closeModal,
   isModalOpen,
   issueType,
-  refetchData,
+  activeQueryKey,
   targetDepartment,
   issueAgentEmail,
 }: ReassignIssueProps) => {
+  const queryClient = useQueryClient();
   const department = targetDepartment.toString();
 
   // Focus Trapping
@@ -48,8 +48,6 @@ const ReassignIssue = ({
   useFocusTrapping(modalRef, isModalOpen, closeModal);
 
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
-  const showOverlay = useOverlayStore((state) => state.showOverlay);
-  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
   const [agentEmail, setAgentEmail] = useState(""); //will be sent to the api
@@ -79,7 +77,29 @@ const ReassignIssue = ({
   const handleReAssigning = async () => {
     hideDialog();
 
-    showOverlay("Reassigning");
+    // 1. Cancel any outgoing refetches so they don't overwrite our optimistic update
+    await queryClient.cancelQueries({ queryKey: activeQueryKey });
+
+    // 2. Snapshot the previous data (for rollback if the API fails)
+    const previousData = queryClient.getQueryData(activeQueryKey);
+
+    // Optimistically update the cache
+    queryClient.setQueryData(
+      activeQueryKey,
+      (oldData: Record<string, IssueValueTypes>[]) => {
+        if (!oldData) return oldData;
+        // Map through the array and update the specific issue's status
+        return oldData.map((issue: Record<string, IssueValueTypes>) =>
+          issue.issue_uuid === uuid
+            ? {
+                ...issue,
+                issue_agent_name: agentName,
+                issue_agent_email: agentEmail,
+              }
+            : issue,
+        );
+      },
+    );
 
     try {
       const response = await apiClient.put("/reassign-issue", {
@@ -95,15 +115,17 @@ const ReassignIssue = ({
       setAgentEmail("");
       setAgentName("");
 
-      //   Refetch data
-      refetchData();
       // close the modal
       closeModal();
     } catch (error) {
+      // 5. Rollback to the snapshot if the API call fails
+      queryClient.setQueryData(activeQueryKey, previousData);
+
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
     } finally {
-      hideOverlay();
+      // 6. Always refetch in the background after error or success to sync with the server
+      queryClient.invalidateQueries({ queryKey: activeQueryKey });
     }
   };
 

@@ -32,14 +32,14 @@ import { InfoBlock } from "./HelperComponents/InfoBlock";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import CommentsSection from "./CommentsSection";
 import { useConfirmStore } from "@/store/useConfirmStore";
-import { useOverlayStore } from "@/store/useOverlayStore";
 import IssueTypeModal from "./IssueTypeModal";
 import IssuePriorityFormatter from "../IssuesData/IssuePriorityFormatter";
 import { useSearchParams } from "next/navigation";
 import { useSearchStore } from "@/store/useSearchStore";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchIssues } from "@/queries/fetchIssues";
 import { fetchAutomations } from "@/queries/fetchAutomations";
+import { IssueValueTypes } from "@/public/assets";
 import { DEFAULT_FETCH_OPTIONS } from "@/public/assets";
 
 const statusOptions = [
@@ -56,6 +56,9 @@ export const priorityOptions = [
 ];
 
 export const IssuePage = ({ uuid }: { uuid: string }) => {
+  // Initialize the query client
+  const queryClient = useQueryClient();
+
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
   const isAutomation = type === "automation";
@@ -94,6 +97,11 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const loading = isAutomation ? automationsLoading : issuesLoading;
   const refetchInfo = isAutomation ? refetchAutomations : refetchIssues;
 
+  // Define the exact active query key based on the record type
+  const activeQueryKey = isAutomation
+    ? ["automationsDashboardData", selectedDepartment]
+    : ["issuesDashboardData", superAdminFilter, agentAdminFilter];
+
   const refetchData = () => {
     refetchInfo();
   };
@@ -104,8 +112,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const router = useRouter();
 
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
-  const showOverlay = useOverlayStore((state) => state.showOverlay);
-  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
+
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
   const { role, email, department, userId, isSuper } = useUser();
@@ -121,36 +128,69 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   // call useScrollToTop hook
   useScrollToTop();
 
-  // Async function for updating the status
+  // Async function for updating the status (Optimistic)
   const handleUpdateStatus = async (status: string) => {
     hideDialog();
 
-    showOverlay("Updating");
+    // 1. Cancel any outgoing refetches so they don't overwrite our optimistic update
+    await queryClient.cancelQueries({ queryKey: activeQueryKey });
+
+    // 2. Snapshot the previous data (for rollback if the API fails)
+    const previousData = queryClient.getQueryData(activeQueryKey);
+
+    // 3. Optimistically update the cache
+    queryClient.setQueryData(
+      activeQueryKey,
+      (oldData: Record<string, IssueValueTypes>[]) => {
+        if (!oldData) return oldData;
+        // Map through the array and update the specific issue's status
+        return oldData.map((issue: Record<string, IssueValueTypes>) =>
+          issue.issue_uuid === uuid
+            ? { ...issue, issue_status: status }
+            : issue,
+        );
+      },
+    );
 
     try {
+      // 4. Perform the actual API call in the background
       const response = await apiClient.put("/update-status", {
         uuid,
         status,
       });
 
-      // Trigger a success alert
       triggerAlert("success", response.data.message);
-
-      // refetch data
-      refetchData();
     } catch (error) {
+      // 5. Rollback to the snapshot if the API call fails
+      queryClient.setQueryData(activeQueryKey, previousData);
+
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
     } finally {
-      hideOverlay();
+      // 6. Always refetch in the background after error or success to sync with the server
+      queryClient.invalidateQueries({ queryKey: activeQueryKey });
     }
   };
 
-  // Updating the priority
+  // Async function for updating the priority (Optimistic)
   const handleUpdatePriority = async (priority: string) => {
     hideDialog();
 
-    showOverlay("Updating");
+    await queryClient.cancelQueries({ queryKey: activeQueryKey });
+    const previousData = queryClient.getQueryData(activeQueryKey);
+
+    // Optimistically update the priority in the cache
+    queryClient.setQueryData(
+      activeQueryKey,
+      (oldData: Record<string, IssueValueTypes>[]) => {
+        if (!oldData) return oldData;
+        return oldData.map((issue: Record<string, IssueValueTypes>) =>
+          issue.issue_uuid === uuid
+            ? { ...issue, issue_priority: priority }
+            : issue,
+        );
+      },
+    );
 
     try {
       const response = await apiClient.put("/update-priority", {
@@ -158,16 +198,15 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
         priority,
       });
 
-      // Trigger a success alert
       triggerAlert("success", response.data.message);
-
-      // refetch data
-      refetchData();
     } catch (error) {
+      // Rollback on failure
+      queryClient.setQueryData(activeQueryKey, previousData);
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
     } finally {
-      hideOverlay();
+      // 6. Always refetch in the background after error or success to sync with the server
+      queryClient.invalidateQueries({ queryKey: activeQueryKey });
     }
   };
 
@@ -239,8 +278,8 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           description={issueData.issue_description}
           isModalOpen={isEditModalOpen}
           closeModal={() => setIsEditModalOpen(false)}
+          activeQueryKey={activeQueryKey}
           uuid={uuid}
-          refetchData={refetchData}
           userId={issueData.issue_submitter_id}
         />
       )}
@@ -252,7 +291,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           isModalOpen={isReassignModalOpen}
           issueType={issueData.issue_type}
           targetDepartment={issueData.issue_target_department}
-          refetchData={() => refetchData()}
+          activeQueryKey={activeQueryKey}
           issueAgentEmail={issueData.issue_agent_email}
         />
       )}
@@ -442,9 +481,9 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
               <InfoBlock label="Issue Type" value={issueData.issue_type} />
               {isSuper && issueData.issue_status !== "resolved" && (
                 <IssueTypeModal
-                  refetchData={refetchData}
                   targetDepartment={issueData.issue_target_department}
                   uuid={uuid}
+                  activeQueryKey={activeQueryKey}
                   currentType={issueData.issue_type}
                 />
               )}

@@ -7,29 +7,28 @@ import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { IssueValueTypes } from "@/public/assets";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useAlertStore } from "@/store/useAlertStore";
-import { useOverlayStore } from "@/store/useOverlayStore";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 type IssueTypeModalProps = {
-  refetchData: () => void;
   targetDepartment: IssueValueTypes;
   currentType: IssueValueTypes;
+  activeQueryKey: (string | boolean)[];
   uuid: string;
 };
 const IssueTypeModal = ({
   targetDepartment,
-  refetchData,
   uuid,
   currentType,
+  activeQueryKey,
 }: IssueTypeModalProps) => {
+  // Query client initialization
+  const queryClient = useQueryClient();
+
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
 
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
-
-  const showOverlay = useOverlayStore((state) => state.showOverlay);
-  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
 
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
 
@@ -56,7 +55,24 @@ const IssueTypeModal = ({
 
   const handleIssueTypeUpdate = async (value: string) => {
     hideDialog();
-    showOverlay("Updating");
+
+    // 1. Cancel any outgoing refetches so they don't overwrite our optimistic update
+    await queryClient.cancelQueries({ queryKey: activeQueryKey });
+
+    // 2. Snapshot the previous data (for rollback if the API fails)
+    const previousData = queryClient.getQueryData(activeQueryKey);
+
+    // Optimistically update the cache
+    queryClient.setQueryData(
+      activeQueryKey,
+      (oldData: Record<string, IssueValueTypes>[]) => {
+        if (!oldData) return oldData;
+        // Map through the array and update the specific issue's status
+        return oldData.map((issue: Record<string, IssueValueTypes>) =>
+          issue.issue_uuid === uuid ? { ...issue, issue_type: value } : issue,
+        );
+      },
+    );
 
     try {
       const response = await apiClient.patch("/patch-issuetype", {
@@ -66,15 +82,16 @@ const IssueTypeModal = ({
 
       // Trigger alert on success
       triggerAlert("success", response.data.message);
-
-      // Refetch the data
-      refetchData();
     } catch (error) {
+      // 5. Rollback to the snapshot if the API call fails
+      queryClient.setQueryData(activeQueryKey, previousData);
+
       const errorMessage = getApiErrorMessage(error);
       console.error("Error while trying to patch issue type:", errorMessage);
       triggerAlert("error", errorMessage);
     } finally {
-      hideOverlay();
+      // 6. Always refetch in the background after error or success to sync with the server
+      queryClient.invalidateQueries({ queryKey: activeQueryKey });
     }
   };
 
