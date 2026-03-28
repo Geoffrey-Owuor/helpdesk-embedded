@@ -11,7 +11,7 @@ import { useOverlayStore } from "@/store/useOverlayStore";
 import { useQuery } from "@tanstack/react-query";
 
 type IssueTypeModalProps = {
-  refetchData: () => Promise<void>;
+  refetchData: () => void;
   targetDepartment: IssueValueTypes;
   currentType: IssueValueTypes;
   uuid: string;
@@ -68,7 +68,7 @@ const IssueTypeModal = ({
       triggerAlert("success", response.data.message);
 
       // Refetch the data
-      await refetchData();
+      refetchData();
     } catch (error) {
       const errorMessage = getApiErrorMessage(error);
       console.error("Error while trying to patch issue type:", errorMessage);
