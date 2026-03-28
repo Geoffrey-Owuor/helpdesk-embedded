@@ -1,6 +1,5 @@
 "use client";
 import { Bell } from "lucide-react";
-import { useIssuesStore } from "@/store/useIssuesStore";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useState } from "react";
@@ -9,6 +8,9 @@ import { useLoadingStore } from "@/store/useLoadingStore";
 import { useRouter, usePathname } from "next/navigation";
 import { RouteChangeProps } from "./NotificationModal";
 import { useAlertStore } from "@/store/useAlertStore";
+import { fetchIssues } from "@/queries/fetchIssues";
+import { DEFAULT_FETCH_OPTIONS } from "@/public/assets";
+import { useSearchStore } from "@/store/useSearchStore";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
 export interface ChangelogItem {
@@ -29,9 +31,11 @@ const Notifications = () => {
 
   const pathname = usePathname();
 
+  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
+  const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
+
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
-  const defaultData = useIssuesStore((state) => state.issuesData);
-  const defaultLoading = useIssuesStore((state) => state.loading);
+
   const type = "issue";
 
   const router = useRouter();
@@ -64,6 +68,11 @@ const Notifications = () => {
       const response = await apiClient.get("/notifications/user-changelogs");
       return response.data as NotificationResponse;
     },
+  });
+
+  const { data: defaultData = [], isLoading: defaultLoading } = useQuery({
+    queryKey: ["issuesDashboardData", superAdminFilter, agentAdminFilter],
+    queryFn: () => fetchIssues(DEFAULT_FETCH_OPTIONS),
   });
 
   // Filter issuesData to only those created on or after notificationDate
