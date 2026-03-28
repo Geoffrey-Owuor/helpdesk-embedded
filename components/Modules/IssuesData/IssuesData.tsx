@@ -6,7 +6,7 @@ import SearchFilterLogic from "./SearchFilterLogic";
 import SearchInputFields from "./SearchInputFields";
 import ClearRefreshFilters from "./ClearRefreshFilters";
 import SearchFilters from "./SearchFilters";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchStore } from "@/store/useSearchStore";
 import ViewAgentAdminFilter from "./ViewAgentAdminFilter";
 import Pagination from "./Pagination";
@@ -18,7 +18,7 @@ import { useRowCount } from "@/hooks/userRowCount";
 import { useQuery } from "@tanstack/react-query";
 import { fetchIssues } from "@/queries/fetchIssues";
 import { fetchAutomations } from "@/queries/fetchAutomations";
-import { DEFAULT_FETCH_OPTIONS } from "@/public/assets";
+import { DEFAULT_FETCH_OPTIONS, Options } from "@/public/assets";
 
 const IssuesData = ({ recordType }: { recordType: string }) => {
   const isAutomations = recordType === "automations";
@@ -31,6 +31,11 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
   const isTableView = useSearchStore((state) => state.isTableView);
   const selectedDepartment = useSearchStore(
     (state) => state.selectedDepartment,
+  );
+
+  // Committed state - only applies filters when search button is clicked
+  const [committedFilters, setCommittedFilters] = useState<Options | null>(
+    null,
   );
 
   const {
@@ -58,6 +63,71 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
   const recordsLoading = isAutomations ? automationsLoading : loading;
   const refetchRecords = isAutomations ? refetchAutomations : refetchIssues;
 
+  const filteredData = useMemo(() => {
+    if (!committedFilters) return recordsData;
+
+    return recordsData.filter((record) => {
+      const {
+        status,
+        fromDate,
+        toDate,
+        reference,
+        department,
+        agent,
+        issueType,
+        issuePriority,
+        submitter,
+      } = committedFilters;
+
+      if (status && record.issue_status !== status) return false;
+      if (
+        reference &&
+        !record.issue_reference_id
+          .toLocaleString()
+          .toLocaleLowerCase()
+          .includes(reference.toLowerCase())
+      )
+        return false;
+      if (department && record.department !== department) return false;
+      if (
+        agent &&
+        !record.issue_agent_name
+          .toLocaleString()
+          .toLocaleLowerCase()
+          .includes(agent.toLocaleLowerCase())
+      )
+        return false;
+      if (
+        issueType &&
+        !record.issue_type
+          .toLocaleString()
+          .toLocaleLowerCase()
+          .includes(issueType.toLocaleLowerCase())
+      )
+        return false;
+      if (issuePriority && record.issue_priority !== issuePriority)
+        return false;
+      if (
+        submitter &&
+        !record.issue_submitter_name
+          .toLocaleString()
+          .toLocaleLowerCase()
+          .includes(submitter.toLocaleLowerCase())
+      )
+        return false;
+      if (fromDate && new Date(record.issue_created_at) < new Date(fromDate))
+        return false;
+      if (
+        toDate &&
+        new Date(record.issue_created_at) >
+          new Date(new Date(toDate).setHours(23, 59, 59, 999))
+      )
+        return false;
+
+      return true;
+    });
+  }, [recordsData, committedFilters]);
+
   // Generate a dynamic url param that we will pass to the issue url - based on the data we are currently viewing
   // We have two sources of data, some are in issuesData,  some are in Automations (based on recordType)
   const dynamicUrlParam = isAutomations ? "automation" : "issue";
@@ -69,18 +139,18 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
     setRowsPerPage: setIssuesPerPage,
     rowsArray: perPageOptions,
   } = useRowCount();
-  const totalPages = Math.ceil(recordsData.length / issuesPerPage);
+  const totalPages = Math.ceil(filteredData.length / issuesPerPage);
   const indexOfLastIssue = currentPage * issuesPerPage;
   const indexOfFirstIssue = indexOfLastIssue - issuesPerPage;
-  const currentIssues = recordsData.slice(
+  const currentIssues = filteredData.slice(
     indexOfFirstIssue,
-    Math.min(indexOfLastIssue, recordsData.length),
+    Math.min(indexOfLastIssue, filteredData.length),
   );
 
   // useEffect that resets current page when data changes or records per page changes
   useEffect(() => {
     Promise.resolve().then(() => setCurrentPage(1));
-  }, [recordsData, issuesPerPage]);
+  }, [filteredData, issuesPerPage]);
 
   // default subtitle
   const defaultSubtitle = `you have submitted`;
@@ -120,7 +190,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
             </span>
 
             <span className="text-xs text-neutral-500">
-              Total records: {recordsData.length || "none"}
+              Total records: {filteredData.length || "none"}
             </span>
           </div>
           {role !== "user" && !isAutomations && <ViewAgentAdminFilter />}
@@ -129,7 +199,12 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
         {/* The refresh button, clear filters, hide columns */}
         <div className="flex items-center justify-start gap-4 md:justify-center">
           {/* Clearing filters */}
-          <ClearRefreshFilters handleRefetchIssues={() => refetchRecords()} />
+          <ClearRefreshFilters
+            handleRefetchIssues={() => {
+              refetchRecords();
+              setCommittedFilters(null);
+            }}
+          />
 
           {/* Show/Hide Columns Logic */}
           <ShowHideColumnsLogic />
@@ -142,7 +217,9 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
         <SearchFilterLogic recordType={recordType} />
         <SearchInputFields />
         {/* The search button */}
-        <SearchFilters recordType={recordType} />
+        <SearchFilters
+          onSearch={(filters: Options) => setCommittedFilters(filters)}
+        />
 
         {/* Toggle between table and card view and Export Data buttons*/}
         <div className="ml-0 flex items-center gap-4 md:ml-auto">
@@ -177,7 +254,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
             perPageOptions={perPageOptions}
             indexOfFirstIssue={indexOfFirstIssue}
             indexOfLastIssue={indexOfLastIssue}
-            issuesLength={recordsData.length}
+            issuesLength={filteredData.length}
           />
         </div>
       )}

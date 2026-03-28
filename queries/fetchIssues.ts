@@ -27,43 +27,6 @@ export const fetchIssues = async (
       url += `&agentAdminFilter=${agentAdminFilter}`;
     }
 
-    if (queryOptions.selectedFilter === "status" && queryOptions.status) {
-      url += `&status=${encodeURIComponent(queryOptions.status)}`;
-    } else if (
-      queryOptions.selectedFilter === "reference" &&
-      queryOptions.reference
-    ) {
-      url += `&reference=${encodeURIComponent(queryOptions.reference.trim())}`;
-    } else if (
-      queryOptions.selectedFilter === "date" &&
-      queryOptions.fromDate &&
-      queryOptions.toDate
-    ) {
-      url += `&fromDate=${queryOptions.fromDate}&toDate=${queryOptions.toDate}`;
-    } else if (
-      queryOptions.selectedFilter === "department" &&
-      queryOptions.department
-    ) {
-      url += `&department=${encodeURIComponent(queryOptions.department)}`;
-    } else if (queryOptions.selectedFilter === "agent" && queryOptions.agent) {
-      url += `&agent=${encodeURIComponent(queryOptions.agent.trim())}`;
-    } else if (
-      queryOptions.selectedFilter === "type" &&
-      queryOptions.issueType
-    ) {
-      url += `&type=${encodeURIComponent(queryOptions.issueType.trim())}`;
-    } else if (
-      queryOptions.selectedFilter === "priority" &&
-      queryOptions.issuePriority
-    ) {
-      url += `&priority=${encodeURIComponent(queryOptions.issuePriority)}`;
-    } else if (
-      queryOptions.selectedFilter === "submitter" &&
-      queryOptions.submitter
-    ) {
-      url += `&submitter=${encodeURIComponent(queryOptions.submitter.trim())}`;
-    }
-
     // Fetch a response with the built url
     const response = await apiClient.get(url);
 
