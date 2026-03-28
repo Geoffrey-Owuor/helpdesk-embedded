@@ -15,7 +15,7 @@ type TitleDescriptionModalProps = {
   title: IssueValueTypes;
   description: IssueValueTypes;
   uuid: string;
-  refetchData: () => Promise<void>;
+  refetchData: () => void;
   userId: IssueValueTypes;
   isModalOpen: boolean;
   closeModal: () => void;
@@ -88,7 +88,7 @@ const TitleDescriptionModal = ({
       setFormData({ issue_title: "", issue_description: "" });
 
       // refetch data
-      await refetchData();
+      refetchData();
 
       // close the modal
       closeModal();

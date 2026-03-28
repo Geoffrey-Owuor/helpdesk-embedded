@@ -36,8 +36,11 @@ import { useOverlayStore } from "@/store/useOverlayStore";
 import IssueTypeModal from "./IssueTypeModal";
 import IssuePriorityFormatter from "../IssuesData/IssuePriorityFormatter";
 import { useSearchParams } from "next/navigation";
-import { useIssuesStore } from "@/store/useIssuesStore";
-import { useAutomationsStore } from "@/store/useAutomationsStore";
+import { useSearchStore } from "@/store/useSearchStore";
+import { useQuery } from "@tanstack/react-query";
+import { fetchIssues } from "@/queries/fetchIssues";
+import { fetchAutomations } from "@/queries/fetchAutomations";
+import { DEFAULT_FETCH_OPTIONS } from "@/public/assets";
 
 const statusOptions = [
   { label: "In Progress", value: "in progress" },
@@ -57,20 +60,43 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const type = searchParams.get("type");
   const isAutomation = type === "automation";
 
-  const issuesData = useIssuesStore((state) => state.issuesData);
-  const issuesLoading = useIssuesStore((state) => state.loading);
-  const refetchIssues = useIssuesStore((state) => state.refetchIssues);
-
-  const automationsData = useAutomationsStore((state) => state.automationsData);
-  const automationsLoading = useAutomationsStore((state) => state.loading);
-  const refetchAutomations = useAutomationsStore(
-    (state) => state.refetchAutomations,
+  // 1. Grab the exact same filters from your search store to match the Query Keys
+  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
+  const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
+  const selectedDepartment = useSearchStore(
+    (state) => state.selectedDepartment,
   );
 
-  // Defining our variables based on record type
+  // 2. Query Issues (Will instantly hit the cache if already loaded on the list page)
+  const {
+    data: issuesData = [],
+    isLoading: issuesLoading,
+    refetch: refetchIssues,
+  } = useQuery({
+    queryKey: ["issuesDashboardData", superAdminFilter, agentAdminFilter],
+    queryFn: () => fetchIssues(DEFAULT_FETCH_OPTIONS),
+    enabled: !isAutomation,
+  });
+
+  // 3. Query Automations (Will instantly hit the cache if already loaded)
+  const {
+    data: automationsData = [],
+    isLoading: automationsLoading,
+    refetch: refetchAutomations,
+  } = useQuery({
+    queryKey: ["automationsDashboardData", selectedDepartment],
+    queryFn: () => fetchAutomations(DEFAULT_FETCH_OPTIONS),
+    enabled: isAutomation,
+  });
+
+  // 4. Define our variables based on the record type
   const recordsData = isAutomation ? automationsData : issuesData;
   const loading = isAutomation ? automationsLoading : issuesLoading;
-  const refetchData = isAutomation ? refetchAutomations : refetchIssues;
+  const refetchInfo = isAutomation ? refetchAutomations : refetchIssues;
+
+  const refetchData = () => {
+    refetchInfo();
+  };
 
   // Our issue data
   const issueData = recordsData.find((issue) => issue.issue_uuid === uuid);
@@ -111,7 +137,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
       triggerAlert("success", response.data.message);
 
       // refetch data
-      await refetchData();
+      refetchData();
     } catch (error) {
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
@@ -136,7 +162,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
       triggerAlert("success", response.data.message);
 
       // refetch data
-      await refetchData();
+      refetchData();
     } catch (error) {
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
@@ -226,7 +252,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           isModalOpen={isReassignModalOpen}
           issueType={issueData.issue_type}
           targetDepartment={issueData.issue_target_department}
-          refetchData={refetchData}
+          refetchData={() => refetchData()}
           issueAgentEmail={issueData.issue_agent_email}
         />
       )}

@@ -28,7 +28,7 @@ type ReassignIssueProps = {
   isModalOpen: boolean;
   issueType: IssueValueTypes;
   targetDepartment: IssueValueTypes;
-  refetchData: () => Promise<void>;
+  refetchData: () => void;
   issueAgentEmail: IssueValueTypes;
 };
 
@@ -96,7 +96,7 @@ const ReassignIssue = ({
       setAgentName("");
 
       //   Refetch data
-      await refetchData();
+      refetchData();
       // close the modal
       closeModal();
     } catch (error) {
