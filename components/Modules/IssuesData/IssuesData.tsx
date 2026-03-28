@@ -18,6 +18,7 @@ import { useRowCount } from "@/hooks/userRowCount";
 import { useQuery } from "@tanstack/react-query";
 import { fetchIssues } from "@/queries/fetchIssues";
 import { fetchAutomations } from "@/queries/fetchAutomations";
+import ActiveFilterPills from "./ActiveFilterPills";
 import { DEFAULT_FETCH_OPTIONS, Options } from "@/public/assets";
 
 const IssuesData = ({ recordType }: { recordType: string }) => {
@@ -88,7 +89,22 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
           .includes(reference.toLowerCase())
       )
         return false;
-      if (department && record.department !== department) return false;
+      if (department) {
+        let departmentCheck;
+
+        if (role === "user") {
+          departmentCheck = record.issue_target_department;
+        } else if (role === "admin" || role === "agent") {
+          departmentCheck =
+            agentAdminFilter === "agentAdminFilter"
+              ? record.issue_target_department
+              : record.issue_submitter_department;
+        } else {
+          departmentCheck = record.issue_target_department;
+        }
+
+        if (departmentCheck !== department) return false;
+      }
       if (
         agent &&
         !record.issue_agent_name
@@ -126,7 +142,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
 
       return true;
     });
-  }, [recordsData, committedFilters]);
+  }, [recordsData, committedFilters, role, agentAdminFilter]);
 
   // Generate a dynamic url param that we will pass to the issue url - based on the data we are currently viewing
   // We have two sources of data, some are in issuesData,  some are in Automations (based on recordType)
@@ -213,7 +229,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
 
       {/* The filtering logic and search input fields */}
 
-      <div className="mb-6 flex flex-wrap items-center justify-start gap-4">
+      <div className="mb-4 flex flex-wrap items-center justify-start gap-4">
         <SearchFilterLogic recordType={recordType} />
         <SearchInputFields />
         {/* The search button */}
@@ -227,6 +243,12 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
           <ToggleTableView />
         </div>
       </div>
+
+      {/* Active filter pills */}
+      <ActiveFilterPills
+        committedFilters={committedFilters}
+        setCommittedFilters={setCommittedFilters}
+      />
 
       {recordsLoading ? (
         <IssuesDataSkeleton isTableView={isTableView} />
