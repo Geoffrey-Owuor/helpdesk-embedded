@@ -7,7 +7,7 @@ import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { IssueValueTypes } from "@/public/assets";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useAlertStore } from "@/store/useAlertStore";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
 type IssueTypeModalProps = {
   targetDepartment: IssueValueTypes;
@@ -53,46 +53,55 @@ const IssueTypeModal = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleIssueTypeUpdate = async (value: string) => {
-    hideDialog();
+  const { mutate: updateIssueType, isPending: isUpdating } = useMutation({
+    mutationFn: (value: string) =>
+      apiClient.patch("/patch-issuetype", { type: value, uuid }),
 
-    // 1. Cancel any outgoing refetches so they don't overwrite our optimistic update
-    await queryClient.cancelQueries({ queryKey: activeQueryKey });
+    onMutate: async (value) => {
+      // 1. Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: activeQueryKey });
 
-    // 2. Snapshot the previous data (for rollback if the API fails)
-    const previousData = queryClient.getQueryData(activeQueryKey);
+      // 2. Snapshot previous data
+      const previousData = queryClient.getQueryData(activeQueryKey);
 
-    // Optimistically update the cache
-    queryClient.setQueryData(
-      activeQueryKey,
-      (oldData: Record<string, IssueValueTypes>[]) => {
-        if (!oldData) return oldData;
-        // Map through the array and update the specific issue's status
-        return oldData.map((issue: Record<string, IssueValueTypes>) =>
-          issue.issue_uuid === uuid ? { ...issue, issue_type: value } : issue,
-        );
-      },
-    );
+      // 3. Optimistically update the cache
+      queryClient.setQueryData(
+        activeQueryKey,
+        (oldData: Record<string, IssueValueTypes>[]) => {
+          if (!oldData) return oldData;
+          return oldData.map((issue: Record<string, IssueValueTypes>) =>
+            issue.issue_uuid === uuid ? { ...issue, issue_type: value } : issue,
+          );
+        },
+      );
 
-    try {
-      const response = await apiClient.patch("/patch-issuetype", {
-        type: value,
-        uuid: uuid,
-      });
+      // 4. Return snapshot for rollback
+      return { previousData };
+    },
 
-      // Trigger alert on success
+    onSuccess: (response) => {
       triggerAlert("success", response.data.message);
-    } catch (error) {
-      // 5. Rollback to the snapshot if the API call fails
-      queryClient.setQueryData(activeQueryKey, previousData);
+    },
 
+    onError: (error, _value, context) => {
+      // 5. Rollback on failure
+      if (context?.previousData) {
+        queryClient.setQueryData(activeQueryKey, context.previousData);
+      }
       const errorMessage = getApiErrorMessage(error);
       console.error("Error while trying to patch issue type:", errorMessage);
       triggerAlert("error", errorMessage);
-    } finally {
-      // 6. Always refetch in the background after error or success to sync with the server
+    },
+
+    onSettled: () => {
+      // 6. Always refetch to sync with server
       queryClient.invalidateQueries({ queryKey: activeQueryKey });
-    }
+    },
+  });
+
+  const handleIssueTypeUpdate = async (value: string) => {
+    hideDialog();
+    updateIssueType(value);
   };
 
   const handleSelect = (value: string) => {
@@ -145,7 +154,7 @@ const IssueTypeModal = ({
                 key={option.value}
                 type="button"
                 onClick={() => handleSelect(option.value)}
-                disabled={currentType === option.value}
+                disabled={currentType === option.value || isUpdating}
                 className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-800"
               >
                 <span>{option.option}</span>

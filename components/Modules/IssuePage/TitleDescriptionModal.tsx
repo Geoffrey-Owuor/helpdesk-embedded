@@ -9,7 +9,15 @@ import { X } from "lucide-react";
 import { IssueValueTypes } from "@/public/assets";
 import FormAsterisk from "../FormAsterisk";
 import { useConfirmStore } from "@/store/useConfirmStore";
-import { useQueryClient } from "@tanstack/react-query";
+import { useOverlayStore } from "@/store/useOverlayStore";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+
+type Payload = {
+  uuid: string;
+  userId: IssueValueTypes;
+  issue_title: IssueValueTypes;
+  issue_description: IssueValueTypes;
+};
 
 type TitleDescriptionModalProps = {
   title: IssueValueTypes;
@@ -39,6 +47,9 @@ const TitleDescriptionModal = ({
   const modalRef = useRef<HTMLDivElement | null>(null);
   useFocusTrapping(modalRef, isModalOpen, closeModal);
 
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
+
   // state data
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
@@ -64,62 +75,52 @@ const TitleDescriptionModal = ({
     }));
   };
 
-  // the handle submit function
-  const handleSubmit = async () => {
-    hideDialog();
+  const { mutate: updateIssueMutation, isPending: isUpdating } = useMutation({
+    mutationFn: (payload: Payload) =>
+      apiClient.put("/update-issueinfo", payload),
 
-    // 1. Cancel any outgoing refetches so they don't overwrite our optimistic update
-    await queryClient.cancelQueries({ queryKey: activeQueryKey });
+    onSuccess: (response, payload) => {
+      // 1. Update cache only after confirmed API success
+      queryClient.setQueryData(
+        activeQueryKey,
+        (oldData: Record<string, IssueValueTypes>[]) => {
+          if (!oldData) return oldData;
+          return oldData.map((issue: Record<string, IssueValueTypes>) =>
+            issue.issue_uuid === payload.uuid
+              ? {
+                  ...issue,
+                  issue_title: payload.issue_title,
+                  issue_description: payload.issue_description,
+                }
+              : issue,
+          );
+        },
+      );
 
-    // 2. Snapshot the previous data (for rollback if the API fails)
-    const previousData = queryClient.getQueryData(activeQueryKey);
+      // Hide overlay on success
+      hideOverlay();
 
-    // Optimistically update the cache
-    queryClient.setQueryData(
-      activeQueryKey,
-      (oldData: Record<string, IssueValueTypes>[]) => {
-        if (!oldData) return oldData;
-        // Map through the array and update the specific issue's status
-        return oldData.map((issue: Record<string, IssueValueTypes>) =>
-          issue.issue_uuid === uuid
-            ? {
-                ...issue,
-                issue_title: formData.issue_title,
-                issue_description: formData.issue_description,
-              }
-            : issue,
-        );
-      },
-    );
-
-    // compile our data into one object
-    const payload = {
-      ...formData,
-      uuid,
-      userId,
-    };
-
-    try {
-      const response = await apiClient.put("/update-issueinfo", payload);
-
-      // Trigger a success alert
       triggerAlert("success", response.data.message);
-
-      // clear the form data
       setFormData({ issue_title: "", issue_description: "" });
-
-      // close the modal
       closeModal();
-    } catch (error) {
-      // 5. Rollback to the snapshot if the API call fails
-      queryClient.setQueryData(activeQueryKey, previousData);
+    },
 
+    onError: (error) => {
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
-    } finally {
-      // 6. Always refetch in the background after error or success to sync with the server
+    },
+
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: activeQueryKey });
-    }
+    },
+  });
+
+  // Simplified handleSubmit
+  const handleSubmit = async () => {
+    const payload = { ...formData, uuid, userId };
+    hideDialog();
+    showOverlay("Updating");
+    updateIssueMutation(payload);
   };
 
   const handleConfirmSubmit = (e: FormEvent) => {
@@ -205,6 +206,7 @@ const TitleDescriptionModal = ({
               <button
                 type="submit"
                 disabled={
+                  isUpdating ||
                   !formData.issue_description ||
                   !formData.issue_title ||
                   (formData.issue_description === description &&
