@@ -71,18 +71,34 @@ export interface Options {
   submitter?: string;
 }
 
+export interface PriorityBreakdown {
+  total: number;
+  low: number;
+  medium: number;
+  high: number;
+  critical: number;
+}
+
 export interface DataCounts {
   totals: number;
-  pending: number;
-  inProgress: number;
-  resolved: number;
-  unfeasible: number;
+  pending: PriorityBreakdown;
+  inProgress: PriorityBreakdown;
+  resolved: PriorityBreakdown;
+  unfeasible: PriorityBreakdown;
 }
+
+const defaultBreakdown: PriorityBreakdown = {
+  total: 0,
+  low: 0,
+  medium: 0,
+  high: 0,
+  critical: 0,
+};
 
 export const defaultCounts: DataCounts = {
   totals: 0,
-  pending: 0,
-  inProgress: 0,
-  resolved: 0,
-  unfeasible: 0,
+  pending: { ...defaultBreakdown },
+  inProgress: { ...defaultBreakdown },
+  resolved: { ...defaultBreakdown },
+  unfeasible: { ...defaultBreakdown },
 };

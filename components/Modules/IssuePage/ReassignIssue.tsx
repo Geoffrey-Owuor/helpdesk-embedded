@@ -19,7 +19,14 @@ import { IssueValueTypes } from "@/public/assets";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useOverlayStore } from "@/store/useOverlayStore";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+
+type Payload = {
+  uuid: string;
+  agentName: IssueValueTypes;
+  agentEmail: IssueValueTypes;
+};
 
 type ReassignIssueProps = {
   uuid: string;
@@ -47,6 +54,9 @@ const ReassignIssue = ({
   const modalRef = useRef<HTMLDivElement | null>(null);
   useFocusTrapping(modalRef, isModalOpen, closeModal);
 
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
+
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
@@ -73,40 +83,28 @@ const ReassignIssue = ({
     setAgentName(agentName);
   };
 
-  //function for calling the api endpoint to handle reassigning
-  const handleReAssigning = async () => {
-    hideDialog();
+  const { mutate: updateAgent, isPending: isUpdating } = useMutation({
+    mutationFn: (payload: Payload) => apiClient.put("/reassign-issue", payload),
+    onSuccess: (response, payload) => {
+      queryClient.setQueryData(
+        activeQueryKey,
+        (oldData: Record<string, IssueValueTypes>[]) => {
+          if (!oldData) return oldData;
+          // Map through the array and update the specific issue's status
+          return oldData.map((issue: Record<string, IssueValueTypes>) =>
+            issue.issue_uuid === payload.uuid
+              ? {
+                  ...issue,
+                  issue_agent_name: payload.agentName,
+                  issue_agent_email: payload.agentEmail,
+                }
+              : issue,
+          );
+        },
+      );
 
-    // 1. Cancel any outgoing refetches so they don't overwrite our optimistic update
-    await queryClient.cancelQueries({ queryKey: activeQueryKey });
-
-    // 2. Snapshot the previous data (for rollback if the API fails)
-    const previousData = queryClient.getQueryData(activeQueryKey);
-
-    // Optimistically update the cache
-    queryClient.setQueryData(
-      activeQueryKey,
-      (oldData: Record<string, IssueValueTypes>[]) => {
-        if (!oldData) return oldData;
-        // Map through the array and update the specific issue's status
-        return oldData.map((issue: Record<string, IssueValueTypes>) =>
-          issue.issue_uuid === uuid
-            ? {
-                ...issue,
-                issue_agent_name: agentName,
-                issue_agent_email: agentEmail,
-              }
-            : issue,
-        );
-      },
-    );
-
-    try {
-      const response = await apiClient.put("/reassign-issue", {
-        agentName,
-        agentEmail,
-        uuid,
-      });
+      // Hide overlay on success
+      hideOverlay();
 
       // Show the alert on success
       triggerAlert("success", response.data.message);
@@ -117,16 +115,28 @@ const ReassignIssue = ({
 
       // close the modal
       closeModal();
-    } catch (error) {
-      // 5. Rollback to the snapshot if the API call fails
-      queryClient.setQueryData(activeQueryKey, previousData);
-
+    },
+    onError: (error) => {
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
-    } finally {
-      // 6. Always refetch in the background after error or success to sync with the server
+    },
+
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: activeQueryKey });
-    }
+    },
+  });
+  //function for calling the api endpoint to handle reassigning
+  const handleReAssigning = async () => {
+    const payload: Payload = {
+      uuid,
+      agentEmail,
+      agentName,
+    };
+
+    hideDialog();
+    showOverlay("Reassigning");
+
+    updateAgent(payload);
   };
 
   const handleConfirmationDialog = () => {
@@ -251,7 +261,7 @@ const ReassignIssue = ({
           <div className="mt-8 flex justify-center">
             <button
               onClick={handleConfirmationDialog}
-              disabled={!agentEmail || !agentName}
+              disabled={!agentEmail || !agentName || isUpdating}
               className="inline-flex items-center gap-2 rounded-xl bg-blue-700 px-3 py-2 text-white hover:bg-blue-800 disabled:opacity-50"
             >
               <UserRoundPen className="h-4 w-4" />

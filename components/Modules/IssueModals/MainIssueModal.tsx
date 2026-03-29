@@ -96,7 +96,14 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     superAdminFilter,
     agentAdminFilter,
   ];
+
+  const activeCardsKey = [
+    "dashboardIssueCounts",
+    agentAdminFilter,
+    superAdminFilter,
+  ];
   const automationsQueryKey = ["automationsDashboardData", selectedDepartment];
+  const automationCardsKey = ["dashboardAutomationCounts", selectedDepartment];
 
   // set options error
   const optionsError = alertType === "error";
@@ -175,10 +182,13 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
 
       // Refetch issues data in the background
       queryClient.invalidateQueries({ queryKey: activeQueryKey });
+      queryClient.invalidateQueries({ queryKey: activeCardsKey });
 
       // Refetch automations data if issue type is Automation
-      if (formData.issue_type === "Automation")
+      if (formData.issue_type === "Automation") {
         queryClient.invalidateQueries({ queryKey: automationsQueryKey });
+        queryClient.invalidateQueries({ queryKey: automationCardsKey });
+      }
 
       // Clear form data
       setFormData({

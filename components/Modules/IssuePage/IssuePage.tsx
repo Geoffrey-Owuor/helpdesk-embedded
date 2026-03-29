@@ -36,7 +36,7 @@ import IssueTypeModal from "./IssueTypeModal";
 import IssuePriorityFormatter from "../IssuesData/IssuePriorityFormatter";
 import { useSearchParams } from "next/navigation";
 import { useSearchStore } from "@/store/useSearchStore";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { fetchIssues } from "@/queries/fetchIssues";
 import { fetchAutomations } from "@/queries/fetchAutomations";
 import { IssueValueTypes } from "@/public/assets";
@@ -128,86 +128,111 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   // call useScrollToTop hook
   useScrollToTop();
 
-  // Async function for updating the status (Optimistic)
+  // Mutation for updating the status
+  const updateStatusMutation = useMutation({
+    mutationFn: (status: string) =>
+      apiClient.put("/update-status", { uuid, status }),
+
+    onMutate: async (newStatus) => {
+      // 1. Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: activeQueryKey });
+
+      // 2. Snapshot previous data
+      const previousData = queryClient.getQueryData(activeQueryKey);
+
+      // 3. Optimistically update the cache
+      queryClient.setQueryData(
+        activeQueryKey,
+        (oldData: Record<string, IssueValueTypes>[]) => {
+          if (!oldData) return oldData;
+          return oldData.map((issue: Record<string, IssueValueTypes>) =>
+            issue.issue_uuid === uuid
+              ? { ...issue, issue_status: newStatus }
+              : issue,
+          );
+        },
+      );
+
+      // 4. Return snapshot for rollback
+      return { previousData };
+    },
+
+    onSuccess: (response) => {
+      triggerAlert("success", response.data.message);
+    },
+
+    onError: (error, _newStatus, context) => {
+      // 5. Rollback on failure
+      if (context?.previousData) {
+        queryClient.setQueryData(activeQueryKey, context.previousData);
+      }
+      const errorMessage = getApiErrorMessage(error);
+      triggerAlert("error", errorMessage);
+    },
+
+    onSettled: () => {
+      // 6. Always refetch to sync with server
+      queryClient.invalidateQueries({ queryKey: activeQueryKey });
+    },
+  });
+
+  // Mutation for updating the priority
+  const updatePriorityMutation = useMutation({
+    mutationFn: (priority: string) =>
+      apiClient.put("/update-priority", { uuid, priority }),
+
+    onMutate: async (newPriority) => {
+      // 1. Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: activeQueryKey });
+
+      // 2. Snapshot previous data
+      const previousData = queryClient.getQueryData(activeQueryKey);
+
+      // 3. Optimistically update the cache
+      queryClient.setQueryData(
+        activeQueryKey,
+        (oldData: Record<string, IssueValueTypes>[]) => {
+          if (!oldData) return oldData;
+          return oldData.map((issue: Record<string, IssueValueTypes>) =>
+            issue.issue_uuid === uuid
+              ? { ...issue, issue_priority: newPriority }
+              : issue,
+          );
+        },
+      );
+
+      // 4. Return snapshot for rollback
+      return { previousData };
+    },
+
+    onSuccess: (response) => {
+      triggerAlert("success", response.data.message);
+    },
+
+    onError: (error, _newPriority, context) => {
+      // 5. Rollback on failure
+      if (context?.previousData) {
+        queryClient.setQueryData(activeQueryKey, context.previousData);
+      }
+      const errorMessage = getApiErrorMessage(error);
+      triggerAlert("error", errorMessage);
+    },
+
+    onSettled: () => {
+      // 6. Always refetch to sync with server
+      queryClient.invalidateQueries({ queryKey: activeQueryKey });
+    },
+  });
+
+  // handlers stay the same, hideDialog just moves here
   const handleUpdateStatus = async (status: string) => {
     hideDialog();
-
-    // 1. Cancel any outgoing refetches so they don't overwrite our optimistic update
-    await queryClient.cancelQueries({ queryKey: activeQueryKey });
-
-    // 2. Snapshot the previous data (for rollback if the API fails)
-    const previousData = queryClient.getQueryData(activeQueryKey);
-
-    // 3. Optimistically update the cache
-    queryClient.setQueryData(
-      activeQueryKey,
-      (oldData: Record<string, IssueValueTypes>[]) => {
-        if (!oldData) return oldData;
-        // Map through the array and update the specific issue's status
-        return oldData.map((issue: Record<string, IssueValueTypes>) =>
-          issue.issue_uuid === uuid
-            ? { ...issue, issue_status: status }
-            : issue,
-        );
-      },
-    );
-
-    try {
-      // 4. Perform the actual API call in the background
-      const response = await apiClient.put("/update-status", {
-        uuid,
-        status,
-      });
-
-      triggerAlert("success", response.data.message);
-    } catch (error) {
-      // 5. Rollback to the snapshot if the API call fails
-      queryClient.setQueryData(activeQueryKey, previousData);
-
-      const errorMessage = getApiErrorMessage(error);
-      triggerAlert("error", errorMessage);
-    } finally {
-      // 6. Always refetch in the background after error or success to sync with the server
-      queryClient.invalidateQueries({ queryKey: activeQueryKey });
-    }
+    updateStatusMutation.mutate(status);
   };
 
-  // Async function for updating the priority (Optimistic)
   const handleUpdatePriority = async (priority: string) => {
     hideDialog();
-
-    await queryClient.cancelQueries({ queryKey: activeQueryKey });
-    const previousData = queryClient.getQueryData(activeQueryKey);
-
-    // Optimistically update the priority in the cache
-    queryClient.setQueryData(
-      activeQueryKey,
-      (oldData: Record<string, IssueValueTypes>[]) => {
-        if (!oldData) return oldData;
-        return oldData.map((issue: Record<string, IssueValueTypes>) =>
-          issue.issue_uuid === uuid
-            ? { ...issue, issue_priority: priority }
-            : issue,
-        );
-      },
-    );
-
-    try {
-      const response = await apiClient.put("/update-priority", {
-        uuid,
-        priority,
-      });
-
-      triggerAlert("success", response.data.message);
-    } catch (error) {
-      // Rollback on failure
-      queryClient.setQueryData(activeQueryKey, previousData);
-      const errorMessage = getApiErrorMessage(error);
-      triggerAlert("error", errorMessage);
-    } finally {
-      // 6. Always refetch in the background after error or success to sync with the server
-      queryClient.invalidateQueries({ queryKey: activeQueryKey });
-    }
+    updatePriorityMutation.mutate(priority);
   };
 
   const handleConfirmationDialog = (selectedValue: string) => {
@@ -376,7 +401,10 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                             onClick={() =>
                               handlePriorityConfirmation(option.value)
                             }
-                            disabled={option.value === issueData.issue_priority}
+                            disabled={
+                              option.value === issueData.issue_priority ||
+                              updatePriorityMutation.isPending
+                            }
                             className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-900"
                           >
                             {option.label}
@@ -427,7 +455,10 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                         <button
                           key={option.value}
                           onClick={() => handleConfirmationDialog(option.value)}
-                          disabled={option.value === issueData.issue_status}
+                          disabled={
+                            option.value === issueData.issue_status ||
+                            updateStatusMutation.isPending
+                          }
                           className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-900"
                         >
                           {option.label}
