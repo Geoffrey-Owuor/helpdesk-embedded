@@ -8,7 +8,7 @@ import {
   CheckCircle2,
   XCircle,
   TrendingUp,
-  RotateCcw,
+  RotateCw,
 } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
@@ -129,19 +129,24 @@ const IssuesCards = ({ type }: { type: string }) => {
           {!isAutomations && isSuper && <SuperAdminFilter />}
         </div>
         <div className="flex items-center gap-4">
+          {/* Refresh button */}
           <button
             onClick={() => refetchCardCounts()}
-            className="rounded-full bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+            title="Refresh"
+            className="rounded-xl bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
           >
-            <RotateCcw />
+            <RotateCw className="h-4.5 w-4.5" />
           </button>
 
+          {/* Count badge */}
           {cardLoading ? (
-            <SkeletonBox className="hidden h-11 w-20 md:inline-flex" />
+            <SkeletonBox className="hidden h-8.5 w-18 md:inline-flex" />
           ) : (
-            <div className="hidden items-center gap-2 rounded-xl bg-neutral-100 px-3 py-2 md:flex dark:bg-neutral-900">
-              <TrendingUp />
-              <span className="text-lg font-semibold">{cardCounts.totals}</span>
+            <div className="hidden items-center gap-2 rounded-xl bg-neutral-100 px-3 py-2 shadow-inner md:flex dark:bg-neutral-900">
+              <TrendingUp className="h-4.5 w-4.5 text-neutral-400 dark:text-neutral-500" />
+              <span className="text-sm font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
+                {cardCounts.totals}
+              </span>
             </div>
           )}
         </div>

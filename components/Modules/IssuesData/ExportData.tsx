@@ -76,7 +76,7 @@ const ExportData = ({ fetchAutomations }: { fetchAutomations: string }) => {
   };
 
   return (
-    <div className="relative inline-flex items-center justify-center p-1">
+    <div className="relative inline-flex items-center justify-center p-1.5">
       {/* Spinning border with a visible track */}
       {isExporting && (
         <div className="absolute inset-0 animate-spin rounded-full border border-neutral-200 border-t-black dark:border-neutral-800 dark:border-t-white" />
@@ -87,9 +87,9 @@ const ExportData = ({ fetchAutomations }: { fetchAutomations: string }) => {
         title="Export data"
         onClick={handleExport}
         disabled={isExporting}
-        className="relative z-10 rounded-full bg-neutral-200 p-2 text-neutral-800 transition-all duration-200 hover:bg-neutral-200/60 disabled:pointer-events-none disabled:opacity-50 dark:bg-neutral-700/50 dark:text-neutral-100 dark:hover:bg-neutral-800/70"
+        className="relative z-10 rounded-xl bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
       >
-        <FileSpreadsheet className="h-5 w-5" />
+        <FileSpreadsheet className="h-4.5 w-4.5" />
       </button>
     </div>
   );

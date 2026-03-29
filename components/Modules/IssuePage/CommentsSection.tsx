@@ -96,9 +96,9 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
         <div className="flex items-center gap-4">
           <button
             onClick={() => refetch()}
-            className="rounded-full bg-neutral-200 p-2 transition-colors duration-200 hover:bg-neutral-300 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+            className="rounded-xl bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
           >
-            <RotateCcw className="h-5 w-5" />
+            <RotateCcw className="h-4.5 w-4.5" />
           </button>
           <button
             onClick={() => setShowCommentsInput((prev) => !prev)}
