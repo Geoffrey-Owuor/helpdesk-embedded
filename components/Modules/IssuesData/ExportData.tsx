@@ -1,6 +1,6 @@
 "use client";
 
-import { Download } from "lucide-react";
+import { FileSpreadsheet } from "lucide-react";
 import apiClient from "@/lib/AxiosClient";
 import { useState } from "react";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
@@ -79,7 +79,7 @@ const ExportData = ({ fetchAutomations }: { fetchAutomations: string }) => {
     <div className="relative inline-flex items-center justify-center p-1">
       {/* Spinning border with a visible track */}
       {isExporting && (
-        <div className="absolute inset-0 animate-spin rounded-full border-2 border-neutral-200 border-t-black dark:border-neutral-800 dark:border-t-white" />
+        <div className="absolute inset-0 animate-spin rounded-full border border-neutral-200 border-t-black dark:border-neutral-800 dark:border-t-white" />
       )}
 
       {/* Download button */}
@@ -87,9 +87,9 @@ const ExportData = ({ fetchAutomations }: { fetchAutomations: string }) => {
         title="Export data"
         onClick={handleExport}
         disabled={isExporting}
-        className="relative z-10 rounded-full bg-black p-2 text-white transition-all duration-200 hover:scale-105 hover:bg-neutral-800 active:scale-95 disabled:pointer-events-none disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+        className="relative z-10 rounded-full bg-neutral-200 p-2 text-neutral-800 transition-all duration-200 hover:bg-neutral-200/60 disabled:pointer-events-none disabled:opacity-50 dark:bg-neutral-700/50 dark:text-neutral-100 dark:hover:bg-neutral-800/70"
       >
-        <Download className="h-5 w-5" />
+        <FileSpreadsheet className="h-5 w-5" />
       </button>
     </div>
   );
