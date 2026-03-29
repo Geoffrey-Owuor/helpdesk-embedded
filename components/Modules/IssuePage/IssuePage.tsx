@@ -324,9 +324,9 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={refetchData}
-              className="rounded-full bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+              className="rounded-xl bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
             >
-              <RotateCcw />
+              <RotateCcw className="h-4.5 w-4.5" />
             </button>
 
             {/* Reassigning an issue and changing the issue priority */}
