@@ -1,6 +1,6 @@
 "use client";
 import { useSearchStore } from "@/store/useSearchStore";
-import { RotateCcw, XCircle } from "lucide-react";
+import { BrushCleaning, RotateCcw } from "lucide-react";
 
 type ClearRefreshProps = {
   handleRefetchIssues: () => void;
@@ -18,17 +18,16 @@ const ClearRefreshFilters = ({ handleRefetchIssues }: ClearRefreshProps) => {
       <button
         onClick={resetFilters}
         title="Clear filters"
-        className="flex h-9.5 items-center gap-1.5 rounded-xl bg-neutral-200 px-3 text-sm text-neutral-900 transition-colors duration-200 hover:bg-neutral-200/60 dark:bg-neutral-700/50 dark:text-neutral-100 dark:hover:bg-neutral-800/70"
+        className="flex items-center justify-center rounded-full bg-neutral-200 p-2 text-sm text-neutral-900 transition-colors duration-200 hover:bg-neutral-200/60 dark:bg-neutral-700/50 dark:text-neutral-100 dark:hover:bg-neutral-800/70"
       >
-        <XCircle className="h-4.5 w-4.5" />
-        <span className="max-w-20 truncate">Clear filters</span>
+        <BrushCleaning className="h-5 w-5" />
       </button>
       <button
         onClick={refetchIssues}
-        className="flex h-9.5 items-center gap-2 rounded-xl bg-neutral-900 px-3 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+        title="Refresh"
+        className="flex items-center justify-center rounded-full bg-neutral-900 p-2 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
       >
-        <RotateCcw className="h-4.5 w-4.5" />
-        <span>Refresh</span>
+        <RotateCcw className="h-5 w-5" />
       </button>
     </div>
   );

@@ -42,7 +42,7 @@ const ShowHideColumnsLogic = () => {
         <Columns2 className="h-4.5 w-4.5" />
         <span>
           <span className="custom:inline-flex hidden max-w-40 truncate">
-            Show/Hide Columns
+            Columns
           </span>
         </span>
         <ChevronDown
