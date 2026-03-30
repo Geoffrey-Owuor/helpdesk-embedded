@@ -164,7 +164,7 @@ const IssuesCards = ({ type }: { type: string }) => {
             </span>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-neutral-500">
+                <p className="max-w-25 truncate text-xs text-neutral-500">
                   Total {item.label}{" "}
                   {type === "automations" ? "Automations" : "Issues"}
                 </p>
