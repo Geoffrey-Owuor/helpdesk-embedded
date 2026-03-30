@@ -4,7 +4,7 @@ import Link from "next/link";
 import { DashBoardLogo } from "../Modules/DashBoardLogo";
 import { Dispatch, SetStateAction } from "react";
 import { useState, useCallback, useRef } from "react";
-import { CirclePlus, Bot, X, Home, ShieldUser } from "lucide-react";
+import { CirclePlus, Bot, X, Home, ShieldUser, ShieldPlus } from "lucide-react";
 import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
 import { useUser } from "@/contexts/UserContext";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
@@ -22,7 +22,7 @@ const MobileSideBar = ({
   setSideBarOpen,
 }: MobileSideBarProps) => {
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
-  const { role } = useUser();
+  const { role, isSuper } = useUser();
   const [showAdminOptions, setShowAdminOptions] = useState(false);
 
   // Tab focus trapping
@@ -112,7 +112,7 @@ const MobileSideBar = ({
               className="flex w-full items-center gap-2 rounded-xl p-2 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
             >
               <Home />
-              <span>Home</span>
+              <span>Home Page</span>
             </Link>
 
             {/* Link: Automations */}
@@ -124,6 +124,18 @@ const MobileSideBar = ({
               <Bot />
               <span>Automations</span>
             </Link>
+
+            {/* Super Admin  */}
+            {isSuper && (
+              <Link
+                href="/dashboard/superadmin"
+                onClick={() => handleMobileRouteChange("/dashboard/superadmin")}
+                className="flex w-full items-center gap-2 rounded-xl p-2 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              >
+                <ShieldPlus />
+                <span>Super Admin</span>
+              </Link>
+            )}
 
             {/* Admin functionality */}
             {role === "admin" && (

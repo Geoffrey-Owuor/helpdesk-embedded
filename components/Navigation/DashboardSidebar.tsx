@@ -6,6 +6,7 @@ import {
   Home,
   ChevronLeft,
   ShieldUser,
+  ShieldPlus,
 } from "lucide-react";
 import Link from "next/link";
 import ThemeToggle from "../Themes/ThemeToggle";
@@ -23,7 +24,7 @@ import UserSettings from "./UserSettings/UserSettings";
 import Notifications from "./Notifications/Notifications";
 
 const DashboardSidebar = () => {
-  const { username, role } = useUser();
+  const { username, role, isSuper } = useUser();
   const [sideBarOpen, setSideBarOpen] = useState(false);
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
@@ -42,6 +43,7 @@ const DashboardSidebar = () => {
 
   const isHomeActive = pathname === "/dashboard";
   const isAutomationActive = pathname === "/dashboard/automations";
+  const isSuperActive = pathname === "/dashboard/superadmin";
 
   const handleRouteChange = (route: string) => {
     if (route === pathname) return;
@@ -148,6 +150,17 @@ const DashboardSidebar = () => {
             isActive={isAutomationActive}
             onClick={() => handleRouteChange("/dashboard/automations")}
           />
+
+          {/* Super Admin */}
+          {isSuper && (
+            <SidebarLink
+              href="/dashboard/superadmin"
+              icon={<ShieldPlus className="h-5 w-5" />}
+              label="Super"
+              isActive={isSuperActive}
+              onClick={() => handleRouteChange("/dashboard/superadmin")}
+            />
+          )}
 
           {/* Admin Panel */}
           {role === "admin" && (
