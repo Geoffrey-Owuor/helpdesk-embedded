@@ -45,8 +45,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   const handleRefetchIssueAgents = async () => {
     // We call our server action here - the below function invalidates next.js unstable_cache
     await handleRefetchIssueAgentsData();
-
-    await refetch();
+    refetch();
   };
 
   if (!showAdminPanel) return null;
@@ -127,7 +126,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
                   </button>
                   <button
                     onClick={() => setShowAdminPanel(false)}
-                    className="rounded-full p-2 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
+                    className="rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
                   >
                     <X size={20} />
                   </button>
