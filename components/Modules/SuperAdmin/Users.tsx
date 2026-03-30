@@ -16,6 +16,7 @@ import Pagination from "../IssuesData/Pagination";
 import { useState, useEffect, useMemo } from "react";
 import SearchRefetch from "./SearchRefetch";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
+import UserCards from "./UserCards";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -181,6 +182,8 @@ const Users = () => {
 
   return (
     <div className="w-full space-y-4">
+      {/* User Cards */}
+      <UserCards />
       {/* Header */}
       <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
         <div>
@@ -190,7 +193,7 @@ const Users = () => {
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
             {loading
               ? "Loading..."
-              : `Registered account${users?.length !== 1 ? "s" : ""}: ${users?.length ?? 0}`}
+              : `Registered Account${users?.length !== 1 ? "s" : ""}: ${users?.length ?? 0}`}
           </p>
         </div>
 

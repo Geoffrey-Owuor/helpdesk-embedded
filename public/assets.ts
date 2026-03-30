@@ -102,3 +102,20 @@ export const defaultCounts: DataCounts = {
   resolved: { ...defaultBreakdown },
   unfeasible: { ...defaultBreakdown },
 };
+
+export interface UserCounts {
+  totals: number;
+  agents: number;
+  admins: number;
+  normalUsers: number;
+  activeUsers: number;
+  inactiveUsers: number;
+}
+export const DefaultUserCounts: UserCounts = {
+  totals: 0,
+  agents: 0,
+  admins: 0,
+  normalUsers: 0,
+  activeUsers: 0,
+  inactiveUsers: 0,
+};
