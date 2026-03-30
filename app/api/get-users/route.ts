@@ -15,7 +15,7 @@ export const GET = withAuth(async ({ user }) => {
   try {
     const baseQuery = `
     SELECT user_id, username, email, department, role, is_user_active, created_at
-    FROM users
+    FROM users ORDER BY created_at DESC
     `;
 
     const users = await query(baseQuery);
