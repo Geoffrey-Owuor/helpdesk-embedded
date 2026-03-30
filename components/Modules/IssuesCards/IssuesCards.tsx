@@ -144,7 +144,7 @@ const IssuesCards = ({ type }: { type: string }) => {
             <SkeletonBox className="hidden h-8.5 w-18 md:inline-flex" />
           ) : (
             <div className="hidden items-center gap-2 rounded-xl bg-neutral-100 px-3 py-2 shadow-inner md:flex dark:bg-neutral-900">
-              <TrendingUp className="h-4.5 w-4.5 text-neutral-400 dark:text-neutral-500" />
+              <TrendingUp className="h-4.5 w-4.5 text-neutral-700 dark:text-neutral-300" />
               <span className="text-sm font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
                 {cardCounts.totals}
               </span>

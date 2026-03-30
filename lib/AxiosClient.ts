@@ -51,8 +51,6 @@ apiClient.interceptors.response.use(
         // Retry the original request
         return apiClient(originalRequest);
       } catch (refreshError) {
-        console.error("Session expired, redirecting to login");
-        // Optional: Use window.location.href or a Next.js router if available
         window.location.href = "/login";
         return Promise.reject(refreshError);
       }

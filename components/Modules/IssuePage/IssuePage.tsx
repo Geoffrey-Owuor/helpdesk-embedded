@@ -102,6 +102,10 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
     ? ["automationsDashboardData", selectedDepartment]
     : ["issuesDashboardData", superAdminFilter, agentAdminFilter];
 
+  const activeCardsKey = isAutomation
+    ? ["dashboardAutomationCounts", selectedDepartment]
+    : ["dashboardIssueCounts", agentAdminFilter, superAdminFilter];
+
   const refetchData = () => {
     refetchInfo();
   };
@@ -173,6 +177,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
     onSettled: () => {
       // 6. Always refetch to sync with server
       queryClient.invalidateQueries({ queryKey: activeQueryKey });
+      queryClient.invalidateQueries({ queryKey: activeCardsKey });
     },
   });
 
@@ -221,6 +226,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
     onSettled: () => {
       // 6. Always refetch to sync with server
       queryClient.invalidateQueries({ queryKey: activeQueryKey });
+      queryClient.invalidateQueries({ queryKey: activeCardsKey });
     },
   });
 

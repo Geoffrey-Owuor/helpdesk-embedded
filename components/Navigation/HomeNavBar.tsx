@@ -41,7 +41,7 @@ const HomeNavBar = () => {
     <div
       className={`sticky top-0 right-0 left-0 z-50 transition-all duration-200 ${scrolledUp ? "translate-y-0" : "-translate-y-full"} ${isScrolled ? "custom-blur bg-white/70 dark:bg-neutral-950/70" : "bg-transparent"}`}
     >
-      <nav className="custom:px-8 mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+      <nav className="custom:px-8 mx-auto flex h-16 max-w-6xl items-center justify-between px-4 2xl:max-w-7xl">
         {/* App Logo */}
         <HomePagesLogo />
         <div className="flex items-center gap-4">

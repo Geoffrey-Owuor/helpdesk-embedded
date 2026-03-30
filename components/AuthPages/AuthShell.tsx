@@ -5,10 +5,10 @@ import { Sparkles } from "lucide-react";
 
 const AuthShell = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col items-center">
+    <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center 2xl:max-w-7xl">
       {/* Logo and Theme Toggle*/}
       <div className="fixed top-0 right-0 left-0 z-50">
-        <nav className="custom:px-8 mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+        <nav className="custom:px-8 mx-auto flex h-16 max-w-6xl items-center justify-between px-4 2xl:max-w-7xl">
           {/* App logo */}
           <HomePagesLogo />
           {/* Theme Toggle */}
