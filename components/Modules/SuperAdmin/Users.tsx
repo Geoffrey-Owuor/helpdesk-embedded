@@ -13,9 +13,10 @@ import {
 } from "lucide-react";
 import Pagination from "../IssuesData/Pagination";
 import { useState, useEffect, useMemo } from "react";
-import SearchRefetch from "./SearchRefetch";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import UserCards from "./UserCards";
+import ExportUsers from "./ExportUsers";
+import SearchInput from "./SearchInput";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -171,6 +172,7 @@ const Users = () => {
       {/* User Cards */}
       <UserCards />
       {/* Header */}
+
       <div className="mb-4 flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-10">
         <div className="inline-flex flex-col">
           <h2 className="text-xl font-semibold">Users Data</h2>
@@ -185,11 +187,13 @@ const Users = () => {
         </div>
 
         {/* Search and Refresh */}
-        <SearchRefetch
+        <SearchInput
           searchValue={searchValue}
           onSearch={(value) => setSearchValue(value)}
-          refetch={() => refetchUsers()}
         />
+
+        {/* Export Button */}
+        <ExportUsers refetch={() => refetchUsers()} />
       </div>
 
       {/* Table card */}

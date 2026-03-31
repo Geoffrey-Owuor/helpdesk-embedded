@@ -1,24 +1,19 @@
 "use client";
 
-import { Search, X, RotateCcw } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 type SearchRefetchProps = {
   onSearch: (value: string) => void;
   searchValue: string;
-  refetch: () => void;
 };
 
-const SearchRefetch = ({
-  onSearch,
-  refetch,
-  searchValue,
-}: SearchRefetchProps) => {
+const SearchInput = ({ onSearch, searchValue }: SearchRefetchProps) => {
   const handleClear = () => {
     onSearch("");
   };
 
   return (
-    <div className="flex w-full max-w-sm items-center gap-4">
+    <div className="flex w-full max-w-3xs">
       {/* Search Input Container */}
       <div className="relative flex-1">
         <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-neutral-400" />
@@ -38,16 +33,8 @@ const SearchRefetch = ({
           </button>
         )}
       </div>
-      {/* Refresh Button */}
-      <button
-        onClick={refetch}
-        title="Refresh"
-        className="rounded-xl bg-neutral-100 p-2 transition-colors duration-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
-      >
-        <RotateCcw className="h-5 w-5" />
-      </button>
     </div>
   );
 };
 
-export default SearchRefetch;
+export default SearchInput;
