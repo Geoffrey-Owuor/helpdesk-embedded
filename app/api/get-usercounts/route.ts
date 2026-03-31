@@ -17,6 +17,8 @@ export const GET = withAuth(async ({ user }) => {
     const baseQuery = `
     SELECT 
         COUNT(*) AS totals,
+        COUNT(*) FILTER (WHERE is_user_active = true) AS total_active,
+        COUNT(*) FILTER (WHERE is_user_active = false) AS total_inactive,
 
         COUNT(*) FILTER (WHERE role = 'agent') AS agents,
         COUNT(*) FILTER (WHERE role = 'agent' AND is_user_active = true) AS agents_active,
@@ -41,7 +43,11 @@ export const GET = withAuth(async ({ user }) => {
 
     return NextResponse.json(
       {
-        totals: getCount(row.totals),
+        totals: {
+          total: getCount(row.totals),
+          active: getCount(row.total_active),
+          inactive: getCount(row.total_inactive),
+        },
         agents: {
           total: getCount(row.agents),
           active: getCount(row.agents_active),

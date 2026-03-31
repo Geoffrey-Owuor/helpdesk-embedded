@@ -117,14 +117,29 @@ export const defaultUserCountBreakdown: UserCountBreakdown = {
 };
 
 export interface UserCounts {
-  totals: number;
+  totals: UserCountBreakdown;
   agents: UserCountBreakdown;
   admins: UserCountBreakdown;
   normalUsers: UserCountBreakdown;
 }
 export const DefaultUserCounts: UserCounts = {
-  totals: 0,
+  totals: { ...defaultUserCountBreakdown },
   agents: { ...defaultUserCountBreakdown },
   admins: { ...defaultUserCountBreakdown },
   normalUsers: { ...defaultUserCountBreakdown },
+};
+
+// Issues Count Types
+export interface IssuesMappingCounts {
+  low: number;
+  medium: number;
+  high: number;
+  critical: number;
+}
+
+export const DefaultIssuesMappingCounts: IssuesMappingCounts = {
+  low: 0,
+  medium: 0,
+  high: 0,
+  critical: 0,
 };

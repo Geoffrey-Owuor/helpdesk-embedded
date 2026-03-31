@@ -2,11 +2,7 @@
 
 import apiClient from "@/lib/AxiosClient";
 import { useQuery } from "@tanstack/react-query";
-import {
-  UserCounts,
-  DefaultUserCounts,
-  defaultUserCountBreakdown,
-} from "@/public/assets";
+import { UserCounts, DefaultUserCounts } from "@/public/assets";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import {
   ShieldCheck,
@@ -30,8 +26,8 @@ const UserCards = () => {
   const cardData = [
     {
       label: "Total Users",
-      value: userCounts.totals,
-      breakdown: defaultUserCountBreakdown,
+      value: userCounts.totals.total,
+      breakdown: userCounts.totals,
       icon: UsersRound,
       color: "text-blue-600 dark:text-blue-500",
       bgColor: "bg-blue-100 dark:bg-blue-900/30",

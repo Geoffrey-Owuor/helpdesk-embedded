@@ -1,5 +1,15 @@
+"use client";
+import IssuesMappingCards from "./IssuesMappingCards";
+
 const IssuesMapping = () => {
-  return <div>Issues Mapping Tab</div>;
+  return (
+    <>
+      {/* Issues Mapping Cards */}
+      <IssuesMappingCards />
+
+      {/* Header */}
+    </>
+  );
 };
 
 export default IssuesMapping;

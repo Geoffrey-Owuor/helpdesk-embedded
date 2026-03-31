@@ -171,8 +171,8 @@ const Users = () => {
     <>
       {/* User Cards */}
       <UserCards />
-      {/* Header */}
 
+      {/* Header */}
       <div className="mb-4 flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-10">
         <div className="inline-flex flex-col">
           <h2 className="text-xl font-semibold">Users Data</h2>
