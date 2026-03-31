@@ -71,6 +71,7 @@ export interface Options {
   submitter?: string;
 }
 
+// Issue Cards Count Types
 export interface PriorityBreakdown {
   total: number;
   low: number;
@@ -103,19 +104,27 @@ export const defaultCounts: DataCounts = {
   unfeasible: { ...defaultBreakdown },
 };
 
+// User Count Types
+export interface UserCountBreakdown {
+  total: number;
+  active: number;
+  inactive: number;
+}
+export const defaultUserCountBreakdown: UserCountBreakdown = {
+  total: 0,
+  active: 0,
+  inactive: 0,
+};
+
 export interface UserCounts {
   totals: number;
-  agents: number;
-  admins: number;
-  normalUsers: number;
-  activeUsers: number;
-  inactiveUsers: number;
+  agents: UserCountBreakdown;
+  admins: UserCountBreakdown;
+  normalUsers: UserCountBreakdown;
 }
 export const DefaultUserCounts: UserCounts = {
   totals: 0,
-  agents: 0,
-  admins: 0,
-  normalUsers: 0,
-  activeUsers: 0,
-  inactiveUsers: 0,
+  agents: { ...defaultUserCountBreakdown },
+  admins: { ...defaultUserCountBreakdown },
+  normalUsers: { ...defaultUserCountBreakdown },
 };

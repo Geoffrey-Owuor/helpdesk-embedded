@@ -10,7 +10,6 @@ import {
   Pencil,
   Trash2,
   UserRound,
-  UsersRound,
 } from "lucide-react";
 import Pagination from "../IssuesData/Pagination";
 import { useState, useEffect, useMemo } from "react";
@@ -108,19 +107,6 @@ function SkeletonRow() {
   );
 }
 
-function EmptyState() {
-  return (
-    <tr>
-      <td colSpan={7} className="py-20 text-center">
-        <div className="flex flex-col items-center gap-3 text-neutral-400 dark:text-neutral-500">
-          <UsersRound size={36} strokeWidth={1.2} />
-          <p className="text-sm font-medium">No users found</p>
-        </div>
-      </td>
-    </tr>
-  );
-}
-
 // ── Main component ────────────────────────────────────────────────────────────
 
 const Users = () => {
@@ -181,20 +167,21 @@ const Users = () => {
   };
 
   return (
-    <div className="w-full space-y-4">
+    <>
       {/* User Cards */}
       <UserCards />
       {/* Header */}
-      <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-            IssueDesk Users
-          </h2>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+      <div className="mb-4 flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-10">
+        <div className="inline-flex flex-col">
+          <h2 className="text-xl font-semibold">Users Data</h2>
+          <span className="text-sm text-neutral-800 dark:text-neutral-400">
+            Users Detailed Information
+          </span>
+          <span className="text-xs text-neutral-500">
             {loading
               ? "Loading..."
               : `Registered Account${users?.length !== 1 ? "s" : ""}: ${users?.length ?? 0}`}
-          </p>
+          </span>
         </div>
 
         {/* Search and Refresh */}
@@ -206,148 +193,145 @@ const Users = () => {
       </div>
 
       {/* Table card */}
-      <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-180 text-sm">
-            {/* Head */}
-            <thead>
-              <tr className="border-b border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800/50">
-                {[
-                  "User",
-                  "Email",
-                  "Department",
-                  "Role",
-                  "Status",
-                  "Joined",
-                  "Actions",
-                ].map((col) => (
-                  <th
-                    key={col}
-                    className={`px-4 py-3 text-left text-xs font-semibold tracking-wider text-neutral-500 uppercase dark:text-neutral-400 ${
-                      col === "Actions" ? "text-right" : ""
-                    }`}
-                  >
-                    {col}
-                  </th>
-                ))}
+      <div className="layout-scrollbar w-full overflow-x-auto rounded-xl bg-gray-100/50 px-4 py-2 dark:bg-neutral-950">
+        <table className="min-w-full border-separate border-spacing-y-3 text-left">
+          {/* Head */}
+          <thead>
+            <tr>
+              {[
+                "User",
+                "Email",
+                "Department",
+                "Role",
+                "Status",
+                "Joined",
+                "Actions",
+              ].map((col) => (
+                <th
+                  key={col}
+                  className={`px-4 pb-2 text-xs font-semibold tracking-wider whitespace-nowrap text-gray-500 uppercase dark:text-gray-400 ${
+                    col === "Actions" ? "text-right" : ""
+                  }`}
+                >
+                  {col}
+                </th>
+              ))}
+            </tr>
+          </thead>
+
+          {/* Body */}
+          <tbody>
+            {loading ? (
+              Array.from({ length: 10 }).map((_, i) => <SkeletonRow key={i} />)
+            ) : !filteredUsers || filteredUsers.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={7}
+                  className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50 py-12 text-center text-neutral-500 shadow-sm dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-400"
+                >
+                  No users found.
+                </td>
               </tr>
-            </thead>
+            ) : (
+              currentUsers.map((user) => {
+                const role = ROLES[user.role] ?? ROLES.user;
+                const active =
+                  ACTIVE_STATES[String(user.is_user_active)] ??
+                  ACTIVE_STATES.false;
 
-            {/* Body */}
-            <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
-              {loading ? (
-                Array.from({ length: 10 }).map((_, i) => (
-                  <SkeletonRow key={i} />
-                ))
-              ) : !filteredUsers || filteredUsers.length === 0 ? (
-                <EmptyState />
-              ) : (
-                currentUsers.map((user) => {
-                  const role = ROLES[user.role] ?? ROLES.user;
-                  const active =
-                    ACTIVE_STATES[String(user.is_user_active)] ??
-                    ACTIVE_STATES.false;
-
-                  return (
-                    <tr
-                      key={user.user_id}
-                      className="group hover:bg-neutral-100 dark:hover:bg-neutral-900/50"
-                    >
-                      {/* User */}
-                      <td className="px-4 py-3.5">
-                        <div className="flex items-center gap-3">
-                          {/* Avatar initials */}
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-200 text-xs font-semibold text-neutral-700 dark:bg-neutral-700 dark:text-neutral-200">
-                            {user.username.slice(0, 2).toUpperCase()}
-                          </div>
-                          <span className="font-medium text-neutral-900 dark:text-neutral-100">
-                            {user.username}
-                          </span>
+                return (
+                  <tr
+                    key={user.user_id}
+                    className="group cursor-default rounded-xl text-sm shadow-sm transition-transform duration-200"
+                  >
+                    {/* User */}
+                    <td className="bg-white px-4 py-3.5 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-200 text-xs font-semibold text-neutral-700 dark:bg-neutral-700 dark:text-neutral-200">
+                          {user.username.slice(0, 2).toUpperCase()}
                         </div>
-                      </td>
+                        <span className="font-medium text-neutral-900 dark:text-neutral-100">
+                          {user.username}
+                        </span>
+                      </div>
+                    </td>
 
-                      {/* Email */}
-                      <td className="px-4 py-3.5 text-neutral-600 dark:text-neutral-400">
-                        {user.email}
-                      </td>
+                    {/* Email */}
+                    <td className="bg-white px-4 py-3.5 text-neutral-600 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:text-neutral-400 dark:group-hover:bg-neutral-800/50">
+                      {user.email}
+                    </td>
 
-                      {/* Department */}
-                      <td className="px-4 py-3.5 text-neutral-600 dark:text-neutral-400">
-                        {user.department || (
-                          <span className="text-neutral-400 dark:text-neutral-600">
-                            —
-                          </span>
-                        )}
-                      </td>
+                    {/* Department */}
+                    <td className="bg-white px-4 py-3.5 text-neutral-600 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:text-neutral-400 dark:group-hover:bg-neutral-800/50">
+                      {user.department || (
+                        <span className="text-neutral-400 dark:text-neutral-600">
+                          —
+                        </span>
+                      )}
+                    </td>
 
-                      {/* Role */}
-                      <td className="px-4 py-3.5">
-                        <Badge
-                          icon={role.icon}
-                          label={role.label}
-                          styles={role.styles}
-                        />
-                      </td>
+                    {/* Role */}
+                    <td className="bg-white px-4 py-3.5 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
+                      <Badge
+                        icon={role.icon}
+                        label={role.label}
+                        styles={role.styles}
+                      />
+                    </td>
 
-                      {/* Status */}
-                      <td className="px-4 py-3.5">
-                        <Badge
-                          icon={active.icon}
-                          label={active.label}
-                          styles={active.styles}
-                        />
-                      </td>
+                    {/* Status */}
+                    <td className="bg-white px-4 py-3.5 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
+                      <Badge
+                        icon={active.icon}
+                        label={active.label}
+                        styles={active.styles}
+                      />
+                    </td>
 
-                      {/* Joined */}
-                      <td className="px-4 py-3.5 text-neutral-500 dark:text-neutral-400">
-                        {dateFormatter(user.created_at)}
-                      </td>
+                    {/* Joined */}
+                    <td className="bg-white px-4 py-3.5 text-neutral-500 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:text-neutral-400 dark:group-hover:bg-neutral-800/50">
+                      {dateFormatter(user.created_at)}
+                    </td>
 
-                      {/* Actions */}
-                      <td className="px-4 py-3.5">
-                        <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={() => handleEdit(user)}
-                            aria-label="Edit user"
-                            className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-neutral-200 hover:text-neutral-700 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
-                          >
-                            <Pencil size={15} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(user)}
-                            aria-label="Delete user"
-                            className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/30 dark:hover:text-red-400"
-                          >
-                            <Trash2 size={15} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {!loading && filteredUsers && filteredUsers.length > 0 && (
-          //   Pagination ui
-          <div className="px-4">
-            <Pagination
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-              totalPages={totalPages}
-              issuesPerPage={usersPerPage}
-              setIssuesPerPage={setUsersPerPage}
-              perPageOptions={perPageOptions}
-              indexOfFirstIssue={indexOfFirstUser}
-              indexOfLastIssue={indexOfLastUser}
-              issuesLength={filteredUsers.length}
-            />
-          </div>
-        )}
+                    {/* Actions */}
+                    <td className="bg-white px-4 py-3.5 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => handleEdit(user)}
+                          className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-neutral-200 hover:text-neutral-700 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
+                        >
+                          <Pencil size={15} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(user)}
+                          className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/30 dark:hover:text-red-400"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
       </div>
-    </div>
+
+      {!loading && filteredUsers && filteredUsers.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          totalPages={totalPages}
+          issuesPerPage={usersPerPage}
+          setIssuesPerPage={setUsersPerPage}
+          perPageOptions={perPageOptions}
+          indexOfFirstIssue={indexOfFirstUser}
+          indexOfLastIssue={indexOfLastUser}
+          issuesLength={filteredUsers.length}
+        />
+      )}
+    </>
   );
 };
 
