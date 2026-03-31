@@ -17,11 +17,19 @@ export const GET = withAuth(async ({ user }) => {
     const baseQuery = `
     SELECT 
         COUNT(*) AS totals,
+
         COUNT(*) FILTER (WHERE role = 'agent') AS agents,
+        COUNT(*) FILTER (WHERE role = 'agent' AND is_user_active = true) AS agents_active,
+        COUNT(*) FILTER (WHERE role = 'agent' AND is_user_active = false) AS agents_inactive,
+      
         COUNT(*) FILTER (WHERE role = 'admin') AS admins,
+        COUNT(*) FILTER (WHERE role = 'admin' AND is_user_active = true) AS admins_active,
+        COUNT(*) FILTER (WHERE role = 'admin' AND is_user_active = false) AS admins_inactive,
+
         COUNT(*) FILTER (WHERE role = 'user') AS normal_users,
-        COUNT(*) FILTER (WHERE is_user_active = true) AS active_users,
-        COUNT(*) FILTER (WHERE is_user_active = false) AS inactive_users
+        COUNT(*) FILTER (WHERE role = 'user' AND is_user_active = true) AS normal_users_active,
+        COUNT(*) FILTER (WHERE role = 'user' AND is_user_active = false) AS normal_users_inactive
+
     FROM users
     `;
 
@@ -34,11 +42,21 @@ export const GET = withAuth(async ({ user }) => {
     return NextResponse.json(
       {
         totals: getCount(row.totals),
-        agents: getCount(row.agents),
-        admins: getCount(row.admins),
-        normalUsers: getCount(row.normal_users),
-        activeUsers: getCount(row.active_users),
-        inactiveUsers: getCount(row.inactive_users),
+        agents: {
+          total: getCount(row.agents),
+          active: getCount(row.agents_active),
+          inactive: getCount(row.agents_inactive),
+        },
+        admins: {
+          total: getCount(row.admins),
+          active: getCount(row.admins_active),
+          inactive: getCount(row.admins_inactive),
+        },
+        normalUsers: {
+          total: getCount(row.normal_users),
+          active: getCount(row.normal_users_active),
+          inactive: getCount(row.normal_users_inactive),
+        },
       },
       { status: 200 },
     );
