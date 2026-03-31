@@ -6,20 +6,25 @@ import apiClient from "@/lib/AxiosClient";
 import { useAlertStore } from "@/store/useAlertStore";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 
-type ExportUsersProps = {
+type ExportDataProps = {
   refetch: () => void;
+  type: string;
 };
-const ExportUsers = ({ refetch }: ExportUsersProps) => {
+const ExportData = ({ refetch, type }: ExportDataProps) => {
   const [isExporting, setIsExporting] = useState(false);
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
 
+  const isUsers = type === "users";
+
   const date = new Date().toLocaleDateString("en-GB");
-  const documentName = `users_data_${date}.xlsx`;
+  const documentName = `${isUsers ? "users" : "issues"}_data_${date}.xlsx`;
+
+  const apiString = `/export-${isUsers ? "users" : "issuesmapping"}`;
 
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      const response = await apiClient.get("/export-users", {
+      const response = await apiClient.get(apiString, {
         responseType: "blob",
       });
 
@@ -80,4 +85,4 @@ const ExportUsers = ({ refetch }: ExportUsersProps) => {
   );
 };
 
-export default ExportUsers;
+export default ExportData;

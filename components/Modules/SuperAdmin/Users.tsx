@@ -15,7 +15,7 @@ import Pagination from "../IssuesData/Pagination";
 import { useState, useEffect, useMemo } from "react";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import UserCards from "./UserCards";
-import ExportUsers from "./ExportUsers";
+import ExportData from "./ExportData";
 import SearchInput from "./SearchInput";
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -193,7 +193,7 @@ const Users = () => {
         />
 
         {/* Export Button */}
-        <ExportUsers refetch={() => refetchUsers()} />
+        <ExportData type="users" refetch={() => refetchUsers()} />
       </div>
 
       {/* Table card */}
