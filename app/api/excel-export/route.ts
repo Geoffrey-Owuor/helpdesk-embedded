@@ -126,7 +126,7 @@ export const GET = withAuth(async ({ request, user }) => {
     console.error("Failed to export issues data to excel:", error);
     return NextResponse.json(
       { message: "Failed to export issues data to excel" },
-      { status: 200 },
+      { status: 500 },
     );
   }
 });
