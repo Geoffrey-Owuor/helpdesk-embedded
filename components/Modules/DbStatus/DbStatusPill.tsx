@@ -1,7 +1,6 @@
 "use client";
 
 import { useDbStore, DbStatus } from "@/store/useDbStore";
-import { Activity, AlertCircle, Loader2 } from "lucide-react";
 import { DbStatusOverlay } from "./DbStatusOverlay";
 import { useState } from "react";
 
@@ -17,20 +16,20 @@ export function DbStatusPill() {
     ok: {
       container:
         "border-neutral-200 bg-neutral-50 text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400",
-      icon: "text-emerald-500",
-      label: "Systems Operational",
+      icon: "bg-green-500",
+      label: "Systems Normal",
     },
     degraded: {
       container:
         "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-500",
-      icon: "text-amber-500",
+      icon: "bg-amber-500",
       label: "Service Degraded",
     },
     checking: {
       container:
         "border-neutral-200 bg-neutral-50 text-neutral-500 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-500",
-      icon: "text-neutral-400 animate-spin",
-      label: "Checking Connectivity...",
+      icon: "bg-neutral-600",
+      label: "Checking...",
     },
   };
 
@@ -48,13 +47,7 @@ export function DbStatusPill() {
         onClick={() => setShowOverlay(true)}
         className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-500 ${current.container}`}
       >
-        {status === "ok" && <Activity size={14} className={current.icon} />}
-        {status === "degraded" && (
-          <AlertCircle size={14} className={current.icon} />
-        )}
-        {status === "checking" && (
-          <Loader2 size={14} className={current.icon} />
-        )}
+        <span className={`flex h-2 w-2 rounded-full ${current.icon}`}></span>
         {current.label}
       </button>
     </>
