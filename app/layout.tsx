@@ -9,6 +9,7 @@ import {
   PromiseOverlay,
 } from "@/components/Modules/Overlays";
 import QueryProvider from "@/components/Navigation/QueryProvider";
+import { DbRecoveryManager } from "@/components/Modules/DbStatus/DbRecoveryManager";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,10 +44,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} bg-gray-50 antialiased dark:bg-neutral-950`}
       >
         <Provider>
+          <DbRecoveryManager />
           <LoadingLine />
           <Alert />
           <PromiseOverlay />
           <ConfirmationDialog />
+
           <QueryProvider>{children}</QueryProvider>
         </Provider>
       </body>

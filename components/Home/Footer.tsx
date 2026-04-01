@@ -3,6 +3,7 @@ import Link from "next/link";
 import { assets } from "@/public/assets";
 import { currentYear } from "@/public/assets";
 import { Sparkles } from "lucide-react";
+import { DbStatusPill } from "../Modules/DbStatus/DbStatusPill";
 
 const footerLinks = {
   product: [
@@ -99,13 +100,16 @@ const Footer = () => {
                 </a>{" "}
                 anytime.
               </p>
+              <div className="mt-4">
+                <DbStatusPill />
+              </div>
             </div>
           </div>
         </div>
 
         {/* Bottom Bar - Centered */}
         <div className="mt-16 flex flex-col items-center gap-8 border-t border-neutral-100 pt-8 dark:border-neutral-900">
-          <span className="inline-flex items-center gap-2 text-sm leading-5 text-neutral-500">
+          <span className="flex items-center gap-2 text-sm leading-5 text-neutral-500">
             <span> &copy; {currentYear} Issue Desk. Built by</span>
             <a
               href="https://jeff-portfolio-web.vercel.app"

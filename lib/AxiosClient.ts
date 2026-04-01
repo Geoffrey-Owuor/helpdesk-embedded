@@ -1,4 +1,5 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { useDbStore } from "@/store/useDbStore";
 
 // 1. The Type Definition
 let refreshPromise: Promise<unknown> | null = null;
@@ -22,6 +23,14 @@ apiClient.interceptors.response.use(
       _retry?: boolean;
     };
 
+    // 1. If the error is a 500, DON'T refresh. Just fail.
+    if (error.response?.status === 503) {
+      // Trigger Healthcheck
+      useDbStore.getState().triggerCheck();
+
+      return Promise.reject(error);
+    }
+
     if (
       error.response?.status === 401 &&
       originalRequest &&
@@ -36,9 +45,6 @@ apiClient.interceptors.response.use(
         refreshPromise = axios
           .post("/api/refresh-token", {}, { withCredentials: true })
           .then((res) => res.data) // This returns Promise<any>
-          .catch((err) => {
-            throw err;
-          })
           .finally(() => {
             refreshPromise = null;
           });
@@ -51,6 +57,17 @@ apiClient.interceptors.response.use(
         // Retry the original request
         return apiClient(originalRequest);
       } catch (refreshError) {
+        // Use Axios's built-in type guard
+        if (axios.isAxiosError(refreshError)) {
+          // Now 'err' is typed as AxiosError
+          if (refreshError.response?.status === 503) {
+            // Trigger Healthcheck
+            useDbStore.getState().triggerCheck();
+
+            return Promise.reject(refreshError);
+          }
+        }
+        // A 401 error - token probably expired redirect to login
         window.location.href = "/login";
         return Promise.reject(refreshError);
       }
