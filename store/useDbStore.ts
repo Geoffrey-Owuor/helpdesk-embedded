@@ -8,15 +8,12 @@ interface DbStore {
   setStatus: (status: DbStatus) => void;
 }
 
-export const useDbStore = create<DbStore>((set, get) => ({
-  status: "degraded", // Assume OK by default
+export const useDbStore = create<DbStore>((set) => ({
+  status: "checking",
 
   setStatus: (status) => set({ status }),
 
   triggerCheck: async () => {
-    // Prevent multiple simultaneous checks
-    if (get().status === "checking") return;
-
     set({ status: "checking" });
 
     try {

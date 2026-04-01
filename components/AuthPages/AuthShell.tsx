@@ -2,6 +2,7 @@ import ThemeToggle from "../Themes/ThemeToggle";
 import { currentYear } from "@/public/assets";
 import HomePagesLogo from "../Modules/HomePagesLogo";
 import { Sparkles } from "lucide-react";
+import { DbStatusPill } from "../Modules/DbStatus/DbStatusPill";
 
 const AuthShell = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -11,8 +12,11 @@ const AuthShell = ({ children }: { children: React.ReactNode }) => {
         <nav className="custom:px-8 mx-auto flex h-16 max-w-6xl items-center justify-between px-4 2xl:max-w-7xl">
           {/* App logo */}
           <HomePagesLogo />
-          {/* Theme Toggle */}
-          <ThemeToggle />
+          {/* Right side controls */}
+          <div className="flex items-center gap-3">
+            <DbStatusPill />
+            <ThemeToggle />
+          </div>
         </nav>
       </div>
 

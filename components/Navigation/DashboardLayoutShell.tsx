@@ -5,7 +5,6 @@ import DashboardFooter from "./DashboardFooter";
 import HydrationGuard from "../Skeletons/HydrationGuard";
 import { DbStatusOverlay } from "../Modules/DbStatus/DbStatusOverlay";
 import { useDbStore } from "@/store/useDbStore";
-import SuspenseSkeleton from "../Skeletons/SuspenseSkeleton";
 
 const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
   const status = useDbStore((state) => state.status);
@@ -30,9 +29,7 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
     </>
   );
 
-  if (status === "checking") {
-    return <SuspenseSkeleton />;
-  } else if (status === "degraded") {
+  if (status === "degraded") {
     return <DbStatusOverlay />;
   } else {
     return defaultContent;
