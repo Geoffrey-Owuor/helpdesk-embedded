@@ -1,6 +1,6 @@
 "use client";
 
-import { FileSpreadsheet, RotateCcw } from "lucide-react";
+import { Bug, FileSpreadsheet, RotateCcw, UserRoundPlus } from "lucide-react";
 import { useState } from "react";
 import apiClient from "@/lib/AxiosClient";
 import { useAlertStore } from "@/store/useAlertStore";
@@ -57,6 +57,15 @@ const ExportData = ({ refetch, type }: ExportDataProps) => {
 
   return (
     <div className="ml-auto flex items-center gap-2">
+      {/*  The Add Button (Add Issue or User) */}
+      <button className="inline-flex items-center gap-2 rounded-xl bg-neutral-950 px-3 py-2 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200">
+        {isUsers ? (
+          <UserRoundPlus className="h-4 w-4" />
+        ) : (
+          <Bug className="h-4 w-4" />
+        )}
+        <span>Add {isUsers ? "user" : "issue"}</span>
+      </button>
       <div className="relative inline-flex items-center justify-center p-1.5">
         {/* Spinning border with a visible track */}
         {isExporting && (

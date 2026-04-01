@@ -7,9 +7,9 @@ import {
   Headset,
   CheckCircle2,
   XCircle,
-  Pencil,
   Trash2,
   UserRound,
+  UserRoundPen,
 } from "lucide-react";
 import Pagination from "../IssuesData/Pagination";
 import { useState, useEffect, useMemo } from "react";
@@ -17,6 +17,7 @@ import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import UserCards from "./UserCards";
 import ExportData from "./ExportData";
 import SearchInput from "./SearchInput";
+import EditUserModal from "./EditModals/EditUserModal";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -126,6 +127,8 @@ const Users = () => {
   //Search value
   const [searchValue, setSearchValue] = useState("");
 
+  const [activeEditId, setActiveEditId] = useState<string | null>(null);
+
   //  Memo hook for filtering data
   const filteredUsers = useMemo(() => {
     if (!searchValue) return users;
@@ -156,11 +159,6 @@ const Users = () => {
   useEffect(() => {
     Promise.resolve().then(() => setCurrentPage(1));
   }, [filteredUsers, usersPerPage]);
-
-  const handleEdit = (user: UserRecord) => {
-    // TODO: implement edit functionality
-    console.log("Edit user:", user);
-  };
 
   const handleDelete = (user: UserRecord) => {
     // TODO: implement delete functionality
@@ -301,10 +299,10 @@ const Users = () => {
                     <td className="bg-white px-4 py-3.5 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
                       <div className="flex items-center justify-end gap-1">
                         <button
-                          onClick={() => handleEdit(user)}
+                          onClick={() => setActiveEditId(user.user_id)}
                           className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-neutral-200 hover:text-neutral-700 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
                         >
-                          <Pencil size={15} />
+                          <UserRoundPen size={15} />
                         </button>
                         <button
                           onClick={() => handleDelete(user)}
@@ -312,6 +310,21 @@ const Users = () => {
                         >
                           <Trash2 size={15} />
                         </button>
+
+                        {/* The edit modal */}
+                        {activeEditId === user.user_id && (
+                          <EditUserModal
+                            isModalOpen={!!activeEditId}
+                            hideModal={() => setActiveEditId(null)}
+                            userInfo={{
+                              name: user.username,
+                              email: user.email,
+                              department: user.department,
+                              role: user.role,
+                              status: String(user.is_user_active),
+                            }}
+                          />
+                        )}
                       </div>
                     </td>
                   </tr>
