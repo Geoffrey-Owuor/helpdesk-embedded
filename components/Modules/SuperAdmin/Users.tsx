@@ -17,6 +17,7 @@ import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import UserCards from "./UserCards";
 import ExportData from "./ExportData";
 import SearchInput from "./SearchInput";
+import { useUser } from "@/contexts/UserContext";
 import EditUserModal from "./EditModals/EditUserModal";
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -123,6 +124,8 @@ const Users = () => {
       return response.data;
     },
   });
+
+  const { userId } = useUser();
 
   //Search value
   const [searchValue, setSearchValue] = useState("");
@@ -300,13 +303,15 @@ const Users = () => {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => setActiveEditId(user.user_id)}
-                          className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-neutral-200 hover:text-neutral-700 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
+                          disabled={userId === user.user_id}
+                          className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-neutral-200 hover:text-neutral-700 disabled:opacity-50 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
                         >
                           <UserRoundPen size={15} />
                         </button>
                         <button
                           onClick={() => handleDelete(user)}
-                          className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/30 dark:hover:text-red-400"
+                          disabled={userId === user.user_id}
+                          className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-red-100 hover:text-red-600 disabled:opacity-50 dark:hover:bg-red-900/30 dark:hover:text-red-400"
                         >
                           <Trash2 size={15} />
                         </button>
