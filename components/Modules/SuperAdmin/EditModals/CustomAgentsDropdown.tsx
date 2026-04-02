@@ -3,18 +3,12 @@ import { useState, useRef, useEffect } from "react";
 import {
   ChevronDown,
   CheckCircle2,
-  Building,
   Shield,
-  Activity,
   LucideIcon,
-  Siren,
+  Headset,
 } from "lucide-react";
 import FormAsterisk from "../../FormAsterisk";
-
-export type DropdownOption = {
-  option: string;
-  value: string;
-};
+import { DropdownOption } from "./CustomDropDown";
 
 type CustomDropdownProps = {
   label: string;
@@ -24,13 +18,11 @@ type CustomDropdownProps = {
 };
 
 const LabelIcon: Record<string, LucideIcon> = {
-  Department: Building,
-  Role: Shield,
-  Status: Activity,
-  Priority: Siren,
+  Agent: Headset,
+  Admin: Shield,
 };
 
-const CustomDropdown = ({
+const CustomAgentsDropdown = ({
   label,
   options,
   value,
@@ -118,7 +110,14 @@ const CustomDropdown = ({
                   : "text-neutral-700 dark:text-neutral-300"
               }`}
             >
-              {item.option}
+              <div className="flex flex-col">
+                <span className="font-semibold text-neutral-900 dark:text-neutral-100">
+                  {item.option}
+                </span>
+                <span className="text-[10px] text-neutral-500">
+                  {item.value}
+                </span>
+              </div>
             </li>
           ))}
         </ul>
@@ -127,4 +126,4 @@ const CustomDropdown = ({
   );
 };
 
-export default CustomDropdown;
+export default CustomAgentsDropdown;

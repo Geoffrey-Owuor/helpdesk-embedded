@@ -10,11 +10,12 @@ import SearchInput from "../SearchInput";
 import ExportData from "../ExportData";
 import IssuePriorityFormatter from "../../IssuesData/IssuePriorityFormatter";
 import IssuesMappingCards from "./IssuesMappingCards";
+import EditIssueTypeModal from "../EditModals/EditIssueTypeModal";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
 interface IssueMappingRecord {
-  issue_id: number;
+  issue_id: string;
   agent_name: string;
   agent_email: string;
   admin_name: string;
@@ -73,6 +74,7 @@ const UserCell = ({
 
 const IssuesMapping = () => {
   const [searchValue, setSearchValue] = useState("");
+  const [activeEditId, setActiveEditId] = useState<string | null>(null);
 
   const {
     data: issuesMapping = [],
@@ -85,6 +87,26 @@ const IssuesMapping = () => {
       return response.data;
     },
   });
+
+  // Filtered mapped data - admins
+  const adminInformation = [
+    ...new Map(
+      issuesMapping.map((issue) => [
+        issue.admin_email,
+        { option: issue.admin_name, value: issue.admin_email },
+      ]),
+    ).values(),
+  ];
+
+  // Filtered mapped data - agents
+  const agentsInformation = [
+    ...new Map(
+      issuesMapping.map((issue) => [
+        issue.agent_email,
+        { option: issue.agent_name, value: issue.agent_email },
+      ]),
+    ).values(),
+  ];
 
   // 1. Search Logic
   const filteredMapping = useMemo(() => {
@@ -114,8 +136,7 @@ const IssuesMapping = () => {
     Promise.resolve().then(() => setCurrentPage(1));
   }, [filteredMapping, itemsPerPage]);
 
-  const handleEdit = (id: number) => console.log("Edit Mapping ID:", id);
-  const handleDelete = (id: number) => console.log("Delete Mapping ID:", id);
+  const handleDelete = (id: string) => console.log("Delete Mapping ID:", id);
 
   return (
     <>
@@ -217,7 +238,7 @@ const IssuesMapping = () => {
                   <td className="bg-white px-4 py-3 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
                     <div className="flex items-center justify-end gap-1">
                       <button
-                        onClick={() => handleEdit(item.issue_id)}
+                        onClick={() => setActiveEditId(item.issue_id)}
                         className="rounded-lg p-2 text-neutral-400 hover:bg-neutral-200 hover:text-neutral-700 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
                       >
                         <Pencil size={15} />
@@ -228,6 +249,22 @@ const IssuesMapping = () => {
                       >
                         <Trash2 size={15} />
                       </button>
+
+                      {/* The edit modal */}
+                      {activeEditId === item.issue_id && (
+                        <EditIssueTypeModal
+                          isModalOpen={activeEditId === item.issue_id}
+                          hideModal={() => setActiveEditId(null)}
+                          agentsInfo={agentsInformation}
+                          adminsInfo={adminInformation}
+                          issueInfo={{
+                            issueType: item.issue_type,
+                            issuePriority: item.issue_priority,
+                            adminEmail: item.admin_email,
+                            agentEmail: item.agent_email,
+                          }}
+                        />
+                      )}
                     </div>
                   </td>
                 </tr>
