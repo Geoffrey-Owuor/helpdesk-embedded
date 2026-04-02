@@ -319,7 +319,7 @@ const Users = () => {
                         {/* The edit modal */}
                         {activeEditId === user.user_id && (
                           <EditUserModal
-                            isModalOpen={!!activeEditId}
+                            isModalOpen={activeEditId === user.user_id}
                             hideModal={() => setActiveEditId(null)}
                             userInfo={{
                               name: user.username,

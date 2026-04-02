@@ -7,6 +7,7 @@ import {
   Shield,
   Activity,
   LucideIcon,
+  Siren,
 } from "lucide-react";
 import FormAsterisk from "../../FormAsterisk";
 
@@ -26,6 +27,7 @@ const LabelIcon: Record<string, LucideIcon> = {
   Department: Building,
   Role: Shield,
   Status: Activity,
+  Priority: Siren,
 };
 
 const CustomDropdown = ({
