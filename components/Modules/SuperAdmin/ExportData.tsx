@@ -6,12 +6,25 @@ import apiClient from "@/lib/AxiosClient";
 import { useAlertStore } from "@/store/useAlertStore";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import AddUser from "./EditModals/AddUser";
+import AddIssue from "./EditModals/AddIssue";
+import { DropdownOption } from "./EditModals/CustomDropDown";
+
+export const DefaultAgentsDropDown: DropdownOption[] = [
+  { option: "Not Found", value: "Not Found" },
+];
 
 type ExportDataProps = {
   refetch: () => void;
   type: string;
+  agentsInfo?: DropdownOption[];
+  adminsInfo?: DropdownOption[];
 };
-const ExportData = ({ refetch, type }: ExportDataProps) => {
+const ExportData = ({
+  refetch,
+  type,
+  agentsInfo = DefaultAgentsDropDown,
+  adminsInfo = DefaultAgentsDropDown,
+}: ExportDataProps) => {
   const [isExporting, setIsExporting] = useState(false);
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -64,6 +77,16 @@ const ExportData = ({ refetch, type }: ExportDataProps) => {
         <AddUser
           hideModal={() => setIsModalOpen(false)}
           isModalOpen={isModalOpen}
+        />
+      )}
+
+      {/* Add issue type modal */}
+      {!isUsers && isModalOpen && (
+        <AddIssue
+          hideModal={() => setIsModalOpen(false)}
+          isModalOpen={isModalOpen}
+          agentsInfo={agentsInfo}
+          adminsInfo={adminsInfo}
         />
       )}
 
