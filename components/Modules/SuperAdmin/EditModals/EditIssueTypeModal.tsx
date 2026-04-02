@@ -6,8 +6,9 @@ import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import { useState, useRef, FocusEvent } from "react";
 import { DropdownOption } from "./CustomDropDown";
 import { Bug, CheckCircle2, X } from "lucide-react";
+import FormAsterisk from "../../FormAsterisk";
 
-const priorityOptions: DropdownOption[] = [
+export const priorityOptions: DropdownOption[] = [
   { option: "Low", value: "Low" },
   { option: "Medium", value: "Medium" },
   { option: "High", value: "High" },
@@ -102,9 +103,10 @@ const EditIssueTypeModal = ({
             <div className="flex flex-col gap-1.5">
               <label
                 htmlFor="issueType"
-                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                className="flex items-center gap-1 text-sm font-medium text-neutral-700 dark:text-neutral-300"
               >
                 Issue Type
+                <FormAsterisk />
               </label>
               <div className="relative">
                 <div className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2">

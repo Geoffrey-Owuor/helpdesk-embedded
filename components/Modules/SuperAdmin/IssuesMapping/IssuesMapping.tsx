@@ -161,7 +161,12 @@ const IssuesMapping = () => {
           onSearch={(value) => setSearchValue(value)}
         />
 
-        <ExportData type="issues" refetch={() => refetchIssuesMapping()} />
+        <ExportData
+          agentsInfo={agentsInformation}
+          adminsInfo={adminInformation}
+          type="issues"
+          refetch={() => refetchIssuesMapping()}
+        />
       </div>
 
       {/* Table Section */}
@@ -239,13 +244,15 @@ const IssuesMapping = () => {
                     <div className="flex items-center justify-end gap-1">
                       <button
                         onClick={() => setActiveEditId(item.issue_id)}
-                        className="rounded-lg p-2 text-neutral-400 hover:bg-neutral-200 hover:text-neutral-700 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
+                        disabled={item.admin_email === "Unassigned"}
+                        className="rounded-lg p-2 text-neutral-400 hover:bg-neutral-200 hover:text-neutral-700 disabled:opacity-50 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
                       >
                         <Pencil size={15} />
                       </button>
                       <button
                         onClick={() => handleDelete(item.issue_id)}
-                        className="rounded-lg p-2 text-neutral-400 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/30 dark:hover:text-red-400"
+                        disabled={item.admin_email === "Unassigned"}
+                        className="rounded-lg p-2 text-neutral-400 hover:bg-red-100 hover:text-red-600 disabled:opacity-50 dark:hover:bg-red-900/30 dark:hover:text-red-400"
                       >
                         <Trash2 size={15} />
                       </button>
