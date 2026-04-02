@@ -1,9 +1,9 @@
 "use client";
 import { baseDepartments } from "@/public/assets";
 import ClientPortal from "../../ClientPortal";
-import { useState, useRef } from "react";
+import { useState, useRef, FocusEvent } from "react";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
-import { X } from "lucide-react";
+import { CheckCircle2, Mail, UserRound, X } from "lucide-react";
 import CustomDropdown from "./CustomDropDown";
 
 export const baseRoles = [
@@ -46,6 +46,11 @@ const EditUserModal = ({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value.trim() }));
+  };
+
   const handleDropdownChange = (field: keyof UserInfo, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -73,7 +78,7 @@ const EditUserModal = ({
           {/* Header */}
           <div className="flex items-center justify-between border-b border-neutral-100 px-6 py-4 dark:border-neutral-800">
             <div>
-              <h2 className="text-base font-semibold text-neutral-900 dark:text-white">
+              <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
                 Edit User Profile
               </h2>
               <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
@@ -84,7 +89,7 @@ const EditUserModal = ({
               onClick={hideModal}
               className="rounded-full p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 dark:text-neutral-500 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
             >
-              <X className="h-4 w-4" />
+              <X className="h-4.5 w-4.5" />
             </button>
           </div>
 
@@ -101,16 +106,26 @@ const EditUserModal = ({
               >
                 Full Name
               </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                placeholder="John Doe"
-                className="w-full rounded-xl border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900 shadow-sm transition-all duration-150 placeholder:text-neutral-400 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
-              />
+              <div className="relative">
+                <div className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2">
+                  {formData.name ? (
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  ) : (
+                    <UserRound className="h-4 w-4 text-neutral-400" />
+                  )}
+                </div>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  value={formData.name}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  placeholder="User Name"
+                  className="w-full rounded-xl border border-neutral-300 bg-white py-2.5 pr-3.5 pl-9 text-sm text-neutral-900 shadow-sm transition-all duration-150 placeholder:text-neutral-400 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
+                />
+              </div>
             </div>
 
             {/* Email */}
@@ -119,18 +134,23 @@ const EditUserModal = ({
                 htmlFor="email"
                 className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
               >
-                Email Address
+                Email Address{" "}
+                <span className="text-xs">(should be accurate)</span>
               </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                placeholder="example@hotpoint.co.ke"
-                className="w-full rounded-xl border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900 shadow-sm transition-all duration-150 placeholder:text-neutral-400 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
-              />
+              <div className="relative">
+                <Mail className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  placeholder="example@hotpoint.co.ke"
+                  className="w-full rounded-xl border border-neutral-300 bg-white py-2.5 pr-3.5 pl-9 text-sm text-neutral-900 shadow-sm transition-all duration-150 placeholder:text-neutral-400 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
+                />
+              </div>
             </div>
 
             {/* Department */}
@@ -168,7 +188,8 @@ const EditUserModal = ({
               </button>
               <button
                 type="submit"
-                className="rounded-xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-neutral-700 focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 focus:outline-none dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100 dark:focus:ring-white dark:focus:ring-offset-neutral-950"
+                disabled={formData === userInfo}
+                className="rounded-xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-neutral-700 focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100 dark:focus:ring-white dark:focus:ring-offset-neutral-950"
               >
                 Save Changes
               </button>

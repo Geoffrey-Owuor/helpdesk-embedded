@@ -245,7 +245,7 @@ const EditIssueTypeInfo = ({
               </span>
               <ChevronDown
                 size={16}
-                className={`text-neutral-400 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
+                className={`text-neutral-400 transition-transform ${isPriorityDropdownOpen ? "rotate-180" : ""}`}
               />
             </button>
 
