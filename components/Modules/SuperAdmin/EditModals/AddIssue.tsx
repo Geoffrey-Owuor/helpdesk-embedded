@@ -7,7 +7,7 @@ import { useState, useRef, FocusEvent } from "react";
 import { priorityOptions } from "./EditIssueTypeModal";
 import { DropdownOption } from "./CustomDropDown";
 import { EditIssueInfo } from "./EditIssueTypeModal";
-import { Bug, CheckCircle2, X } from "lucide-react";
+import { Bug, X } from "lucide-react";
 import FormAsterisk from "../../FormAsterisk";
 
 type AddIssueProps = {
@@ -101,11 +101,7 @@ const AddIssue = ({
               </label>
               <div className="relative">
                 <div className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2">
-                  {formData.issueType ? (
-                    <CheckCircle2 className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <Bug className="h-4 w-4 text-neutral-400" />
-                  )}
+                  <Bug className="h-4 w-4 text-neutral-400" />
                 </div>
                 <input
                   id="issueType"

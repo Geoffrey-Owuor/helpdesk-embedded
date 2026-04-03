@@ -112,7 +112,7 @@ const CardViewData = ({
                 </div>
               </div>
 
-              <div className="flex items-center justify-between gap-2 rounded-lg border border-neutral-100 bg-neutral-50 p-2 dark:border-neutral-800/50 dark:bg-neutral-800/40">
+              <div className="flex items-center justify-between gap-2 rounded-xl border border-neutral-100 bg-neutral-50 p-2 dark:border-neutral-800/50 dark:bg-neutral-800/40">
                 <AssignedAgentFormatter
                   agentName={issueData.issue_agent_name}
                 />

@@ -128,7 +128,7 @@ const ActiveFilterPills = ({
 
       {/* Render the Combined Date Pill if it exists */}
       {hasDateFilter && (
-        <div className="flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-100 px-3 py-1 text-xs font-medium text-neutral-700 transition-colors dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+        <div className="flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 transition-colors dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
           <span>
             Date: <span className="font-semibold">{getDateRangeText()}</span>
           </span>
@@ -146,7 +146,7 @@ const ActiveFilterPills = ({
       {standardKeys.map((key) => (
         <div
           key={key}
-          className="flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-100 px-3 py-1 text-xs font-medium text-neutral-700 transition-colors dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+          className="flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 transition-colors dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
         >
           <span className="capitalize">
             {filterLabels[key]}:{" "}

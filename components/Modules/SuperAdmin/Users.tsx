@@ -8,8 +8,8 @@ import {
   CheckCircle2,
   XCircle,
   Trash2,
-  UserRound,
   UserRoundPen,
+  UserRoundCheck,
 } from "lucide-react";
 import Pagination from "../IssuesData/Pagination";
 import { useState, useEffect, useMemo } from "react";
@@ -45,16 +45,16 @@ const ROLES: Record<
       "bg-neutral-800 text-neutral-100 dark:bg-neutral-200 dark:text-neutral-900",
   },
   user: {
-    icon: <UserRound size={13} />,
+    icon: <UserRoundCheck size={13} />,
     label: "User",
     styles:
-      "bg-neutral-200 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-200",
+      "bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200",
   },
   agent: {
     icon: <Headset size={13} />,
     label: "Agent",
     styles:
-      "bg-neutral-300 text-neutral-800 dark:bg-neutral-600 dark:text-neutral-100",
+      "bg-neutral-200 text-neutral-800 dark:bg-neutral-700 dark:text-neutral-100",
   },
 };
 
@@ -90,7 +90,7 @@ function Badge({
 }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-0.5 text-xs font-medium tracking-wide ${styles}`}
+      className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium tracking-wide ${styles}`}
     >
       {icon}
       {label}

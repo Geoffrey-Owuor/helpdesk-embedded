@@ -10,7 +10,7 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
   const status = useDbStore((state) => state.status);
 
   const defaultContent = (
-    <>
+    <HydrationGuard>
       <DashboardSidebar />
       <div
         id="main-content"
@@ -19,14 +19,14 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
         <div className="flex h-full flex-col">
           {/* Content */}
           <main className="mx-auto w-full max-w-7xl flex-1 px-4">
-            <HydrationGuard>{children}</HydrationGuard>
+            {children}
           </main>
 
           {/* Footer */}
           <DashboardFooter />
         </div>
       </div>
-    </>
+    </HydrationGuard>
   );
 
   if (status === "degraded") {

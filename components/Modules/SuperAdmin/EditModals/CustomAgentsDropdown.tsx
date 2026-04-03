@@ -1,12 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import {
-  ChevronDown,
-  CheckCircle2,
-  Shield,
-  LucideIcon,
-  Headset,
-} from "lucide-react";
+import { ChevronDown, Shield, LucideIcon, Headset } from "lucide-react";
 import FormAsterisk from "../../FormAsterisk";
 import { DropdownOption } from "./CustomDropDown";
 
@@ -74,11 +68,7 @@ const CustomAgentsDropdown = ({
       >
         {/* Left icon — swaps to CheckCircle2 when selected, matching the name field pattern */}
         <div className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2">
-          {isSelected ? (
-            <CheckCircle2 className="h-4 w-4 text-green-500" />
-          ) : (
-            <Icon className="h-4 w-4 text-neutral-400" />
-          )}
+          <Icon className="h-4 w-4 text-neutral-400" />
         </div>
 
         <span
