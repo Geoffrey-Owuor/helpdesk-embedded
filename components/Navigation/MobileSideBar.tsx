@@ -4,7 +4,14 @@ import Link from "next/link";
 import { DashBoardLogo } from "../Modules/DashBoardLogo";
 import { Dispatch, SetStateAction } from "react";
 import { useState, useCallback, useRef } from "react";
-import { CirclePlus, Bot, X, Home, ShieldUser, ShieldPlus } from "lucide-react";
+import {
+  CirclePlus,
+  Bot,
+  X,
+  ShieldUser,
+  ShieldPlus,
+  LayoutDashboard,
+} from "lucide-react";
 import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
 import { useUser } from "@/contexts/UserContext";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
@@ -96,6 +103,16 @@ const MobileSideBar = ({
 
           {/* Navigation Links */}
           <nav className="flex flex-col gap-4">
+            {/* Link: Homepage */}
+            <Link
+              href="/dashboard"
+              onClick={() => handleMobileRouteChange("/dashboard")}
+              className="flex w-full items-center gap-2 rounded-xl p-2 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+            >
+              <LayoutDashboard />
+              <span>Home Page</span>
+            </Link>
+
             {/* Button: New Issue */}
             <button
               onClick={handleNewIssueOpening}
@@ -104,16 +121,6 @@ const MobileSideBar = ({
               <CirclePlus />
               <span>New Issue</span>
             </button>
-
-            {/* Link: Homepage */}
-            <Link
-              href="/dashboard"
-              onClick={() => handleMobileRouteChange("/dashboard")}
-              className="flex w-full items-center gap-2 rounded-xl p-2 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
-            >
-              <Home />
-              <span>Home Page</span>
-            </Link>
 
             {/* Link: Automations */}
             <Link
