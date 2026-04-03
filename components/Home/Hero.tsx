@@ -22,7 +22,7 @@ const Hero = () => {
 
   return (
     <section className="flex h-full items-center justify-center overflow-hidden py-16">
-      <div className="custom:px-8 px-4">
+      <div className="custom:px-8 w-full px-4">
         <div className="mx-auto max-w-3xl text-center">
           {/* Badge */}
           <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-sm text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400">

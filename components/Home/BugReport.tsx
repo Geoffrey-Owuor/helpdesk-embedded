@@ -1,6 +1,3 @@
-// ─────────────────────────────────────────────
-// Bug Report Section
-// ─────────────────────────────────────────────
 "use client";
 
 import {
@@ -134,7 +131,7 @@ const BugReport = () => {
           <Bug className="h-3.5 w-3.5" />
           Quality & Feedback
         </div>
-        <h2 className="text-2xl font-bold tracking-tight text-neutral-950 sm:text-3xl dark:text-white">
+        <h2 className="text-2xl font-semibold tracking-tight text-neutral-950 sm:text-3xl dark:text-white">
           Report a Bug
         </h2>
         <p className="mt-3 max-w-xl text-base text-neutral-500 dark:text-neutral-400">

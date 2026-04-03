@@ -15,7 +15,7 @@ const HomePagesLogo = () => {
         />
       </div>
       <span className="hidden text-xl font-semibold text-black sm:flex dark:text-white">
-        Issue Desk
+        IssueDesk
       </span>
     </Link>
   );
