@@ -40,6 +40,18 @@ export const POST = withAuth(async ({ user, request }) => {
       );
     }
 
+    // Check if the selected agent exits
+    const existingAgent = await query(
+      `SELECT user_id FROM users WHERE email = $1`,
+      [agentEmail],
+    );
+    if (existingAgent.length === 0) {
+      return NextResponse.json(
+        { message: "Select agent could not be found" },
+        { status: 404 },
+      );
+    }
+
     // Everything is ok - perform the insert query
     const insertQuery = `
         INSERT INTO issues_mapping(issue_type, issue_priority, admin_id, agent_id)

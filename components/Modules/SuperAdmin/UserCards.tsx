@@ -4,12 +4,7 @@ import apiClient from "@/lib/AxiosClient";
 import { useQuery } from "@tanstack/react-query";
 import { UserCounts, DefaultUserCounts } from "@/public/assets";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
-import {
-  ShieldCheck,
-  UsersRound,
-  UserRoundCog,
-  UserRoundCheck,
-} from "lucide-react";
+import { ShieldCheck, UsersRound, UserRoundCheck, Headset } from "lucide-react";
 import ActiveCounts from "./ActiveCounts";
 
 const UserCards = () => {
@@ -46,7 +41,7 @@ const UserCards = () => {
       label: "Agents",
       value: userCounts.agents.total,
       breakdown: userCounts.agents,
-      icon: UserRoundCog,
+      icon: Headset,
       color: "text-orange-600 dark:text-orange-500",
       bgColor: "bg-orange-100 dark:bg-orange-900/30",
       borderColor: "border-orange-200 dark:border-orange-800/50",

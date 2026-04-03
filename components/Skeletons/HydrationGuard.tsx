@@ -11,7 +11,7 @@ const HydrationGuard = ({ children }: { children: React.ReactNode }) => {
 
   if (!hydrated) {
     return (
-      <div className="flex h-full w-full items-center justify-center">
+      <div className="flex h-screen w-full items-center justify-center">
         <div className="h-7 w-7 animate-spin rounded-full border-2 border-neutral-200 border-t-neutral-500 dark:border-neutral-700 dark:border-t-neutral-300" />
       </div>
     );

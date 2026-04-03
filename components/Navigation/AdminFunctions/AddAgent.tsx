@@ -204,7 +204,7 @@ const AddAgent = ({
                 }}
                 placeholder="Agent Name..."
                 required
-                className={`w-full rounded-lg border bg-white py-2 pr-3 pl-9 text-sm text-neutral-900 placeholder-neutral-400 focus:ring-1 ${
+                className={`w-full rounded-xl border bg-white py-2 pr-3 pl-9 text-sm text-neutral-900 placeholder-neutral-400 focus:ring-1 ${
                   !nameValidation.isValid &&
                   formData.name.length > 0 &&
                   !isNameFocused
@@ -234,7 +234,7 @@ const AddAgent = ({
                 onBlur={handleBlur}
                 placeholder="username@hotpoint.co.ke"
                 required
-                className="w-full rounded-lg border border-neutral-300 bg-white py-2 pr-3 pl-9 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-500"
+                className="w-full rounded-xl border border-neutral-300 bg-white py-2 pr-3 pl-9 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-500"
               />
             </div>
           </div>
@@ -254,7 +254,7 @@ const AddAgent = ({
                 onChange={handleChange}
                 placeholder="agent's department"
                 readOnly
-                className="w-full cursor-not-allowed rounded-lg border border-neutral-300 bg-neutral-100 py-2 pr-3 pl-9 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500"
+                className="w-full cursor-not-allowed rounded-xl border border-neutral-300 bg-neutral-100 py-2 pr-3 pl-9 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500"
               />
             </div>
           </div>
@@ -274,7 +274,7 @@ const AddAgent = ({
                 onChange={handleChange}
                 placeholder="agent's role"
                 readOnly
-                className="w-full cursor-not-allowed rounded-lg border border-neutral-300 bg-neutral-100 py-2 pr-3 pl-9 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500"
+                className="w-full cursor-not-allowed rounded-xl border border-neutral-300 bg-neutral-100 py-2 pr-3 pl-9 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500"
               />
             </div>
           </div>
@@ -295,7 +295,7 @@ const AddAgent = ({
                 onBlur={handleBlur}
                 placeholder="••••••••"
                 required
-                className="w-full rounded-lg border border-neutral-300 bg-white py-2 pr-3 pl-9 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-500"
+                className="w-full rounded-xl border border-neutral-300 bg-white py-2 pr-3 pl-9 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-500"
               />
               <button
                 type="button"
@@ -326,7 +326,7 @@ const AddAgent = ({
                 onChange={handleChange}
                 placeholder="••••••••"
                 required
-                className={`w-full rounded-lg border bg-white py-2 pr-3 pl-9 text-sm text-neutral-900 placeholder-neutral-400 focus:ring-1 focus:outline-none dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-500 ${
+                className={`w-full rounded-xl border bg-white py-2 pr-3 pl-9 text-sm text-neutral-900 placeholder-neutral-400 focus:ring-1 focus:outline-none dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-500 ${
                   shortPassword || passwordsMismatch
                     ? "border-red-500 focus:border-red-500 focus:ring-red-500"
                     : "border-neutral-300 focus:border-blue-500 focus:ring-blue-500 dark:border-neutral-700"
@@ -338,7 +338,7 @@ const AddAgent = ({
 
         {/* Error Message */}
         {(shortPassword || passwordsMismatch) && (
-          <div className="flex items-center gap-2 rounded-lg bg-red-50 p-3 text-xs text-red-600 dark:bg-red-900/20 dark:text-red-400">
+          <div className="flex items-center gap-2 rounded-xl bg-red-50 p-3 text-xs text-red-600 dark:bg-red-900/20 dark:text-red-400">
             <AlertCircle size={16} />
             <span>{shortPassword || passwordsMismatch}</span>
           </div>
@@ -351,7 +351,7 @@ const AddAgent = ({
             disabled={
               !!shortPassword || !!passwordsMismatch || !nameValidation.isValid
             }
-            className="flex items-center gap-2 rounded-lg bg-blue-700 px-4 py-2 text-sm text-white transition-colors hover:bg-blue-800 disabled:opacity-50"
+            className="flex items-center gap-2 rounded-xl bg-blue-700 px-4 py-2 text-sm text-white transition-colors hover:bg-blue-800 disabled:opacity-50"
           >
             <Plus size={16} />
             <span>Register</span>
