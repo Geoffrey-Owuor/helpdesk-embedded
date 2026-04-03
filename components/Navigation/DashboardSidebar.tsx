@@ -129,7 +129,7 @@ const DashboardSidebar = () => {
           <SidebarLink
             href="/dashboard"
             icon={<LayoutDashboard className="h-5 w-5" />}
-            label="Home"
+            label="Dashboard"
             isActive={isHomeActive}
             onClick={() => handleRouteChange("/dashboard")}
           />

@@ -110,7 +110,7 @@ const MobileSideBar = ({
               className="flex w-full items-center gap-2 rounded-xl p-2 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
             >
               <LayoutDashboard />
-              <span>Home Page</span>
+              <span>Dashboard</span>
             </Link>
 
             {/* Button: New Issue */}

@@ -5,17 +5,11 @@ import { currentYear } from "@/public/assets";
 import { Sparkles } from "lucide-react";
 import { DbStatusPill } from "../Modules/DbStatus/DbStatusPill";
 
-const footerLinks = {
-  product: [
-    { name: "Features", href: "/features" },
-    { name: "Changelog", href: "/changelog" },
-    { name: "Manual", href: "/manual" },
-  ],
-  support: [
-    { name: "Contact Us", href: "/contact" },
-    { name: "Report a Bug", href: "/report" },
-  ],
-};
+const footerLinks = [
+  { name: "Changelog", href: "/changelog" },
+  { name: "Manual", href: "/manual/#user-manual" },
+  { name: "Report a Bug", href: "/manual#bug-report" },
+];
 
 const Footer = () => {
   return (
@@ -46,33 +40,14 @@ const Footer = () => {
           </div>
 
           {/* Footer Links */}
-          <div className="mt-2 grid grid-cols-1 gap-12 lg:grid-cols-3 lg:gap-8">
+          <div className="mt-2 grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-8">
             {/* Product Links */}
             <div>
               <h3 className="text-base leading-6 font-semibold text-neutral-900 dark:text-white">
                 Product
               </h3>
               <ul role="list" className="mt-4 space-y-3">
-                {footerLinks.product.map((item) => (
-                  <li key={item.name}>
-                    <Link
-                      href={item.href}
-                      className="text-base text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
-                    >
-                      {item.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Support Links */}
-            <div>
-              <h3 className="text-base leading-6 font-semibold text-neutral-900 dark:text-white">
-                Support
-              </h3>
-              <ul role="list" className="mt-4 space-y-3">
-                {footerLinks.support.map((item) => (
+                {footerLinks.map((item) => (
                   <li key={item.name}>
                     <Link
                       href={item.href}
