@@ -1,11 +1,10 @@
-"use client";
 import HomePagesLogo from "@/components/Modules/HomePagesLogo";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+
 import ThemeToggle from "../Themes/ThemeToggle";
+import { Gauge, Home } from "lucide-react";
 
 const PageNotFound = () => {
-  const router = useRouter();
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden">
       {/* Header */}
@@ -43,16 +42,18 @@ const PageNotFound = () => {
         <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row">
           <Link
             href="/dashboard"
-            className="inline-flex h-9 items-center rounded-lg bg-neutral-900 px-5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+            className="inline-flex h-9 items-center gap-2 rounded-full bg-neutral-900 px-5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
           >
-            Go to dashboard
+            <Gauge className="h-4 w-4" />
+            Dashboard
           </Link>
-          <button
-            onClick={() => router.back()}
-            className="inline-flex h-9 items-center rounded-lg border border-neutral-200 bg-white px-5 text-sm font-medium text-neutral-700 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
+          <Link
+            href="/"
+            className="inline-flex h-9 items-center gap-2 rounded-full border border-neutral-200 bg-white px-5 text-sm font-medium text-neutral-700 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
           >
-            Go back
-          </button>
+            <Home className="h-4 w-4" />
+            Homepage
+          </Link>
         </div>
       </main>
 
