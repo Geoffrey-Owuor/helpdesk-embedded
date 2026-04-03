@@ -22,17 +22,13 @@ import apiClient from "@/lib/AxiosClient";
 import DynamicIssueTypes from "./DynamicIssueTypes";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlertStore } from "@/store/useAlertStore";
-import { useIssuesStore } from "@/store/useIssuesStore";
-import { useAutomationsStore } from "@/store/useAutomationsStore";
-import { useIssueCardsStore } from "@/store/useIssueCardsStore";
-import { useAutomationCardsStore } from "@/store/useAutomationCardsStore";
 import OptionsDropDown from "./OptionsDropDown";
 import { baseDepartments } from "@/public/assets";
 import FormAsterisk from "../FormAsterisk";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
-import { useUser } from "@/contexts/UserContext";
-import { usePathname } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSearchStore } from "@/store/useSearchStore";
 
 // Priority icon types
 const priorityIcons: Record<string, LucideIcon> = {
@@ -62,6 +58,8 @@ type MainIssueModalProps = {
 };
 
 const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
+  const queryClient = useQueryClient();
+
   const [formData, setFormData] = useState({
     target_department: "",
     issue_type: "",
@@ -69,12 +67,16 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     issue_description: "",
   });
 
-  const { role } = useUser();
-
   // Tab Focus Trapping
   const closeModal = useCallback(() => setIsOpen(false), [setIsOpen]);
   const modalRef = useRef<HTMLDivElement | null>(null);
   useFocusTrapping(modalRef, isOpen, closeModal);
+
+  const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
+  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
+  const selectedDepartment = useSearchStore(
+    (state) => state.selectedDepartment,
+  );
 
   // State for the Assignment Bot Card
   const [assignmentInfo, setAssignmentInfo] =
@@ -88,39 +90,20 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
-  const refetchIssues = useIssuesStore((state) => state.refetchIssues);
-  const refetchAutomations = useAutomationsStore(
-    (state) => state.refetchAutomations,
-  );
-  const refetchAutomationCounts = useAutomationCardsStore(
-    (state) => state.fetchAutomationCounts,
-  );
-  const refetchIssueCounts = useIssueCardsStore(
-    (state) => state.fetchIssueCounts,
-  );
 
-  const pathname = usePathname();
+  const activeQueryKey = [
+    "issuesDashboardData",
+    superAdminFilter,
+    agentAdminFilter,
+  ];
 
-  const refetchData =
-    pathname === "/dashboard"
-      ? refetchIssues
-      : pathname === "/dashboard/automations"
-        ? refetchAutomations
-        : () => {}; // Default: do nothing
-
-  const refetchCounts =
-    pathname === "/dashboard"
-      ? refetchIssueCounts
-      : pathname === "/dashboard/automations"
-        ? refetchAutomationCounts
-        : () => {}; // Default: do nothing
-
-  // Function to refetch data for normal users - role is user
-  const refetchInfo = async () => {
-    if (role !== "user") return;
-    refetchData();
-    refetchCounts();
-  };
+  const activeCardsKey = [
+    "dashboardIssueCounts",
+    agentAdminFilter,
+    superAdminFilter,
+  ];
+  const automationsQueryKey = ["automationsDashboardData", selectedDepartment];
+  const automationCardsKey = ["dashboardAutomationCounts", selectedDepartment];
 
   // set options error
   const optionsError = alertType === "error";
@@ -197,6 +180,16 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       // Trigger alert on success
       triggerAlert("success", response.data.message);
 
+      // Refetch issues data in the background
+      queryClient.invalidateQueries({ queryKey: activeQueryKey });
+      queryClient.invalidateQueries({ queryKey: activeCardsKey });
+
+      // Refetch automations data if issue type is Automation
+      if (formData.issue_type === "Automation") {
+        queryClient.invalidateQueries({ queryKey: automationsQueryKey });
+        queryClient.invalidateQueries({ queryKey: automationCardsKey });
+      }
+
       // Clear form data
       setFormData({
         target_department: "",
@@ -206,9 +199,6 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       });
 
       setAssignmentInfo(null); // Clear assignment info
-
-      // refetch all data
-      await refetchInfo();
 
       // Close issue modal
       setIsOpen(false);
@@ -300,73 +290,70 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
 
               {/* --- NEW: Auto-Assignment Bot Card --- */}
               {(assignmentInfo || isFetchingAssignment) && (
-                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                  <div className="relative overflow-hidden rounded-lg border border-blue-100 bg-blue-50/50 p-3 dark:border-blue-900/30 dark:bg-blue-900/10">
-                    <div className="flex gap-3">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-800 dark:text-blue-200">
-                        {isFetchingAssignment ? (
-                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
-                        ) : (
-                          <BotMessageSquare size={18} />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100">
-                          Auto-Assignment Bot
-                        </h4>
+                <div className="relative overflow-hidden rounded-xl border border-blue-100 bg-blue-50/50 p-3 dark:border-blue-900/30 dark:bg-blue-900/10">
+                  <div className="flex gap-3">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-800 dark:text-blue-200">
+                      {isFetchingAssignment ? (
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+                      ) : (
+                        <BotMessageSquare size={18} />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+                        Auto-Assignment Bot
+                      </h4>
 
-                        {isFetchingAssignment ? (
-                          <p className="text-xs text-blue-700 dark:text-blue-300">
-                            Finding the best agent for this issue...
+                      {isFetchingAssignment ? (
+                        <p className="text-xs text-blue-700 dark:text-blue-300">
+                          Finding the best agent for this issue...
+                        </p>
+                      ) : (
+                        <div className="mt-1 flex flex-col gap-1 text-xs text-blue-700 dark:text-blue-300">
+                          <p>
+                            Based on your selection, this issue may be assigned
+                            to:
                           </p>
-                        ) : (
-                          <div className="mt-1 flex flex-col gap-1 text-xs text-blue-700 dark:text-blue-300">
-                            <p>
-                              Based on your selection, this issue may be
-                              assigned to:
-                            </p>
-                            <div className="mt-1 flex flex-wrap items-center gap-4">
-                              <div className="flex items-center gap-1.5 font-semibold">
-                                <UserRoundCog size={14} />
-                                <span>
-                                  Agent:{" "}
-                                  {assignmentInfo?.agent_name || "None found"}
-                                </span>
-                              </div>
+                          <div className="mt-1 flex flex-wrap items-center gap-4">
+                            <div className="flex items-center gap-1.5 font-semibold">
+                              <UserRoundCog size={14} />
+                              <span>
+                                Agent:{" "}
+                                {assignmentInfo?.agent_name || "None found"}
+                              </span>
+                            </div>
 
-                              <div className="flex items-center gap-1.5 opacity-75">
-                                <span>
-                                  (
-                                  <span className="font-semibold">
-                                    Dept Admin
-                                  </span>
-                                  : {assignmentInfo?.admin_name || "None found"}
-                                  )
+                            <div className="flex items-center gap-1.5 opacity-75">
+                              <span>
+                                (
+                                <span className="font-semibold">
+                                  Dept Admin
                                 </span>
-                              </div>
+                                : {assignmentInfo?.admin_name || "None found"})
+                              </span>
+                            </div>
 
-                              {/* Current issue priority */}
-                              <div className="flex items-center gap-1.5 font-semibold">
-                                <ArrowUpDown size={14} />
-                                <span>
-                                  Default priority:{" "}
-                                  <span className="font-normal">
-                                    {assignmentInfo?.issue_priority || "None"}
-                                  </span>
+                            {/* Current issue priority */}
+                            <div className="flex items-center gap-1.5 font-semibold">
+                              <ArrowUpDown size={14} />
+                              <span>
+                                Default priority:{" "}
+                                <span className="font-normal">
+                                  {assignmentInfo?.issue_priority || "None"}
                                 </span>
-                                {/* Dynamic Icon */}
-                                <DynamicIcon
-                                  priority={
-                                    assignmentInfo?.issue_priority
-                                      ? assignmentInfo.issue_priority
-                                      : "None"
-                                  }
-                                />
-                              </div>
+                              </span>
+                              {/* Dynamic Icon */}
+                              <DynamicIcon
+                                priority={
+                                  assignmentInfo?.issue_priority
+                                    ? assignmentInfo.issue_priority
+                                    : "None"
+                                }
+                              />
                             </div>
                           </div>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -391,7 +378,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                   required
                   maxLength={50}
                   placeholder="Brief summary of the issue (50 characters maximum)"
-                  className="rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+                  className="rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
                 />
               </div>
 
@@ -413,7 +400,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                   required
                   rows={4}
                   placeholder="Please describe the issue in detail..."
-                  className="resize-none rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+                  className="resize-none rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
                 />
               </div>
 
@@ -427,7 +414,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                     !formData.issue_type ||
                     !formData.target_department
                   }
-                  className="w-full rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:focus:ring-offset-neutral-900"
+                  className="w-full rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:focus:ring-offset-neutral-900"
                 >
                   Submit Issue
                 </button>

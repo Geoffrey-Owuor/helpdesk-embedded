@@ -57,7 +57,7 @@ const OptionsDropDown = ({
         type="button" // Important: prevents form submission
         onClick={() => setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`flex w-full items-center justify-between rounded-lg border bg-white px-3 py-2 text-sm transition-all focus:ring-1 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-900 ${
+        className={`flex w-full items-center justify-between rounded-xl border bg-white px-3 py-2 text-sm transition-all focus:ring-1 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-900 ${
           isOpen
             ? "border-blue-500 ring-1 ring-blue-500/20"
             : "hover:bg-neutral-50 dark:hover:bg-neutral-800/50"

@@ -110,9 +110,10 @@ export async function POST() {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Token refresh error:", error);
+    // Failure when trying to run the refresh token
     return NextResponse.json(
-      { message: "Server error occured" },
-      { status: 401 },
+      { message: "Refresh token verification failed" },
+      { status: 503 },
     );
   }
 }

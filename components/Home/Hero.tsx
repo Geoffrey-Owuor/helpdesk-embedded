@@ -1,15 +1,32 @@
 "use client";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, ShieldCheck, Zap } from "lucide-react";
+import { DbStatus, useDbStore } from "@/store/useDbStore";
+import { useEffect } from "react";
 
 const Hero = () => {
+  const status = useDbStore((state) => state.status);
+  const triggerCheck = useDbStore((state) => state.triggerCheck);
+
+  useEffect(() => {
+    triggerCheck();
+  }, [triggerCheck]);
+
+  const colorsMapping: Record<DbStatus, string> = {
+    checking: "bg-neutral-600",
+    degraded: "bg-amber-500",
+    ok: "bg-green-500",
+  };
+
   return (
     <section className="flex h-full items-center justify-center overflow-hidden py-16">
       <div className="custom:px-8 px-4">
         <div className="mx-auto max-w-3xl text-center">
           {/* Badge */}
           <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-sm text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400">
-            <span className="flex h-2 w-2 rounded-full bg-green-500"></span>
+            <span
+              className={`flex h-2 w-2 rounded-full ${colorsMapping[status]}`}
+            ></span>
             Internal Issue Tracking v1.0
           </div>
 

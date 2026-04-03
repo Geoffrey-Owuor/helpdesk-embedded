@@ -3,6 +3,8 @@ import { query } from "@/lib/Db";
 import { Workbook } from "exceljs";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 
+const LIMIT = 500;
+
 export const GET = withAuth(async ({ request, user }) => {
   // user information we need
   const { role, department, userId, email, isSuper } = user;
@@ -78,7 +80,8 @@ export const GET = withAuth(async ({ request, user }) => {
     }
 
     // Drafting the final query
-    baseQuery += ` ORDER BY issue_created_at DESC`;
+    baseQuery += ` ORDER BY issue_created_at DESC LIMIT $${params.length + 1}`;
+    params.push(LIMIT);
 
     //Running the query
     const rows = await query(baseQuery, params);
@@ -123,7 +126,7 @@ export const GET = withAuth(async ({ request, user }) => {
     console.error("Failed to export issues data to excel:", error);
     return NextResponse.json(
       { message: "Failed to export issues data to excel" },
-      { status: 200 },
+      { status: 500 },
     );
   }
 });

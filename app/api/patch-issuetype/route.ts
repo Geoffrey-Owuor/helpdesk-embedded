@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
+import { emailSender } from "@/services/EmailSender";
 
 export const PATCH = withAuth(async ({ user, request }) => {
   let client: PoolClient | undefined;
@@ -35,7 +36,7 @@ export const PATCH = withAuth(async ({ user, request }) => {
     // Check if issue is already marked as resolved
     const { rows } = await client.query(
       `
-        SELECT issue_type, issue_status FROM issues_table WHERE issue_uuid = $1 FOR UPDATE
+        SELECT issue_type, issue_reference_id, issue_status FROM issues_table WHERE issue_uuid = $1 FOR UPDATE
         `,
       [uuid],
     );
@@ -49,6 +50,7 @@ export const PATCH = withAuth(async ({ user, request }) => {
     // Our current issue type and status
     const currentStatus = rows[0].issue_status;
     const currentType = rows[0].issue_type;
+    const referenceNumber = rows[0].issue_reference_id;
 
     // Issue is already marked as resolved
     if (currentStatus === "resolved") {
@@ -86,6 +88,12 @@ export const PATCH = withAuth(async ({ user, request }) => {
 
     // Commit the transaction
     await client.query("COMMIT");
+
+    // Fire and forget - Email sender
+    const title = `${referenceNumber} issue type updated to ${type}`;
+    const description = `${referenceNumber} issue type has been updated to ${type} by ${username}`;
+
+    emailSender({ title, description, uuid });
 
     // Return a response
     return NextResponse.json(

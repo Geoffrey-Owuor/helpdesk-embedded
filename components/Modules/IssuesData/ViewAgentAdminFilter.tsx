@@ -38,33 +38,46 @@ const ViewAgentAdminFilter = () => {
   return (
     <div className="flex items-center justify-center">
       <div
-        className={`flex rounded-xl ${superAdminFilter ? "opacity-50" : ""} border border-neutral-300 bg-neutral-100 p-1 dark:border-neutral-800 dark:bg-neutral-950`}
+        className={`relative flex rounded-2xl transition-opacity duration-200 ${
+          superAdminFilter ? "pointer-events-none opacity-40" : ""
+        } border border-neutral-200 bg-neutral-100 p-1 shadow-inner dark:border-neutral-800 dark:bg-neutral-900`}
       >
-        {/* Button 1: Default View */}
+        {/* Sliding background pill */}
+        <div
+          className={`absolute top-1 bottom-1 w-[calc(50%-2px)] rounded-xl bg-white shadow-sm ring-1 ring-black/5 transition-all duration-200 ease-in-out dark:bg-neutral-700 dark:ring-white/10 ${
+            filterApplied ? "translate-x-[calc(100%-4px)]" : "translate-x-0"
+          }`}
+        />
+
+        {/* Button 1: Incoming */}
         <button
           onClick={handleDefaultIssues}
           disabled={!filterApplied || superAdminFilter}
-          className={`flex items-center justify-center gap-2 rounded-lg px-4 py-1.5 text-sm font-semibold ${
+          className={`relative z-10 flex items-center justify-center gap-2 rounded-xl px-5 py-2 text-sm font-medium tracking-tight transition-colors duration-200 ${
             !filterApplied
-              ? "bg-neutral-900 text-white shadow-sm dark:bg-white dark:text-neutral-900"
-              : "text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
+              ? "text-neutral-900 dark:text-white"
+              : "text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300"
           }`}
         >
-          <Building2 className="h-4 w-4" />
+          <Building2
+            className={`h-4 w-4 transition-transform duration-200 ${!filterApplied ? "scale-110" : "scale-100"}`}
+          />
           <span className="custom:inline-flex hidden">Incoming</span>
         </button>
 
-        {/* Button 2: Agent/Admin Submitted View */}
+        {/* Button 2: Submissions */}
         <button
           onClick={fetchAgentAdminIssues}
           disabled={filterApplied || superAdminFilter}
-          className={`flex items-center justify-center gap-2 rounded-lg px-4 py-1.5 text-sm font-semibold ${
+          className={`relative z-10 flex items-center justify-center gap-2 rounded-xl px-5 py-2 text-sm font-medium tracking-tight transition-colors duration-200 ${
             filterApplied
-              ? "bg-neutral-900 text-white shadow-sm dark:bg-white dark:text-neutral-900"
-              : "text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
+              ? "text-neutral-900 dark:text-white"
+              : "text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300"
           }`}
         >
-          <Send className="h-4 w-4" />
+          <Send
+            className={`h-4 w-4 transition-transform duration-200 ${filterApplied ? "scale-110" : "scale-100"}`}
+          />
           <span className="custom:inline-flex hidden">Submissions</span>
         </button>
       </div>

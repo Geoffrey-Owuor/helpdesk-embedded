@@ -6,16 +6,24 @@ import ClientPortal from "../ClientPortal";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import apiClient from "@/lib/AxiosClient";
 import { X } from "lucide-react";
-import { IssueValueTypes } from "@/store/useIssuesStore";
+import { IssueValueTypes } from "@/public/assets";
 import FormAsterisk from "../FormAsterisk";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+
+type Payload = {
+  uuid: string;
+  userId: IssueValueTypes;
+  issue_title: IssueValueTypes;
+  issue_description: IssueValueTypes;
+};
 
 type TitleDescriptionModalProps = {
   title: IssueValueTypes;
   description: IssueValueTypes;
   uuid: string;
-  refetchData: () => Promise<void>;
+  activeQueryKey: (string | boolean)[];
   userId: IssueValueTypes;
   isModalOpen: boolean;
   closeModal: () => void;
@@ -24,11 +32,12 @@ const TitleDescriptionModal = ({
   title,
   description,
   uuid,
-  refetchData,
+  activeQueryKey,
   userId,
   isModalOpen,
   closeModal,
 }: TitleDescriptionModalProps) => {
+  const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
     issue_title: title || "",
     issue_description: description || "",
@@ -38,10 +47,11 @@ const TitleDescriptionModal = ({
   const modalRef = useRef<HTMLDivElement | null>(null);
   useFocusTrapping(modalRef, isModalOpen, closeModal);
 
-  // state data
-  const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
+
+  // state data
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
 
@@ -65,39 +75,52 @@ const TitleDescriptionModal = ({
     }));
   };
 
-  // the handle submit function
-  const handleSubmit = async () => {
-    hideDialog();
+  const { mutate: updateIssueMutation, isPending: isUpdating } = useMutation({
+    mutationFn: (payload: Payload) =>
+      apiClient.put("/update-issueinfo", payload),
 
-    showOverlay("Updating");
+    onSuccess: (response, payload) => {
+      // 1. Update cache only after confirmed API success
+      queryClient.setQueryData(
+        activeQueryKey,
+        (oldData: Record<string, IssueValueTypes>[]) => {
+          if (!oldData) return oldData;
+          return oldData.map((issue: Record<string, IssueValueTypes>) =>
+            issue.issue_uuid === payload.uuid
+              ? {
+                  ...issue,
+                  issue_title: payload.issue_title,
+                  issue_description: payload.issue_description,
+                }
+              : issue,
+          );
+        },
+      );
 
-    // compile our data into one object
-    const payload = {
-      ...formData,
-      uuid,
-      userId,
-    };
+      // Hide overlay on success
+      hideOverlay();
 
-    try {
-      const response = await apiClient.put("/update-issueinfo", payload);
-
-      // Trigger a success alert
       triggerAlert("success", response.data.message);
-
-      // clear the form data
       setFormData({ issue_title: "", issue_description: "" });
-
-      // refetch data
-      await refetchData();
-
-      // close the modal
       closeModal();
-    } catch (error) {
+    },
+
+    onError: (error) => {
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
-    } finally {
-      hideOverlay();
-    }
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: activeQueryKey });
+    },
+  });
+
+  // Simplified handleSubmit
+  const handleSubmit = async () => {
+    const payload = { ...formData, uuid, userId };
+    hideDialog();
+    showOverlay("Updating");
+    updateIssueMutation(payload);
   };
 
   const handleConfirmSubmit = (e: FormEvent) => {
@@ -152,7 +175,7 @@ const TitleDescriptionModal = ({
                 required
                 maxLength={50}
                 placeholder="Brief summary of the issue (50 characters maximum)"
-                className="rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+                className="rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
               />
             </div>
 
@@ -174,7 +197,7 @@ const TitleDescriptionModal = ({
                 required
                 rows={4}
                 placeholder="Please describe the issue in detail..."
-                className="resize-none rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+                className="resize-none rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
               />
             </div>
 
@@ -183,12 +206,13 @@ const TitleDescriptionModal = ({
               <button
                 type="submit"
                 disabled={
+                  isUpdating ||
                   !formData.issue_description ||
                   !formData.issue_title ||
                   (formData.issue_description === description &&
                     formData.issue_title === title)
                 }
-                className="w-full rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:focus:ring-offset-neutral-900"
+                className="w-full rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:focus:ring-offset-neutral-900"
               >
                 Update
               </button>

@@ -6,7 +6,7 @@ import {
   HelpCircle,
   LucideIcon,
 } from "lucide-react";
-import { IssueValueTypes } from "@/store/useIssuesStore";
+import { IssueValueTypes } from "@/public/assets";
 
 interface IssueStatusProps {
   status: IssueValueTypes;
@@ -62,7 +62,7 @@ const IssueStatusFormatter = ({ status }: IssueStatusProps) => {
 
   return (
     <div
-      className={`inline-flex w-22 items-center rounded-lg border px-2 py-1 text-xs font-semibold ${config.bg} ${config.text} ${config.border} `}
+      className={`inline-flex w-22 items-center rounded-full border px-2 py-1 text-xs font-semibold ${config.bg} ${config.text} ${config.border} `}
     >
       <Icon
         size={14}

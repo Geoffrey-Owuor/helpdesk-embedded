@@ -285,9 +285,7 @@ const InfoCard = ({
   value: string | undefined;
 }) => (
   <div className="flex items-start gap-3 rounded-xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800/60 dark:bg-neutral-900/40">
-    <div
-      className={`mt-0.5 ${value === "Super Admin" ? "text-red-500" : "text-neutral-400 dark:text-neutral-500"}`}
-    >
+    <div className="mt-0.5 text-neutral-400 dark:text-neutral-500">
       <Icon />
     </div>
     <div className="flex flex-col">

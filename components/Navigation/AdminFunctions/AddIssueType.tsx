@@ -16,10 +16,11 @@ import FormAsterisk from "@/components/Modules/FormAsterisk";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { priorityOptions } from "@/components/Modules/IssuePage/IssuePage";
+import { RefetchFunction } from "./AgentsInfo";
 
 type AddIssueTypeProps = {
   showAddIssueModal: boolean;
-  refetchAgentsInfo: () => Promise<void>;
+  refetchAgentsInfo: RefetchFunction;
   setShowAddIssueModal: Dispatch<SetStateAction<boolean>>;
   agentNames: { agentName: string; agentEmail: string }[];
 };
@@ -141,7 +142,7 @@ const AddIssueType = ({
             value={issueType}
             onChange={(e) => setIssueType(e.target.value)}
             onBlur={(e) => setIssueType(e.target.value.trim())}
-            className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:focus:border-blue-500"
+            className="w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:focus:border-blue-500"
             placeholder="e.g. Technical Support"
           />
         </div>
@@ -160,7 +161,7 @@ const AddIssueType = ({
             <button
               type="button"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex w-full items-center justify-between rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm transition-all hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800"
+              className="flex w-full items-center justify-between rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm transition-all hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800"
             >
               <span
                 className={
@@ -178,7 +179,7 @@ const AddIssueType = ({
             </button>
 
             {isDropdownOpen && (
-              <div className="default-scrollbar absolute left-0 z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-lg border border-neutral-200 bg-white p-2 shadow-xl dark:border-neutral-700 dark:bg-neutral-800">
+              <div className="default-scrollbar absolute left-0 z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-xl border border-neutral-200 bg-white p-2 shadow-xl dark:border-neutral-700 dark:bg-neutral-800">
                 {agentNames.map((agent) => (
                   <button
                     key={agent.agentEmail}
@@ -220,7 +221,7 @@ const AddIssueType = ({
             <button
               type="button"
               onClick={() => setIsPriorityDropdownOpen(!isPriorityDropdownOpen)}
-              className="flex w-full items-center justify-between rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm transition-all hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800"
+              className="flex w-full items-center justify-between rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm transition-all hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800"
             >
               <span
                 className={
@@ -238,7 +239,7 @@ const AddIssueType = ({
             </button>
 
             {isPriorityDropdownOpen && (
-              <div className="default-scrollbar absolute left-0 z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-lg border border-neutral-200 bg-white p-2 shadow-xl dark:border-neutral-700 dark:bg-neutral-800">
+              <div className="default-scrollbar absolute left-0 z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-xl border border-neutral-200 bg-white p-2 shadow-xl dark:border-neutral-700 dark:bg-neutral-800">
                 {priorityOptions.map((priority) => (
                   <button
                     key={priority.value}
@@ -267,7 +268,7 @@ const AddIssueType = ({
           <button
             onClick={handleConfirmSubmit}
             disabled={!issueType || !agentEmail || !issuePriority} //We will also repeat this logic in our handleSubmit function for double security
-            className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50"
+            className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50"
           >
             <Plus size={16} />
             Add

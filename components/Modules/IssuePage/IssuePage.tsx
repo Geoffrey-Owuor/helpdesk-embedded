@@ -32,12 +32,15 @@ import { InfoBlock } from "./HelperComponents/InfoBlock";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import CommentsSection from "./CommentsSection";
 import { useConfirmStore } from "@/store/useConfirmStore";
-import { useOverlayStore } from "@/store/useOverlayStore";
 import IssueTypeModal from "./IssueTypeModal";
 import IssuePriorityFormatter from "../IssuesData/IssuePriorityFormatter";
 import { useSearchParams } from "next/navigation";
-import { useIssuesStore } from "@/store/useIssuesStore";
-import { useAutomationsStore } from "@/store/useAutomationsStore";
+import { useSearchStore } from "@/store/useSearchStore";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { fetchIssues } from "@/queries/fetchIssues";
+import { fetchAutomations } from "@/queries/fetchAutomations";
+import { IssueValueTypes } from "@/public/assets";
+import { DEFAULT_FETCH_OPTIONS } from "@/public/assets";
 
 const statusOptions = [
   { label: "In Progress", value: "in progress" },
@@ -53,24 +56,59 @@ export const priorityOptions = [
 ];
 
 export const IssuePage = ({ uuid }: { uuid: string }) => {
+  // Initialize the query client
+  const queryClient = useQueryClient();
+
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
   const isAutomation = type === "automation";
 
-  const issuesData = useIssuesStore((state) => state.issuesData);
-  const issuesLoading = useIssuesStore((state) => state.loading);
-  const refetchIssues = useIssuesStore((state) => state.refetchIssues);
-
-  const automationsData = useAutomationsStore((state) => state.automationsData);
-  const automationsLoading = useAutomationsStore((state) => state.loading);
-  const refetchAutomations = useAutomationsStore(
-    (state) => state.refetchAutomations,
+  // 1. Grab the exact same filters from your search store to match the Query Keys
+  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
+  const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
+  const selectedDepartment = useSearchStore(
+    (state) => state.selectedDepartment,
   );
 
-  // Defining our variables based on record type
+  // 2. Query Issues (Will instantly hit the cache if already loaded on the list page)
+  const {
+    data: issuesData = [],
+    isLoading: issuesLoading,
+    refetch: refetchIssues,
+  } = useQuery({
+    queryKey: ["issuesDashboardData", superAdminFilter, agentAdminFilter],
+    queryFn: () => fetchIssues(DEFAULT_FETCH_OPTIONS),
+    enabled: !isAutomation,
+  });
+
+  // 3. Query Automations (Will instantly hit the cache if already loaded)
+  const {
+    data: automationsData = [],
+    isLoading: automationsLoading,
+    refetch: refetchAutomations,
+  } = useQuery({
+    queryKey: ["automationsDashboardData", selectedDepartment],
+    queryFn: () => fetchAutomations(DEFAULT_FETCH_OPTIONS),
+    enabled: isAutomation,
+  });
+
+  // 4. Define our variables based on the record type
   const recordsData = isAutomation ? automationsData : issuesData;
   const loading = isAutomation ? automationsLoading : issuesLoading;
-  const refetchData = isAutomation ? refetchAutomations : refetchIssues;
+  const refetchInfo = isAutomation ? refetchAutomations : refetchIssues;
+
+  // Define the exact active query key based on the record type
+  const activeQueryKey = isAutomation
+    ? ["automationsDashboardData", selectedDepartment]
+    : ["issuesDashboardData", superAdminFilter, agentAdminFilter];
+
+  const activeCardsKey = isAutomation
+    ? ["dashboardAutomationCounts", selectedDepartment]
+    : ["dashboardIssueCounts", agentAdminFilter, superAdminFilter];
+
+  const refetchData = () => {
+    refetchInfo();
+  };
 
   // Our issue data
   const issueData = recordsData.find((issue) => issue.issue_uuid === uuid);
@@ -78,8 +116,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const router = useRouter();
 
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
-  const showOverlay = useOverlayStore((state) => state.showOverlay);
-  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
+
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
   const { role, email, department, userId, isSuper } = useUser();
@@ -95,54 +132,113 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   // call useScrollToTop hook
   useScrollToTop();
 
-  // Async function for updating the status
+  // Mutation for updating the status
+  const updateStatusMutation = useMutation({
+    mutationFn: (status: string) =>
+      apiClient.put("/update-status", { uuid, status }),
+
+    onMutate: async (newStatus) => {
+      // 1. Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: activeQueryKey });
+
+      // 2. Snapshot previous data
+      const previousData = queryClient.getQueryData(activeQueryKey);
+
+      // 3. Optimistically update the cache
+      queryClient.setQueryData(
+        activeQueryKey,
+        (oldData: Record<string, IssueValueTypes>[]) => {
+          if (!oldData) return oldData;
+          return oldData.map((issue: Record<string, IssueValueTypes>) =>
+            issue.issue_uuid === uuid
+              ? { ...issue, issue_status: newStatus }
+              : issue,
+          );
+        },
+      );
+
+      // 4. Return snapshot for rollback
+      return { previousData };
+    },
+
+    onSuccess: (response) => {
+      triggerAlert("success", response.data.message);
+    },
+
+    onError: (error, _newStatus, context) => {
+      // 5. Rollback on failure
+      if (context?.previousData) {
+        queryClient.setQueryData(activeQueryKey, context.previousData);
+      }
+      const errorMessage = getApiErrorMessage(error);
+      triggerAlert("error", errorMessage);
+    },
+
+    onSettled: () => {
+      // 6. Always refetch to sync with server
+      queryClient.invalidateQueries({ queryKey: activeQueryKey });
+      queryClient.invalidateQueries({ queryKey: activeCardsKey });
+    },
+  });
+
+  // Mutation for updating the priority
+  const updatePriorityMutation = useMutation({
+    mutationFn: (priority: string) =>
+      apiClient.put("/update-priority", { uuid, priority }),
+
+    onMutate: async (newPriority) => {
+      // 1. Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: activeQueryKey });
+
+      // 2. Snapshot previous data
+      const previousData = queryClient.getQueryData(activeQueryKey);
+
+      // 3. Optimistically update the cache
+      queryClient.setQueryData(
+        activeQueryKey,
+        (oldData: Record<string, IssueValueTypes>[]) => {
+          if (!oldData) return oldData;
+          return oldData.map((issue: Record<string, IssueValueTypes>) =>
+            issue.issue_uuid === uuid
+              ? { ...issue, issue_priority: newPriority }
+              : issue,
+          );
+        },
+      );
+
+      // 4. Return snapshot for rollback
+      return { previousData };
+    },
+
+    onSuccess: (response) => {
+      triggerAlert("success", response.data.message);
+    },
+
+    onError: (error, _newPriority, context) => {
+      // 5. Rollback on failure
+      if (context?.previousData) {
+        queryClient.setQueryData(activeQueryKey, context.previousData);
+      }
+      const errorMessage = getApiErrorMessage(error);
+      triggerAlert("error", errorMessage);
+    },
+
+    onSettled: () => {
+      // 6. Always refetch to sync with server
+      queryClient.invalidateQueries({ queryKey: activeQueryKey });
+      queryClient.invalidateQueries({ queryKey: activeCardsKey });
+    },
+  });
+
+  // handlers stay the same, hideDialog just moves here
   const handleUpdateStatus = async (status: string) => {
     hideDialog();
-
-    showOverlay("Updating");
-
-    try {
-      const response = await apiClient.put("/update-status", {
-        uuid,
-        status,
-      });
-
-      // Trigger a success alert
-      triggerAlert("success", response.data.message);
-
-      // refetch data
-      await refetchData();
-    } catch (error) {
-      const errorMessage = getApiErrorMessage(error);
-      triggerAlert("error", errorMessage);
-    } finally {
-      hideOverlay();
-    }
+    updateStatusMutation.mutate(status);
   };
 
-  // Updating the priority
   const handleUpdatePriority = async (priority: string) => {
     hideDialog();
-
-    showOverlay("Updating");
-
-    try {
-      const response = await apiClient.put("/update-priority", {
-        uuid,
-        priority,
-      });
-
-      // Trigger a success alert
-      triggerAlert("success", response.data.message);
-
-      // refetch data
-      await refetchData();
-    } catch (error) {
-      const errorMessage = getApiErrorMessage(error);
-      triggerAlert("error", errorMessage);
-    } finally {
-      hideOverlay();
-    }
+    updatePriorityMutation.mutate(priority);
   };
 
   const handleConfirmationDialog = (selectedValue: string) => {
@@ -213,8 +309,8 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           description={issueData.issue_description}
           isModalOpen={isEditModalOpen}
           closeModal={() => setIsEditModalOpen(false)}
+          activeQueryKey={activeQueryKey}
           uuid={uuid}
-          refetchData={refetchData}
           userId={issueData.issue_submitter_id}
         />
       )}
@@ -226,7 +322,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           isModalOpen={isReassignModalOpen}
           issueType={issueData.issue_type}
           targetDepartment={issueData.issue_target_department}
-          refetchData={refetchData}
+          activeQueryKey={activeQueryKey}
           issueAgentEmail={issueData.issue_agent_email}
         />
       )}
@@ -259,9 +355,9 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={refetchData}
-              className="rounded-full bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+              className="rounded-xl bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
             >
-              <RotateCcw />
+              <RotateCcw className="h-4.5 w-4.5" />
             </button>
 
             {/* Reassigning an issue and changing the issue priority */}
@@ -311,7 +407,10 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                             onClick={() =>
                               handlePriorityConfirmation(option.value)
                             }
-                            disabled={option.value === issueData.issue_priority}
+                            disabled={
+                              option.value === issueData.issue_priority ||
+                              updatePriorityMutation.isPending
+                            }
                             className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-900"
                           >
                             {option.label}
@@ -362,7 +461,10 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                         <button
                           key={option.value}
                           onClick={() => handleConfirmationDialog(option.value)}
-                          disabled={option.value === issueData.issue_status}
+                          disabled={
+                            option.value === issueData.issue_status ||
+                            updateStatusMutation.isPending
+                          }
                           className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-900"
                         >
                           {option.label}
@@ -416,9 +518,9 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
               <InfoBlock label="Issue Type" value={issueData.issue_type} />
               {isSuper && issueData.issue_status !== "resolved" && (
                 <IssueTypeModal
-                  refetchData={refetchData}
                   targetDepartment={issueData.issue_target_department}
                   uuid={uuid}
+                  activeQueryKey={activeQueryKey}
                   currentType={issueData.issue_type}
                 />
               )}

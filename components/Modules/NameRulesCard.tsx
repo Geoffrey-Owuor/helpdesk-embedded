@@ -23,7 +23,7 @@ const NameRulesCard = ({ validation, isVisible }: NameRulesCardProps) => {
   if (!isVisible) return null;
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-2 absolute -top-28 left-0 z-10 w-full rounded-lg border border-neutral-200 bg-white p-4 shadow-lg dark:border-neutral-700 dark:bg-neutral-800">
+    <div className="absolute top-[calc(100%+6px)] left-0 z-50 w-full rounded-lg border border-neutral-200 bg-white p-4 shadow-lg dark:border-neutral-700 dark:bg-neutral-800">
       <h4 className="mb-2 text-sm font-semibold text-neutral-900 dark:text-white">
         Name Requirements
       </h4>
@@ -41,8 +41,6 @@ const NameRulesCard = ({ validation, isVisible }: NameRulesCardProps) => {
           passed={validation.isCapitalized}
         />
       </div>
-      {/* Decorative Arrow pointing down */}
-      <div className="absolute -bottom-1.5 left-6 h-4 w-4 rotate-45 border-r border-b border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800"></div>
     </div>
   );
 };
