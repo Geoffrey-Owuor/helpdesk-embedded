@@ -72,7 +72,7 @@ const DashboardSidebar = () => {
       />
 
       {/* Mobile top bar — only visible on small screens */}
-      <div className="custom:hidden fixed top-0 right-0 left-0 z-50 flex h-16 items-center justify-between px-4">
+      <div className="fixed top-0 right-0 left-0 z-50 flex h-16 items-center justify-between px-4 lg:hidden">
         <button
           onClick={() => setSideBarOpen(true)}
           className="rounded-full p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800"
@@ -117,7 +117,7 @@ const DashboardSidebar = () => {
       </div>
 
       {/* Left sidebar — visible on md+ screens */}
-      <aside className="custom:flex fixed top-0 bottom-0 left-0 z-50 hidden w-20 flex-col items-center border-neutral-200 py-4 dark:border-neutral-800">
+      <aside className="fixed top-0 bottom-0 left-0 z-50 hidden w-20 flex-col items-center border-neutral-200 py-4 lg:flex dark:border-neutral-800">
         {/* Logo at the top */}
         <div className="mb-6 flex items-center justify-center">
           <DashBoardLogo />
