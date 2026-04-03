@@ -8,7 +8,7 @@ const HomePage = () => {
       id="home-container"
       className="layout-scrollbar h-screen overflow-y-auto"
     >
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-6xl 2xl:max-w-7xl">
         <HomeNavBar />
         <Hero />
         <Footer />

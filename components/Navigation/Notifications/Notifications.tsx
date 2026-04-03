@@ -1,13 +1,17 @@
 "use client";
 import { Bell } from "lucide-react";
-import { useIssuesStore } from "@/store/useIssuesStore";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import NotificationModal from "./NotificationModal";
 import { useLoadingStore } from "@/store/useLoadingStore";
 import { useRouter, usePathname } from "next/navigation";
 import { RouteChangeProps } from "./NotificationModal";
+import { useAlertStore } from "@/store/useAlertStore";
+import { fetchIssues } from "@/queries/fetchIssues";
+import { DEFAULT_FETCH_OPTIONS } from "@/public/assets";
+import { useSearchStore } from "@/store/useSearchStore";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
 export interface ChangelogItem {
   changelog_id: string;
@@ -23,15 +27,15 @@ type NotificationResponse = {
 };
 
 const Notifications = () => {
-  const [notificationData, setNotificationData] =
-    useState<NotificationResponse | null>(null);
-  const [loading, setLoading] = useState(true); //default to true
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const pathname = usePathname();
 
-  const defaultData = useIssuesStore((state) => state.issuesData);
-  const defaultLoading = useIssuesStore((state) => state.loading);
+  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
+  const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
+
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
+
   const type = "issue";
 
   const router = useRouter();
@@ -56,22 +60,20 @@ const Notifications = () => {
     router.push(dashboardPath);
   };
 
-  useEffect(() => {
-    const fetchChangelogs = async () => {
-      setLoading(true);
-      try {
-        const response = await apiClient.get("/notifications/user-changelogs");
-        setNotificationData(response.data);
-      } catch (error) {
-        const errorMessage = getApiErrorMessage(error);
-        console.error("Error while fetching changelogs data:", errorMessage);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const queryClient = useQueryClient();
 
-    fetchChangelogs();
-  }, []);
+  const { data: notificationData, isLoading: loading } = useQuery({
+    queryKey: ["changelogs"],
+    queryFn: async () => {
+      const response = await apiClient.get("/notifications/user-changelogs");
+      return response.data as NotificationResponse;
+    },
+  });
+
+  const { data: defaultData = [], isLoading: defaultLoading } = useQuery({
+    queryKey: ["issuesDashboardData", superAdminFilter, agentAdminFilter],
+    queryFn: () => fetchIssues(DEFAULT_FETCH_OPTIONS),
+  });
 
   // Filter issuesData to only those created on or after notificationDate
   const filteredIssues =
@@ -86,30 +88,31 @@ const Notifications = () => {
   const count =
     (notificationData?.changelogs?.length ?? 0) + filteredIssues.length;
 
-  // Handling closing the modal
-  const handleCloseModal = async () => {
-    setIsModalOpen(false);
-
-    //Nothing was viewed, skip the update
-    if (count === 0) return;
-
-    try {
-      await apiClient.patch("/notifications/patch-notifications-date");
-      // optimistically clearing the count by setting the notificationDate to now
-      setNotificationData((prev) =>
-        prev
-          ? {
-              ...prev,
-              notificationDate: new Date().toISOString(),
-              changelogs: [],
-            }
-          : null,
+  // Mutation function
+  const { mutate: handleCloseModal, isPending: closing } = useMutation({
+    mutationFn: async () =>
+      await apiClient.patch("/notifications/patch-notifications-date"),
+    onSuccess: () => {
+      // optimistic update
+      queryClient.setQueryData(
+        ["changelogs"],
+        (prevNotifications: NotificationResponse) => {
+          return {
+            ...prevNotifications,
+            notificationDate: new Date().toISOString(),
+            changelogs: [],
+          };
+        },
       );
-    } catch (error) {
-      const errorMessage = getApiErrorMessage(error);
-      console.error("Error updating notification last viewed:", errorMessage);
-    }
-  };
+
+      setIsModalOpen(false);
+    },
+    onError: (error) => {
+      const generatedError = getApiErrorMessage(error);
+      console.error("Error while trying to close the modal:", generatedError);
+      triggerAlert("error", "Failed to update viewed date");
+    },
+  });
 
   return (
     <>
@@ -120,7 +123,8 @@ const Notifications = () => {
           setIsModalOpen={setIsModalOpen}
           handleRouteChange={handleRouteChange}
           count={count}
-          closeModal={handleCloseModal}
+          isClosing={closing}
+          closeModal={() => handleCloseModal()}
         />
       )}
       <button

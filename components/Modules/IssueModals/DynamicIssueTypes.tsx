@@ -1,9 +1,8 @@
 "use client";
 import { Asterisk } from "lucide-react";
 import OptionsDropDown from "./OptionsDropDown";
-import { IssueOption } from "@/serverActions/GetIssueTypes";
 import { fetchedIssueTypes } from "@/serverActions/GetIssueTypes";
-import { useState, useEffect, useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 type DynamicTypeProps = {
   value: string;
@@ -18,32 +17,11 @@ const DynamicIssueTypes = ({
   department,
   error,
 }: DynamicTypeProps) => {
-  const [options, setOptions] = useState<IssueOption[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  // Fetch Options in a useCallBack
-  const fetchOptions = useCallback(async () => {
-    // Don't fetch if no department selected
-    if (!department) {
-      setOptions([]);
-      return;
-    }
-    try {
-      setLoading(true);
-      const result = await fetchedIssueTypes(department);
-      setOptions(result);
-    } catch (error) {
-      console.error("Failed to fetch issue types", error);
-      setOptions([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [department]);
-
-  // UseEffect for fetching issue types
-  useEffect(() => {
-    fetchOptions();
-  }, [fetchOptions]);
+  const { data: options = [], isLoading: loading } = useQuery({
+    queryKey: ["issueTypes", department],
+    queryFn: () => fetchedIssueTypes(department),
+    enabled: !!department,
+  });
 
   // Disable dropdown if no department is selected
   const isDisabled = !department;

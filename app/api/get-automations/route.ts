@@ -11,15 +11,8 @@ export const GET = withAuth(async ({ request }) => {
 
   // Extract query parameters from the request url
   const searchParams = request.nextUrl.searchParams;
-  const selectedFilter = searchParams.get("selectedFilter");
+
   const departmentFilter = searchParams.get("departmentFilter");
-  const status = searchParams.get("status");
-  const reference = searchParams.get("reference");
-  const agent = searchParams.get("agent");
-  const submitter = searchParams.get("submitter");
-  const issuePriority = searchParams.get("priority");
-  const fromDate = searchParams.get("fromDate");
-  const toDate = searchParams.get("toDate");
 
   try {
     // Simple testing version to see the nature of the api response
@@ -42,43 +35,6 @@ export const GET = withAuth(async ({ request }) => {
     if (departmentFilter) {
       whereClauses.push(`issue_submitter_department = $${params.length + 1}`);
       params.push(departmentFilter);
-    }
-
-    // Dynamic filtering based on client params
-    // status filter
-    if (selectedFilter === "status" && status) {
-      whereClauses.push(`issue_status = $${params.length + 1}`);
-      params.push(status);
-    }
-    // reference filter
-    else if (selectedFilter === "reference" && reference) {
-      whereClauses.push(`issue_reference_id ILIKE $${params.length + 1}`);
-      params.push(`%${reference}%`);
-    }
-    // Agent filtering
-    else if (selectedFilter === "agent" && agent) {
-      whereClauses.push(`issue_agent_name ILIKE $${params.length + 1}`);
-      params.push(`%${agent}%`);
-    }
-
-    // Priority filtering
-    else if (selectedFilter === "priority" && issuePriority) {
-      whereClauses.push(`issue_priority = $${params.length + 1}`);
-      params.push(issuePriority);
-    }
-
-    // Submitter filtering
-    else if (selectedFilter === "submitter" && submitter) {
-      whereClauses.push(`issue_submitter_name ILIKE $${params.length + 1}`);
-      params.push(`%${submitter}%`);
-    }
-
-    // Date filtering
-    else if (selectedFilter === "date" && fromDate && toDate) {
-      whereClauses.push(
-        `issue_created_at::date BETWEEN $${params.length + 1} AND $${params.length + 2}`,
-      );
-      params.push(fromDate, toDate);
     }
 
     if (whereClauses.length > 0) {

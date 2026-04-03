@@ -33,7 +33,7 @@ const ShowHideColumnsLogic = () => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         disabled={!isTableView}
-        className={`flex h-9.5 items-center gap-2 rounded-xl border px-3 text-sm transition-colors disabled:opacity-50 ${
+        className={`flex h-9 items-center gap-2 rounded-xl border px-3 text-sm transition-colors disabled:opacity-50 ${
           isOpen
             ? "border-blue-500 bg-white ring-2 ring-blue-500/20 dark:bg-neutral-900"
             : "border-neutral-300 bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:border-neutral-800 dark:bg-neutral-800/50 dark:text-white dark:hover:bg-neutral-700/50"
@@ -42,7 +42,7 @@ const ShowHideColumnsLogic = () => {
         <Columns2 className="h-4.5 w-4.5" />
         <span>
           <span className="custom:inline-flex hidden max-w-40 truncate">
-            Show/Hide Columns
+            Columns
           </span>
         </span>
         <ChevronDown

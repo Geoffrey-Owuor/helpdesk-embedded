@@ -74,17 +74,20 @@ const Pagination = ({
       )}
       <div className="hidden md:flex md:flex-1 md:items-center md:justify-center lg:justify-between">
         <div className="flex items-center gap-4">
-          <div className="hidden pr-3 lg:flex">
-            <p className="text-sm text-neutral-700 dark:text-neutral-400">
-              Showing{" "}
-              <span className="font-semibold">{indexOfFirstIssue + 1}</span> to{" "}
-              <span className="font-semibold">
-                {Math.min(indexOfLastIssue, issuesLength)}
-              </span>{" "}
-              of <span className="font-semibold">{issuesLength}</span>{" "}
-              {`result${issuesLength > 1 ? "s" : ""}`}
-            </p>
-          </div>
+          {issuesLength > 0 && (
+            <div className="hidden pr-3 lg:flex">
+              <p className="text-sm text-neutral-700 dark:text-neutral-400">
+                Showing{" "}
+                <span className="font-semibold">{indexOfFirstIssue + 1}</span>{" "}
+                to{" "}
+                <span className="font-semibold">
+                  {Math.min(indexOfLastIssue, issuesLength)}
+                </span>{" "}
+                of <span className="font-semibold">{issuesLength}</span>{" "}
+                {`result${issuesLength > 1 ? "s" : ""}`}
+              </p>
+            </div>
+          )}
 
           {/* The button to set issues per page */}
           {issuesLength > 6 && (

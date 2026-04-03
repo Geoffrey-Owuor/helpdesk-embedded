@@ -1,6 +1,5 @@
 import issue_desk_logo from "./web-app-manifest-512x512.png";
 import issue_desk_image from "./issue_desk_light.png";
-import { IssueValueTypes } from "@/store/useIssuesStore";
 
 export const assets = {
   issue_desk_logo,
@@ -54,3 +53,93 @@ export const baseDepartments = [
   { option: "Security", value: "Security" },
   { option: "Directorate", value: "Directorate" },
 ];
+
+export const DEFAULT_FETCH_OPTIONS = { selectedFilter: "status", status: "" };
+
+export type IssueValueTypes = string | number;
+
+export interface Options {
+  selectedFilter?: string;
+  fromDate?: string;
+  toDate?: string;
+  status?: string;
+  reference?: string;
+  department?: string;
+  agent?: string;
+  issueType?: string;
+  issuePriority?: string;
+  submitter?: string;
+}
+
+// Issue Cards Count Types
+export interface PriorityBreakdown {
+  total: number;
+  low: number;
+  medium: number;
+  high: number;
+  critical: number;
+}
+
+export interface DataCounts {
+  totals: number;
+  pending: PriorityBreakdown;
+  inProgress: PriorityBreakdown;
+  resolved: PriorityBreakdown;
+  unfeasible: PriorityBreakdown;
+}
+
+const defaultBreakdown: PriorityBreakdown = {
+  total: 0,
+  low: 0,
+  medium: 0,
+  high: 0,
+  critical: 0,
+};
+
+export const defaultCounts: DataCounts = {
+  totals: 0,
+  pending: { ...defaultBreakdown },
+  inProgress: { ...defaultBreakdown },
+  resolved: { ...defaultBreakdown },
+  unfeasible: { ...defaultBreakdown },
+};
+
+// User Count Types
+export interface UserCountBreakdown {
+  total: number;
+  active: number;
+  inactive: number;
+}
+export const defaultUserCountBreakdown: UserCountBreakdown = {
+  total: 0,
+  active: 0,
+  inactive: 0,
+};
+
+export interface UserCounts {
+  totals: UserCountBreakdown;
+  agents: UserCountBreakdown;
+  admins: UserCountBreakdown;
+  normalUsers: UserCountBreakdown;
+}
+export const DefaultUserCounts: UserCounts = {
+  totals: { ...defaultUserCountBreakdown },
+  agents: { ...defaultUserCountBreakdown },
+  admins: { ...defaultUserCountBreakdown },
+  normalUsers: { ...defaultUserCountBreakdown },
+};
+
+// Issues Count Types
+export interface IssuesMappingCounts {
+  low: number;
+  medium: number;
+  high: number;
+  critical: number;
+}
+
+export const DefaultIssuesMappingCounts: IssuesMappingCounts = {
+  low: 0,
+  medium: 0,
+  high: 0,
+  critical: 0,
+};

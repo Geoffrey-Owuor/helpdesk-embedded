@@ -1,21 +1,15 @@
 "use client";
 
 import { X, Bug, ShieldCheck, UsersRound, RotateCcw } from "lucide-react";
-import {
-  Dispatch,
-  SetStateAction,
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-} from "react";
+import { Dispatch, SetStateAction, useState, useRef, useCallback } from "react";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import AgentsInfo from "./AgentsInfo";
 import IssueTypesInfo from "./IssueTypesInfo";
 import ClientPortal from "@/components/Modules/ClientPortal";
-import { useAgentsStore } from "@/store/useAgentsStore";
 import { useUser } from "@/contexts/UserContext";
+import { useQuery } from "@tanstack/react-query";
 import { handleRefetchIssueAgentsData } from "@/serverActions/refetchIssueAgentsData";
+import { fetchedIssueAgents } from "@/serverActions/GetIssueAgents";
 
 type AdminPanelProps = {
   showAdminPanel: boolean;
@@ -37,27 +31,21 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   const modalRef = useRef<HTMLDivElement | null>(null);
   useFocusTrapping(modalRef, showAdminPanel, closeModal);
 
-  const agentsInfo = useAgentsStore((state) => state.agentsInfo);
-  const loading = useAgentsStore((state) => state.loading);
-  const fetchAction = useAgentsStore((state) => state.fetchAgentsInfo);
-
-  // fetch agents action
-  const fetchAgentsInfo = useCallback(async () => {
-    if (department) await fetchAction(department);
-  }, [fetchAction, department]);
-
-  // UseEffect for fetching on mount
-  useEffect(() => {
-    fetchAgentsInfo();
-  }, [fetchAgentsInfo]);
+  const {
+    data: agentsInfo = [],
+    isLoading: loading,
+    refetch,
+  } = useQuery({
+    queryKey: ["AgentInfo", department],
+    queryFn: () => fetchedIssueAgents(department),
+    enabled: !!department,
+  });
 
   // Refetch agents and issue types data
   const handleRefetchIssueAgents = async () => {
-    // We call our server action here
+    // We call our server action here - the below function invalidates next.js unstable_cache
     await handleRefetchIssueAgentsData();
-
-    // refetch data after revalidation
-    await fetchAgentsInfo();
+    refetch();
   };
 
   if (!showAdminPanel) return null;
@@ -138,7 +126,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
                   </button>
                   <button
                     onClick={() => setShowAdminPanel(false)}
-                    className="rounded-full p-2 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
+                    className="rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
                   >
                     <X size={20} />
                   </button>
@@ -170,7 +158,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
               {activeTab === "agent-info" && (
                 <AgentsInfo
                   loading={loading}
-                  refetchAgentsInfo={fetchAgentsInfo}
+                  refetchAgentsInfo={handleRefetchIssueAgents}
                   agentsFlatInfo={agentsInfo}
                 />
               )}
@@ -178,7 +166,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
               {activeTab === "issue-info" && (
                 <IssueTypesInfo
                   loading={loading}
-                  refetchAgentsInfo={fetchAgentsInfo}
+                  refetchAgentsInfo={handleRefetchIssueAgents}
                   agentsFlatInfo={agentsInfo}
                 />
               )}
