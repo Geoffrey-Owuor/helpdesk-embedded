@@ -3,10 +3,10 @@ import {
   Menu,
   CirclePlus,
   Bot,
-  Home,
   ChevronLeft,
   ShieldUser,
   ShieldPlus,
+  LayoutDashboard,
 } from "lucide-react";
 import Link from "next/link";
 import ThemeToggle from "../Themes/ThemeToggle";
@@ -125,21 +125,21 @@ const DashboardSidebar = () => {
 
         {/* Nav items — grow to fill space */}
         <nav className="sidebar-nav mb-2 flex w-full flex-1 flex-col items-center gap-1 px-2">
+          {/* Home */}
+          <SidebarLink
+            href="/dashboard"
+            icon={<LayoutDashboard className="h-5 w-5" />}
+            label="Home"
+            isActive={isHomeActive}
+            onClick={() => handleRouteChange("/dashboard")}
+          />
+
           {/* New Issue */}
           <SidebarButton
             onClick={() => setIsIssueModalOpen(true)}
             icon={<CirclePlus className="h-5 w-5" />}
             label="New Issue"
             highlight
-          />
-
-          {/* Home */}
-          <SidebarLink
-            href="/dashboard"
-            icon={<Home className="h-5 w-5" />}
-            label="Home"
-            isActive={isHomeActive}
-            onClick={() => handleRouteChange("/dashboard")}
           />
 
           {/* Automations */}

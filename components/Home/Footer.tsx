@@ -40,7 +40,7 @@ const Footer = () => {
               </span>
             </div>
             <p className="px-2 text-base leading-7 text-neutral-600 dark:text-neutral-400">
-              The centralized internal tool for managing user reports, assigning
+              The centralized internal tool for managing user issues, assigning
               ownership, and closing the loop on issues.
             </p>
           </div>

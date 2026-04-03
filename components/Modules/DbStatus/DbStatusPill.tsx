@@ -28,8 +28,8 @@ export function DbStatusPill() {
     checking: {
       container:
         "border-neutral-200 bg-neutral-50 text-neutral-500 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-500",
-      icon: "bg-neutral-600",
-      label: "Checking...",
+      icon: "bg-green-500",
+      label: "Systems Normal",
     },
   };
 

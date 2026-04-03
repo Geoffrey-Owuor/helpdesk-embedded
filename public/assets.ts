@@ -143,3 +143,5 @@ export const DefaultIssuesMappingCounts: IssuesMappingCounts = {
   high: 0,
   critical: 0,
 };
+
+export const AppVersion = "v2.0";
