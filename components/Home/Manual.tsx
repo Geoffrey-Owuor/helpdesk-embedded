@@ -4,25 +4,22 @@ import { useState } from "react";
 import Link from "next/link";
 import UserManual from "./UserManual";
 import BugReport from "./BugReport";
-import { ArrowLeft, BookOpen, Bug } from "lucide-react";
+import { ArrowLeft, BookOpen, Bug, FileText } from "lucide-react";
+import HomeNavBar from "../Navigation/HomeNavBar";
+import Footer from "./Footer";
 
-// ─────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────
 type Section = "user-manual" | "bug-report";
-
-// ─────────────────────────────────────────────
-// Main Manual Page
-// ─────────────────────────────────────────────
 
 const navItems = [
   {
     id: "user-manual",
+    link: "#user-manual",
     label: "User Manual",
     icon: <BookOpen className="h-4 w-4" />,
   },
   {
     id: "bug-report",
+    link: "#bug-report",
     label: "Report a Bug",
     icon: <Bug className="h-4 w-4" />,
   },
@@ -31,46 +28,56 @@ const navItems = [
 const Manual = () => {
   const [activeSection, setActiveSection] = useState<Section>("user-manual");
 
-  const scrollTo = (id: Section) => {
-    setActiveSection(id);
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
   return (
-    <main className="layout-scrollbar h-screen overflow-y-auto bg-white dark:bg-neutral-950">
-      <div className="custom:px-8 mx-auto max-w-6xl px-6 py-16 2xl:max-w-7xl">
-        {/* Page header */}
-        <div className="mb-12">
-          <Link
-            href="/"
-            className="mb-6 inline-flex items-center gap-1.5 text-sm text-neutral-500 transition-colors hover:text-neutral-900 dark:hover:text-white"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Back to home
-          </Link>
-          <h1 className="text-3xl font-bold tracking-tight text-neutral-950 sm:text-4xl dark:text-white">
-            Documentation
-          </h1>
-          <p className="mt-3 max-w-2xl text-base text-neutral-500 dark:text-neutral-400">
-            Learn how to use IssueDesk and help us improve it by reporting any
-            encountered bugs.
-          </p>
-        </div>
-
+    <main
+      id="home-container"
+      className="layout-scrollbar h-screen overflow-y-auto scroll-smooth bg-white dark:bg-neutral-950"
+    >
+      <HomeNavBar />
+      <div className="custom:px-8 mx-auto mb-8 max-w-6xl px-6 py-6 2xl:max-w-7xl">
         <div className="flex flex-col gap-12 lg:flex-row lg:gap-16">
           {/* Sticky sidebar nav */}
-          <aside className="shrink-0 lg:w-52">
-            <div className="sticky top-8">
-              <p className="mb-3 text-xs font-semibold tracking-widest text-neutral-400 uppercase dark:text-neutral-600">
+          <aside className="shrink-0 lg:w-56">
+            <div className="sticky top-20">
+              {/* Identity card */}
+              <div className="mb-5 overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800">
+                <div className="p-4">
+                  {/* Back link */}
+                  <Link
+                    href="/"
+                    className="mb-4 inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 bg-white px-2.5 py-1 text-xs font-medium text-neutral-500 transition-colors hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900/50 dark:text-neutral-400 dark:hover:border-neutral-600 dark:hover:text-white"
+                  >
+                    <ArrowLeft className="h-3 w-3" />
+                    Back to home
+                  </Link>
+
+                  {/* Title */}
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4 shrink-0 text-blue-400 dark:text-blue-500" />
+                    <span className="font-mono font-semibold tracking-tight text-neutral-900 dark:text-white">
+                      Docs
+                    </span>
+                  </div>
+
+                  {/* Description */}
+                  <p className="mt-2 text-xs leading-relaxed text-neutral-500 dark:text-neutral-400">
+                    Learn how to use <strong>IssueDesk</strong> and help us
+                    improve it by reporting any bugs you encounter.
+                  </p>
+                </div>
+              </div>
+
+              {/* Section nav */}
+              <p className="mb-2 px-1 text-xs font-semibold tracking-widest text-neutral-400 uppercase dark:text-neutral-600">
                 Sections
               </p>
               <nav className="flex flex-row gap-2 lg:flex-col">
                 {navItems.map((item) => (
-                  <button
+                  <a
                     key={item.id}
-                    onClick={() => scrollTo(item.id as Section)}
-                    className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all ${
+                    href={item.link}
+                    onClick={() => setActiveSection(item.id as Section)}
+                    className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium transition-all ${
                       activeSection === item.id
                         ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-900 dark:text-white"
                         : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900 dark:hover:bg-neutral-900 dark:hover:text-white"
@@ -78,7 +85,7 @@ const Manual = () => {
                   >
                     {item.icon}
                     {item.label}
-                  </button>
+                  </a>
                 ))}
               </nav>
             </div>
@@ -91,6 +98,9 @@ const Manual = () => {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </main>
   );
 };

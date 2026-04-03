@@ -5,7 +5,7 @@ const DashboardFooter = () => {
   return (
     <footer className="flex justify-center px-6 py-4 text-sm text-neutral-500">
       <span className="inline-flex items-center gap-2 text-sm leading-5 text-neutral-500">
-        <span> &copy; {currentYear} Issue Desk. Built by</span>
+        <span> &copy; {currentYear} IssueDesk. Built by</span>
         <a
           href="https://jeff-portfolio-web.vercel.app"
           target="_blank"

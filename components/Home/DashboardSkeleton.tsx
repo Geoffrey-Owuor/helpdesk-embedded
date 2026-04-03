@@ -188,33 +188,35 @@ function TableSection() {
 
 export default function DashboardSkeleton() {
   return (
-    <div className="mt-16 overflow-hidden rounded-xl border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-950">
-      {/* Window chrome */}
-      <div className="flex h-9 items-center gap-1.5 border-b border-neutral-100 bg-neutral-50 px-4 dark:border-neutral-800 dark:bg-neutral-900">
-        <div className="h-2.5 w-2.5 rounded-full bg-red-400/80" />
-        <div className="h-2.5 w-2.5 rounded-full bg-yellow-400/80" />
-        <div className="h-2.5 w-2.5 rounded-full bg-green-400/80" />
-        <div className="ml-auto flex gap-2">
-          <Sk speed="slow" className="h-4 w-16 rounded-md" />
-          <Sk speed="mid" className="h-4 w-4 rounded-md" />
-        </div>
-      </div>
-
-      {/* Body */}
-      <div className="flex" style={{ height: 480 }}>
-        <Sidebar />
-
-        {/* Main content */}
-        <div className="flex flex-1 flex-col gap-3 overflow-hidden p-4">
-          {/* Stat cards */}
-          <div className="grid grid-cols-3 gap-3">
-            <StatCard speed="slow" />
-            <StatCard speed="mid" />
-            <StatCard speed="fast" />
+    <div className="mx-auto mt-16 max-w-4xl">
+      <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-950">
+        {/* Window chrome */}
+        <div className="flex h-9 items-center gap-1.5 border-b border-neutral-100 bg-neutral-50 px-4 dark:border-neutral-800 dark:bg-neutral-900">
+          <div className="h-2.5 w-2.5 rounded-full bg-red-400/80" />
+          <div className="h-2.5 w-2.5 rounded-full bg-yellow-400/80" />
+          <div className="h-2.5 w-2.5 rounded-full bg-green-400/80" />
+          <div className="ml-auto flex gap-2">
+            <Sk speed="slow" className="h-4 w-16 rounded-md" />
+            <Sk speed="mid" className="h-4 w-4 rounded-md" />
           </div>
+        </div>
 
-          {/* Table */}
-          <TableSection />
+        {/* Body */}
+        <div className="flex" style={{ height: 480 }}>
+          <Sidebar />
+
+          {/* Main content */}
+          <div className="flex flex-1 flex-col gap-3 overflow-hidden p-4">
+            {/* Stat cards */}
+            <div className="grid grid-cols-3 gap-3">
+              <StatCard speed="slow" />
+              <StatCard speed="mid" />
+              <StatCard speed="fast" />
+            </div>
+
+            {/* Table */}
+            <TableSection />
+          </div>
         </div>
       </div>
     </div>

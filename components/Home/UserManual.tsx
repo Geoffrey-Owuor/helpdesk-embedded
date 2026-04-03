@@ -2,15 +2,11 @@
 
 import { useState } from "react";
 
-// ─────────────────────────────────────────────
-// User Manual Section
-// ─────────────────────────────────────────────
-
 import {
   BookOpen,
-  CheckCircle2,
   ChevronRight,
   LayoutDashboard,
+  Lightbulb,
   Mail,
   MessageSquareText,
   PlusSquare,
@@ -178,7 +174,7 @@ const UserManual = () => {
           <BookOpen className="h-3.5 w-3.5" />
           Getting Started
         </div>
-        <h2 className="text-2xl font-bold tracking-tight text-neutral-950 sm:text-3xl dark:text-white">
+        <h2 className="text-2xl font-semibold tracking-tight text-neutral-950 sm:text-3xl dark:text-white">
           User Manual
         </h2>
         <p className="mt-3 max-w-xl text-base text-neutral-500 dark:text-neutral-400">
@@ -239,7 +235,7 @@ const UserManual = () => {
 
       {/* Quick tip callout */}
       <div className="mt-8 flex gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4 dark:border-blue-900/40 dark:bg-blue-950/30">
-        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-blue-500" />
+        <Lightbulb className="mt-0.5 h-5 w-5 shrink-0 text-blue-500" />
         <div>
           <p className="text-sm font-medium text-blue-900 dark:text-blue-300">
             Pro tip
