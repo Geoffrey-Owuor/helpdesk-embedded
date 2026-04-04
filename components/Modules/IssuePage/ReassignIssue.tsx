@@ -117,6 +117,7 @@ const ReassignIssue = ({
       closeModal();
     },
     onError: (error) => {
+      hideOverlay();
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
     },

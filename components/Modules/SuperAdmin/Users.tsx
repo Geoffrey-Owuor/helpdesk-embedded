@@ -22,7 +22,7 @@ import EditUserModal from "./EditModals/EditUserModal";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
-interface UserRecord {
+export interface UserRecord {
   user_id: string;
   username: string;
   email: string;
@@ -310,7 +310,9 @@ const Users = () => {
                         </button>
                         <button
                           onClick={() => handleDelete(user)}
-                          disabled={userId === user.user_id}
+                          disabled={
+                            userId === user.user_id || !user.is_user_active
+                          }
                           className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-red-100 hover:text-red-600 disabled:opacity-50 dark:hover:bg-red-900/30 dark:hover:text-red-400"
                         >
                           <Trash2 size={15} />
