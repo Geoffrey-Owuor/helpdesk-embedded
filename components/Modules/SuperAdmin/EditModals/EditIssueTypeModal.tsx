@@ -7,6 +7,7 @@ import { useState, useRef, FocusEvent } from "react";
 import { DropdownOption } from "./CustomDropDown";
 import { Bug, X } from "lucide-react";
 import FormAsterisk from "../../FormAsterisk";
+import apiClient from "@/lib/AxiosClient";
 
 export const priorityOptions: DropdownOption[] = [
   { option: "Low", value: "Low" },
