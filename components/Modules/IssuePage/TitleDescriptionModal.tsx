@@ -106,6 +106,7 @@ const TitleDescriptionModal = ({
     },
 
     onError: (error) => {
+      hideOverlay();
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
     },

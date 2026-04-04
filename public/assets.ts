@@ -50,6 +50,7 @@ export const baseDepartments = [
   { option: "Retail", value: "Retail" },
   { option: "B2B", value: "B2B" },
   { option: "Internal Audit", value: "Internal Audit" },
+  { option: "Engineering & HVAC", value: "Engineering & HVAC" },
   { option: "Security", value: "Security" },
   { option: "Directorate", value: "Directorate" },
 ];

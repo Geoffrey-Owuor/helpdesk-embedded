@@ -139,7 +139,7 @@ const TableOfContents = ({ items }: { items: ChangelogData[] }) => (
               className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 bg-white px-2.5 py-1 text-xs font-medium text-neutral-500 transition-colors hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900/50 dark:text-neutral-400 dark:hover:border-neutral-600 dark:hover:text-white"
             >
               <ArrowLeft className="h-3 w-3" />
-              Back to app
+              Back to home
             </Link>
 
             <button
