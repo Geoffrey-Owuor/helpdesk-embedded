@@ -46,7 +46,7 @@ const Alert = () => {
 
   return (
     <div
-      className={`fixed top-0 left-1/2 z-9999 max-w-sm -translate-x-1/2 ${
+      className={`fixed top-0 left-1/2 z-9999 max-w-2xl -translate-x-1/2 ${
         isClosing ? "animate-slideUp" : "animate-slideDown"
       }`}
     >
@@ -57,7 +57,7 @@ const Alert = () => {
           {/* Render the appropriate icon */}
           <IconComponent className={`h-5 w-5 shrink-0 ${iconColorClass}`} />
           <p
-            className="max-w-70 truncate text-sm md:max-w-none"
+            className="max-w-70 truncate text-sm md:max-w-2xl"
             title={alertMessage}
           >
             {alertMessage}

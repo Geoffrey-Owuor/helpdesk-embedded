@@ -121,10 +121,6 @@ const ReassignIssue = ({
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
     },
-
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: activeQueryKey });
-    },
   });
   //function for calling the api endpoint to handle reassigning
   const handleReAssigning = async () => {

@@ -1,6 +1,9 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import apiClient from "@/lib/AxiosClient";
+import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
+import { useConfirmStore } from "@/store/useConfirmStore";
+import { useAlertStore } from "@/store/useAlertStore";
 import { dateFormatter } from "@/public/assets";
 import {
   ShieldCheck,
@@ -113,6 +116,9 @@ function SkeletonRow() {
 // ── Main component ────────────────────────────────────────────────────────────
 
 const Users = () => {
+  // Query client;
+  const queryClient = useQueryClient();
+
   const {
     data: users = [],
     isPending: loading,
@@ -127,10 +133,17 @@ const Users = () => {
 
   const { userId } = useUser();
 
+  const activeQueryKey = ["UsersDataInfo"];
+
   //Search value
   const [searchValue, setSearchValue] = useState("");
 
   const [activeEditId, setActiveEditId] = useState<string | null>(null);
+
+  // Zustand stores
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
 
   //  Memo hook for filtering data
   const filteredUsers = useMemo(() => {
@@ -163,10 +176,51 @@ const Users = () => {
     Promise.resolve().then(() => setCurrentPage(1));
   }, [filteredUsers, usersPerPage]);
 
-  const handleDelete = (user: UserRecord) => {
-    // TODO: implement delete functionality
-    console.log("Delete user:", user);
+  const handleDelete = (userId: string) => {
+    // Show confirmation dialog
+    triggerDialog({
+      title: "Delete User",
+      description: "Confirm user deletion",
+      onConfirm: () => deleteUser(userId),
+    });
   };
+
+  const deleteUser = async (id: string) => {
+    hideDialog();
+    mutateUser(id);
+  };
+
+  const { mutate: mutateUser, isPending: deleting } = useMutation({
+    mutationFn: (id: string) =>
+      apiClient.delete("/superadmin/delete-user", { params: { userId: id } }),
+
+    onSuccess: (response, id) => {
+      triggerAlert("success", response.data.message);
+
+      // Only update cache after confirmed success
+      queryClient.setQueryData(activeQueryKey, (oldData: UserRecord[]) => {
+        if (!oldData) return oldData;
+        return oldData.map((user: UserRecord) =>
+          user.user_id === id
+            ? {
+                ...user,
+                email: `deleted_${user.email}`,
+                is_user_active: !user.is_user_active,
+              }
+            : user,
+        );
+      });
+    },
+
+    onError: (error) => {
+      const errorMessage = getApiErrorMessage(error);
+      triggerAlert("error", errorMessage);
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["UserCountsData"] });
+    },
+  });
 
   return (
     <>
@@ -262,7 +316,10 @@ const Users = () => {
                     </td>
 
                     {/* Email */}
-                    <td className="bg-white px-4 py-3.5 text-neutral-600 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:text-neutral-400 dark:group-hover:bg-neutral-800/50">
+                    <td
+                      title={user.email}
+                      className="max-w-37.5 truncate bg-white px-4 py-3.5 text-neutral-600 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:text-neutral-400 dark:group-hover:bg-neutral-800/50"
+                    >
                       {user.email}
                     </td>
 
@@ -309,9 +366,11 @@ const Users = () => {
                           <UserRoundPen size={15} />
                         </button>
                         <button
-                          onClick={() => handleDelete(user)}
+                          onClick={() => handleDelete(user.user_id)}
                           disabled={
-                            userId === user.user_id || !user.is_user_active
+                            userId === user.user_id ||
+                            !user.is_user_active ||
+                            deleting
                           }
                           className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-red-100 hover:text-red-600 disabled:opacity-50 dark:hover:bg-red-900/30 dark:hover:text-red-400"
                         >

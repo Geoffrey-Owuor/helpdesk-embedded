@@ -153,7 +153,6 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
       triggerAlert("error", errorMessage);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["UsersDataInfo"] });
       queryClient.invalidateQueries({ queryKey: ["UserCountsData"] }); //Card counts data
     },
   });
