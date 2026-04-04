@@ -110,10 +110,6 @@ const TitleDescriptionModal = ({
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
     },
-
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: activeQueryKey });
-    },
   });
 
   // Simplified handleSubmit

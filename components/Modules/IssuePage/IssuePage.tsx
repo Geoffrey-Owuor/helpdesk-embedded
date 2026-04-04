@@ -137,14 +137,9 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
     mutationFn: (status: string) =>
       apiClient.put("/update-status", { uuid, status }),
 
-    onMutate: async (newStatus) => {
-      // 1. Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: activeQueryKey });
+    onSuccess: (response, newStatus) => {
+      triggerAlert("success", response.data.message);
 
-      // 2. Snapshot previous data
-      const previousData = queryClient.getQueryData(activeQueryKey);
-
-      // 3. Optimistically update the cache
       queryClient.setQueryData(
         activeQueryKey,
         (oldData: Record<string, IssueValueTypes>[]) => {
@@ -156,27 +151,13 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           );
         },
       );
-
-      // 4. Return snapshot for rollback
-      return { previousData };
     },
 
-    onSuccess: (response) => {
-      triggerAlert("success", response.data.message);
-    },
-
-    onError: (error, _newStatus, context) => {
-      // 5. Rollback on failure
-      if (context?.previousData) {
-        queryClient.setQueryData(activeQueryKey, context.previousData);
-      }
+    onError: (error) => {
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
     },
-
     onSettled: () => {
-      // 6. Always refetch to sync with server
-      queryClient.invalidateQueries({ queryKey: activeQueryKey });
       queryClient.invalidateQueries({ queryKey: activeCardsKey });
     },
   });
@@ -186,14 +167,9 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
     mutationFn: (priority: string) =>
       apiClient.put("/update-priority", { uuid, priority }),
 
-    onMutate: async (newPriority) => {
-      // 1. Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: activeQueryKey });
+    onSuccess: (response, newPriority) => {
+      triggerAlert("success", response.data.message);
 
-      // 2. Snapshot previous data
-      const previousData = queryClient.getQueryData(activeQueryKey);
-
-      // 3. Optimistically update the cache
       queryClient.setQueryData(
         activeQueryKey,
         (oldData: Record<string, IssueValueTypes>[]) => {
@@ -205,27 +181,14 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           );
         },
       );
-
-      // 4. Return snapshot for rollback
-      return { previousData };
     },
 
-    onSuccess: (response) => {
-      triggerAlert("success", response.data.message);
-    },
-
-    onError: (error, _newPriority, context) => {
-      // 5. Rollback on failure
-      if (context?.previousData) {
-        queryClient.setQueryData(activeQueryKey, context.previousData);
-      }
+    onError: (error) => {
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
     },
 
     onSettled: () => {
-      // 6. Always refetch to sync with server
-      queryClient.invalidateQueries({ queryKey: activeQueryKey });
       queryClient.invalidateQueries({ queryKey: activeCardsKey });
     },
   });

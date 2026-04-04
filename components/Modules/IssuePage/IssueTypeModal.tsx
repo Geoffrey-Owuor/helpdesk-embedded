@@ -57,14 +57,9 @@ const IssueTypeModal = ({
     mutationFn: (value: string) =>
       apiClient.patch("/patch-issuetype", { type: value, uuid }),
 
-    onMutate: async (value) => {
-      // 1. Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: activeQueryKey });
+    onSuccess: (response, value) => {
+      triggerAlert("success", response.data.message);
 
-      // 2. Snapshot previous data
-      const previousData = queryClient.getQueryData(activeQueryKey);
-
-      // 3. Optimistically update the cache
       queryClient.setQueryData(
         activeQueryKey,
         (oldData: Record<string, IssueValueTypes>[]) => {
@@ -74,28 +69,12 @@ const IssueTypeModal = ({
           );
         },
       );
-
-      // 4. Return snapshot for rollback
-      return { previousData };
     },
 
-    onSuccess: (response) => {
-      triggerAlert("success", response.data.message);
-    },
-
-    onError: (error, _value, context) => {
-      // 5. Rollback on failure
-      if (context?.previousData) {
-        queryClient.setQueryData(activeQueryKey, context.previousData);
-      }
+    onError: (error) => {
       const errorMessage = getApiErrorMessage(error);
       console.error("Error while trying to patch issue type:", errorMessage);
       triggerAlert("error", errorMessage);
-    },
-
-    onSettled: () => {
-      // 6. Always refetch to sync with server
-      queryClient.invalidateQueries({ queryKey: activeQueryKey });
     },
   });
 
