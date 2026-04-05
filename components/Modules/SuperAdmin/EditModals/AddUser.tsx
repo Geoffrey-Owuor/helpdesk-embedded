@@ -101,7 +101,7 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
     e.preventDefault();
     triggerDialog({
       title: "Add New User",
-      description: "Confirm adding a new user",
+      description: "Confirm adding of the new user",
       onConfirm: handleSubmit,
     });
   };
