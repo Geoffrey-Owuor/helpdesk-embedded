@@ -195,12 +195,10 @@ const Users = () => {
       apiClient.delete("/superadmin/delete-user", { params: { userId: id } }),
 
     onSuccess: (response, id) => {
-      triggerAlert("success", response.data.message);
-
       // Only update cache after confirmed success
       queryClient.setQueryData(activeQueryKey, (oldData: UserRecord[]) => {
         if (!oldData) return oldData;
-        return oldData.map((user: UserRecord) =>
+        return oldData.map((user) =>
           user.user_id === id
             ? {
                 ...user,
@@ -210,6 +208,8 @@ const Users = () => {
             : user,
         );
       });
+
+      triggerAlert("success", response.data.message);
     },
 
     onError: (error) => {
@@ -382,6 +382,7 @@ const Users = () => {
                           <EditUserModal
                             isModalOpen={activeEditId === user.user_id}
                             hideModal={() => setActiveEditId(null)}
+                            userId={user.user_id}
                             userInfo={{
                               name: user.username,
                               email: user.email,

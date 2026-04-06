@@ -138,8 +138,6 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
       apiClient.put("/update-status", { uuid, status }),
 
     onSuccess: (response, newStatus) => {
-      triggerAlert("success", response.data.message);
-
       queryClient.setQueryData(
         activeQueryKey,
         (oldData: Record<string, IssueValueTypes>[]) => {
@@ -151,6 +149,8 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           );
         },
       );
+
+      triggerAlert("success", response.data.message);
     },
 
     onError: (error) => {
@@ -168,8 +168,6 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
       apiClient.put("/update-priority", { uuid, priority }),
 
     onSuccess: (response, newPriority) => {
-      triggerAlert("success", response.data.message);
-
       queryClient.setQueryData(
         activeQueryKey,
         (oldData: Record<string, IssueValueTypes>[]) => {
@@ -181,6 +179,8 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           );
         },
       );
+
+      triggerAlert("success", response.data.message);
     },
 
     onError: (error) => {

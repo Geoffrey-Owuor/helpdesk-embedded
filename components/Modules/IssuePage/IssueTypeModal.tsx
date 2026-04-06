@@ -58,8 +58,6 @@ const IssueTypeModal = ({
       apiClient.patch("/patch-issuetype", { type: value, uuid }),
 
     onSuccess: (response, value) => {
-      triggerAlert("success", response.data.message);
-
       queryClient.setQueryData(
         activeQueryKey,
         (oldData: Record<string, IssueValueTypes>[]) => {
@@ -69,6 +67,8 @@ const IssueTypeModal = ({
           );
         },
       );
+
+      triggerAlert("success", response.data.message);
     },
 
     onError: (error) => {

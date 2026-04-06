@@ -121,22 +121,23 @@ const AddAgent = ({
     try {
       const response = await apiClient.post("/add-agent", formData);
 
-      // On success, show toast alert
-      triggerAlert("success", response.data.message);
-
-      // refetch agents data
-      refetchAgentsInfo();
+      hideOverlay();
 
       // close modal
       setShowAgentModal(false);
+
+      // refetch agents data
+      await refetchAgentsInfo();
+
+      // On success, show toast alert
+      triggerAlert("success", response.data.message);
     } catch (error) {
+      hideOverlay();
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
 
       // log the error
       console.error("Error while trying to add an agent:", errorMessage);
-    } finally {
-      hideOverlay();
     }
   };
 

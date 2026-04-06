@@ -100,9 +100,9 @@ const TitleDescriptionModal = ({
       // Hide overlay on success
       hideOverlay();
 
-      triggerAlert("success", response.data.message);
-      setFormData({ issue_title: "", issue_description: "" });
       closeModal();
+
+      triggerAlert("success", response.data.message);
     },
 
     onError: (error) => {

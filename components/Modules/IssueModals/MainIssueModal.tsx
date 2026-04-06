@@ -177,9 +177,6 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       // post issue api endpoint
       const response = await apiClient.post("/post-issue", formData);
 
-      // Trigger alert on success
-      triggerAlert("success", response.data.message);
-
       // Refetch issues data in the background
       queryClient.invalidateQueries({ queryKey: activeQueryKey });
       queryClient.invalidateQueries({ queryKey: activeCardsKey });
@@ -189,6 +186,9 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
         queryClient.invalidateQueries({ queryKey: automationsQueryKey });
         queryClient.invalidateQueries({ queryKey: automationCardsKey });
       }
+
+      // Hide the overlay
+      hideOverlay();
 
       // Clear form data
       setFormData({
@@ -202,14 +202,16 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
 
       // Close issue modal
       setIsOpen(false);
+
+      // Trigger alert on success
+      triggerAlert("success", response.data.message);
     } catch (error) {
+      hideOverlay();
       // Call the error helper
       const errorMessage = getApiErrorMessage(error);
       // 4. Trigger alert on error
       triggerAlert("error", errorMessage);
       console.error("Error submitting the issue:", error);
-    } finally {
-      hideOverlay();
     }
   };
 
