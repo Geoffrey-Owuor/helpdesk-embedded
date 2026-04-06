@@ -389,6 +389,8 @@ const Users = () => {
                               department: user.department,
                               role: user.role,
                               status: String(user.is_user_active),
+                              password: "",
+                              confirmPassword: "",
                             }}
                           />
                         )}

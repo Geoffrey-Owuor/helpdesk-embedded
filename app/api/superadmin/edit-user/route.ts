@@ -2,6 +2,7 @@ import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { NextResponse } from "next/server";
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
+import { hashPassword } from "@/lib/Auth";
 
 export const PUT = withAuth(async ({ request, user }) => {
   let client: PoolClient | undefined;
@@ -15,19 +16,41 @@ export const PUT = withAuth(async ({ request, user }) => {
   }
 
   try {
-    const { userId, name, email, role, department, status } =
-      await request.json();
+    const {
+      userId,
+      name,
+      email,
+      role,
+      department,
+      status,
+      password,
+      confirmPassword,
+    } = await request.json();
 
     // Check if all fields have a value
-    if (!userId || !name || !email || !role || !department || !status) {
+    if (
+      !userId ||
+      !name ||
+      !email ||
+      !role ||
+      !department ||
+      !status ||
+      !password ||
+      !confirmPassword
+    ) {
       return NextResponse.json(
         { message: "Missing some required fields" },
         { status: 400 },
       );
     }
 
-    // User active boolean
-    const isUserActive = status === "true";
+    // Check if password is same as confirmPassword
+    if (password !== confirmPassword) {
+      return NextResponse.json(
+        { message: "Passwords do not match" },
+        { status: 400 },
+      );
+    }
 
     // get a pool client
     client = await pool.connect();
@@ -66,6 +89,11 @@ export const PUT = withAuth(async ({ request, user }) => {
       );
     }
 
+    // User active boolean
+    const isUserActive = status === "true";
+    // If everything is ok - hash the password and perform an INSERT query
+    const hashedPassword = await hashPassword(password);
+
     // Update query
     const updateQuery = `
     UPDATE users
@@ -73,12 +101,21 @@ export const PUT = withAuth(async ({ request, user }) => {
     username = $2,
     role = $3,
     department = $4,
-    is_user_active = $5
-    WHERE user_id = $6
+    is_user_active = $5,
+    password = $6
+    WHERE user_id = $7
     `;
 
     // The update params
-    const updateParams = [email, name, role, department, isUserActive, userId];
+    const updateParams = [
+      email,
+      name,
+      role,
+      department,
+      isUserActive,
+      hashedPassword,
+      userId,
+    ];
 
     // Running the query
     await client.query(updateQuery, updateParams);
