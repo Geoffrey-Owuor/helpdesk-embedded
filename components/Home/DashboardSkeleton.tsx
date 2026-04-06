@@ -40,8 +40,8 @@ function Sk({ className, speed = "mid", style, ...props }: SkProps) {
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 
 const navIcons = [
-  { Icon: LayoutDashboard },
-  { Icon: PlusCircle, active: true },
+  { Icon: LayoutDashboard, active: true },
+  { Icon: PlusCircle },
   { Icon: Bot },
   { Icon: ShieldCheck },
 ];
@@ -208,9 +208,10 @@ export default function DashboardSkeleton() {
           {/* Main content */}
           <div className="flex flex-1 flex-col gap-3 overflow-hidden p-4">
             {/* Stat cards */}
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
               <StatCard speed="slow" />
               <StatCard speed="mid" />
+              <StatCard speed="slow" />
               <StatCard speed="fast" />
             </div>
 

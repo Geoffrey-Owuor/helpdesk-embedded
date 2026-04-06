@@ -164,7 +164,7 @@ const IssuesCards = ({ type }: { type: string }) => {
             </span>
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+                <h3 className="text-3xl font-semibold text-neutral-900 dark:text-neutral-100">
                   {cardLoading ? (
                     <SkeletonBox className="h-9 w-9 rounded-full" />
                   ) : (
