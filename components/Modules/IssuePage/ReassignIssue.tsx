@@ -106,15 +106,15 @@ const ReassignIssue = ({
       // Hide overlay on success
       hideOverlay();
 
-      // Show the alert on success
-      triggerAlert("success", response.data.message);
-
       //   clear data
       setAgentEmail("");
       setAgentName("");
 
       // close the modal
       closeModal();
+
+      // Show the alert on success
+      triggerAlert("success", response.data.message);
     },
     onError: (error) => {
       hideOverlay();

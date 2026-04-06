@@ -124,7 +124,7 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
         department: payload.department,
         role: payload.role,
         user_id: Date.now().toLocaleString(), //Get a random generic id
-        is_user_active: payload.status === "true" ? true : false,
+        is_user_active: payload.status === "true",
         created_at: new Date().toLocaleString(),
       };
       queryClient.setQueryData(["UsersDataInfo"], (oldData: UserRecord[]) => {
@@ -135,7 +135,6 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
       // Hide overlay on success
       hideOverlay();
 
-      triggerAlert("success", response.data.message);
       setFormData({
         name: "",
         email: "",
@@ -145,7 +144,10 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
         role: "user", //default to user
         status: "",
       });
+
       hideModal();
+
+      triggerAlert("success", response.data.message);
     },
     onError: (error) => {
       hideOverlay();

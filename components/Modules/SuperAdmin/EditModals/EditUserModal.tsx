@@ -7,7 +7,12 @@ import { CheckCircle2, Mail, UserRound, X } from "lucide-react";
 import CustomDropdown from "./CustomDropDown";
 import FormAsterisk from "../../FormAsterisk";
 import apiClient from "@/lib/AxiosClient";
-import { useQueryClient } from "@tanstack/react-query";
+import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useAlertStore } from "@/store/useAlertStore";
+import { useOverlayStore } from "@/store/useOverlayStore";
+import { useConfirmStore } from "@/store/useConfirmStore";
+import { UserRecord } from "../Users";
 
 export const baseRoles = [
   { option: "User", value: "user" },
@@ -28,19 +33,38 @@ export type UserInfo = {
   status: string;
 };
 
+interface Payload extends UserInfo {
+  userId: string;
+}
+
 type EditUserModalProps = {
   isModalOpen: boolean;
   hideModal: () => void;
+  userId: string;
   userInfo: UserInfo;
 };
 
 const EditUserModal = ({
   hideModal,
   isModalOpen,
+  userId,
   userInfo,
 }: EditUserModalProps) => {
+  const queryClient = useQueryClient();
+
+  // The query key
+  const activeQueryKey = ["UsersDataInfo"];
+  const userCardsKey = ["UserCountsData"];
+
   const [formData, setFormData] = useState<UserInfo>(userInfo);
   const modalRef = useRef<HTMLDivElement | null>(null);
+
+  // Store states
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
 
   useFocusTrapping(modalRef, isModalOpen, hideModal);
 
@@ -58,11 +82,66 @@ const EditUserModal = ({
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleConfirmSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitting updated user info:", formData);
-    hideModal();
+    triggerDialog({
+      title: "Edit User Info",
+      description: "Confirm editing of user information",
+      onConfirm: handleSubmit,
+    });
   };
+
+  const handleSubmit = async () => {
+    // Our final data object
+    const payload = { ...formData, userId };
+    hideDialog();
+    showOverlay("Updating");
+
+    // The mutation function
+    editMutation(payload);
+  };
+
+  // Mutation function
+  const { mutate: editMutation, isPending: loading } = useMutation({
+    mutationFn: async (payload: Payload) =>
+      apiClient.put("/superadmin/edit-user", payload),
+
+    onSuccess: (response, payload) => {
+      // // Update the cache
+      queryClient.setQueryData(activeQueryKey, (oldData: UserRecord[]) => {
+        if (!oldData) return oldData;
+        return oldData.map((user) => {
+          if (user.user_id === payload.userId) {
+            // Return a new object merging existing user data with the new payload
+            return {
+              ...user,
+              username: payload.name, // Mapping 'name' to 'username'
+              email: payload.email,
+              department: payload.department,
+              role: payload.role as "admin" | "user" | "agent",
+              // Convert the string "true"/"false" from your dropdown back to boolean
+              is_user_active: payload.status === "true",
+            };
+          }
+          return user;
+        });
+      });
+
+      // Hide the overlay
+      hideOverlay();
+
+      hideModal();
+
+      triggerAlert("success", response.data.message);
+    },
+
+    onError: (error) => {
+      hideOverlay();
+      const errorMessage = getApiErrorMessage(error);
+      triggerAlert("error", errorMessage);
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: userCardsKey }),
+  });
 
   return (
     <ClientPortal>
@@ -95,7 +174,7 @@ const EditUserModal = ({
 
           {/* Form */}
           <form
-            onSubmit={handleSubmit}
+            onSubmit={handleConfirmSubmit}
             className="layout-scrollbar flex flex-col gap-4 overflow-y-auto px-6 py-5"
           >
             {/* Name */}
@@ -190,7 +269,7 @@ const EditUserModal = ({
               </button>
               <button
                 type="submit"
-                disabled={formData === userInfo}
+                disabled={formData === userInfo || loading}
                 className="rounded-xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-neutral-700 focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100 dark:focus:ring-white dark:focus:ring-offset-neutral-950"
               >
                 Save Changes

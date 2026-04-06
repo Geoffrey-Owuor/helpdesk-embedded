@@ -106,14 +106,19 @@ const EditIssueTypeInfo = ({
         selectedPriority,
       });
 
-      // Trigger alert on success
-      triggerAlert("success", response.data.message);
+      // hide overlay
+      hideOverlay();
 
       // Close the EditIssueTypeInfo Modal
       setActiveEditId(null);
+
       // refetch info data
-      refetchAgentsInfo();
+      await refetchAgentsInfo();
+
+      // Trigger alert on success
+      triggerAlert("success", response.data.message);
     } catch (error) {
+      hideOverlay();
       const errorMessage = getApiErrorMessage(error);
 
       console.error(
@@ -123,8 +128,6 @@ const EditIssueTypeInfo = ({
 
       // Trigger alert on error
       triggerAlert("error", errorMessage);
-    } finally {
-      hideOverlay();
     }
   };
 

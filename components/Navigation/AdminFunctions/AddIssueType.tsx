@@ -95,23 +95,25 @@ const AddIssueType = ({
         agentEmail,
       });
 
-      // Trigger alert on success
-      triggerAlert("success", response.data.message);
-
-      //refetch agents data
-      refetchAgentsInfo();
+      // Hide the overlay
+      hideOverlay();
 
       //close the modal
       setShowAddIssueModal(false);
+
+      //refetch agents data
+      await refetchAgentsInfo();
+
+      // Trigger alert on success
+      triggerAlert("success", response.data.message);
     } catch (error) {
+      hideOverlay();
       const errorMessage = getApiErrorMessage(error);
 
       // Trigger alert on error
       triggerAlert("error", errorMessage);
 
       console.error("Error while trying to add the issue type:", error);
-    } finally {
-      hideOverlay();
     }
   };
 
