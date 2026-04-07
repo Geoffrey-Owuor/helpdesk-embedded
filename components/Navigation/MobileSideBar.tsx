@@ -109,7 +109,7 @@ const MobileSideBar = ({
               onClick={() => handleMobileRouteChange("/dashboard")}
               className="flex w-full items-center gap-2 rounded-xl bg-neutral-900 p-2 text-sm font-medium text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
             >
-              <LayoutDashboard />
+              <LayoutDashboard className="h-5 w-5" />
               <span>Dashboard</span>
             </Link>
 
@@ -118,7 +118,7 @@ const MobileSideBar = ({
               onClick={handleNewIssueOpening}
               className="flex w-full items-center gap-2 rounded-xl p-2 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
             >
-              <CirclePlus />
+              <CirclePlus className="h-5 w-5" />
               <span>New Issue</span>
             </button>
 
@@ -128,7 +128,7 @@ const MobileSideBar = ({
               onClick={() => handleMobileRouteChange("/dashboard/automations")}
               className="flex w-full items-center gap-2 rounded-xl p-2 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
             >
-              <Bot />
+              <Bot className="h-5 w-5" />
               <span>Automation</span>
             </Link>
 
@@ -139,7 +139,7 @@ const MobileSideBar = ({
                 onClick={() => handleMobileRouteChange("/dashboard/superadmin")}
                 className="flex w-full items-center gap-2 rounded-xl p-2 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
               >
-                <ShieldPlus />
+                <ShieldPlus className="h-5 w-5" />
                 <span>Super Admin</span>
               </Link>
             )}
@@ -150,7 +150,7 @@ const MobileSideBar = ({
                 onClick={handleAdminPanelOpening}
                 className="flex w-full items-center gap-2 rounded-xl p-2 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
               >
-                <ShieldUser />
+                <ShieldUser className="h-5 w-5" />
                 <span>Admin Panel</span>
               </button>
             )}
