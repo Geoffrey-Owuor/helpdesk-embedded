@@ -5,6 +5,7 @@ import { PoolClient } from "pg";
 
 export const DELETE = withAuth(async ({ user, request }) => {
   let client: PoolClient | undefined;
+
   const { isSuper } = user;
 
   if (!isSuper) {
@@ -16,6 +17,13 @@ export const DELETE = withAuth(async ({ user, request }) => {
 
   const searchParams = request.nextUrl.searchParams;
   const userId = searchParams.get("userId");
+
+  if (!userId) {
+    return NextResponse.json(
+      { message: "Selected user id could not be found" },
+      { status: 400 },
+    );
+  }
 
   try {
     // get a pool client
