@@ -27,9 +27,9 @@ export const DELETE = withAuth(async ({ user, request }) => {
   }
 
   // convert the id to a number
-  const idNumber = Number(issueId);
+  const issueNumber = Number(issueId);
 
-  if (!idNumber) {
+  if (!issueNumber) {
     return NextResponse.json(
       { message: "Could not resolve the selected issue id" },
       { status: 400 },
@@ -49,7 +49,7 @@ export const DELETE = withAuth(async ({ user, request }) => {
           SELECT id FROM issues_mapping
           WHERE id = $1 FOR UPDATE
         `,
-      [idNumber],
+      [issueNumber],
     );
 
     if (rows.length === 0) {
@@ -65,7 +65,7 @@ export const DELETE = withAuth(async ({ user, request }) => {
       `
         DELETE FROM issues_mapping WHERE id = $1
         `,
-      [idNumber],
+      [issueNumber],
     );
 
     // Commit transaction

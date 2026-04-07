@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ApiHandler } from "@/utils/ApiHandler";
 import AuthShell from "./AuthShell";
@@ -13,7 +13,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();
+
   const searchParams = useSearchParams();
 
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
@@ -33,8 +33,7 @@ export default function LoginPage() {
       const data = await response.json();
       //   Successfull login
       if (response.ok) {
-        router.push("/dashboard");
-        router.refresh(); //refresh server components
+        window.location.href = "/dashboard";
       } else {
         setError(data.message || "Login Failed");
         setLoading(false);
