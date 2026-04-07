@@ -310,6 +310,7 @@ const IssuesMapping = () => {
                           hideModal={() => setActiveEditId(null)}
                           agentsInfo={agentsInformation}
                           adminsInfo={adminInformation}
+                          issueId={item.issue_id}
                           issueInfo={{
                             issueType: item.issue_type,
                             issuePriority: item.issue_priority,
