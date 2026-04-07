@@ -14,7 +14,7 @@ import EditIssueTypeModal from "../EditModals/EditIssueTypeModal";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
-interface IssueMappingRecord {
+export interface IssueMappingRecord {
   issue_id: string;
   agent_name: string;
   agent_email: string;

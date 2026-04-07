@@ -107,7 +107,7 @@ const MobileSideBar = ({
             <Link
               href="/dashboard"
               onClick={() => handleMobileRouteChange("/dashboard")}
-              className="flex w-full items-center gap-2 rounded-xl p-2 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              className="flex w-full items-center gap-2 rounded-xl bg-neutral-900 p-2 text-sm font-medium text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
             >
               <LayoutDashboard />
               <span>Dashboard</span>
@@ -116,7 +116,7 @@ const MobileSideBar = ({
             {/* Button: New Issue */}
             <button
               onClick={handleNewIssueOpening}
-              className="flex w-full items-center gap-2 rounded-xl bg-neutral-900 p-2 text-sm font-medium text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+              className="flex w-full items-center gap-2 rounded-xl p-2 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
             >
               <CirclePlus />
               <span>New Issue</span>
@@ -129,7 +129,7 @@ const MobileSideBar = ({
               className="flex w-full items-center gap-2 rounded-xl p-2 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
             >
               <Bot />
-              <span>Automations</span>
+              <span>Automation</span>
             </Link>
 
             {/* Super Admin  */}
