@@ -121,7 +121,7 @@ const RecordForm = ({
             onChange={handleChange}
             onBlur={handleBlur}
             required
-            placeholder="email1@co.com, email2@co.com"
+            placeholder="email1@hotpoint.co.ke, email2@hotpoint.co.ke"
             className="w-full rounded-xl border border-neutral-300 bg-white py-2.5 pr-3.5 pl-9 text-sm text-neutral-900 shadow-sm transition-all duration-150 placeholder:text-neutral-400 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
           />
         </div>
@@ -188,7 +188,7 @@ const GroupEmailsModal = ({
 
   const { mutate: addRecord, isPending: isAdding } = useMutation({
     mutationFn: (data: GroupEmailFormData) =>
-      apiClient.post("/superadmin/group-emails", data), // TODO: implement
+      apiClient.post("/superadmin/group-emails/post-email", data),
     onMutate: () => showOverlay("Adding"),
     onSuccess: (res, data) => {
       const optimistic: GroupEmail = { id: Date.now(), ...data };
@@ -208,7 +208,7 @@ const GroupEmailsModal = ({
 
   const { mutate: editRecord, isPending: isEditing } = useMutation({
     mutationFn: ({ id, data }: { id: number; data: GroupEmailFormData }) =>
-      apiClient.patch(`/superadmin/group-emails/${id}`, data), // TODO: implement
+      apiClient.patch(`/superadmin/group-emails/edit-email`, { id, data }), // TODO: implement - was here
     onMutate: () => showOverlay("Updating"),
     onSuccess: (res, { id, data }) => {
       queryClient.setQueryData(["groupEmailsData"], (old: GroupEmail[]) =>
