@@ -129,7 +129,7 @@ const DashboardSidebar = () => {
           <SidebarLink
             href="/dashboard"
             icon={<LayoutDashboard className="h-5 w-5" />}
-            label="Dashboard"
+            label="Home"
             isActive={isHomeActive}
             onClick={() => handleRouteChange("/dashboard")}
           />
@@ -145,7 +145,7 @@ const DashboardSidebar = () => {
           <SidebarLink
             href="/dashboard/automations"
             icon={<Bot className="h-5 w-5" />}
-            label="Automation"
+            label="Automate"
             isActive={isAutomationActive}
             onClick={() => handleRouteChange("/dashboard/automations")}
           />
@@ -174,7 +174,7 @@ const DashboardSidebar = () => {
           <SidebarButton
             onClick={() => router.back()}
             icon={<ChevronLeft className="h-5 w-5" />}
-            label="Go Back"
+            label="Back"
           />
         </nav>
 
@@ -227,7 +227,7 @@ type SidebarButtonProps = {
 const SidebarButton = ({ onClick, icon, label }: SidebarButtonProps) => (
   <button
     onClick={onClick}
-    className="flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-[9px] font-semibold text-neutral-600 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800"
+    className="flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-semibold text-neutral-600 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800"
   >
     {icon}
     <span>{label}</span>
@@ -252,7 +252,7 @@ const SidebarLink = ({
   <Link
     href={href}
     onClick={onClick}
-    className={`flex w-full flex-col items-center gap-1 ${isActive ? "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200" : "text-neutral-600 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800"} rounded-xl px-1 py-2 text-[9px] font-semibold`}
+    className={`flex w-full flex-col items-center gap-1 ${isActive ? "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200" : "text-neutral-600 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800"} rounded-xl px-1 py-2 text-[10px] font-semibold`}
   >
     {icon}
     <span>{label}</span>

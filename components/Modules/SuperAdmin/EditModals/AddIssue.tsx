@@ -9,6 +9,20 @@ import { DropdownOption } from "./CustomDropDown";
 import { EditIssueInfo } from "./EditIssueTypeModal";
 import { Bug, X } from "lucide-react";
 import FormAsterisk from "../../FormAsterisk";
+import apiClient from "@/lib/AxiosClient";
+import { useAlertStore } from "@/store/useAlertStore";
+import { useConfirmStore } from "@/store/useConfirmStore";
+import { useOverlayStore } from "@/store/useOverlayStore";
+import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { IssueMappingRecord } from "../IssuesMapping/IssuesMapping";
+
+interface AddIssueData {
+  issueType: string;
+  issuePriority: string;
+  agentEmail: string;
+  adminEmail: string;
+}
 
 type AddIssueProps = {
   isModalOpen: boolean;
@@ -22,12 +36,22 @@ const AddIssue = ({
   agentsInfo,
   adminsInfo,
 }: AddIssueProps) => {
-  const [formData, setFormData] = useState({
+  // Query client
+  const queryClient = useQueryClient();
+
+  const [formData, setFormData] = useState<AddIssueData>({
     issueType: "",
     issuePriority: "",
     agentEmail: "",
     adminEmail: "",
   });
+
+  // Zustand states
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
 
   const modalRef = useRef<HTMLDivElement | null>(null);
 
@@ -47,11 +71,79 @@ const AddIssue = ({
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleConfirmSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitting updated user info:", formData);
-    hideModal();
+    triggerDialog({
+      title: "Add New Issue Type",
+      description: "Confirm adding of new issue type",
+      onConfirm: handleSubmit,
+    });
   };
+
+  const handleSubmit = async () => {
+    hideDialog();
+    showOverlay("Adding");
+    addIssueMutation(formData);
+  };
+
+  const { mutate: addIssueMutation, isPending: loading } = useMutation({
+    mutationFn: async (issueData: AddIssueData) =>
+      apiClient.post("/superadmin/add-issue", issueData),
+    onSuccess: (response, issueData) => {
+      // Additional data to include in our new object
+      const agentObject = agentsInfo.find(
+        (agent) => agent.value === issueData.agentEmail,
+      );
+      const adminObject = adminsInfo.find(
+        (admin) => admin.value === issueData.adminEmail,
+      );
+
+      // Assign names from emails
+      const agentName = agentObject ? agentObject.option : "No Name";
+      const adminName = adminObject ? adminObject.option : "No Name";
+
+      // The new IssueObject
+      const newIssueObject: IssueMappingRecord = {
+        issue_id: Date.now().toLocaleString(),
+        agent_name: agentName,
+        agent_email: issueData.agentEmail,
+        admin_name: adminName,
+        admin_email: issueData.adminEmail,
+        issue_type: issueData.issueType,
+        issue_priority: issueData.issuePriority,
+      };
+
+      // Optimistic data update
+      queryClient.setQueryData(
+        ["issuesMappingDataInfo"],
+        (oldData: IssueMappingRecord[]) => {
+          if (!oldData) return oldData;
+          return [newIssueObject, ...oldData];
+        },
+      );
+
+      hideOverlay();
+
+      setFormData({
+        agentEmail: "",
+        adminEmail: "",
+        issueType: "",
+        issuePriority: "",
+      });
+
+      hideModal();
+
+      triggerAlert("success", response.data.message);
+    },
+    onError: (error) => {
+      hideOverlay();
+      const generatedError = getApiErrorMessage(error);
+      triggerAlert("error", generatedError);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["IssueCountsData"] }); //Issue counts data
+    },
+  });
 
   return (
     <ClientPortal>
@@ -84,7 +176,7 @@ const AddIssue = ({
 
           {/* Form */}
           <form
-            onSubmit={handleSubmit}
+            onSubmit={handleConfirmSubmit}
             className="layout-scrollbar flex flex-col gap-4 overflow-y-auto px-6 py-5"
           >
             {/* Name */}
@@ -149,7 +241,7 @@ const AddIssue = ({
               </button>
               <button
                 type="submit"
-                disabled={!formData}
+                disabled={!formData || loading}
                 className="rounded-xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-neutral-700 focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100 dark:focus:ring-white dark:focus:ring-offset-neutral-950"
               >
                 Save Changes
