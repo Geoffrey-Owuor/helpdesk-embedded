@@ -23,7 +23,7 @@ const NameRulesCard = ({ validation, isVisible }: NameRulesCardProps) => {
   if (!isVisible) return null;
 
   return (
-    <div className="absolute top-[calc(100%+6px)] left-0 z-50 w-full rounded-lg border border-neutral-200 bg-white p-4 shadow-lg dark:border-neutral-700 dark:bg-neutral-800">
+    <div className="absolute top-[calc(100%+6px)] left-0 z-50 w-full rounded-xl border border-neutral-200 bg-white p-4 shadow-lg dark:border-neutral-700 dark:bg-neutral-800">
       <h4 className="mb-2 text-sm font-semibold text-neutral-900 dark:text-white">
         Name Requirements
       </h4>
