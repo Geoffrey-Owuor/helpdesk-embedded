@@ -75,7 +75,7 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
   });
 
   return (
-    <div className="layout-scrollbar max-h-150 max-w-3xl overflow-y-auto rounded-xl border border-neutral-200 p-6 shadow-sm dark:border-neutral-800">
+    <div className="layout-scrollbar max-h-150 overflow-y-auto rounded-xl border border-neutral-200 p-6 shadow-sm dark:border-neutral-800">
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         {/* The title and total comments */}
         <div className="flex flex-col gap-2">
