@@ -1,23 +1,12 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { Search, ChevronDown, Check, X } from "lucide-react";
+import { Search, ChevronDown, Check, X, Loader2 } from "lucide-react";
 import { useSearchStore } from "@/store/useSearchStore";
-import { baseDepartments } from "@/public/assets";
-import { priorityOptions } from "../IssuePage/IssuePage";
+import { fetchedBaseDepartments } from "@/serverActions/GetBaseDepartments";
+import { useQuery } from "@tanstack/react-query";
+import { priorityOptions } from "@/public/assets";
 import { DatePicker } from "../DatePicker";
-
-// --- Status Options ---
-const statusOptions = [
-  { label: "Pending", value: "pending" },
-  { label: "In Progress", value: "in progress" },
-  { label: "Resolved", value: "resolved" },
-  { label: "Unfeasible", value: "unfeasible" },
-];
-
-const departmentOptions = baseDepartments.map((department) => ({
-  label: department.option,
-  value: department.value,
-}));
+import { statusOptions } from "@/public/assets";
 
 // --- Reusable Custom Dropdown Component ---
 interface DropdownOption {
@@ -172,6 +161,18 @@ const SearchInputFields = () => {
   const setIssuePriority = useSearchStore((state) => state.setIssuePriority);
   const setSubmitter = useSearchStore((state) => state.setSubmitter);
 
+  // Fetch the departments
+  const { data: baseDepartments = [], isPending: loading } = useQuery({
+    queryKey: ["BaseDepartmentsData"],
+    queryFn: fetchedBaseDepartments,
+    enabled: selectedFilter === "department",
+  });
+
+  const departmentOptions = baseDepartments.map((department) => ({
+    label: department.option,
+    value: department.value,
+  }));
+
   // Render logic based on selectedFilter
   const renderInput = () => {
     switch (selectedFilter) {
@@ -213,12 +214,28 @@ const SearchInputFields = () => {
 
       case "department":
         return (
-          <CustomDropdown
-            options={departmentOptions}
-            value={department}
-            onChange={setDepartment}
-            placeholder="Select Department..."
-          />
+          <>
+            {loading ? (
+              // Loading state
+              <div className="flex items-center justify-center py-4 text-neutral-500">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Loading departments...
+              </div>
+            ) : departmentOptions.length === 0 ? (
+              // Empty fallback
+              <div className="flex items-center justify-center py-4 text-neutral-500">
+                No departments available
+              </div>
+            ) : (
+              // Dropdown when data exists
+              <CustomDropdown
+                options={departmentOptions}
+                value={department}
+                onChange={setDepartment}
+                placeholder="Select Department..."
+              />
+            )}
+          </>
         );
 
       case "agent":

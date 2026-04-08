@@ -106,23 +106,20 @@ const ReassignIssue = ({
       // Hide overlay on success
       hideOverlay();
 
-      // Show the alert on success
-      triggerAlert("success", response.data.message);
-
       //   clear data
       setAgentEmail("");
       setAgentName("");
 
       // close the modal
       closeModal();
+
+      // Show the alert on success
+      triggerAlert("success", response.data.message);
     },
     onError: (error) => {
+      hideOverlay();
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
-    },
-
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: activeQueryKey });
     },
   });
   //function for calling the api endpoint to handle reassigning

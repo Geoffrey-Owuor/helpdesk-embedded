@@ -81,7 +81,7 @@ export const ConfirmationDialog = () => {
             className="absolute -top-0.5 right-0 cursor-pointer rounded-full p-2 text-neutral-500 hover:bg-neutral-200 hover:text-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
             aria-label="Close dialog"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4.5 w-4.5" />
           </button>
         </div>
         <p className="mb-4 text-start text-sm text-neutral-700 dark:text-neutral-400">

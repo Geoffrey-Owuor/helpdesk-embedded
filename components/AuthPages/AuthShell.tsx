@@ -28,7 +28,7 @@ const AuthShell = ({ children }: { children: React.ReactNode }) => {
       {/* Bottom Footer */}
       <div className="p-4">
         <span className="inline-flex items-center gap-2 text-sm leading-5 text-neutral-500">
-          <span> &copy; {currentYear} Issue Desk. Built by</span>
+          <span> &copy; {currentYear} IssueDesk. Built by</span>
           <a
             href="https://jeff-portfolio-web.vercel.app"
             target="_blank"

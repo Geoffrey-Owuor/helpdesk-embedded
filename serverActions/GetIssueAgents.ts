@@ -20,7 +20,7 @@ const getIssueAgents = async (department: string) => {
         COALESCE(m.issue_priority, 'None') AS issue_priority
         FROM users as agents
         LEFT JOIN issues_mapping as m ON agents.user_id = m.agent_id
-        WHERE (agents.role = 'agent' OR agents.role = 'admin') AND agents.department = $1
+        WHERE (agents.role = 'agent' OR agents.role = 'admin') AND agents.is_user_active = TRUE AND agents.department = $1
     `;
   try {
     const result = await query<IssueAgents>(baseQuery, [department]);

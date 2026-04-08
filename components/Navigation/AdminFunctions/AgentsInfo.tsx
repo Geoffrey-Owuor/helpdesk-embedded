@@ -69,19 +69,21 @@ const AgentsInfo = ({
         data: { agentEmail: agentEmail },
       });
 
+      // Hide the overlay
+      hideOverlay();
+
       // Refetch agents info on success
-      refetchAgentsInfo();
+      await refetchAgentsInfo();
 
       // Trigger alert on success
       triggerAlert("success", response.data.message);
     } catch (error) {
+      hideOverlay();
       const apiError = getApiErrorMessage(error);
       triggerAlert("error", apiError);
 
       // Log the error
       console.error("Error while deleting an agent:", apiError);
-    } finally {
-      hideOverlay();
     }
   };
 

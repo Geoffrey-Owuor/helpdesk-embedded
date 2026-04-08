@@ -1,8 +1,10 @@
 "use client";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, ShieldCheck, Zap } from "lucide-react";
+import { ArrowRight, CheckCircle2, RefreshCw, Wand2 } from "lucide-react";
 import { DbStatus, useDbStore } from "@/store/useDbStore";
 import { useEffect } from "react";
+import { AppVersion } from "@/public/assets";
+import DashboardSkeleton from "./DashboardSkeleton";
 
 const Hero = () => {
   const status = useDbStore((state) => state.status);
@@ -13,21 +15,21 @@ const Hero = () => {
   }, [triggerCheck]);
 
   const colorsMapping: Record<DbStatus, string> = {
-    checking: "bg-neutral-600",
+    checking: "bg-green-500",
     degraded: "bg-amber-500",
     ok: "bg-green-500",
   };
 
   return (
     <section className="flex h-full items-center justify-center overflow-hidden py-16">
-      <div className="custom:px-8 px-4">
+      <div className="custom:px-8 w-full px-4">
         <div className="mx-auto max-w-3xl text-center">
           {/* Badge */}
           <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-sm text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400">
             <span
               className={`flex h-2 w-2 rounded-full ${colorsMapping[status]}`}
             ></span>
-            Internal Issue Tracking v1.0
+            Internal Issue Tracking {AppVersion}
           </div>
 
           {/* Headline */}
@@ -66,38 +68,16 @@ const Hero = () => {
               <CheckCircle2 className="h-4 w-4" /> Easy Submission
             </div>
             <div className="flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4" /> SSO Ready
+              <Wand2 className="h-4 w-4" /> Intuitive Interface
             </div>
             <div className="flex items-center gap-2">
-              <Zap className="h-4 w-4" /> Real-time Updates
+              <RefreshCw className="h-4 w-4" /> Real-time Updates
             </div>
           </div>
         </div>
 
         {/* Abstract Dashboard Visual */}
-        <div className="relative mx-auto mt-16 max-w-5xl">
-          <div className="rounded-xl border border-neutral-200 bg-neutral-100/50 p-2 dark:border-neutral-800 dark:bg-neutral-900/50">
-            <div className="flex aspect-video flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-xl dark:border-neutral-800 dark:bg-neutral-950">
-              {/* Mock Window Header */}
-              <div className="flex h-10 items-center gap-2 border-b border-neutral-100 bg-neutral-50 px-4 dark:border-neutral-800 dark:bg-neutral-900">
-                <div className="flex gap-1.5">
-                  <div className="h-3 w-3 rounded-full bg-red-400/80"></div>
-                  <div className="h-3 w-3 rounded-full bg-yellow-400/80"></div>
-                  <div className="h-3 w-3 rounded-full bg-green-400/80"></div>
-                </div>
-              </div>
-              {/* Mock Content Placeholder */}
-              <div className="flex flex-1 flex-col items-center justify-center p-8 text-neutral-300 dark:text-neutral-700">
-                <p className="font-mono text-sm">Dashboard Preview Interface</p>
-                <div className="mt-4 w-3/4 space-y-3">
-                  <div className="h-4 w-full animate-pulse rounded bg-neutral-100 dark:bg-neutral-800"></div>
-                  <div className="h-4 w-2/3 animate-pulse rounded bg-neutral-100 dark:bg-neutral-800"></div>
-                  <div className="h-4 w-1/2 animate-pulse rounded bg-neutral-100 dark:bg-neutral-800"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <DashboardSkeleton />
       </div>
     </section>
   );

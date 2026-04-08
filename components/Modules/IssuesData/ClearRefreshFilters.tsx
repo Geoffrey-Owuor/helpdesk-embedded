@@ -1,6 +1,6 @@
 "use client";
 import { useSearchStore } from "@/store/useSearchStore";
-import { BrushCleaning, RotateCcw } from "lucide-react";
+import { FunnelX, RotateCcw } from "lucide-react";
 
 type ClearRefreshProps = {
   handleRefetchIssues: () => void;
@@ -20,7 +20,7 @@ const ClearRefreshFilters = ({ handleRefetchIssues }: ClearRefreshProps) => {
         title="Clear filters"
         className="rounded-xl bg-neutral-100 p-2 transition-colors duration-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
       >
-        <BrushCleaning className="h-4.5 w-4.5" />
+        <FunnelX className="h-4.5 w-4.5" />
       </button>
 
       <button

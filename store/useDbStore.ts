@@ -9,7 +9,7 @@ interface DbStore {
 }
 
 export const useDbStore = create<DbStore>((set) => ({
-  status: "checking",
+  status: "ok", //Optimistic that the systems are normal
 
   setStatus: (status) => set({ status }),
 

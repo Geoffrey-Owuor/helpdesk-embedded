@@ -1,17 +1,12 @@
 "use client";
 
-import {
-  X,
-  GitCommitHorizontal,
-  CircleDot,
-  CheckCheck,
-  BellOff,
-} from "lucide-react";
+import { X, CircleDot, CheckCheck, BellOff } from "lucide-react";
 import ClientPortal from "@/components/Modules/ClientPortal";
 import { dateFormatter } from "@/public/assets";
 import { IssueValueTypes } from "@/public/assets";
 import { ChangelogItem } from "./Notifications";
 import { Dispatch, SetStateAction } from "react";
+import { ChangelogTypePill } from "@/components/Home/ChangeLog";
 
 export type RouteChangeProps = {
   uuid: IssueValueTypes;
@@ -157,18 +152,10 @@ const NotificationModal = ({
                       key={changelog.changelog_id}
                       className="flex items-start gap-3 px-6 py-4 hover:bg-neutral-50 dark:hover:bg-neutral-900/50"
                     >
-                      <div className="mt-0.5 shrink-0 text-emerald-500 dark:text-emerald-400">
-                        <GitCommitHorizontal className="h-4 w-4" />
-                      </div>
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 capitalize dark:bg-emerald-900/30 dark:text-emerald-400">
-                            {changelog.changelog_type}
-                          </span>
-                          <span className="text-xs text-neutral-400 dark:text-neutral-600">
-                            ·
-                          </span>
-                          <span className="text-xs text-neutral-400 dark:text-neutral-500">
+                        <div className="mb-2 flex items-center gap-2">
+                          <ChangelogTypePill type={changelog.changelog_type} />
+                          <span className="font-mono text-xs text-neutral-400 dark:text-neutral-500">
                             {dateFormatter(changelog.changelog_updated_at)}
                           </span>
                         </div>
