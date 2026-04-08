@@ -4,6 +4,7 @@ import { Attachment } from "nodemailer/lib/mailer";
 // 1. Define an interface for your function arguments
 interface EmailOptions {
   to: string | string[];
+  cc?: string;
   subject: string;
   html: string;
   attachments?: {
@@ -25,6 +26,7 @@ const transporter = nodemailer.createTransport({
 
 export async function sendEmail({
   to,
+  cc,
   subject,
   html,
   attachments,
@@ -34,6 +36,7 @@ export async function sendEmail({
     const mailOptions: SendMailOptions = {
       from: `"Issue Desk" <${process.env.GMAIL_USER}>`,
       to,
+      cc,
       subject,
       html,
     };

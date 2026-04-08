@@ -4,11 +4,12 @@ import { IssueEmailBody } from "@/templates/IssueEmailTemplate";
 interface EmailData {
   issueData: IssueEmailBody;
   emails: string[];
+  ccEmails?: string;
 }
 
 export const getEmailData = async (uuid: string): Promise<EmailData> => {
   const baseQuery = `
-    SELECT issue_reference_id, issue_type, issue_agent_name,
+    SELECT issue_reference_id, issue_target_department, issue_type, issue_agent_name,
     issue_priority, issue_status, issue_submitter_name,
     issue_assigner_name, issue_title, issue_description,
     issue_submitter_email, issue_agent_email, issue_assigner_email
@@ -17,6 +18,15 @@ export const getEmailData = async (uuid: string): Promise<EmailData> => {
 
   const result = await query(baseQuery, [uuid]);
   const emailData = result[0];
+
+  // The group emails query
+  const ccEmailsQuery = await query(
+    `SELECT emails FROM group_emails WHERE department = $1 LIMIT 1`,
+    [emailData.issue_target_department],
+  );
+
+  const ccEmails =
+    ccEmailsQuery.length > 0 ? ccEmailsQuery[0].emails : undefined;
 
   const issueData: IssueEmailBody = {
     referenceNo: emailData.issue_reference_id,
@@ -45,5 +55,6 @@ export const getEmailData = async (uuid: string): Promise<EmailData> => {
   return {
     issueData: issueData,
     emails: issueEmails,
+    ccEmails: ccEmails,
   };
 };

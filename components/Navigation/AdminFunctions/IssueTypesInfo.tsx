@@ -129,7 +129,7 @@ const IssueTypesInfo = ({
 
           <button
             onClick={() => setShowAddIssueModal((prev) => !prev)}
-            className="mb-4 flex items-center gap-1.5 rounded-xl bg-blue-700 px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-blue-800"
+            className="mb-4 flex items-center gap-1.5 rounded-xl bg-neutral-900 px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
           >
             <BugPlay className="h-4 w-4" />
             <span>Add Issue Type</span>

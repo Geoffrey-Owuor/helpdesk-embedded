@@ -270,7 +270,7 @@ const AddIssueType = ({
           <button
             onClick={handleConfirmSubmit}
             disabled={!issueType || !agentEmail || !issuePriority} //We will also repeat this logic in our handleSubmit function for double security
-            className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-xl bg-neutral-900 px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
           >
             <Plus size={16} />
             Add

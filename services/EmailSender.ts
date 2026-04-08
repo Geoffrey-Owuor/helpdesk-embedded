@@ -29,7 +29,7 @@ export const emailSender = async ({
     : undefined;
 
   // Getting the issue data for the email body
-  const { issueData, emails } = await getEmailData(uuid);
+  const { issueData, emails, ccEmails } = await getEmailData(uuid);
 
   const emailParams: IssueNotificationEmailParams = {
     title: title,
@@ -42,5 +42,10 @@ export const emailSender = async ({
   const emailHtml = generateIssueNotificationEmail(emailParams);
 
   //Sending the email
-  await sendEmail({ to: emails, subject: title, html: emailHtml });
+  await sendEmail({
+    to: emails,
+    cc: ccEmails,
+    subject: title,
+    html: emailHtml,
+  });
 };
