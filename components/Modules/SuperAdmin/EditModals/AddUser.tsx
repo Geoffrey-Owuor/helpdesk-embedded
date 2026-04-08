@@ -1,6 +1,6 @@
 "use client";
 
-import { baseDepartments } from "@/public/assets";
+import { fetchedBaseDepartments } from "@/serverActions/GetBaseDepartments";
 import ClientPortal from "../../ClientPortal";
 import { useState, useRef, FocusEvent, FormEvent } from "react";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
@@ -20,7 +20,7 @@ import NameRulesCard from "../../NameRulesCard";
 import FormAsterisk from "../../FormAsterisk";
 import { baseRoles, baseStatuses } from "./EditUserModal";
 import apiClient from "@/lib/AxiosClient";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
@@ -44,6 +44,13 @@ interface AddUserData {
 
 const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
   const queryClient = useQueryClient();
+
+  // Fetch the departments
+  const { data: baseDepartments = [], isPending: loading } = useQuery({
+    queryKey: ["BaseDepartmentsData"],
+    queryFn: fetchedBaseDepartments,
+    enabled: isModalOpen,
+  });
 
   const [formData, setFormData] = useState<AddUserData>({
     name: "",
@@ -273,6 +280,7 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
             <CustomDropdown
               label="Department"
               options={baseDepartments}
+              loading={loading}
               value={formData.department}
               onChange={(val) => handleDropdownChange("department", val)}
             />
