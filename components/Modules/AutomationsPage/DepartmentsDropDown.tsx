@@ -1,16 +1,23 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { Check, ChevronDown, Building2 } from "lucide-react"; // Using Building2 for departments
-import { baseDepartments } from "@/public/assets";
+import { Check, ChevronDown, Building2, Loader2 } from "lucide-react"; // Using Building2 for departments
+import { fetchedBaseDepartments } from "@/serverActions/GetBaseDepartments";
+import { useQuery } from "@tanstack/react-query";
 import { useSearchStore } from "@/store/useSearchStore";
 
-// Map the data as requested
-const departments = baseDepartments.map((department) => ({
-  label: department.option,
-  value: department.value,
-}));
-
 const DepartmentsDropDown = () => {
+  // Fetch the departments
+  const { data: baseDepartments = [], isPending: loading } = useQuery({
+    queryKey: ["BaseDepartmentsData"],
+    queryFn: fetchedBaseDepartments,
+  });
+
+  // Map through the returned data
+  const departments = baseDepartments.map((department) => ({
+    label: department.option,
+    value: department.value,
+  }));
+
   // State for visibility
   const [isOpen, setIsOpen] = useState(false);
 
@@ -86,28 +93,49 @@ const DepartmentsDropDown = () => {
           <div className="px-2 py-2 text-xs font-semibold text-neutral-500 uppercase">
             Available Departments
           </div>
+
+          {/* Loading State */}
+          {loading && (
+            <div className="flex items-center justify-center py-4 text-neutral-500">
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Loading departments...
+            </div>
+          )}
+
+          {/* Empty Fallback */}
+          {!loading && departments.length === 0 && (
+            <div className="flex items-center justify-center py-4 text-neutral-500">
+              No departments available
+            </div>
+          )}
+
           {/* Default button for fetching all cards */}
-          <button
-            onClick={() => handleSelect("")}
-            className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-900"
-          >
-            All
-            {selectedDepartment === "" && (
-              <Check className="h-4 w-4 text-blue-600" />
-            )}
-          </button>
-          {departments.map((option) => (
-            <button
-              key={option.value}
-              onClick={() => handleSelect(option.value)}
-              className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-900"
-            >
-              {option.label}
-              {selectedDepartment === option.value && (
-                <Check className="h-4 w-4 text-blue-600" />
-              )}
-            </button>
-          ))}
+          {!loading && departments.length > 0 && (
+            <>
+              <button
+                onClick={() => handleSelect("")}
+                className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-900"
+              >
+                All
+                {selectedDepartment === "" && (
+                  <Check className="h-4 w-4 text-blue-600" />
+                )}
+              </button>
+
+              {departments.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => handleSelect(option.value)}
+                  className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-900"
+                >
+                  {option.label}
+                  {selectedDepartment === option.value && (
+                    <Check className="h-4 w-4 text-blue-600" />
+                  )}
+                </button>
+              ))}
+            </>
+          )}
         </div>
       )}
     </div>

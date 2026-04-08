@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { query } from "@/lib/Db";
+import { revalidateTag } from "next/cache";
 
 export const POST = withAuth(async ({ user, request }) => {
   const { isSuper } = user;
@@ -41,6 +42,9 @@ export const POST = withAuth(async ({ user, request }) => {
       `INSERT INTO group_emails (emails, department) VALUES ($1, $2)`,
       [emails, department],
     );
+
+    // Refetch departments data
+    revalidateTag("BaseDepartments_Data", { expire: 0 });
 
     return NextResponse.json(
       { message: "Group email record added successfully" },

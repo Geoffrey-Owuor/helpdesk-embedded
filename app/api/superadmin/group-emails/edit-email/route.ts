@@ -2,6 +2,7 @@ import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { NextResponse } from "next/server";
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
+import { revalidateTag } from "next/cache";
 
 export const PATCH = withAuth(async ({ user, request }) => {
   let client: PoolClient | undefined;
@@ -70,6 +71,9 @@ export const PATCH = withAuth(async ({ user, request }) => {
 
     // Commit transaction
     await client.query("COMMIT");
+
+    // Refetch departments data
+    revalidateTag("BaseDepartments_Data", { expire: 0 });
 
     return NextResponse.json(
       { message: "Group email record updated successfully" },
