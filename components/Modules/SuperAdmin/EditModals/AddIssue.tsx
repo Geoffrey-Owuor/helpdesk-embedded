@@ -4,7 +4,7 @@ import CustomDropdown from "./CustomDropDown";
 import ClientPortal from "../../ClientPortal";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import { useState, useRef, FocusEvent } from "react";
-import { priorityOptions } from "./EditIssueTypeModal";
+import { priorityOptions as baseOptions } from "@/public/assets";
 import { DropdownOption } from "./CustomDropDown";
 import { EditIssueInfo } from "./EditIssueTypeModal";
 import { Bug, X } from "lucide-react";
@@ -16,6 +16,11 @@ import { useOverlayStore } from "@/store/useOverlayStore";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { IssueMappingRecord } from "../IssuesMapping/IssuesMapping";
+
+const priorityOptions = baseOptions.map((option) => ({
+  option: option.label,
+  value: option.value,
+}));
 
 interface AddIssueData {
   issueType: string;

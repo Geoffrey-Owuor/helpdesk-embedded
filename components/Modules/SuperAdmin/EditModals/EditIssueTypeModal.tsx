@@ -14,13 +14,12 @@ import { useAlertStore } from "@/store/useAlertStore";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { IssueMappingRecord } from "../IssuesMapping/IssuesMapping";
+import { priorityOptions as baseOptions } from "@/public/assets";
 
-export const priorityOptions: DropdownOption[] = [
-  { option: "Low", value: "Low" },
-  { option: "Medium", value: "Medium" },
-  { option: "High", value: "High" },
-  { option: "Critical", value: "Critical" },
-];
+const priorityOptions = baseOptions.map((option) => ({
+  option: option.label,
+  value: option.value,
+}));
 
 export interface EditIssueInfo {
   issueType: string;
