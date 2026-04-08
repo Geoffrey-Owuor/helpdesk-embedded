@@ -23,11 +23,11 @@ import DynamicIssueTypes from "./DynamicIssueTypes";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlertStore } from "@/store/useAlertStore";
 import OptionsDropDown from "./OptionsDropDown";
-import { baseDepartments } from "@/public/assets";
+import { fetchedBaseDepartments } from "@/serverActions/GetBaseDepartments";
 import FormAsterisk from "../FormAsterisk";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useSearchStore } from "@/store/useSearchStore";
 
 // Priority icon types
@@ -59,6 +59,13 @@ type MainIssueModalProps = {
 
 const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   const queryClient = useQueryClient();
+
+  // Fetch the departments
+  const { data: baseDepartments = [], isPending: loading } = useQuery({
+    queryKey: ["BaseDepartmentsData"],
+    queryFn: fetchedBaseDepartments,
+    enabled: isOpen,
+  });
 
   const [formData, setFormData] = useState({
     target_department: "",
@@ -177,9 +184,6 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       // post issue api endpoint
       const response = await apiClient.post("/post-issue", formData);
 
-      // Trigger alert on success
-      triggerAlert("success", response.data.message);
-
       // Refetch issues data in the background
       queryClient.invalidateQueries({ queryKey: activeQueryKey });
       queryClient.invalidateQueries({ queryKey: activeCardsKey });
@@ -189,6 +193,9 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
         queryClient.invalidateQueries({ queryKey: automationsQueryKey });
         queryClient.invalidateQueries({ queryKey: automationCardsKey });
       }
+
+      // Hide the overlay
+      hideOverlay();
 
       // Clear form data
       setFormData({
@@ -202,14 +209,16 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
 
       // Close issue modal
       setIsOpen(false);
+
+      // Trigger alert on success
+      triggerAlert("success", response.data.message);
     } catch (error) {
+      hideOverlay();
       // Call the error helper
       const errorMessage = getApiErrorMessage(error);
       // 4. Trigger alert on error
       triggerAlert("error", errorMessage);
       console.error("Error submitting the issue:", error);
-    } finally {
-      hideOverlay();
     }
   };
 
@@ -273,6 +282,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                   <OptionsDropDown
                     value={formData.target_department}
                     onChange={handleDepartmentChange}
+                    loading={loading}
                     options={baseDepartments}
                     dropDownType="department"
                     error={optionsError}

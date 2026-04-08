@@ -10,6 +10,7 @@ import { useUser } from "@/contexts/UserContext";
 import { useQuery } from "@tanstack/react-query";
 import { handleRefetchIssueAgentsData } from "@/serverActions/refetchIssueAgentsData";
 import { fetchedIssueAgents } from "@/serverActions/GetIssueAgents";
+import { AppVersion } from "@/public/assets";
 
 type AdminPanelProps = {
   showAdminPanel: boolean;
@@ -38,7 +39,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   } = useQuery({
     queryKey: ["AgentInfo", department],
     queryFn: () => fetchedIssueAgents(department),
-    enabled: !!department,
+    enabled: showAdminPanel && !!department,
   });
 
   // Refetch agents and issue types data
@@ -103,7 +104,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
 
             <div className="mt-auto border-t border-neutral-200 pt-4 dark:border-neutral-800">
               <p className="px-2 text-[10px] tracking-widest text-neutral-400 uppercase">
-                IssueDesk v1.0
+                IssueDesk {AppVersion}
               </p>
             </div>
           </aside>

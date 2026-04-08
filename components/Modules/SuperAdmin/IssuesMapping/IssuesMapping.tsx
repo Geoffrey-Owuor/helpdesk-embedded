@@ -1,6 +1,9 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useAlertStore } from "@/store/useAlertStore";
+import { useConfirmStore } from "@/store/useConfirmStore";
+import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import apiClient from "@/lib/AxiosClient";
 import { Pencil, Trash2, ShieldCheck, Headset } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
@@ -14,7 +17,7 @@ import EditIssueTypeModal from "../EditModals/EditIssueTypeModal";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
-interface IssueMappingRecord {
+export interface IssueMappingRecord {
   issue_id: string;
   agent_name: string;
   agent_email: string;
@@ -73,8 +76,15 @@ const UserCell = ({
 // ── Main Component ────────────────────────────────────────────────────────────
 
 const IssuesMapping = () => {
+  const queryClient = useQueryClient();
+
   const [searchValue, setSearchValue] = useState("");
   const [activeEditId, setActiveEditId] = useState<string | null>(null);
+
+  // Zustand states
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
 
   const {
     data: issuesMapping = [],
@@ -136,7 +146,43 @@ const IssuesMapping = () => {
     Promise.resolve().then(() => setCurrentPage(1));
   }, [filteredMapping, itemsPerPage]);
 
-  const handleDelete = (id: string) => console.log("Delete Mapping ID:", id);
+  const handleConfirmDelete = (id: string) => {
+    // Trigger confirmation dialog
+    triggerDialog({
+      title: "Delete Issue Type",
+      description: "Confirm deleting this issue type",
+      onConfirm: () => handleDelete(id),
+    });
+  };
+
+  const handleDelete = async (id: string) => {
+    hideDialog();
+    deleteIssueMutation(id);
+  };
+
+  const { mutate: deleteIssueMutation, isPending: deleting } = useMutation({
+    mutationFn: async (id: string) =>
+      apiClient.delete("/superadmin/delete-issue", { params: { issueId: id } }),
+    onSuccess: (response, id) => {
+      queryClient.setQueryData(
+        ["issuesMappingDataInfo"],
+        (oldData: IssueMappingRecord[]) => {
+          if (!oldData) return oldData;
+
+          // Filter out the deleted issue
+          return oldData.filter((issue) => issue.issue_id !== id);
+        },
+      );
+
+      triggerAlert("success", response.data.message);
+    },
+    onError: (error) => {
+      const generatedError = getApiErrorMessage(error);
+      triggerAlert("error", generatedError);
+    },
+    onSettled: () =>
+      queryClient.invalidateQueries({ queryKey: ["IssueCountsData"] }),
+  });
 
   return (
     <>
@@ -250,8 +296,8 @@ const IssuesMapping = () => {
                         <Pencil size={15} />
                       </button>
                       <button
-                        onClick={() => handleDelete(item.issue_id)}
-                        disabled={item.admin_email === "Unassigned"}
+                        onClick={() => handleConfirmDelete(item.issue_id)}
+                        disabled={item.admin_email === "Unassigned" || deleting}
                         className="rounded-lg p-2 text-neutral-400 hover:bg-red-100 hover:text-red-600 disabled:opacity-50 dark:hover:bg-red-900/30 dark:hover:text-red-400"
                       >
                         <Trash2 size={15} />
@@ -264,6 +310,7 @@ const IssuesMapping = () => {
                           hideModal={() => setActiveEditId(null)}
                           agentsInfo={agentsInformation}
                           adminsInfo={adminInformation}
+                          issueId={item.issue_id}
                           issueInfo={{
                             issueType: item.issue_type,
                             issuePriority: item.issue_priority,

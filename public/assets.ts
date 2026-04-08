@@ -50,6 +50,7 @@ export const baseDepartments = [
   { option: "Retail", value: "Retail" },
   { option: "B2B", value: "B2B" },
   { option: "Internal Audit", value: "Internal Audit" },
+  { option: "Engineering & HVAC", value: "Engineering & HVAC" },
   { option: "Security", value: "Security" },
   { option: "Directorate", value: "Directorate" },
 ];
@@ -143,3 +144,21 @@ export const DefaultIssuesMappingCounts: IssuesMappingCounts = {
   high: 0,
   critical: 0,
 };
+
+export const AppVersion = "v2.0";
+
+// Status Options
+export const statusOptions = [
+  { label: "Pending", value: "pending" },
+  { label: "In Progress", value: "in progress" },
+  { label: "Resolved", value: "resolved" },
+  { label: "Unfeasible", value: "unfeasible" },
+];
+
+// Priority Options
+export const priorityOptions = [
+  { label: "Critical", value: "Critical" },
+  { label: "High", value: "High" },
+  { label: "Medium", value: "Medium" },
+  { label: "Low", value: "Low" },
+];

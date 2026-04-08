@@ -41,19 +41,12 @@ import { fetchIssues } from "@/queries/fetchIssues";
 import { fetchAutomations } from "@/queries/fetchAutomations";
 import { IssueValueTypes } from "@/public/assets";
 import { DEFAULT_FETCH_OPTIONS } from "@/public/assets";
+import { statusOptions as baseOptions } from "@/public/assets";
+import { priorityOptions } from "@/public/assets";
 
-const statusOptions = [
-  { label: "In Progress", value: "in progress" },
-  { label: "Resolved", value: "resolved" },
-  { label: "Unfeasible", value: "unfeasible" },
-];
-
-export const priorityOptions = [
-  { label: "Critical", value: "Critical" },
-  { label: "High", value: "High" },
-  { label: "Medium", value: "Medium" },
-  { label: "Low", value: "Low" },
-];
+const statusOptions = baseOptions.filter(
+  (option) => option.value !== "pending",
+);
 
 export const IssuePage = ({ uuid }: { uuid: string }) => {
   // Initialize the query client
@@ -137,14 +130,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
     mutationFn: (status: string) =>
       apiClient.put("/update-status", { uuid, status }),
 
-    onMutate: async (newStatus) => {
-      // 1. Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: activeQueryKey });
-
-      // 2. Snapshot previous data
-      const previousData = queryClient.getQueryData(activeQueryKey);
-
-      // 3. Optimistically update the cache
+    onSuccess: (response, newStatus) => {
       queryClient.setQueryData(
         activeQueryKey,
         (oldData: Record<string, IssueValueTypes>[]) => {
@@ -157,26 +143,14 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
         },
       );
 
-      // 4. Return snapshot for rollback
-      return { previousData };
-    },
-
-    onSuccess: (response) => {
       triggerAlert("success", response.data.message);
     },
 
-    onError: (error, _newStatus, context) => {
-      // 5. Rollback on failure
-      if (context?.previousData) {
-        queryClient.setQueryData(activeQueryKey, context.previousData);
-      }
+    onError: (error) => {
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
     },
-
     onSettled: () => {
-      // 6. Always refetch to sync with server
-      queryClient.invalidateQueries({ queryKey: activeQueryKey });
       queryClient.invalidateQueries({ queryKey: activeCardsKey });
     },
   });
@@ -186,14 +160,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
     mutationFn: (priority: string) =>
       apiClient.put("/update-priority", { uuid, priority }),
 
-    onMutate: async (newPriority) => {
-      // 1. Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: activeQueryKey });
-
-      // 2. Snapshot previous data
-      const previousData = queryClient.getQueryData(activeQueryKey);
-
-      // 3. Optimistically update the cache
+    onSuccess: (response, newPriority) => {
       queryClient.setQueryData(
         activeQueryKey,
         (oldData: Record<string, IssueValueTypes>[]) => {
@@ -206,26 +173,15 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
         },
       );
 
-      // 4. Return snapshot for rollback
-      return { previousData };
-    },
-
-    onSuccess: (response) => {
       triggerAlert("success", response.data.message);
     },
 
-    onError: (error, _newPriority, context) => {
-      // 5. Rollback on failure
-      if (context?.previousData) {
-        queryClient.setQueryData(activeQueryKey, context.previousData);
-      }
+    onError: (error) => {
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
     },
 
     onSettled: () => {
-      // 6. Always refetch to sync with server
-      queryClient.invalidateQueries({ queryKey: activeQueryKey });
       queryClient.invalidateQueries({ queryKey: activeCardsKey });
     },
   });
@@ -337,7 +293,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
               {issueData.issue_title}
             </h1>
             <div className="flex flex-wrap items-center gap-3 text-sm">
-              <span className="font-mono font-semibold text-blue-600 dark:text-blue-400">
+              <span className="font-mono text-[15px] font-semibold text-blue-600 dark:text-blue-400">
                 {issueData.issue_reference_id}
               </span>
               <span className="h-1 w-1 rounded-full bg-neutral-300 dark:bg-neutral-600"></span>

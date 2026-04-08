@@ -1,8 +1,8 @@
 "use client";
 
-import { baseDepartments } from "@/public/assets";
+import { fetchedBaseDepartments } from "@/serverActions/GetBaseDepartments";
 import ClientPortal from "../../ClientPortal";
-import { useState, useRef, FocusEvent } from "react";
+import { useState, useRef, FocusEvent, FormEvent } from "react";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import {
   X,
@@ -19,20 +19,46 @@ import { NameValidationResult, NameValidator } from "@/utils/Validators";
 import NameRulesCard from "../../NameRulesCard";
 import FormAsterisk from "../../FormAsterisk";
 import { baseRoles, baseStatuses } from "./EditUserModal";
+import apiClient from "@/lib/AxiosClient";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useAlertStore } from "@/store/useAlertStore";
+import { useConfirmStore } from "@/store/useConfirmStore";
+import { useOverlayStore } from "@/store/useOverlayStore";
+import { UserRecord } from "../Users";
+import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 
 type AddUserModalProps = {
   hideModal: () => void;
   isModalOpen: boolean;
 };
 
+interface AddUserData {
+  name: string;
+  email: string;
+  department: string;
+  password: string;
+  confirmPassword: string;
+  role: "admin" | "user" | "agent";
+  status: string;
+}
+
 const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
-  const [formData, setFormData] = useState({
+  const queryClient = useQueryClient();
+
+  // Fetch the departments
+  const { data: baseDepartments = [], isPending: loading } = useQuery({
+    queryKey: ["BaseDepartmentsData"],
+    queryFn: fetchedBaseDepartments,
+    enabled: isModalOpen,
+  });
+
+  const [formData, setFormData] = useState<AddUserData>({
     name: "",
     email: "",
     department: "",
     password: "",
     confirmPassword: "",
-    role: "",
+    role: "user", //default to user
     status: "",
   });
 
@@ -44,6 +70,13 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
     singleSpace: true,
     isValid: false,
   });
+
+  // Store states
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
+  const hideDialog = useConfirmStore((state) => state.hideDialog);
+  const triggerDialog = useConfirmStore((state) => state.triggerDialog);
+  const showOverlay = useOverlayStore((state) => state.showOverlay);
+  const hideOverlay = useOverlayStore((state) => state.hideOverlay);
 
   // Password visibility state
   const [showPassword, setShowPassword] = useState(false);
@@ -71,11 +104,68 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleConfirmSubmit = (e: FormEvent) => {
     e.preventDefault();
-    console.log("Submitting updated user info:", formData);
-    hideModal();
+    triggerDialog({
+      title: "Add New User",
+      description: "Confirm adding of the new user",
+      onConfirm: handleSubmit,
+    });
   };
+
+  const handleSubmit = async () => {
+    const payload = { ...formData };
+    hideDialog();
+    showOverlay("Adding");
+    addUserMutation(payload);
+  };
+
+  const { mutate: addUserMutation, isPending: adding } = useMutation({
+    mutationFn: (payload: AddUserData) =>
+      apiClient.post("/superadmin/add-user", payload),
+    onSuccess: (response, payload) => {
+      //  Creating the new user object
+      const newUser: UserRecord = {
+        username: payload.name,
+        email: payload.email,
+        department: payload.department,
+        role: payload.role,
+        user_id: Date.now().toLocaleString(), //Get a random generic id
+        is_user_active: payload.status === "true",
+        created_at: new Date().toLocaleString(),
+      };
+      queryClient.setQueryData(["UsersDataInfo"], (oldData: UserRecord[]) => {
+        if (!oldData) return oldData;
+        return [newUser, ...oldData];
+      });
+
+      // Hide overlay on success
+      hideOverlay();
+
+      setFormData({
+        name: "",
+        email: "",
+        department: "",
+        password: "",
+        confirmPassword: "",
+        role: "user", //default to user
+        status: "",
+      });
+
+      hideModal();
+
+      triggerAlert("success", response.data.message);
+    },
+    onError: (error) => {
+      hideOverlay();
+      const errorMessage = getApiErrorMessage(error);
+      triggerAlert("error", errorMessage);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["UserCountsData"] }); //Card counts data
+      queryClient.invalidateQueries({ queryKey: ["UsersDataInfo"] }); //Card counts data
+    },
+  });
 
   const passwordMismatch =
     formData.confirmPassword.length > 0 &&
@@ -84,10 +174,7 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
   return (
     <ClientPortal>
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm transition-opacity dark:bg-black/60"
-        onClick={hideModal}
-      />
+      <div className="custom-blur fixed inset-0 z-50 bg-black/40 transition-opacity dark:bg-black/60" />
 
       {/* Modal */}
       <div
@@ -115,7 +202,7 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
 
           {/* Form */}
           <form
-            onSubmit={handleSubmit}
+            onSubmit={handleConfirmSubmit}
             autoComplete="off"
             className="layout-scrollbar flex flex-col gap-4 overflow-y-auto px-6 py-5"
           >
@@ -194,6 +281,7 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
             <CustomDropdown
               label="Department"
               options={baseDepartments}
+              loading={loading}
               value={formData.department}
               onChange={(val) => handleDropdownChange("department", val)}
             />
@@ -295,7 +383,10 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
               <button
                 type="submit"
                 disabled={
-                  !formData || passwordMismatch || !nameValidation.isValid
+                  adding ||
+                  !formData ||
+                  passwordMismatch ||
+                  !nameValidation.isValid
                 }
                 className="rounded-xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-neutral-700 focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100 dark:focus:ring-white dark:focus:ring-offset-neutral-950"
               >

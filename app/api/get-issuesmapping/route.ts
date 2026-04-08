@@ -24,7 +24,7 @@ export const GET = withAuth(async ({ user }) => {
     COALESCE((SELECT email FROM users WHERE user_id = m.admin_id), 'Unassigned') AS admin_email
    FROM users AS agents
    LEFT JOIN issues_mapping AS m ON agents.user_id = m.agent_id
-   WHERE (agents.role = 'agent' OR agents.role = 'admin')
+   WHERE (agents.role = 'agent' OR agents.role = 'admin') AND agents.is_user_active = TRUE
     `;
 
     const issuesMapping = await query(baseQuery);

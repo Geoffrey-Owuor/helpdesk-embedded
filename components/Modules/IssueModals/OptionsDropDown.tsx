@@ -51,6 +51,13 @@ const OptionsDropDown = ({
     setIsOpen(false);
   };
 
+  // Handling cases where issue type is other and later other issue types that require formatting
+  const generateValue = (value: string) => {
+    if (value.includes("_Other")) return "Other Issue";
+    else if (value === "Automation") return "(RPA) Robotic Process Automation";
+    else return value;
+  };
+
   return (
     <div className="relative w-full" ref={dropdownRef}>
       <button
@@ -76,10 +83,10 @@ const OptionsDropDown = ({
           )}
 
           <span
-            className={`${!value ? "text-neutral-500" : "text-neutral-900 dark:text-neutral-100"}`}
+            className={`${!value ? "text-neutral-500" : "max-w-35 truncate text-neutral-900 dark:text-neutral-100"}`}
           >
             {value
-              ? value
+              ? generateValue(value)
               : dropDownType === "department"
                 ? "Direct this issue to..."
                 : "Select an issue type..."}
@@ -111,7 +118,12 @@ const OptionsDropDown = ({
                 onClick={() => handleSelect(option.value)}
                 className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
               >
-                <span>{option.option}</span>
+                <span
+                  title={generateValue(option.option)}
+                  className="max-w-35 truncate"
+                >
+                  {generateValue(option.option)}
+                </span>
                 {value === option.value && (
                   <Check className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 )}

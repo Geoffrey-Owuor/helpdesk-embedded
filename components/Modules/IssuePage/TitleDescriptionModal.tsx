@@ -100,18 +100,15 @@ const TitleDescriptionModal = ({
       // Hide overlay on success
       hideOverlay();
 
-      triggerAlert("success", response.data.message);
-      setFormData({ issue_title: "", issue_description: "" });
       closeModal();
+
+      triggerAlert("success", response.data.message);
     },
 
     onError: (error) => {
+      hideOverlay();
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
-    },
-
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: activeQueryKey });
     },
   });
 

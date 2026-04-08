@@ -55,7 +55,6 @@ export const DELETE = withAuth(async ({ user, request }) => {
     //Agent is there - get the agent_id, and prepare the data we will replace
     const agentId = agentInfo[0].user_id;
     const deletedEmail = `deleted_${agentEmail}`;
-    const deletedRole = "deleted_role";
     const deletedPassword = "deleted_password";
 
     // Replace issue types assigned to the agent being deleted to the admin performing the deletion
@@ -72,18 +71,17 @@ export const DELETE = withAuth(async ({ user, request }) => {
     const userUpdateQuery = `
      UPDATE users
      SET email = $1,
-     role = $2,
-     password = $3,
+     password = $2,
      refresh_token = NULL,
      refresh_token_expiry = NULL,
      reset_token = NULL,
+     is_user_active = FALSE,
      reset_token_expiry = NULL
-     WHERE email = $4 AND department = $5
+     WHERE email = $3 AND department = $4
     `;
 
     const userUpdateParams = [
       deletedEmail,
-      deletedRole,
       deletedPassword,
       agentEmail,
       department,

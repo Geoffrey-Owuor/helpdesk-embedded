@@ -5,17 +5,11 @@ import { currentYear } from "@/public/assets";
 import { Sparkles } from "lucide-react";
 import { DbStatusPill } from "../Modules/DbStatus/DbStatusPill";
 
-const footerLinks = {
-  product: [
-    { name: "Features", href: "/features" },
-    { name: "Changelog", href: "/changelog" },
-    { name: "Manual", href: "/manual" },
-  ],
-  support: [
-    { name: "Contact Us", href: "/contact" },
-    { name: "Report a Bug", href: "/report" },
-  ],
-};
+const footerLinks = [
+  { name: "Changelog", href: "/changelog" },
+  { name: "Manual", href: "/manual#user-manual" },
+  { name: "Report a Bug", href: "/manual#bug-report" },
+];
 
 const Footer = () => {
   return (
@@ -24,9 +18,9 @@ const Footer = () => {
         {/* Main Grid */}
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-0">
           {/* Brand Column */}
-          <div className="flex max-w-sm flex-col gap-4">
+          <div className="flex max-w-sm flex-col gap-3">
             <div className="flex items-center gap-0.5">
-              <div className="relative h-8 w-8">
+              <div className="relative -ml-1.5 h-8 w-8">
                 <Image
                   src={assets.issue_desk_image}
                   alt="Issue Desk Logo"
@@ -35,44 +29,25 @@ const Footer = () => {
                   sizes="32px"
                 />
               </div>
-              <span className="text-xl font-bold text-neutral-900 dark:text-white">
-                Issue Desk
+              <span className="text-xl font-semibold text-neutral-900 dark:text-white">
+                IssueDesk
               </span>
             </div>
-            <p className="px-2 text-base leading-7 text-neutral-600 dark:text-neutral-400">
-              The centralized internal tool for managing user reports, assigning
+            <p className="text-base leading-7 text-neutral-600 dark:text-neutral-400">
+              The centralized internal tool for managing user issues, assigning
               ownership, and closing the loop on issues.
             </p>
           </div>
 
           {/* Footer Links */}
-          <div className="mt-2 grid grid-cols-1 gap-12 lg:grid-cols-3 lg:gap-8">
+          <div className="mt-2 grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-8">
             {/* Product Links */}
             <div>
               <h3 className="text-base leading-6 font-semibold text-neutral-900 dark:text-white">
                 Product
               </h3>
               <ul role="list" className="mt-4 space-y-3">
-                {footerLinks.product.map((item) => (
-                  <li key={item.name}>
-                    <Link
-                      href={item.href}
-                      className="text-base text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
-                    >
-                      {item.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Support Links */}
-            <div>
-              <h3 className="text-base leading-6 font-semibold text-neutral-900 dark:text-white">
-                Support
-              </h3>
-              <ul role="list" className="mt-4 space-y-3">
-                {footerLinks.support.map((item) => (
+                {footerLinks.map((item) => (
                   <li key={item.name}>
                     <Link
                       href={item.href}
@@ -110,7 +85,7 @@ const Footer = () => {
         {/* Bottom Bar - Centered */}
         <div className="mt-16 flex flex-col items-center gap-8 border-t border-neutral-100 pt-8 dark:border-neutral-900">
           <span className="flex items-center gap-2 text-sm leading-5 text-neutral-500">
-            <span> &copy; {currentYear} Issue Desk. Built by</span>
+            <span> &copy; {currentYear} IssueDesk. Built by</span>
             <a
               href="https://jeff-portfolio-web.vercel.app"
               target="_blank"

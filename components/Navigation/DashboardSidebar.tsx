@@ -3,10 +3,10 @@ import {
   Menu,
   CirclePlus,
   Bot,
-  Home,
   ChevronLeft,
   ShieldUser,
   ShieldPlus,
+  LayoutDashboard,
 } from "lucide-react";
 import Link from "next/link";
 import ThemeToggle from "../Themes/ThemeToggle";
@@ -72,7 +72,7 @@ const DashboardSidebar = () => {
       />
 
       {/* Mobile top bar — only visible on small screens */}
-      <div className="custom:hidden fixed top-0 right-0 left-0 z-50 flex h-16 items-center justify-between px-4">
+      <div className="fixed top-0 right-0 left-0 z-50 flex h-16 items-center justify-between px-4 lg:hidden">
         <button
           onClick={() => setSideBarOpen(true)}
           className="rounded-full p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800"
@@ -117,7 +117,7 @@ const DashboardSidebar = () => {
       </div>
 
       {/* Left sidebar — visible on md+ screens */}
-      <aside className="custom:flex fixed top-0 bottom-0 left-0 z-50 hidden w-20 flex-col items-center border-neutral-200 py-4 dark:border-neutral-800">
+      <aside className="fixed top-0 bottom-0 left-0 z-50 hidden w-20 flex-col items-center border-neutral-200 py-4 lg:flex dark:border-neutral-800">
         {/* Logo at the top */}
         <div className="mb-6 flex items-center justify-center">
           <DashBoardLogo />
@@ -125,21 +125,20 @@ const DashboardSidebar = () => {
 
         {/* Nav items — grow to fill space */}
         <nav className="sidebar-nav mb-2 flex w-full flex-1 flex-col items-center gap-1 px-2">
+          {/* Home */}
+          <SidebarLink
+            href="/dashboard"
+            icon={<LayoutDashboard className="h-5 w-5" />}
+            label="Home"
+            isActive={isHomeActive}
+            onClick={() => handleRouteChange("/dashboard")}
+          />
+
           {/* New Issue */}
           <SidebarButton
             onClick={() => setIsIssueModalOpen(true)}
             icon={<CirclePlus className="h-5 w-5" />}
             label="New Issue"
-            highlight
-          />
-
-          {/* Home */}
-          <SidebarLink
-            href="/dashboard"
-            icon={<Home className="h-5 w-5" />}
-            label="Home"
-            isActive={isHomeActive}
-            onClick={() => handleRouteChange("/dashboard")}
           />
 
           {/* Automations */}
@@ -223,22 +222,12 @@ type SidebarButtonProps = {
   onClick: () => void;
   icon: React.ReactNode;
   label: string;
-  highlight?: boolean;
 };
 
-const SidebarButton = ({
-  onClick,
-  icon,
-  label,
-  highlight,
-}: SidebarButtonProps) => (
+const SidebarButton = ({ onClick, icon, label }: SidebarButtonProps) => (
   <button
     onClick={onClick}
-    className={`flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-semibold text-neutral-600 transition-colors dark:text-neutral-400 ${
-      highlight
-        ? "hover:bg-neutral-900 hover:text-white dark:hover:bg-white dark:hover:text-black"
-        : "hover:bg-neutral-200 dark:hover:bg-neutral-800"
-    }`}
+    className="flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-semibold text-neutral-600 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800"
   >
     {icon}
     <span>{label}</span>
@@ -263,7 +252,7 @@ const SidebarLink = ({
   <Link
     href={href}
     onClick={onClick}
-    className={`flex w-full flex-col items-center gap-1 ${isActive ? "border-b-[1.5px] border-neutral-700 text-black dark:border-neutral-300 dark:text-white" : "text-neutral-600 dark:text-neutral-400"} rounded-xl px-1 py-2 text-[10px] font-semibold transition-colors duration-200 hover:bg-neutral-200 dark:hover:bg-neutral-800`}
+    className={`flex w-full flex-col items-center gap-1 ${isActive ? "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200" : "text-neutral-600 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800"} rounded-xl px-1 py-2 text-[10px] font-semibold`}
   >
     {icon}
     <span>{label}</span>

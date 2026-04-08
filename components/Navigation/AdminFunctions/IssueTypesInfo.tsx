@@ -84,20 +84,22 @@ const IssueTypesInfo = ({
         data: { issueType: issueType },
       });
 
+      // hide overlay
+      hideOverlay();
+
       // Refetch agents data
-      refetchAgentsInfo();
+      await refetchAgentsInfo();
 
       // Trigger alert on success
       triggerAlert("success", response.data.message);
     } catch (error) {
+      hideOverlay();
       const apiError = getApiErrorMessage(error);
       // trigger alert Error
       triggerAlert("error", apiError);
 
       // Log the error
       console.error("Error while deleting issue type:", apiError);
-    } finally {
-      hideOverlay();
     }
   };
 
