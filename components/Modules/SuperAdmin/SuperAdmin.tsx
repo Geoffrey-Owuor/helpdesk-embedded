@@ -52,7 +52,7 @@ const SuperAdmin = () => {
               className="inline-flex items-center gap-2 rounded-xl bg-neutral-100 px-3 py-2 text-sm text-neutral-800 hover:bg-neutral-200/60 dark:bg-neutral-800/60 dark:text-neutral-300 dark:hover:bg-neutral-800/80"
             >
               <Mails strokeWidth={1.5} className="h-5 w-5" />
-              <span>Group Emails</span>
+              <span>Departments</span>
             </button>
             <div className="inline-flex items-center gap-1 rounded-2xl bg-neutral-100 p-1 dark:bg-neutral-900">
               <button

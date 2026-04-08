@@ -278,10 +278,10 @@ const GroupEmailsModal = ({
           <div className="flex items-center justify-between border-b border-neutral-100 px-6 py-4 dark:border-neutral-800">
             <div>
               <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
-                Group Emails
+                Departments
               </h2>
               <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
-                Manage department group email addresses
+                Manage departments info
               </p>
             </div>
             <div className="flex items-center gap-2">
