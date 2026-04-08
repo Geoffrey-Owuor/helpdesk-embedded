@@ -23,7 +23,7 @@ const Footer = () => {
               <div className="relative -ml-1.5 h-8 w-8">
                 <Image
                   src={assets.issue_desk_image}
-                  alt="Issue Desk Logo"
+                  alt="IssueDesk Logo"
                   className="object-contain dark:invert"
                   loading="eager"
                   sizes="32px"

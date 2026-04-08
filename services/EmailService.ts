@@ -34,7 +34,7 @@ export async function sendEmail({
   try {
     // 2. Use SendMailOptions for the config object
     const mailOptions: SendMailOptions = {
-      from: `"Issue Desk" <${process.env.GMAIL_USER}>`,
+      from: `"IssueDesk" <${process.env.GMAIL_USER}>`,
       to,
       cc,
       subject,

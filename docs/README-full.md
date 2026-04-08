@@ -1,6 +1,6 @@
-# Issue Desk
+# IssueDesk
 
-Issue Desk is a lightweight, centralized issue-tracking application for teams to collect, assign, and track user-reported issues. It uses the Next.js App Router, Tailwind CSS for styling, and Postgres for persistence.
+IssueDesk is a lightweight, centralized issue-tracking application for teams to collect, assign, and track user-reported issues. It uses the Next.js App Router, Tailwind CSS for styling, and Postgres for persistence.
 
 ## Key Features
 

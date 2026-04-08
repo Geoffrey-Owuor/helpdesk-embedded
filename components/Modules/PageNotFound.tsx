@@ -61,7 +61,7 @@ const PageNotFound = () => {
       <footer className="relative z-20 flex items-center justify-center gap-2 px-6 py-5 sm:px-10">
         <span className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs dark:border-neutral-800 dark:bg-neutral-900">
           <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
-          Error 404 · Issue Desk
+          Error 404 · IssueDesk
         </span>
       </footer>
     </div>
