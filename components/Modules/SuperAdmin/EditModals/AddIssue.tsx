@@ -147,6 +147,7 @@ const AddIssue = ({
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["IssueCountsData"] }); //Issue counts data
+      queryClient.invalidateQueries({ queryKey: ["issuesMappingDataInfo"] }); //Issue counts data
     },
   });
 

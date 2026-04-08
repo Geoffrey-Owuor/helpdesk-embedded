@@ -200,6 +200,7 @@ const GroupEmailsModal = ({
     },
     onError: (err) => triggerAlert("error", getApiErrorMessage(err)),
     onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["groupEmailsData"] });
       hideOverlay();
     },
   });
@@ -230,7 +231,9 @@ const GroupEmailsModal = ({
 
   const { mutate: deleteRecord } = useMutation({
     mutationFn: (id: number) =>
-      apiClient.delete(`/superadmin/group-emails/${id}`), // TODO: implement
+      apiClient.delete(`/superadmin/group-emails/delete-email`, {
+        params: { id: id },
+      }), // TODO: implement
     onMutate: () => showOverlay("Deleting"),
     onSuccess: (res, id) => {
       queryClient.setQueryData(["groupEmailsData"], (old: GroupEmail[]) =>
