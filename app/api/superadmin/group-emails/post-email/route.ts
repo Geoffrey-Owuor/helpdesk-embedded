@@ -47,7 +47,7 @@ export const POST = withAuth(async ({ user, request }) => {
     revalidateTag("BaseDepartments_Data", { expire: 0 });
 
     return NextResponse.json(
-      { message: "Group email record added successfully" },
+      { message: "Department added successfully" },
       { status: 201 },
     );
   } catch (error) {

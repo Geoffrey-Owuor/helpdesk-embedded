@@ -76,7 +76,7 @@ export const DELETE = withAuth(async ({ request, user }) => {
 
     // Return a response
     return NextResponse.json(
-      { message: "Group email deleted successfully" },
+      { message: "Department deleted successfully" },
       { status: 200 },
     );
   } catch (error) {
