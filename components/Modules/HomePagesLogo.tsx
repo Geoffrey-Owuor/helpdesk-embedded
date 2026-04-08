@@ -8,7 +8,7 @@ const HomePagesLogo = () => {
       <div className="relative h-8 w-8">
         <Image
           src={assets.issue_desk_image}
-          alt="Issue Desk Logo"
+          alt="IssueDesk Logo"
           sizes="32px"
           loading="eager"
           className="object-contain dark:invert"

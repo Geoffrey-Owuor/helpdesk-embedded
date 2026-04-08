@@ -1,4 +1,4 @@
-﻿# Issue Desk
+﻿# IssueDesk
 
 A lightweight, centralized issue tracker built with Next.js and Tailwind CSS that enables teams to manage user-reported issues with clear ownership and status updates.
 
