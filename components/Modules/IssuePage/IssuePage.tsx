@@ -41,19 +41,12 @@ import { fetchIssues } from "@/queries/fetchIssues";
 import { fetchAutomations } from "@/queries/fetchAutomations";
 import { IssueValueTypes } from "@/public/assets";
 import { DEFAULT_FETCH_OPTIONS } from "@/public/assets";
+import { statusOptions as baseOptions } from "@/public/assets";
+import { priorityOptions } from "@/public/assets";
 
-const statusOptions = [
-  { label: "In Progress", value: "in progress" },
-  { label: "Resolved", value: "resolved" },
-  { label: "Unfeasible", value: "unfeasible" },
-];
-
-export const priorityOptions = [
-  { label: "Critical", value: "Critical" },
-  { label: "High", value: "High" },
-  { label: "Medium", value: "Medium" },
-  { label: "Low", value: "Low" },
-];
+const statusOptions = baseOptions.filter(
+  (option) => option.value !== "pending",
+);
 
 export const IssuePage = ({ uuid }: { uuid: string }) => {
   // Initialize the query client

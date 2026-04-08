@@ -3,16 +3,9 @@ import { useState, useRef, useEffect } from "react";
 import { Search, ChevronDown, Check, X } from "lucide-react";
 import { useSearchStore } from "@/store/useSearchStore";
 import { baseDepartments } from "@/public/assets";
-import { priorityOptions } from "../IssuePage/IssuePage";
+import { priorityOptions } from "@/public/assets";
 import { DatePicker } from "../DatePicker";
-
-// --- Status Options ---
-const statusOptions = [
-  { label: "Pending", value: "pending" },
-  { label: "In Progress", value: "in progress" },
-  { label: "Resolved", value: "resolved" },
-  { label: "Unfeasible", value: "unfeasible" },
-];
+import { statusOptions } from "@/public/assets";
 
 const departmentOptions = baseDepartments.map((department) => ({
   label: department.option,

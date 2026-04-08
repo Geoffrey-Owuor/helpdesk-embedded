@@ -250,8 +250,7 @@ const GroupEmailsModal = ({
   const handleDeleteClick = (id: number) => {
     triggerDialog({
       title: "Delete Group Email",
-      description:
-        "Are you sure you want to delete this record? This action cannot be undone.",
+      description: "Confirm deletion of the selected record.",
       onConfirm: async () => {
         hideDialog();
         deleteRecord(id);
@@ -317,7 +316,7 @@ const GroupEmailsModal = ({
             {isLoading ? (
               <div className="flex flex-col gap-3">
                 {[...Array(3)].map((_, i) => (
-                  <SkeletonBox key={i} className="h-20 rounded-xl" />
+                  <SkeletonBox key={i} className="h-18 rounded-xl" />
                 ))}
               </div>
             ) : groupEmails.length === 0 ? (
