@@ -40,7 +40,7 @@ export const emailSender = async ({
   };
 
   // Generate the html email template
-  const emailHtml = generateIssueNotificationEmail(emailParams);
+  const emailHtml = generateIssueNotificationEmail(emailParams, uuid);
 
   //Sending the email
   await sendEmail({

@@ -256,8 +256,11 @@ function renderCommentSection(comment: IssueEmailComment): string {
 
 export function generateIssueNotificationEmail(
   params: IssueNotificationEmailParams,
+  uuid: string,
 ): string {
   const { title, description, body, comment, remarks } = params;
+
+  const issueLink = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/${uuid}/?type=issue&title=${encodeURIComponent(body.issueTitle)}&description=${encodeURIComponent(body.issueDescription)}`;
 
   const statusBadge = renderStatusBadge(body.status);
   const priorityBadge = renderPriorityBadge(body.priority);
@@ -444,6 +447,25 @@ export function generateIssueNotificationEmail(
 
               <!-- Optional Comment Section -->
               ${commentHtml}
+
+              <!-- View Issue Button -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 24px;">
+                <tr>
+                  <td align="center">
+                    <a href="${issueLink}" style="
+                      display: inline-block;
+                      background: #171717;
+                      color: #ffffff;
+                      font-size: 13.5px;
+                      font-weight: 600;
+                      text-decoration: none;
+                      padding: 12px 28px;
+                      border-radius: 6px;
+                      letter-spacing: 0.2px;
+                    ">View Issue →</a>
+                  </td>
+                </tr>
+              </table>
 
               <!-- ── FOOTER ── -->
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 36px; border-top: 1px solid #f3f4f6; padding-top: 22px;">
