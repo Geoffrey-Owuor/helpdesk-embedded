@@ -10,6 +10,9 @@ import {
   Terminal,
 } from "lucide-react";
 import { useState } from "react";
+import { useAlertStore } from "@/store/useAlertStore";
+import { useMutation } from "@tanstack/react-query";
+import { ApiHandler } from "@/utils/ApiHandler";
 
 type Severity = "low" | "medium" | "high" | "critical";
 type BugCategory =
@@ -116,12 +119,47 @@ const BugReport = () => {
   const set = (key: keyof BugFormState, val: string) =>
     setForm((prev) => ({ ...prev, [key]: val }));
 
+  // Zustand State
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
+
   // Placeholder submit — logic handled later
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: wire up submission logic
-    alert("Bug report captured — submission logic coming soon!");
+    submitReport(form);
   };
+
+  // Mutation function
+  const { mutate: submitReport, isPending: loading } = useMutation({
+    mutationFn: async (form: BugFormState) =>
+      ApiHandler("/api/bug-report", "POST", form),
+    onSuccess: async (response) => {
+      const data = await response.json();
+
+      if (!response.ok) {
+        triggerAlert("error", data.message);
+      } else {
+        triggerAlert("success", data.message);
+
+        // Clear form data on success
+        setForm({
+          title: "",
+          category: "",
+          severity: "",
+          steps: "",
+          expected: "",
+          actual: "",
+          browserOs: "",
+          extras: "",
+        });
+      }
+    },
+    onError: (error) => {
+      if (error instanceof Error) {
+        console.error("Error while trying to submit a bug report:", error);
+        triggerAlert("error", error.message);
+      }
+    },
+  });
 
   return (
     <div id="bug-report" className="scroll-mt-24">
@@ -295,10 +333,11 @@ const BugReport = () => {
           </p>
           <button
             type="submit"
-            className="inline-flex items-center gap-2 rounded-full bg-neutral-950 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200"
+            disabled={loading}
+            className="inline-flex items-center gap-2 rounded-full bg-neutral-950 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-neutral-800 disabled:opacity-50 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200"
           >
             <Bug className="h-4 w-4" />
-            Submit Report
+            {loading ? "Submitting..." : "Submit Report"}
           </button>
         </div>
       </form>
