@@ -319,7 +319,7 @@ const GroupEmailsModal = ({
             {isLoading ? (
               <div className="flex flex-col gap-3">
                 {[...Array(3)].map((_, i) => (
-                  <SkeletonBox key={i} className="h-18 rounded-xl" />
+                  <SkeletonBox key={i} className="h-16 rounded-xl" />
                 ))}
               </div>
             ) : groupEmails.length === 0 ? (

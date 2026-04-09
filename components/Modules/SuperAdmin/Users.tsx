@@ -252,7 +252,7 @@ const Users = () => {
       </div>
 
       {/* Table card */}
-      <div className="layout-scrollbar w-full overflow-x-auto rounded-xl bg-gray-100/50 px-4 py-2 dark:bg-neutral-950">
+      <div className="layout-scrollbar w-full overflow-x-auto rounded-xl border border-neutral-200 bg-gray-100/50 px-4 py-2 dark:border-neutral-800 dark:bg-neutral-950">
         <table className="min-w-full border-separate border-spacing-y-3 text-left">
           {/* Head */}
           <thead>

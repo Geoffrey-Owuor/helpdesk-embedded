@@ -3,7 +3,7 @@ import { useState } from "react";
 import Users from "./Users";
 import IssuesMapping from "./IssuesMapping/IssuesMapping";
 import { useQueryClient } from "@tanstack/react-query";
-import { Bug, Mails, RotateCw, UsersRound } from "lucide-react";
+import { Bug, Building2, RotateCw, UsersRound } from "lucide-react";
 import GroupEmailsModal from "./GroupEmails/GroupEmailsModal";
 
 const SuperAdmin = () => {
@@ -51,15 +51,15 @@ const SuperAdmin = () => {
               onClick={() => setShowGroupsModal(true)}
               className="inline-flex items-center gap-2 rounded-xl bg-neutral-100 px-3 py-2 text-sm text-neutral-800 hover:bg-neutral-200/60 dark:bg-neutral-800/60 dark:text-neutral-300 dark:hover:bg-neutral-800/80"
             >
-              <Mails strokeWidth={1.5} className="h-5 w-5" />
+              <Building2 strokeWidth={1.5} className="h-4 w-4" />
               <span>Departments</span>
             </button>
-            <div className="inline-flex items-center gap-1 rounded-2xl bg-neutral-100 p-1 dark:bg-neutral-900">
+            <div className="inline-flex items-center gap-1 rounded-2xl border border-neutral-200 bg-neutral-50 p-1 shadow-inner dark:border-neutral-800 dark:bg-neutral-950">
               <button
                 onClick={() => setActiveTab("users")}
                 className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
                   activeTab === "users"
-                    ? "bg-white text-neutral-900 shadow-sm dark:bg-neutral-700 dark:text-neutral-100"
+                    ? "bg-white text-neutral-900 shadow-sm dark:bg-neutral-800 dark:text-neutral-100"
                     : "text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
                 }`}
               >
@@ -70,7 +70,7 @@ const SuperAdmin = () => {
                 onClick={() => setActiveTab("issues")}
                 className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
                   activeTab === "issues"
-                    ? "bg-white text-neutral-900 shadow-sm dark:bg-neutral-700 dark:text-neutral-100"
+                    ? "bg-white text-neutral-900 shadow-sm dark:bg-neutral-800 dark:text-neutral-100"
                     : "text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
                 }`}
               >
