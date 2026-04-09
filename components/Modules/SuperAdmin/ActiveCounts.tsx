@@ -2,7 +2,7 @@
 
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import { UserCountBreakdown } from "@/public/assets";
-import { Activity, UserRoundMinus, LucideIcon } from "lucide-react";
+import { LucideIcon, CircleCheck, CircleX } from "lucide-react";
 
 interface breakdownObject {
   label: string;
@@ -20,13 +20,13 @@ const ActiveCounts = ({ cardLoading, breakdown }: ActiveCountsProps) => {
     {
       label: "Active",
       count: breakdown.active,
-      icon: Activity,
+      icon: CircleCheck,
       text: "text-green-600 dark:text-green-500",
     },
     {
       label: "Inactive",
       count: breakdown.inactive,
-      icon: UserRoundMinus,
+      icon: CircleX,
       text: "text-red-600 dark:text-red-500",
     },
   ];

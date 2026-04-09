@@ -40,11 +40,11 @@ const ViewAgentAdminFilter = () => {
       <div
         className={`relative flex rounded-2xl transition-opacity duration-200 ${
           superAdminFilter ? "pointer-events-none opacity-40" : ""
-        } border border-neutral-200 bg-neutral-100 p-1 shadow-inner dark:border-neutral-800 dark:bg-neutral-900`}
+        } border border-neutral-200 bg-neutral-50 p-1 shadow-inner dark:border-neutral-800 dark:bg-neutral-950`}
       >
         {/* Sliding background pill */}
         <div
-          className={`absolute top-1 bottom-1 w-[calc(50%-2px)] rounded-xl bg-white shadow-sm ring-1 ring-black/5 transition-all duration-200 ease-in-out dark:bg-neutral-700 dark:ring-white/10 ${
+          className={`absolute top-1 bottom-1 w-[calc(50%-2px)] rounded-xl bg-white shadow-sm ring-1 ring-black/5 transition-all duration-200 ease-in-out dark:bg-neutral-800 dark:ring-white/10 ${
             filterApplied ? "translate-x-[calc(100%-4px)]" : "translate-x-0"
           }`}
         />

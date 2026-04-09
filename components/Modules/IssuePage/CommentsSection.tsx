@@ -169,7 +169,7 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
                   </div>
 
                   {/* Content Box - flex-1 and min-w-0 are CRITICAL for text wrapping */}
-                  <div className="min-w-0 flex-1 rounded-2xl rounded-tl-none bg-neutral-100 px-5 py-4 shadow-sm dark:bg-neutral-900">
+                  <div className="min-w-0 flex-1 rounded-2xl rounded-tl-none bg-neutral-100 px-5 py-4 shadow-sm dark:bg-neutral-900/80">
                     {/* Header: Name and Date */}
                     <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                       <div className="flex flex-wrap items-center gap-0.5 text-sm">
