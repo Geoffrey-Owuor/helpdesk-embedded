@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/Db";
+import { SendBugReport } from "@/services/SendBugReport";
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,6 +36,14 @@ export async function POST(request: NextRequest) {
 
     // Execute the query and return a response
     await query(baseQuery, baseParams);
+
+    // Fire and forget - send an email notification
+    SendBugReport({
+      title,
+      dateReported: new Date().toLocaleDateString(),
+      category,
+      severity,
+    });
 
     return NextResponse.json(
       { message: "Thank you for helping us improve the product!" },
