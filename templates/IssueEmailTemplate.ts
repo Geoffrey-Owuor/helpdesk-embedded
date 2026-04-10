@@ -71,7 +71,7 @@ const PRIORITY_STYLES: Record<
 
 // ─── Sub-renderers ────────────────────────────────────────────────────────────
 
-function renderStatusBadge(status: IssueEmailStatus): string {
+export function renderStatusBadge(status: IssueEmailStatus): string {
   const s = STATUS_STYLES[status];
   return `
         <span style="
@@ -94,7 +94,7 @@ function renderStatusBadge(status: IssueEmailStatus): string {
     `;
 }
 
-function renderPriorityBadge(priority: IssueEmailPriority): string {
+export function renderPriorityBadge(priority: IssueEmailPriority): string {
   const p = PRIORITY_STYLES[priority];
   return `
     <span style="
