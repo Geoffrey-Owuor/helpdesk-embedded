@@ -1,8 +1,11 @@
 import { query } from "@/lib/Db";
 import { NextRequest, NextResponse } from "next/server";
 import { sendEmail } from "@/services/EmailService";
-import { renderStatusBadge } from "@/templates/IssueEmailTemplate";
-import { renderPriorityBadge } from "@/templates/IssueEmailTemplate";
+import {
+  renderStatusBadge,
+  renderPriorityBadge,
+} from "@/templates/IssueEmailTemplate";
+import { dateFormatter } from "@/public/assets";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -13,48 +16,103 @@ interface UnresolvedIssue {
   issue_priority: string;
   issue_type: string;
   issue_title: string;
+  issue_description: string;
   issue_status: string;
   issue_agent_name: string;
   issue_created_at: string;
+  issue_updated_at: string;
 }
 
-// ─── Issue Row ────────────────────────────────────────────────────────────────
+// ─── Issue Card ────────────────────────────────────────────────────────────────
 
-function renderIssueRow(issue: UnresolvedIssue, index: number): string {
-  const isEven = index % 2 === 0;
+function renderIssueRow(issue: UnresolvedIssue): string {
   const daysSince = Math.floor(
     (Date.now() - new Date(issue.issue_created_at).getTime()) /
       (1000 * 60 * 60 * 24),
   );
 
   return `
-    <tr style="background: ${isEven ? "#ffffff" : "#f9fafb"};">
-      <td style="padding: 12px 16px; border-bottom: 1px solid #f3f4f6; vertical-align: top;">
-        <span style="font-family: 'Courier New', monospace; font-size: 12px; color: #374151;">
-          ${issue.issue_reference_id}
-        </span>
-      </td>
-      <td style="padding: 12px 16px; border-bottom: 1px solid #f3f4f6; vertical-align: top;">
-        <div style="font-size: 13px; font-weight: 600; color: #111827; margin-bottom: 3px;">
-          ${issue.issue_title}
-        </div>
-        <div style="font-size: 11.5px; color: #9ca3af;">
-          ${issue.issue_type} · ${issue.issue_submitter_name}
-        </div>
-      </td>
-      <td style="padding: 12px 16px; border-bottom: 1px solid #f3f4f6; vertical-align: top; text-align: center;">
-        ${renderPriorityBadge(issue.issue_priority)}
-        <div style="margin-top: 5px;">
-          ${renderStatusBadge(issue.issue_status)}
-        </div>
-      </td>
-      <td style="padding: 12px 16px; border-bottom: 1px solid #f3f4f6; vertical-align: top; text-align: center;">
-        <div style="font-size: 12px; font-weight: 600; color: #c2410c;">${daysSince}d</div>
-      </td>
-      <td style="padding: 12px 16px; border-bottom: 1px solid #f3f4f6; vertical-align: top;">
-        <div style="font-size: 12.5px; color: #374151;">${issue.issue_agent_name}</div>
-      </td>
-    </tr>`;
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="
+      background-color: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    ">
+      <tr>
+        <td style="padding: 24px;">
+          
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 16px;">
+            <tr>
+              <td align="left" valign="middle">
+                <span style="font-family: 'Courier New', monospace; font-size: 13px; font-weight: 600; color: #6b7280; background: #f3f4f6; padding: 4px 8px; border-radius: 6px;">
+                  ${issue.issue_reference_id}
+                </span>
+              </td>
+              <td align="right" valign="middle">
+                <table cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="padding-right: 8px;">
+                      ${renderPriorityBadge(issue.issue_priority)}
+                    </td>
+                    <td>
+                      ${renderStatusBadge(issue.issue_status)}
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+
+          <h3 style="margin: 0 0 8px 0; font-size: 17px; font-weight: 700; color: #111827; line-height: 1.4;">
+            ${issue.issue_title}
+          </h3>
+          <p style="margin: 0 0 20px 0; font-size: 14px; color: #4b5563; line-height: 1.6;">
+            ${issue.issue_description || "<em style='color: #9ca3af;'>No description provided</em>"}
+          </p>
+
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="
+            background-color: #f9fafb;
+            border: 1px solid #f3f4f6;
+            border-radius: 8px;
+            padding: 16px;
+          ">
+            <tr>
+              <td width="50%" valign="top" style="padding-right: 10px;">
+                <div style="margin-bottom: 10px;">
+                  <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #9ca3af; display: block; margin-bottom: 2px;">Submitter</span>
+                  <span style="font-size: 13px; font-weight: 500; color: #1f2937;">${issue.issue_submitter_name}</span>
+                </div>
+                <div style="margin-bottom: 10px;">
+                  <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #9ca3af; display: block; margin-bottom: 2px;">Assigned Agent</span>
+                  <span style="font-size: 13px; font-weight: 500; color: #1f2937;">${issue.issue_agent_name || "Unassigned"}</span>
+                </div>
+                <div>
+                  <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #9ca3af; display: block; margin-bottom: 2px;">Category</span>
+                  <span style="font-size: 13px; font-weight: 500; color: #1f2937;">${issue.issue_type}</span>
+                </div>
+              </td>
+              
+              <td width="50%" valign="top">
+                <div style="margin-bottom: 10px;">
+                  <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #9ca3af; display: block; margin-bottom: 2px;">Created At</span>
+                  <span style="font-size: 13px; font-weight: 500; color: #1f2937;">${dateFormatter(issue.issue_created_at)}</span>
+                </div>
+                <div style="margin-bottom: 10px;">
+                  <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #9ca3af; display: block; margin-bottom: 2px;">Last Updated</span>
+                  <span style="font-size: 13px; font-weight: 500; color: #1f2937;">${dateFormatter(issue.issue_updated_at)}</span>
+                </div>
+                <div>
+                  <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #9ca3af; display: block; margin-bottom: 2px;">Issue Age</span>
+                  <span style="font-size: 13px; font-weight: 700; color: #dc2626;">${daysSince} Days Unresolved</span>
+                </div>
+              </td>
+            </tr>
+          </table>
+
+        </td>
+      </tr>
+    </table>`;
 }
 
 // ─── Email Template ───────────────────────────────────────────────────────────
@@ -63,7 +121,7 @@ function generateReminderEmail(
   department: string,
   issues: UnresolvedIssue[],
 ): string {
-  const issueRows = issues.map((issue, i) => renderIssueRow(issue, i)).join("");
+  const issueCards = issues.map((issue) => renderIssueRow(issue)).join("");
   const criticalCount = issues.filter(
     (i) => i.issue_priority === "Critical",
   ).length;
@@ -88,12 +146,11 @@ function generateReminderEmail(
       <td align="center">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 680px;">
 
-          <!-- HEADER -->
           <tr>
             <td style="
               background: #171717;
               padding: 22px 32px;
-              border-radius: 10px 10px 0 0;
+              border-radius: 12px 12px 0 0;
             ">
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
@@ -112,76 +169,54 @@ function generateReminderEmail(
             </td>
           </tr>
 
-          <!-- Accent bar -->
           <tr>
             <td style="height: 3px; background: linear-gradient(90deg, #dc2626 0%, #f87171 100%);"></td>
           </tr>
 
-          <!-- BODY -->
           <tr>
             <td style="
               background: #ffffff;
               padding: 32px 32px 28px;
-              border-radius: 0 0 10px 10px;
+              border-radius: 0 0 12px 12px;
               border: 1px solid #e5e7eb;
               border-top: none;
             ">
 
-              <!-- Alert banner -->
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="
                 background: #fef2f2;
                 border: 1px solid #fecaca;
-                border-left: 3px solid #dc2626;
-                border-radius: 6px;
-                margin-bottom: 28px;
+                border-left: 4px solid #dc2626;
+                border-radius: 8px;
+                margin-bottom: 32px;
               ">
                 <tr>
-                  <td style="padding: 14px 18px;">
-                    <div style="font-size: 13.5px; font-weight: 700; color: #991b1b; margin-bottom: 4px;">
+                  <td style="padding: 16px 20px;">
+                    <div style="font-size: 14px; font-weight: 700; color: #991b1b; margin-bottom: 6px;">
                       ⚠ Issues Unresolved after 7 days
                     </div>
-                    <p style="font-size: 13px; color: #b91c1c; margin: 0; line-height: 1.5;">
+                    <p style="font-size: 13.5px; color: #b91c1c; margin: 0; line-height: 1.5;">
                       The <strong>${department}</strong> department has <strong>${issues.length} unresolved issue${issues.length !== 1 ? "s" : ""}</strong>
                       that ${issues.length !== 1 ? "have" : "has"} not been resolved after 7 days.
-                      ${criticalCount > 0 ? `<br><span style="margin-top: 4px; display: inline-block;">${criticalCount} Critical and ${highCount} High priority issue${criticalCount + highCount !== 1 ? "s" : ""} need immediate action.</span>` : ""}
+                      ${criticalCount > 0 ? `<br><span style="margin-top: 6px; display: inline-block;">${criticalCount} Critical and ${highCount} High priority issue${criticalCount + highCount !== 1 ? "s" : ""} need immediate action.</span>` : ""}
                     </p>
                   </td>
                 </tr>
               </table>
 
-              <!-- Section label -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 14px;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px;">
                 <tr>
                   <td style="
-                    font-size: 11px; font-weight: 700;
+                    font-size: 12px; font-weight: 700;
                     text-transform: uppercase; letter-spacing: 1px;
-                    color: #9ca3af; padding-bottom: 10px;
-                    border-bottom: 1px solid #e5e7eb;
+                    color: #9ca3af; padding-bottom: 12px;
+                    border-bottom: 2px solid #f3f4f6;
                   ">Pending Issues — ${department}</td>
                 </tr>
               </table>
 
-              <!-- Issues table -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="
-                border: 1px solid #e5e7eb;
-                border-radius: 8px;
-                overflow: hidden;
-                border-collapse: separate;
-                border-spacing: 0;
-              ">
-                <!-- Table header -->
-                <tr style="background: #f9fafb;">
-                  <td style="padding: 10px 16px; font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e5e7eb;">Ref No.</td>
-                  <td style="padding: 10px 16px; font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e5e7eb;">Issue</td>
-                  <td style="padding: 10px 16px; font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e5e7eb; text-align: center;">Priority</td>
-                  <td style="padding: 10px 16px; font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e5e7eb; text-align: center;">Age</td>
-                  <td style="padding: 10px 16px; font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e5e7eb;">Agent</td>
-                </tr>
-                ${issueRows}
-              </table>
+              ${issueCards}
 
-              <!-- FOOTER -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 36px; border-top: 1px solid #f3f4f6; padding-top: 22px;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 40px; border-top: 1px solid #f3f4f6; padding-top: 24px;">
                 <tr>
                   <td align="center">
                     <p style="font-size: 12px; color: #9ca3af; margin: 0 0 4px;">This is an automated reminder from</p>
@@ -194,9 +229,8 @@ function generateReminderEmail(
             </td>
           </tr>
 
-          <!-- Bottom spacer -->
           <tr>
-            <td style="padding-top: 20px;" align="center">
+            <td style="padding-top: 24px;" align="center">
               <p style="font-size: 11px; color: #9ca3af; margin: 0;">
                 © ${new Date().getFullYear()} IssueDesk. All rights reserved.
               </p>
@@ -222,6 +256,7 @@ export async function GET(request: NextRequest) {
   if (token !== process.env.CRON_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
   try {
     const groupEmailsResult = await query<{
       emails: string;
@@ -231,8 +266,8 @@ export async function GET(request: NextRequest) {
     const unresolvedQuery = `
       SELECT 
         issue_reference_id, issue_submitter_name, issue_submitter_department,
-        issue_priority, issue_type, issue_title, issue_status,
-        issue_agent_name, issue_created_at
+        issue_priority, issue_type, issue_title, issue_description, issue_status,
+        issue_agent_name, issue_created_at, issue_updated_at
       FROM issues_table
       WHERE issue_status != $1
         AND issue_status != $2
@@ -254,7 +289,7 @@ export async function GET(request: NextRequest) {
 
         await sendEmail({
           to: emails,
-          subject: `[IssueDesk] ${issuesResult.length} Unresolved Issue${issuesResult.length !== 1 ? "s" : ""} — ${department}`,
+          subject: `[IssueDesk] ${issuesResult.length} Unresolved Issue${issuesResult.length !== 1 ? "s" : ""} - ${department}`,
           html,
         });
 
