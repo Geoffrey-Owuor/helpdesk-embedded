@@ -31,7 +31,7 @@ export const POST = withAuth(async ({ request, user }) => {
     await query(baseQuery, queryParams);
 
     // EMAIL SERVICE
-    const title = `New Comment raised on ${referenceNumber}`;
+    const title = `New Comment Raised on Issue ${referenceNumber}`;
     const description = `A new comment has been raised by ${username} on ${referenceNumber}`;
 
     // Fire and forget - Calling the email sender service

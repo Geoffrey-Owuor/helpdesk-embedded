@@ -95,8 +95,8 @@ export const PUT = withAuth(async ({ user, request }) => {
     await client.query("COMMIT");
 
     // EMAIL SERVICE
-    const title = `${referenceNumber} status updated to ${status}`;
-    const description = `Status of ${referenceNumber} has been updated to ${status} by ${username}`;
+    const title = `Issue ${referenceNumber} status updated to ${status}`;
+    const description = `Status of Issue ${referenceNumber} has been updated to ${status} by ${username}`;
 
     // Fire and forget - Calling the email sender service
     emailSender({ title, description, uuid });

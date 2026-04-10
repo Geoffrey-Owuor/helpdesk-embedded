@@ -116,8 +116,8 @@ export const PUT = withAuth(async ({ request, user }) => {
     await client.query("COMMIT");
 
     // EMAIL SERVICE
-    const title = `${referenceNumber} Reassigned to ${agentName}`;
-    const description = `${referenceNumber} has been reassigned to ${agentName} by ${username}`;
+    const title = `Issue ${referenceNumber} Reassigned to ${agentName}`;
+    const description = `Issue ${referenceNumber} has been reassigned to ${agentName} by ${username}`;
 
     // Fire and Forget - Calling the email sender service
     emailSender({ title, description, uuid });
