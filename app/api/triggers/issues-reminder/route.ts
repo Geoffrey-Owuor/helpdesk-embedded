@@ -10,6 +10,7 @@ import { dateFormatter } from "@/public/assets";
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface UnresolvedIssue {
+  issue_uuid: string;
   issue_reference_id: string;
   issue_submitter_name: string;
   issue_submitter_department: string;
@@ -30,6 +31,9 @@ function renderIssueRow(issue: UnresolvedIssue): string {
     (Date.now() - new Date(issue.issue_created_at).getTime()) /
       (1000 * 60 * 60 * 24),
   );
+
+  // Building the issue uuid link
+  const issueLink = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/${issue.issue_uuid}?type=issue&title=${encodeURIComponent(issue.issue_title)}&description=${encodeURIComponent(issue.issue_description)}`;
 
   return `
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="
@@ -70,6 +74,16 @@ function renderIssueRow(issue: UnresolvedIssue): string {
           <p style="margin: 0 0 20px 0; font-size: 14px; color: #4b5563; line-height: 1.6;">
             ${issue.issue_description || "<em style='color: #9ca3af;'>No description provided</em>"}
           </p>
+
+          <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 24px;">
+            <tr>
+              <td align="left" style="border-radius: 6px; background-color: #111827;">
+                <a href="${issueLink}" target="_blank" style="display: inline-block; padding: 10px 20px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 600; color: #ffffff; text-decoration: none; border-radius: 6px; text-align: center;">
+                  View Issue &rarr;
+                </a>
+              </td>
+            </tr>
+          </table>
 
           <table width="100%" cellpadding="0" cellspacing="0" border="0" style="
             background-color: #f9fafb;
@@ -265,7 +279,7 @@ export async function GET(request: NextRequest) {
 
     const unresolvedQuery = `
       SELECT 
-        issue_reference_id, issue_submitter_name, issue_submitter_department,
+        issue_uuid, issue_reference_id, issue_submitter_name, issue_submitter_department,
         issue_priority, issue_type, issue_title, issue_description, issue_status,
         issue_agent_name, issue_created_at, issue_updated_at
       FROM issues_table
