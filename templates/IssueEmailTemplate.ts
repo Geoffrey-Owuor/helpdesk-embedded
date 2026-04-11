@@ -260,7 +260,7 @@ export function generateIssueNotificationEmail(
 ): string {
   const { title, description, body, comment, remarks } = params;
 
-  const issueLink = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/${uuid}/?type=issue&title=${encodeURIComponent(body.issueTitle)}&description=${encodeURIComponent(body.issueDescription)}`;
+  const issueLink = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/${uuid}?type=issue&title=${encodeURIComponent(body.issueTitle)}&description=${encodeURIComponent(body.issueDescription)}`;
 
   const statusBadge = renderStatusBadge(body.status);
   const priorityBadge = renderPriorityBadge(body.priority);

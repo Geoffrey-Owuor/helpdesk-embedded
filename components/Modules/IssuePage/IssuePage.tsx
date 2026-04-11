@@ -1,6 +1,7 @@
 "use client";
 
 import IssueDetailsSkeleton from "@/components/Skeletons/IssueDetailsSkeleton";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import UpdateStatusModal from "./UpdateStatusModal";
 import { AssignedAgentFormatter } from "../IssuesData/AssignedAgentFormatter";
@@ -19,6 +20,8 @@ import {
   RotateCcw,
   ArrowUpDown,
   MessageSquare,
+  FileQuestion,
+  LayoutDashboard,
 } from "lucide-react";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import { dateFormatter, titleHelper } from "@/public/assets";
@@ -211,14 +214,39 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   // Case where the issueData has not been found (The object is blank)
   if (!issueData) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-neutral-500">
-        <p className="text-lg font-semibold">Record not found</p>
-        <button
-          onClick={() => router.back()}
-          className="mt-4 flex items-center gap-2 text-blue-600 hover:underline"
-        >
-          <ArrowLeft className="h-4 w-4" /> Go Back
-        </button>
+      <div className="mx-auto my-12 flex w-full max-w-md flex-col items-center justify-center rounded-2xl border-2 border-dashed border-neutral-200 bg-neutral-50/50 p-8 dark:border-neutral-800 dark:bg-neutral-900/20">
+        {/* Icon */}
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800/80">
+          <FileQuestion className="h-6 w-6 text-neutral-400 dark:text-neutral-500" />
+        </div>
+
+        {/* Title & Context */}
+        <h2 className="text-lg font-semibold text-neutral-800 dark:text-neutral-200">
+          Issue not found
+        </h2>
+        <p className="mt-2 text-center text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
+          We couldn&apos;t find the issue you are looking for. It may have been
+          deleted, the URL might be incorrect, or you might not have access.
+        </p>
+
+        {/* Actions */}
+        <div className="mt-8 flex w-full flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <button
+            onClick={() => router.back()}
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-neutral-200 bg-white px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-50 hover:text-neutral-900 sm:w-auto dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Go Back
+          </button>
+
+          <Link
+            href="/dashboard"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:w-auto dark:bg-blue-500 dark:hover:bg-blue-600"
+          >
+            <LayoutDashboard className="h-4 w-4" />
+            Dashboard
+          </Link>
+        </div>
       </div>
     );
   }
