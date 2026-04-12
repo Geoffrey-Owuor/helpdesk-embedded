@@ -222,11 +222,12 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
 
         {/* Title & Context */}
         <h2 className="text-lg font-semibold text-neutral-800 dark:text-neutral-200">
-          Issue not found
+          Issue/Page not found
         </h2>
         <p className="mt-2 text-center text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
-          We couldn&apos;t find the issue you are looking for. It may have been
-          deleted, the URL might be incorrect, or you might not have access.
+          We couldn&apos;t find the issue/page you are looking for. It may have
+          been deleted, the URL might be incorrect, or you might not have
+          access.
         </p>
 
         {/* Actions */}
