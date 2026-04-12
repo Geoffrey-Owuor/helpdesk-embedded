@@ -24,12 +24,20 @@ import {
   RotateCcw,
 } from "lucide-react";
 
-type FormData = {
+interface FormData {
   articleKey: string;
   articleTitle: string;
   articleSubtitle: string;
   articleType: string;
   articleContent: string;
+}
+
+const InitialFormState: FormData = {
+  articleKey: "",
+  articleTitle: "",
+  articleSubtitle: "",
+  articleType: "",
+  articleContent: "",
 };
 
 const ARTICLE_TYPES = [
@@ -49,13 +57,8 @@ const PostArticle = () => {
     queryFn: GetArticleKey,
   });
 
-  const [formData, setFormData] = useState<FormData>({
-    articleKey: "",
-    articleTitle: "",
-    articleSubtitle: "",
-    articleType: "",
-    articleContent: "",
-  });
+  const [formData, setFormData] = useState<FormData>(InitialFormState);
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -98,16 +101,24 @@ const PostArticle = () => {
   const handleConfirmSubmit = (e: FormEvent) => {
     e.preventDefault();
     triggerDialog({
-      title: "Post Article",
-      description: "Confirm posting of this article",
+      title: "Publish Article",
+      description: "Confirm publishing of this article",
       onConfirm: handleSubmit,
     });
   };
 
   const handleSubmit = async () => {
     hideDialog();
-    const readTime = `${Math.ceil(formData.articleContent.split(" ").length / 200)} min read`;
-    postBlogMutation({ formData, readTime });
+    const readTime = `${Math.ceil(formData.articleContent.split(/\s+/).length / 200)} min read`;
+
+    // Our trimmed formData
+    const trimmedData: FormData = {
+      ...formData,
+      articleTitle: formData.articleTitle.trim(),
+      articleSubtitle: formData.articleSubtitle.trim(),
+      articleContent: formData.articleContent.trim(),
+    };
+    postBlogMutation({ formData: trimmedData, readTime });
   };
 
   const { mutate: postBlogMutation, isPending: loading } = useMutation({
@@ -117,10 +128,14 @@ const PostArticle = () => {
     }: {
       formData: FormData;
       readTime: string;
-    }) => apiClient.post("/postarticle", { formData, readTime }),
+    }) => apiClient.post("/post-article", { formData, readTime }),
     onMutate: () => showOverlay("Adding"),
     onSuccess: (response) => {
       hideOverlay();
+
+      // Clearing the formData
+      setFormData(InitialFormState);
+
       triggerAlert("success", response.data.message);
     },
     onError: (error) => {
@@ -318,7 +333,7 @@ const PostArticle = () => {
           </p>
           <button
             type="submit"
-            disabled={loading || keyIsInvalid}
+            disabled={loading || keyIsInvalid || !formData.articleKey}
             className="flex items-center gap-2 rounded-xl bg-neutral-900 px-5 py-2.5 text-sm font-medium text-neutral-100 transition-all duration-150 hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900"
           >
             <Send className="h-4 w-4" />
