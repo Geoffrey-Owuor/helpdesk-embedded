@@ -6,6 +6,7 @@ import { useAlertStore } from "@/store/useAlertStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import apiClient from "@/lib/AxiosClient";
+import MdEditor from "./MdEditor";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import {
   ChevronDown,
@@ -40,7 +41,7 @@ const ARTICLE_TYPES = [
 const PostArticle = () => {
   // Fetch the article key from the database
   const {
-    data: VALID_KEY = "",
+    data: VALID_KEY = "fall_back_key",
     isPending: fetching,
     refetch: refetchKey,
   } = useQuery({
@@ -171,7 +172,9 @@ const PostArticle = () => {
                 value={formData.articleKey}
                 onChange={handleChange}
                 placeholder={
-                  fetching ? "loading input..." : "Enter a valid article key..."
+                  fetching
+                    ? "Loading, please wait..."
+                    : "Enter a valid article key..."
                 }
                 className="text-neutral-900 outline-none placeholder:text-neutral-300 disabled:cursor-none dark:text-neutral-100 dark:placeholder:text-neutral-600"
               />
@@ -216,7 +219,7 @@ const PostArticle = () => {
             onChange={handleChange}
             placeholder="Give your article a compelling title…"
             required
-            className="w-full bg-transparent text-base font-medium text-neutral-900 outline-none placeholder:text-neutral-300 dark:text-neutral-100 dark:placeholder:text-neutral-600"
+            className="w-full bg-transparent text-base text-neutral-900 outline-none placeholder:text-neutral-300 dark:text-neutral-100 dark:placeholder:text-neutral-600"
           />
         </div>
 
@@ -268,7 +271,7 @@ const PostArticle = () => {
 
             {/* Dropdown */}
             {dropdownOpen && (
-              <div className="animate-in fade-in slide-in-from-top-1 absolute left-0 z-20 mt-2 min-w-[180px] space-y-1 overflow-hidden rounded-xl border border-neutral-200 bg-white p-1 shadow-lg duration-150 dark:border-neutral-700 dark:bg-neutral-900">
+              <div className="animate-in fade-in slide-in-from-top-1 absolute left-0 z-20 mt-2 min-w-45 space-y-1 overflow-hidden rounded-xl border border-neutral-200 bg-white p-1 shadow-lg duration-150 dark:border-neutral-700 dark:bg-neutral-900">
                 {ARTICLE_TYPES.map(({ value, label, icon: Icon }) => (
                   <button
                     key={value}
@@ -296,15 +299,7 @@ const PostArticle = () => {
             Content
           </label>
           {/* Where we put our custom MD editor */}
-          <textarea
-            name="articleContent"
-            value={formData.articleContent}
-            onChange={handleChange}
-            placeholder="Write your article content here…"
-            required
-            rows={10}
-            className="w-full resize-none bg-transparent text-sm leading-relaxed text-neutral-900 outline-none placeholder:text-neutral-300 dark:text-neutral-100 dark:placeholder:text-neutral-600"
-          />
+          <MdEditor value={formData.articleContent} onChange={handleChange} />
 
           {/* Word count / read time */}
           {wordCount > 0 && (
@@ -317,7 +312,7 @@ const PostArticle = () => {
         </div>
 
         {/* Footer / Submit */}
-        <div className="flex items-center justify-between rounded-b-2xl bg-neutral-50 px-6 py-4 dark:bg-neutral-900/50">
+        <div className="flex items-center justify-between py-4">
           <p className="text-xs text-neutral-400 dark:text-neutral-600">
             All fields are required
           </p>

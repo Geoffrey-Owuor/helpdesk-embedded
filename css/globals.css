@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@plugin "@tailwindcss/typography";
+
 /* Variant that works with next-themes */
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
