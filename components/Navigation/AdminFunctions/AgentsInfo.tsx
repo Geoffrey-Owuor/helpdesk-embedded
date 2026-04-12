@@ -134,7 +134,7 @@ const AgentsInfo = ({
                 className="group flex flex-col gap-4 rounded-xl border border-neutral-200 bg-white p-4 transition-all hover:border-neutral-300 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900/40 dark:hover:border-neutral-700"
               >
                 {/* 1. Header: Avatar & Info */}
-                <div className="flex flex-wrap items-start justify-between">
+                <div className="flex flex-wrap items-start justify-between gap-2">
                   <div className="flex items-center gap-3">
                     <div className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-sm text-white dark:bg-white dark:text-black">
                       {abbreviateUserName(agent.name)}
@@ -145,7 +145,9 @@ const AgentsInfo = ({
                       </h5>
                       <div className="flex items-center gap-1 text-xs text-blue-500 transition-colors">
                         <Mail size={12} />
-                        <a href={`mailto:${agent.email}`}>{agent.email}</a>
+                        <span className="max-w-35 truncate sm:max-w-none">
+                          {agent.email}
+                        </span>
                       </div>
                     </div>
                   </div>
