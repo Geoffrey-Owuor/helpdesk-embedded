@@ -7,6 +7,7 @@ import {
   ShieldUser,
   ShieldPlus,
   LayoutDashboard,
+  NotebookPen,
 } from "lucide-react";
 import Link from "next/link";
 import ThemeToggle from "../Themes/ThemeToggle";
@@ -41,12 +42,12 @@ const DashboardSidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
 
-  const isHomeActive = pathname === "/dashboard";
-  const isAutomationActive = pathname === "/dashboard/automations";
-  const isSuperActive = pathname === "/dashboard/superadmin";
+  // Determine which link to highlight
+  const highlightLink = (path: string) => path === pathname;
 
   const handleRouteChange = (route: string) => {
     if (route === pathname) return;
+
     setLoadingLine(true);
   };
 
@@ -130,7 +131,7 @@ const DashboardSidebar = () => {
             href="/dashboard"
             icon={<LayoutDashboard className="h-5 w-5" />}
             label="Home"
-            isActive={isHomeActive}
+            isActive={highlightLink("/dashboard")}
             onClick={() => handleRouteChange("/dashboard")}
           />
 
@@ -146,7 +147,7 @@ const DashboardSidebar = () => {
             href="/dashboard/automations"
             icon={<Bot className="h-5 w-5" />}
             label="Automate"
-            isActive={isAutomationActive}
+            isActive={highlightLink("/dashboard/automations")}
             onClick={() => handleRouteChange("/dashboard/automations")}
           />
 
@@ -156,7 +157,7 @@ const DashboardSidebar = () => {
               href="/dashboard/superadmin"
               icon={<ShieldPlus className="h-5 w-5" />}
               label="Super"
-              isActive={isSuperActive}
+              isActive={highlightLink("/dashboard/superadmin")}
               onClick={() => handleRouteChange("/dashboard/superadmin")}
             />
           )}
@@ -169,6 +170,15 @@ const DashboardSidebar = () => {
               label="Admin"
             />
           )}
+
+          {/* Articles Page */}
+          <SidebarLink
+            href="/dashboard/articles"
+            icon={<NotebookPen className="h-5 w-5" />}
+            label="Articles"
+            isActive={highlightLink("/dashboard/articles")}
+            onClick={() => handleRouteChange("/dashboard/articles")}
+          />
 
           {/* Back */}
           <SidebarButton
