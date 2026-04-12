@@ -55,6 +55,7 @@ const PostArticle = () => {
   } = useQuery({
     queryKey: ["ArticleKeyData"],
     queryFn: GetArticleKey,
+    staleTime: 1000 * 60 * 30,
   });
 
   const [formData, setFormData] = useState<FormData>(InitialFormState);
@@ -161,7 +162,7 @@ const PostArticle = () => {
           Fill in the details below to publish your article.
         </p>
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <div
               className={`flex w-fit min-w-60 items-center gap-2 rounded-xl border bg-white px-3.5 py-2.5 text-sm transition-colors duration-150 dark:bg-neutral-900/60 ${
                 keyIsInvalid
@@ -204,7 +205,7 @@ const PostArticle = () => {
               className="inline-flex items-center gap-2 rounded-xl bg-neutral-900 px-3.5 py-2.5 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
             >
               <RotateCcw className="h-4 w-4" />
-              <span className="hidden sm:flex">Refetch Key</span>
+              <span>Refetch Key</span>
             </button>
           </div>
           {keyIsInvalid && (

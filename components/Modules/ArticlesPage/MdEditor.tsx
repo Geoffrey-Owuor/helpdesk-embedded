@@ -74,7 +74,7 @@ const MdEditor = ({ value, onChange }: MdEditorProps) => {
   };
 
   return (
-    <div className="w-full rounded-xl border border-neutral-200 shadow-sm transition-all focus:outline-none dark:border-neutral-800">
+    <div className="w-full rounded-xl border border-neutral-200 transition-all focus:outline-none dark:border-neutral-800">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-2 rounded-t-xl border-b border-neutral-200 bg-neutral-50/50 px-2 py-3 dark:border-neutral-800 dark:bg-neutral-900/50">
         {!showPreview && (

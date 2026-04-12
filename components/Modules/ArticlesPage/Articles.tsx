@@ -10,7 +10,7 @@ const Articles = () => {
   return (
     <div className="flex h-full w-full flex-col py-6 md:py-3.5">
       {/* Title Header */}
-      <div className="mb-6 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+      <div className="mb-4 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         {/* Title & Subtitle */}
         <div className="flex flex-col">
           <h1 className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-white">
@@ -24,10 +24,10 @@ const Articles = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex w-fit items-center rounded-2xl border border-neutral-200 bg-neutral-100/80 p-1 dark:border-neutral-800 dark:bg-neutral-900/80">
+        <div className="inline-flex h-fit w-fit items-center gap-1 rounded-2xl border border-neutral-200 bg-neutral-50 p-1 shadow-inner dark:border-neutral-800 dark:bg-neutral-950">
           <button
             onClick={() => setActiveTab("articles")}
-            className={`flex items-center gap-2 rounded-xl px-5 py-2 text-sm font-medium transition-all ${
+            className={`flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm font-medium transition-all ${
               activeTab === "articles"
                 ? "bg-white text-black shadow-sm dark:bg-neutral-800 dark:text-white"
                 : "text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
@@ -38,7 +38,7 @@ const Articles = () => {
           </button>
           <button
             onClick={() => setActiveTab("post")}
-            className={`flex items-center gap-2 rounded-xl px-5 py-2 text-sm font-medium transition-all ${
+            className={`flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm font-medium transition-all ${
               activeTab === "post"
                 ? "bg-white text-black shadow-sm dark:bg-neutral-800 dark:text-white"
                 : "text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
@@ -55,7 +55,7 @@ const Articles = () => {
         {activeTab === "articles" ? (
           <div className="flex h-full flex-col">
             <p className="text-neutral-500 dark:text-neutral-400">
-              Articles list and content will be displayed here...
+              User articles list and content will be displayed here...
             </p>
           </div>
         ) : (
