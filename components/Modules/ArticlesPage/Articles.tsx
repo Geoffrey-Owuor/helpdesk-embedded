@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { FileText, PenLine } from "lucide-react";
+import PostArticle from "./PostArticle";
 
 const Articles = () => {
   const [activeTab, setActiveTab] = useState<"articles" | "post">("articles");
@@ -58,11 +59,7 @@ const Articles = () => {
             </p>
           </div>
         ) : (
-          <div className="flex h-full flex-col">
-            <p className="text-neutral-500 dark:text-neutral-400">
-              The article creation and posting form will go here...
-            </p>
-          </div>
+          <PostArticle />
         )}
       </div>
     </div>
