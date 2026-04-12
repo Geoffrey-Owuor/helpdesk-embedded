@@ -152,7 +152,7 @@ const IssueTypesInfo = ({
               >
                 {/* The major card containing issue type information */}
                 <div
-                  className={`group flex justify-between rounded-xl border p-4 transition-all duration-200 ${
+                  className={`group flex flex-wrap justify-between gap-4 rounded-xl border p-4 transition-all duration-200 ${
                     activeEditId === item.issue_type
                       ? "border-blue-500 bg-blue-50/30 shadow-md dark:border-blue-500/50 dark:bg-blue-900/10"
                       : "border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-900/40 dark:hover:border-neutral-700"

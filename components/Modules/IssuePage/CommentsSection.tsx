@@ -148,7 +148,7 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
               <h3 className="mt-3 text-sm font-medium text-neutral-900 dark:text-neutral-100">
                 No comments yet
               </h3>
-              <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+              <p className="mt-1 px-2 text-sm text-neutral-500 dark:text-neutral-400">
                 Be the first to share your thoughts on this issue.
               </p>
             </div>

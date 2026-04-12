@@ -11,6 +11,7 @@ import {
   ShieldUser,
   ShieldPlus,
   LayoutDashboard,
+  NotebookPen,
 } from "lucide-react";
 import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
 import { useUser } from "@/contexts/UserContext";
@@ -154,6 +155,16 @@ const MobileSideBar = ({
                 <span>Admin Panel</span>
               </button>
             )}
+
+            {/* Articles Page */}
+            <Link
+              href="/dashboard/articles"
+              onClick={() => handleMobileRouteChange("/dashboard/articles")}
+              className="flex w-full items-center gap-2 rounded-xl p-2 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+            >
+              <NotebookPen className="h-5 w-5" />
+              <span>Articles Hub</span>
+            </Link>
           </nav>
         </aside>
       </div>

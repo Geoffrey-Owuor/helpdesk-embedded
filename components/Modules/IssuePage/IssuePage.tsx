@@ -555,7 +555,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                   Issue Summary
                 </h2>
               </div>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+              <p className="hidden text-sm text-neutral-500 sm:inline-flex dark:text-neutral-400">
                 Key details at a glance
               </p>
             </div>
