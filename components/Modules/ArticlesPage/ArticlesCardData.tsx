@@ -11,12 +11,14 @@ type ArticlesCardDataProps = {
   articles: ArticlesCardValues[];
   loading: boolean;
   refetchData: () => Promise<void>;
+  userId: string;
 };
 
 const ArticlesCardData = ({
   articles,
   loading,
   refetchData,
+  userId,
 }: ArticlesCardDataProps) => {
   // Search query states
   const [searchQuery, setSearchQuery] = useState("");
@@ -128,6 +130,7 @@ const ArticlesCardData = ({
         searchQuery={searchQuery}
         highlightText={highlightText}
         getPreviewText={getPreviewText}
+        userId={userId}
       />
 
       {/* Pagination */}

@@ -174,7 +174,7 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
   return (
     <ClientPortal>
       {/* Backdrop */}
-      <div className="custom-blur fixed inset-0 z-50 bg-black/40 transition-opacity dark:bg-black/60" />
+      <div className="custom-blur fixed inset-0 z-50 bg-black/50 transition-opacity dark:bg-black/60" />
 
       {/* Modal */}
       <div

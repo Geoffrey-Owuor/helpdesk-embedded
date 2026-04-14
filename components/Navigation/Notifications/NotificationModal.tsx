@@ -47,7 +47,7 @@ const NotificationModal = ({
 
   return (
     <ClientPortal>
-      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 transition-all dark:bg-black/70">
+      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 transition-all dark:bg-black/60">
         <div className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-neutral-200 px-6 py-4 dark:border-neutral-800">
