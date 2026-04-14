@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { FileText, PenLine } from "lucide-react";
 import PostArticle from "./PostArticle";
+import UserArticlesWrapper from "./UserArticlesWrapper";
 
 const Articles = () => {
   const [activeTab, setActiveTab] = useState<"articles" | "post">("articles");
@@ -52,15 +53,7 @@ const Articles = () => {
 
       {/* Content Area */}
       <div className="min-h-125 flex-1 rounded-2xl border border-neutral-200 p-6 shadow-[0px_2px_8px_0px_rgba(0,0,0,0.04)] dark:border-neutral-800">
-        {activeTab === "articles" ? (
-          <div className="flex h-full flex-col">
-            <p className="text-neutral-500 dark:text-neutral-400">
-              User articles list and content will be displayed here...
-            </p>
-          </div>
-        ) : (
-          <PostArticle />
-        )}
+        {activeTab === "articles" ? <UserArticlesWrapper /> : <PostArticle />}
       </div>
     </div>
   );
