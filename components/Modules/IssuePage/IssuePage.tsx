@@ -491,7 +491,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
 
         <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* --- DESCRIPTION SECTION --- */}
-          <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
+          <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-xs dark:border-neutral-800 dark:bg-neutral-950">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="flex items-center gap-2 text-lg font-semibold text-neutral-900 dark:text-white">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
@@ -518,7 +518,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           </div>
 
           {/* --- ISSUE REMARKS AREA --- */}
-          <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
+          <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-xs dark:border-neutral-800 dark:bg-neutral-950">
             <div className="mb-4 flex items-center">
               <h2 className="flex items-center gap-2 text-lg font-semibold text-neutral-900 dark:text-white">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400">
@@ -543,7 +543,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
         {/* --- BOTTOM GRID: Description summary card + Comments --- */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Summary card */}
-          <div className="flex flex-col rounded-xl border border-neutral-200 shadow-sm dark:border-neutral-800">
+          <div className="flex flex-col rounded-xl border border-neutral-200 shadow-xs dark:border-neutral-800">
             {/* Card header */}
             <div className="flex items-center justify-between border-b border-neutral-100 px-6 py-4 dark:border-neutral-800">
               <div className="inline-flex items-center gap-2">

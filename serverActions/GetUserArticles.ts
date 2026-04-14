@@ -5,6 +5,7 @@ export interface ArticlesCardValues {
   article_id: string;
   article_type: string;
   article_title: string;
+  article_subtitle: string;
   article_content: string;
   article_read_time: string;
   article_updated_at: string;
@@ -21,7 +22,7 @@ export const getUserArticles = async (
 
   const baseQuery = `
   SELECT 
-  user_id, article_id, article_type, article_title, article_content,
+  user_id, article_id, article_type, article_title, article_subtitle, article_content,
   article_read_time, article_updated_at, user_department, user_name,
   can_edit
   FROM articles WHERE user_id = $1`;
