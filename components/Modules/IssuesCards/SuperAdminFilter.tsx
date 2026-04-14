@@ -10,8 +10,8 @@ export default function SuperAdminFilter() {
     <div
       className={`inline-flex items-center gap-3 rounded-2xl border px-4 py-2 shadow-inner transition-colors duration-200 ${
         enabled
-          ? "border-neutral-300 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900"
-          : "border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900"
+          ? "border-neutral-300 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-950"
+          : "border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950"
       }`}
       title="View all submitted issues"
     >
@@ -45,7 +45,7 @@ export default function SuperAdminFilter() {
         className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-xl ring-1 transition-colors duration-300 ease-in-out focus-visible:ring-2 focus-visible:ring-neutral-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:outline-none dark:focus-visible:ring-neutral-400 dark:focus-visible:ring-offset-neutral-900 ${
           enabled
             ? "bg-neutral-800 ring-black/10 dark:bg-neutral-100 dark:ring-white/10"
-            : "bg-neutral-200 ring-black/5 dark:bg-neutral-700 dark:ring-white/5"
+            : "bg-neutral-200 ring-black/5 dark:bg-neutral-800 dark:ring-white/5"
         }`}
       >
         {/* Knob */}

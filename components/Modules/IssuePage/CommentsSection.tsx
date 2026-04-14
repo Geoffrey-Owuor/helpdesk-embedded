@@ -75,7 +75,7 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
   });
 
   return (
-    <div className="layout-scrollbar max-h-150 max-w-3xl overflow-y-auto rounded-xl border border-neutral-200 p-6 shadow-sm dark:border-neutral-800">
+    <div className="layout-scrollbar max-h-150 overflow-y-auto rounded-xl border border-neutral-200 p-6 shadow-sm dark:border-neutral-800">
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         {/* The title and total comments */}
         <div className="flex flex-col gap-2">
@@ -148,7 +148,7 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
               <h3 className="mt-3 text-sm font-medium text-neutral-900 dark:text-neutral-100">
                 No comments yet
               </h3>
-              <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+              <p className="mt-1 px-2 text-sm text-neutral-500 dark:text-neutral-400">
                 Be the first to share your thoughts on this issue.
               </p>
             </div>
@@ -169,7 +169,7 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
                   </div>
 
                   {/* Content Box - flex-1 and min-w-0 are CRITICAL for text wrapping */}
-                  <div className="min-w-0 flex-1 rounded-2xl rounded-tl-none bg-neutral-100 px-5 py-4 shadow-sm dark:bg-neutral-900">
+                  <div className="min-w-0 flex-1 rounded-2xl rounded-tl-none bg-neutral-100 px-5 py-4 shadow-sm dark:bg-neutral-900/80">
                     {/* Header: Name and Date */}
                     <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                       <div className="flex flex-wrap items-center gap-0.5 text-sm">

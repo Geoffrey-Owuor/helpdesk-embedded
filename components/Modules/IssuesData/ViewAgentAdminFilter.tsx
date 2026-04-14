@@ -40,12 +40,14 @@ const ViewAgentAdminFilter = () => {
       <div
         className={`relative flex rounded-2xl transition-opacity duration-200 ${
           superAdminFilter ? "pointer-events-none opacity-40" : ""
-        } border border-neutral-200 bg-neutral-100 p-1 shadow-inner dark:border-neutral-800 dark:bg-neutral-900`}
+        } border border-neutral-200 bg-neutral-50 p-1 shadow-inner dark:border-neutral-800 dark:bg-neutral-950`}
       >
         {/* Sliding background pill */}
         <div
-          className={`absolute top-1 bottom-1 w-[calc(50%-2px)] rounded-xl bg-white shadow-sm ring-1 ring-black/5 transition-all duration-200 ease-in-out dark:bg-neutral-700 dark:ring-white/10 ${
-            filterApplied ? "translate-x-[calc(100%-4px)]" : "translate-x-0"
+          className={`absolute top-1 bottom-1 rounded-xl bg-white shadow-sm ring-1 ring-black/5 transition-all duration-200 ease-in-out dark:bg-neutral-800 dark:ring-white/10 ${
+            filterApplied
+              ? "w-[calc(50%-1px)] translate-x-[calc(100%-6px)]"
+              : "w-[calc(50%-12px)] translate-x-0"
           }`}
         />
 
@@ -53,7 +55,7 @@ const ViewAgentAdminFilter = () => {
         <button
           onClick={handleDefaultIssues}
           disabled={!filterApplied || superAdminFilter}
-          className={`relative z-10 flex items-center justify-center gap-2 rounded-xl px-5 py-2 text-sm font-medium tracking-tight transition-colors duration-200 ${
+          className={`relative z-10 flex items-center justify-center gap-2 rounded-xl px-3 py-1.5 text-sm font-medium tracking-tight transition-colors duration-200 ${
             !filterApplied
               ? "text-neutral-900 dark:text-white"
               : "text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300"
@@ -69,7 +71,7 @@ const ViewAgentAdminFilter = () => {
         <button
           onClick={fetchAgentAdminIssues}
           disabled={filterApplied || superAdminFilter}
-          className={`relative z-10 flex items-center justify-center gap-2 rounded-xl px-5 py-2 text-sm font-medium tracking-tight transition-colors duration-200 ${
+          className={`relative z-10 flex items-center justify-center gap-2 rounded-xl px-3 py-1.5 text-sm font-medium tracking-tight transition-colors duration-200 ${
             filterApplied
               ? "text-neutral-900 dark:text-white"
               : "text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300"

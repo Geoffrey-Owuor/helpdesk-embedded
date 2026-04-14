@@ -29,18 +29,24 @@ export const emailSender = async ({
     : undefined;
 
   // Getting the issue data for the email body
-  const { issueData, emails } = await getEmailData(uuid);
+  const { issueData, emails, ccEmails, remarks } = await getEmailData(uuid);
 
   const emailParams: IssueNotificationEmailParams = {
     title: title,
     description: description,
     body: issueData,
+    remarks: remarks,
     comment: commentData,
   };
 
   // Generate the html email template
-  const emailHtml = generateIssueNotificationEmail(emailParams);
+  const emailHtml = generateIssueNotificationEmail(emailParams, uuid);
 
   //Sending the email
-  await sendEmail({ to: emails, subject: title, html: emailHtml });
+  await sendEmail({
+    to: emails,
+    cc: ccEmails,
+    subject: title,
+    html: emailHtml,
+  });
 };

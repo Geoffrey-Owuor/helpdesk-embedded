@@ -40,7 +40,7 @@ const CardViewData = ({
               `/dashboard/${issueData.issue_uuid}?type=${dynamicUrlParam}&title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`,
             );
           }}
-          className="group flex cursor-pointer flex-col justify-between rounded-xl border border-neutral-200 bg-white p-5 shadow-sm transition-all duration-200 hover:border-neutral-300 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900/50 dark:hover:border-neutral-700"
+          className="group flex cursor-pointer flex-col justify-between rounded-xl border border-neutral-200 bg-white p-5 shadow-sm transition-all duration-200 hover:border-neutral-300 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700"
         >
           {/* Header: Ref ID & Status */}
           <div className="mb-4 flex items-center justify-between gap-2">

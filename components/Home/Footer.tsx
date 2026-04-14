@@ -13,7 +13,7 @@ const footerLinks = [
 
 const Footer = () => {
   return (
-    <footer className="border-t border-neutral-100 bg-white dark:border-neutral-900 dark:bg-neutral-950">
+    <footer className="border-t border-neutral-100 dark:border-neutral-900">
       <div className="custom:px-8 mx-auto max-w-6xl px-6 py-12">
         {/* Main Grid */}
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-0">
@@ -23,7 +23,7 @@ const Footer = () => {
               <div className="relative -ml-1.5 h-8 w-8">
                 <Image
                   src={assets.issue_desk_image}
-                  alt="Issue Desk Logo"
+                  alt="IssueDesk Logo"
                   className="object-contain dark:invert"
                   loading="eager"
                   sizes="32px"

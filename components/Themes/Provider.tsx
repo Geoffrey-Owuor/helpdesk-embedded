@@ -10,6 +10,7 @@ const Provider = ({ children }: ProviderProps) => {
       enableSystem={true}
       defaultTheme="system"
       disableTransitionOnChange={true}
+      attribute="data-theme"
     >
       {children}
     </ThemeProvider>
