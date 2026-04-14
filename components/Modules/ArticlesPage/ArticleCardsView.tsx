@@ -16,7 +16,6 @@ import { dateFormatter } from "@/public/assets";
 import { ArticlesCardValues } from "@/serverActions/GetUserArticles";
 import { JSX } from "react";
 import { usePathname } from "next/navigation";
-import { useUser } from "@/contexts/UserContext";
 import ArticleTypeFormatter from "./ArticleTypeFormatter";
 
 type ArticleCardsProps = {
@@ -27,6 +26,7 @@ type ArticleCardsProps = {
     query: string,
   ) => string | (string | JSX.Element)[];
   getPreviewText: (content: string, maxLength?: number) => string;
+  userId: string;
 };
 
 const ArticleCardsView = ({
@@ -34,14 +34,13 @@ const ArticleCardsView = ({
   searchQuery,
   highlightText,
   getPreviewText,
+  userId,
 }: ArticleCardsProps) => {
   const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
 
   const pathname = usePathname();
   const baseLink =
     pathname === "/articles" ? "/articles" : "/dashboard/articles";
-
-  const { userId } = useUser();
 
   return (
     <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">

@@ -25,6 +25,7 @@ const UserArticlesWrapper = () => {
       articles={userArticles}
       loading={loading}
       refetchData={refetchData}
+      userId={userId}
     />
   );
 };
