@@ -39,7 +39,7 @@ const ResetLinkTemplate = (resetLink: string): string => {
         <table class="main" width="100%">
             <tr>
                 <td class="header">
-                   <h2 style="color: #2c3e50; margin:0;">Issue Desk</h2>
+                   <h2 style="color: #2c3e50; margin:0;">IssueDesk</h2>
                 </td>
             </tr>
 
@@ -47,7 +47,7 @@ const ResetLinkTemplate = (resetLink: string): string => {
                 <td class="content">
                     <h1>Reset your password</h1>
                     <p>Hello,</p>
-                    <p>We received a request to reset the password for your Issue Desk account. Click the button below to set a new password.</p>
+                    <p>We received a request to reset the password for your IssueDesk account. Click the button below to set a new password.</p>
                     
                     <div class="btn-container">
                         <a href="${resetLink}" class="btn">Reset Password</a>
@@ -63,7 +63,7 @@ const ResetLinkTemplate = (resetLink: string): string => {
         </table>
 
         <div class="footer">
-            <p>&copy; ${currentYear} Issue Desk. All rights reserved.</p>
+            <p>&copy; ${currentYear} IssueDesk. All rights reserved.</p>
         </div>
     </center>
 </body>

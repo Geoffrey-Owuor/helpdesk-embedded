@@ -18,9 +18,9 @@ export const PUT = withAuth(async ({ user, request }) => {
   }
 
   try {
-    const { uuid, status } = await request.json();
+    const { uuid, status, remarks } = await request.json();
 
-    if (!uuid || !status) {
+    if (!uuid || !status || !remarks) {
       return NextResponse.json(
         { message: "UUID and Status are required" },
         { status: 400 },
@@ -79,14 +79,15 @@ export const PUT = withAuth(async ({ user, request }) => {
     }
 
     // Group our params
-    const queryParams = [status, uuid];
+    const queryParams = [status, remarks, uuid];
 
     // Issue is not resolved, so we can continue
     await client.query(
       `UPDATE issues_table 
         SET issue_status = $1,
+        issue_remarks = $2,
         issue_updated_at = CURRENT_TIMESTAMP
-        WHERE issue_uuid = $2`,
+        WHERE issue_uuid = $3`,
       queryParams,
     );
 
@@ -94,8 +95,8 @@ export const PUT = withAuth(async ({ user, request }) => {
     await client.query("COMMIT");
 
     // EMAIL SERVICE
-    const title = `${referenceNumber} status updated to ${status}`;
-    const description = `Status of ${referenceNumber} has been updated to ${status} by ${username}`;
+    const title = `Issue ${referenceNumber} status updated to ${status}`;
+    const description = `Status of Issue ${referenceNumber} has been updated to ${status} by ${username}`;
 
     // Fire and forget - Calling the email sender service
     emailSender({ title, description, uuid });
@@ -109,7 +110,7 @@ export const PUT = withAuth(async ({ user, request }) => {
     await client?.query("ROLLBACK");
     console.error("Error while trying to update the status:", error);
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: "Error updating the status" },
       { status: 500 },
     );
   } finally {

@@ -129,7 +129,7 @@ const IssueTypesInfo = ({
 
           <button
             onClick={() => setShowAddIssueModal((prev) => !prev)}
-            className="mb-4 flex items-center gap-1.5 rounded-xl bg-blue-700 px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-blue-800"
+            className="mb-4 flex items-center gap-1.5 rounded-xl bg-neutral-900 px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
           >
             <BugPlay className="h-4 w-4" />
             <span>Add Issue Type</span>
@@ -152,7 +152,7 @@ const IssueTypesInfo = ({
               >
                 {/* The major card containing issue type information */}
                 <div
-                  className={`group flex justify-between rounded-xl border p-4 transition-all duration-200 ${
+                  className={`group flex flex-wrap justify-between gap-4 rounded-xl border p-4 transition-all duration-200 ${
                     activeEditId === item.issue_type
                       ? "border-blue-500 bg-blue-50/30 shadow-md dark:border-blue-500/50 dark:bg-blue-900/10"
                       : "border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-900/40 dark:hover:border-neutral-700"

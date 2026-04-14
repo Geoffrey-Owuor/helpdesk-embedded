@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, useEffect, ChangeEvent, FormEvent, FocusEvent } from "react";
+import {
+  useState,
+  useEffect,
+  ChangeEvent,
+  FormEvent,
+  FocusEvent,
+  useRef,
+} from "react";
 import Link from "next/link";
 import {
   Eye,
@@ -19,10 +26,15 @@ import { useAlertStore } from "@/store/useAlertStore";
 import { ApiHandler } from "@/utils/ApiHandler";
 import NameRulesCard from "@/components/Modules/NameRulesCard";
 import { NameValidator, NameValidationResult } from "@/utils/Validators";
+import { baseDepartments } from "@/public/assets";
 
 const CompleteRegistration = ({ email }: { email: string }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  // Drop down state
+  const [isDepartmentOpen, setIsDepartmentOpen] = useState(false);
+  const departmentRef = useRef<HTMLDivElement | null>(null);
 
   //   Name Validation States
   const [isNameFocused, setIsNameFocused] = useState(false);
@@ -58,7 +70,7 @@ const CompleteRegistration = ({ email }: { email: string }) => {
   useEffect(() => {
     // Only trigger logic if the specific param exists
     if (searchParams.get("sent") === "true") {
-      triggerAlert("success", "Your password has been reset successfully");
+      triggerAlert("success", "Your email has been verified successfully");
       // Now clean the URL
       const newUrl = window.location.pathname;
       window.history.replaceState(null, "", newUrl);
@@ -67,6 +79,19 @@ const CompleteRegistration = ({ email }: { email: string }) => {
     // This leaves the alert visible until the user manually closes it
     // or the AlertContext handles the timeout.
   }, [searchParams, triggerAlert]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        departmentRef.current &&
+        !departmentRef.current.contains(e.target as Node)
+      ) {
+        setIsDepartmentOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Handle input changes
   const handleChange = (
@@ -209,53 +234,62 @@ const CompleteRegistration = ({ email }: { email: string }) => {
             >
               Department
             </label>
-            <div className="relative">
-              {/* Left Icon (Building) */}
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-6">
-                <Building2 className="h-5 w-5 text-neutral-400" />
-              </div>
-
-              {/* Select Element */}
-              <select
-                id="department"
-                name="department"
-                value={formData.department}
-                onChange={handleChange}
-                // appearance-none removes default ugly arrow
-                // Conditional text color makes the placeholder look grey
-                className={`w-full appearance-none rounded-full border border-neutral-400 bg-white py-3 pr-12 pl-14 focus:border-neutral-600 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:focus:border-neutral-500 ${
+            <div ref={departmentRef} className="relative">
+              {/* Trigger Button */}
+              <button
+                type="button"
+                onClick={() => setIsDepartmentOpen((prev) => !prev)}
+                className={`flex w-full items-center rounded-full border border-neutral-400 bg-white py-3 pr-12 pl-14 focus:border-neutral-600 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:focus:border-neutral-500 ${
                   formData.department === ""
-                    ? "text-neutral-400" // Placeholder color
-                    : "text-neutral-900 dark:text-white" // Selected value color
+                    ? "text-neutral-400"
+                    : "text-neutral-900 dark:text-white"
                 }`}
-                required
               >
-                <option value="" disabled>
-                  Select a department
-                </option>
-                <option value="Commercial">Commercial</option>
-                <option value="IT & Projects">IT & Projects</option>
-                <option value="Finance">Finance</option>
-                <option value="HR & Admin">HR & Admin</option>
-                <option value="Directorate">Directorate</option>
-                <option value="Marketing">Marketing</option>
-                <option value="B2B">B2B</option>
-                <option value="Operations">Operations</option>
-                <option value="Modern Trade">Modern Trade</option>
-                <option value="Retail">Retail</option>
-                <option value="Engineering & HVAC">Engineering & HVAC</option>
-                <option value="Service Center">Service Center</option>
-                <option value="Internal Audit">Internal Audit</option>
-                <option value="Security">Security</option>
-              </select>
+                {/* Left Icon */}
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-6">
+                  <Building2 className="h-5 w-5 text-neutral-400" />
+                </div>
 
-              {/* Custom Right Icon (Chevron) */}
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
-                <ChevronDown className="h-4 w-4 text-neutral-400" />
-              </div>
+                <span className="flex-1 text-left">
+                  {formData.department || "Select a department"}
+                </span>
+
+                {/* Right Chevron */}
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+                  <ChevronDown
+                    className={`h-4 w-4 text-neutral-400 transition-transform duration-200 ${
+                      isDepartmentOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </div>
+              </button>
+
+              {/* Dropdown List */}
+              {isDepartmentOpen && (
+                <ul className="default-scrollbar absolute z-10 mt-2 max-h-52 w-full overflow-y-auto rounded-2xl border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900">
+                  {baseDepartments.map((dept) => (
+                    <li
+                      key={dept.value}
+                      onClick={() => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          department: dept.value,
+                        }));
+                        setIsDepartmentOpen(false);
+                      }}
+                      className={`cursor-pointer rounded-xl px-5 py-2.5 text-sm transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800 ${
+                        formData.department === dept.value
+                          ? "font-semibold text-neutral-900 dark:text-white"
+                          : "text-neutral-600 dark:text-neutral-400"
+                      }`}
+                    >
+                      {dept.option}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
-
           {/* Password Input */}
           <div>
             <label

@@ -266,7 +266,7 @@ const GroupEmailsModal = ({
   return (
     <ClientPortal>
       {/* Backdrop */}
-      <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm transition-opacity dark:bg-black/60" />
+      <div className="custom-blur fixed inset-0 z-50 bg-black/40 transition-opacity dark:bg-black/60" />
 
       {/* Modal */}
       <div
@@ -278,10 +278,10 @@ const GroupEmailsModal = ({
           <div className="flex items-center justify-between border-b border-neutral-100 px-6 py-4 dark:border-neutral-800">
             <div>
               <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
-                Group Emails
+                Departments
               </h2>
               <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
-                Manage department group email addresses
+                Manage departments info
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -319,7 +319,7 @@ const GroupEmailsModal = ({
             {isLoading ? (
               <div className="flex flex-col gap-3">
                 {[...Array(3)].map((_, i) => (
-                  <SkeletonBox key={i} className="h-18 rounded-xl" />
+                  <SkeletonBox key={i} className="h-16 rounded-xl" />
                 ))}
               </div>
             ) : groupEmails.length === 0 ? (

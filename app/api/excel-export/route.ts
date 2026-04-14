@@ -16,7 +16,7 @@ export const GET = withAuth(async ({ request, user }) => {
     issue_target_department, issue_type, issue_priority, issue_title, issue_description, 
     TO_CHAR(issue_created_at, 'YYYY-MM-DD HH24:MI:SS') AS issue_created_at, 
     TO_CHAR(issue_updated_at, 'YYYY-MM-DD HH24:MI:SS') AS issue_updated_at, 
-    issue_status,
+    issue_status, issue_remarks,
     issue_agent_name, issue_agent_email, issue_assigner_name, issue_assigner_email
     FROM issues_table
     `;

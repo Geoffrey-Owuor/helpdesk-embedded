@@ -76,7 +76,7 @@ export const PATCH = withAuth(async ({ user, request }) => {
     revalidateTag("BaseDepartments_Data", { expire: 0 });
 
     return NextResponse.json(
-      { message: "Group email record updated successfully" },
+      { message: "Department updated successfully" },
       { status: 200 },
     );
   } catch (error) {

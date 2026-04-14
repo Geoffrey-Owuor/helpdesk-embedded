@@ -37,9 +37,9 @@ export const POST = withAuth(async ({ request, user }) => {
     // construct a prepared statement
     const insertQuery = `
     INSERT INTO issues_table
-    (issue_submitter_id, issue_submitter_name, issue_submitter_email, issue_submitter_department, issue_target_department, issue_type, issue_title, issue_description, issue_agent_name)
-    VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
-    RETURNING issue_id, issue_uuid
+    (issue_submitter_id, issue_submitter_name, issue_submitter_email, issue_submitter_department, issue_target_department, issue_type, issue_title, issue_description, issue_agent_name, issue_reference_id)
+    VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, generate_issue_reference())
+    RETURNING issue_id, issue_uuid, issue_reference_id
     `;
 
     // construct the params
@@ -61,19 +61,7 @@ export const POST = withAuth(async ({ request, user }) => {
     // Get the returned id
     const resultantId = returnedId[0].issue_id;
     const resultantUuid = returnedId[0].issue_uuid;
-
-    // Craft an issue reference number
-    const issueReferenceNumber = `#ISSUE-${resultantId}`;
-
-    // Update the issues table with the reference number
-    await client.query(
-      `
-        UPDATE issues_table
-        SET issue_reference_id = $1
-        WHERE issue_id = $2
-        `,
-      [issueReferenceNumber, resultantId],
-    );
+    const issueReferenceNumber = returnedId[0].issue_reference_id;
 
     // Query to auto-assign the issue to an agent based on the target department and issue type
     //First, we fetch the necessary agent and admin info based on the issue type and target department.
@@ -130,7 +118,7 @@ export const POST = withAuth(async ({ request, user }) => {
     await client.query("COMMIT");
 
     // EMAIL SERVICE
-    const title = `New ${issueReferenceNumber} Raised By ${user.username}`;
+    const title = `New Issue ${issueReferenceNumber} Raised By ${user.username}`;
     const description = `A new issue has been raised to ${target_department} by ${user.username}`;
 
     // Fire and forget - calling the email sender service

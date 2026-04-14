@@ -1,4 +1,5 @@
 import { abbreviateUserName } from "@/public/assets";
+import { dateFormatter } from "@/public/assets";
 
 type IssueEmailStatus = string;
 type IssueEmailPriority = string;
@@ -13,6 +14,7 @@ export interface IssueEmailBody {
   referenceNo: string;
   type: string;
   agent: string;
+  date: string;
   priority: IssueEmailPriority;
   status: IssueEmailStatus;
   submitter: string;
@@ -26,6 +28,7 @@ export interface IssueNotificationEmailParams {
   description: string;
   body: IssueEmailBody;
   comment?: IssueEmailComment;
+  remarks?: string;
 }
 
 // ─── Badge Configs ────────────────────────────────────────────────────────────
@@ -68,7 +71,7 @@ const PRIORITY_STYLES: Record<
 
 // ─── Sub-renderers ────────────────────────────────────────────────────────────
 
-function renderStatusBadge(status: IssueEmailStatus): string {
+export function renderStatusBadge(status: IssueEmailStatus): string {
   const s = STATUS_STYLES[status];
   return `
         <span style="
@@ -91,7 +94,7 @@ function renderStatusBadge(status: IssueEmailStatus): string {
     `;
 }
 
-function renderPriorityBadge(priority: IssueEmailPriority): string {
+export function renderPriorityBadge(priority: IssueEmailPriority): string {
   const p = PRIORITY_STYLES[priority];
   return `
     <span style="
@@ -130,6 +133,52 @@ function renderMetaRow(label: string, value: string): string {
         vertical-align: top;
       ">${value}</td>
     </tr>`;
+}
+
+function renderRemarksSection(remarks: string): string {
+  return `
+    <!-- Remarks Section -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 24px;">
+      <tr>
+        <td>
+          <!-- Section Header -->
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 14px;">
+            <tr>
+              <td style="
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                color: #9ca3af;
+                padding-bottom: 10px;
+                border-bottom: 1px solid #e5e7eb;
+              ">Remarks</td>
+            </tr>
+          </table>
+
+          <!-- Remarks Card -->
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-left: 3px solid #f59e0b;
+            border-radius: 6px;
+          ">
+            <tr>
+              <td style="padding: 14px 18px;">
+                <p style="
+                  font-size: 13.5px;
+                  line-height: 1.65;
+                  color: #374151;
+                  margin: 0;
+                  padding: 0;
+                ">${remarks}</p>
+              </td>
+            </tr>
+          </table>
+
+        </td>
+      </tr>
+    </table>`;
 }
 
 function renderCommentSection(comment: IssueEmailComment): string {
@@ -207,12 +256,16 @@ function renderCommentSection(comment: IssueEmailComment): string {
 
 export function generateIssueNotificationEmail(
   params: IssueNotificationEmailParams,
+  uuid: string,
 ): string {
-  const { title, description, body, comment } = params;
+  const { title, description, body, comment, remarks } = params;
+
+  const issueLink = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/${uuid}?type=issue&title=${encodeURIComponent(body.issueTitle)}&description=${encodeURIComponent(body.issueDescription)}`;
 
   const statusBadge = renderStatusBadge(body.status);
   const priorityBadge = renderPriorityBadge(body.priority);
   const commentHtml = comment ? renderCommentSection(comment) : "";
+  const remarksHtml = remarks ? renderRemarksSection(remarks) : "";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -346,6 +399,7 @@ export function generateIssueNotificationEmail(
                 ${renderMetaRow("Priority", priorityBadge)}
                 ${renderMetaRow("Status", statusBadge)}
                 ${renderMetaRow("Submitter", body.submitter)}
+                ${renderMetaRow("Date Submitted", dateFormatter(body.date))}
                 ${renderMetaRow("Admin", body.admin)}
                 <tr>
                   <td colspan="2" style="
@@ -387,8 +441,31 @@ export function generateIssueNotificationEmail(
                 </tr>
               </table>
 
+
+              <!-- Optional Issue Remarks Section -->
+              ${remarksHtml}
+
               <!-- Optional Comment Section -->
               ${commentHtml}
+
+              <!-- View Issue Button -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 24px;">
+                <tr>
+                  <td align="center">
+                    <a href="${issueLink}" style="
+                      display: inline-block;
+                      background: #171717;
+                      color: #ffffff;
+                      font-size: 13.5px;
+                      font-weight: 600;
+                      text-decoration: none;
+                      padding: 12px 28px;
+                      border-radius: 6px;
+                      letter-spacing: 0.2px;
+                    ">View Issue →</a>
+                  </td>
+                </tr>
+              </table>
 
               <!-- ── FOOTER ── -->
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 36px; border-top: 1px solid #f3f4f6; padding-top: 22px;">

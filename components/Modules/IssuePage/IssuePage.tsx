@@ -1,7 +1,9 @@
 "use client";
 
 import IssueDetailsSkeleton from "@/components/Skeletons/IssueDetailsSkeleton";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import UpdateStatusModal from "./UpdateStatusModal";
 import { AssignedAgentFormatter } from "../IssuesData/AssignedAgentFormatter";
 import {
   ArrowLeft,
@@ -17,6 +19,9 @@ import {
   Check,
   RotateCcw,
   ArrowUpDown,
+  MessageSquare,
+  FileQuestion,
+  LayoutDashboard,
 } from "lucide-react";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import { dateFormatter, titleHelper } from "@/public/assets";
@@ -114,6 +119,10 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   const hideDialog = useConfirmStore((state) => state.hideDialog);
   const { role, email, department, userId, isSuper } = useUser();
 
+  // States for the update status modal
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState("");
+
   // Status to hold our selected status
   const [isOpen, setIsOpen] = useState(false);
   const [isPriorityOpen, setIsPriorityOpen] = useState(false);
@@ -125,35 +134,12 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   // call useScrollToTop hook
   useScrollToTop();
 
-  // Mutation for updating the status
-  const updateStatusMutation = useMutation({
-    mutationFn: (status: string) =>
-      apiClient.put("/update-status", { uuid, status }),
-
-    onSuccess: (response, newStatus) => {
-      queryClient.setQueryData(
-        activeQueryKey,
-        (oldData: Record<string, IssueValueTypes>[]) => {
-          if (!oldData) return oldData;
-          return oldData.map((issue: Record<string, IssueValueTypes>) =>
-            issue.issue_uuid === uuid
-              ? { ...issue, issue_status: newStatus }
-              : issue,
-          );
-        },
-      );
-
-      triggerAlert("success", response.data.message);
-    },
-
-    onError: (error) => {
-      const errorMessage = getApiErrorMessage(error);
-      triggerAlert("error", errorMessage);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: activeCardsKey });
-    },
-  });
+  // ADD:
+  const handleConfirmationDialog = (selectedValue: string) => {
+    setIsOpen(false);
+    setSelectedStatus(selectedValue);
+    setStatusModalOpen(true);
+  };
 
   // Mutation for updating the priority
   const updatePriorityMutation = useMutation({
@@ -186,25 +172,9 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
     },
   });
 
-  // handlers stay the same, hideDialog just moves here
-  const handleUpdateStatus = async (status: string) => {
-    hideDialog();
-    updateStatusMutation.mutate(status);
-  };
-
   const handleUpdatePriority = async (priority: string) => {
     hideDialog();
     updatePriorityMutation.mutate(priority);
-  };
-
-  const handleConfirmationDialog = (selectedValue: string) => {
-    setIsOpen(false);
-    // Show the dialog
-    triggerDialog({
-      title: "Update Status",
-      description: `Confirm marking of issue as ${selectedValue}.`,
-      onConfirm: () => handleUpdateStatus(selectedValue),
-    });
   };
 
   const handlePriorityConfirmation = (selectedValue: string) => {
@@ -244,20 +214,57 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   // Case where the issueData has not been found (The object is blank)
   if (!issueData) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-neutral-500">
-        <p className="text-lg font-semibold">Record not found</p>
-        <button
-          onClick={() => router.back()}
-          className="mt-4 flex items-center gap-2 text-blue-600 hover:underline"
-        >
-          <ArrowLeft className="h-4 w-4" /> Go Back
-        </button>
+      <div className="mx-auto my-12 flex w-full max-w-md flex-col items-center justify-center rounded-2xl border-2 border-dashed border-neutral-200 bg-neutral-50/50 p-8 dark:border-neutral-800 dark:bg-neutral-900/20">
+        {/* Icon */}
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800/80">
+          <FileQuestion className="h-6 w-6 text-neutral-400 dark:text-neutral-500" />
+        </div>
+
+        {/* Title & Context */}
+        <h2 className="text-lg font-semibold text-neutral-800 dark:text-neutral-200">
+          Issue/Page not found
+        </h2>
+        <p className="mt-2 text-center text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
+          We couldn&apos;t find the issue/page you are looking for. It may have
+          been deleted, the URL might be incorrect, or you might not have
+          access.
+        </p>
+
+        {/* Actions */}
+        <div className="mt-8 flex w-full flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <button
+            onClick={() => router.back()}
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-neutral-200 bg-white px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-50 hover:text-neutral-900 sm:w-auto dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Go Back
+          </button>
+
+          <Link
+            href="/dashboard"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:w-auto dark:bg-blue-500 dark:hover:bg-blue-600"
+          >
+            <LayoutDashboard className="h-4 w-4" />
+            Dashboard
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
     <>
+      {/* Update  Status Modal */}
+      {statusModalOpen && (
+        <UpdateStatusModal
+          isOpen={statusModalOpen}
+          closeModal={() => setStatusModalOpen(false)}
+          uuid={uuid}
+          selectedStatus={selectedStatus}
+          activeQueryKey={activeQueryKey}
+          activeCardsKey={activeCardsKey}
+        />
+      )}
       {/* Title and description edit modal */}
       {isEditModalOpen && (
         <TitleDescriptionModal
@@ -417,10 +424,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                         <button
                           key={option.value}
                           onClick={() => handleConfirmationDialog(option.value)}
-                          disabled={
-                            option.value === issueData.issue_status ||
-                            updateStatusMutation.isPending
-                          }
+                          disabled={option.value === issueData.issue_status}
                           className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-900"
                         >
                           {option.label}
@@ -485,35 +489,138 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           </DetailCard>
         </div>
 
-        {/* --- DESCRIPTION SECTION --- */}
-        <div className="mb-6 rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-lg font-semibold text-neutral-900 dark:text-white">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
-                <FileText className="h-4 w-4" />
-              </div>
-              Description
-            </h2>
-            {(userId === issueData.issue_submitter_id || isSuper) &&
-              issueData.issue_status !== "resolved" && (
-                <button
-                  type="button"
-                  onClick={() => setIsEditModalOpen(true)}
-                  className="group rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-white"
-                >
-                  <PenLine className="h-4 w-4" />
-                </button>
-              )}
+        <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* --- DESCRIPTION SECTION --- */}
+          <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="flex items-center gap-2 text-lg font-semibold text-neutral-900 dark:text-white">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
+                  <FileText className="h-4 w-4" />
+                </div>
+                Description
+              </h2>
+              {(userId === issueData.issue_submitter_id || isSuper) &&
+                issueData.issue_status !== "resolved" && (
+                  <button
+                    type="button"
+                    onClick={() => setIsEditModalOpen(true)}
+                    className="group rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                  >
+                    <PenLine className="h-4 w-4" />
+                  </button>
+                )}
+            </div>
+            <div className="prose prose-neutral dark:prose-invert max-w-none">
+              <p className="line-clamp-1 leading-relaxed text-neutral-600 dark:text-neutral-300">
+                {issueData.issue_description}
+              </p>
+            </div>
           </div>
-          <div className="prose prose-neutral dark:prose-invert max-w-none">
-            <p className="leading-relaxed whitespace-pre-wrap text-neutral-600 dark:text-neutral-300">
-              {issueData.issue_description}
-            </p>
+
+          {/* --- ISSUE REMARKS AREA --- */}
+          <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
+            <div className="mb-4 flex items-center">
+              <h2 className="flex items-center gap-2 text-lg font-semibold text-neutral-900 dark:text-white">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400">
+                  <MessageSquare className="h-4 w-4" />
+                </div>
+                Remarks
+              </h2>
+            </div>
+            <div className="prose prose-neutral dark:prose-invert max-w-none">
+              {issueData.issue_remarks ? (
+                <p className="line-clamp-1 leading-relaxed text-neutral-600 dark:text-neutral-300">
+                  {issueData.issue_remarks}
+                </p>
+              ) : (
+                <p className="text-neutral-400 italic dark:text-neutral-500">
+                  No remarks provided.
+                </p>
+              )}
+            </div>
           </div>
         </div>
+        {/* --- BOTTOM GRID: Description summary card + Comments --- */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Summary card */}
+          <div className="flex flex-col rounded-xl border border-neutral-200 shadow-sm dark:border-neutral-800">
+            {/* Card header */}
+            <div className="flex items-center justify-between border-b border-neutral-100 px-6 py-4 dark:border-neutral-800">
+              <div className="inline-flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800">
+                  <FileText className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
+                </div>
 
-        {/* COMMENTS SECTION */}
-        <CommentsSection uuid={uuid} />
+                <h2 className="font-semibold text-neutral-900 dark:text-white">
+                  Issue Summary
+                </h2>
+              </div>
+              <p className="hidden text-sm text-neutral-500 sm:inline-flex dark:text-neutral-400">
+                Key details at a glance
+              </p>
+            </div>
+
+            {/* Rows */}
+            <div className="flex flex-col divide-y divide-neutral-100 px-6 dark:divide-neutral-800">
+              {[
+                {
+                  label: "Status",
+                  value: (
+                    <IssueStatusFormatter status={issueData.issue_status} />
+                  ),
+                },
+                {
+                  label: "Priority",
+                  value: (
+                    <IssuePriorityFormatter
+                      priority={issueData.issue_priority}
+                    />
+                  ),
+                },
+                { label: "Assigned agent", value: issueData.issue_agent_name },
+                {
+                  label: "Department",
+                  value: issueData.issue_submitter_department,
+                },
+                {
+                  label: "Submitted by",
+                  value: issueData.issue_submitter_name,
+                },
+                {
+                  label: "Date Submitted",
+                  value: dateFormatter(issueData.issue_created_at),
+                },
+                {
+                  label: "Date Updated",
+                  value: dateFormatter(issueData.issue_updated_at),
+                },
+                {
+                  label: "Reference ID",
+                  value: (
+                    <span className="font-mono font-semibold text-blue-600 dark:text-blue-400">
+                      {issueData.issue_reference_id}
+                    </span>
+                  ),
+                },
+              ].map(({ label, value }) => (
+                <div
+                  key={label}
+                  className="flex items-center justify-between py-3"
+                >
+                  <span className="text-sm text-neutral-500 dark:text-neutral-400">
+                    {label}
+                  </span>
+                  <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
+                    {value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Comments Section */}
+          <CommentsSection uuid={uuid} />
+        </div>
       </div>
     </>
   );
