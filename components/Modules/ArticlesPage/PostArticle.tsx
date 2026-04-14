@@ -155,7 +155,7 @@ const PostArticle = () => {
   const readTime = Math.ceil(wordCount / 200);
 
   return (
-    <div className="">
+    <div>
       {/* SubText + Article Key */}
       <div className="mb-3">
         <p className="mb-3 text-sm text-neutral-500 dark:text-neutral-400">
@@ -192,7 +192,7 @@ const PostArticle = () => {
                     ? "Loading, please wait..."
                     : "Enter a valid article key..."
                 }
-                className="text-neutral-900 outline-none placeholder:text-neutral-300 disabled:cursor-none dark:text-neutral-100 dark:placeholder:text-neutral-600"
+                className="text-neutral-900 outline-none placeholder:text-neutral-300 disabled:cursor-not-allowed dark:text-neutral-100 dark:placeholder:text-neutral-600"
               />
               {keyIsValid && (
                 <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500 dark:text-green-400" />
@@ -330,7 +330,7 @@ const PostArticle = () => {
         {/* Footer / Submit */}
         <div className="flex items-center justify-between py-4">
           <p className="text-xs text-neutral-400 dark:text-neutral-600">
-            All fields are required
+            **All fields are required**
           </p>
           <button
             type="submit"
@@ -338,7 +338,7 @@ const PostArticle = () => {
             className="flex items-center gap-2 rounded-xl bg-neutral-900 px-5 py-2.5 text-sm font-medium text-neutral-100 transition-all duration-150 hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900"
           >
             <Send className="h-4 w-4" />
-            {loading ? "Publishing..." : "Publish Article"}
+            Publish Article
           </button>
         </div>
       </form>
