@@ -8,6 +8,7 @@ import {
   FormEvent,
   SetStateAction,
   useState,
+  useRef,
 } from "react";
 import {
   X,
@@ -30,6 +31,7 @@ import { useOverlayStore } from "@/store/useOverlayStore";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
+import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 
 type UserSettingsProps = {
   isUserSettingsOpen: boolean;
@@ -46,6 +48,13 @@ const UserSettings = ({
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
+
+  const modalRef = useRef<HTMLDivElement | null>(null);
+
+  // Running the useFocusTrapping hook
+  useFocusTrapping(modalRef, isUserSettingsOpen, () =>
+    setIsUserSettingsOpen(false),
+  );
 
   const [formData, setFormData] = useState({
     previousPassword: "",
@@ -153,7 +162,10 @@ const UserSettings = ({
   return (
     <ClientPortal>
       <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 transition-all dark:bg-black/60">
-        <div className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
+        <div
+          ref={modalRef}
+          className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
+        >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-neutral-200 bg-neutral-50 px-6 py-4 dark:border-neutral-800 dark:bg-neutral-900/50">
             <div>

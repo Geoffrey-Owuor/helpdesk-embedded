@@ -5,7 +5,6 @@ import remarkGfm from "remark-gfm";
 import {
   Calendar,
   Clock,
-  ArrowRight,
   UserRound,
   Search,
   Building2,
@@ -14,9 +13,10 @@ import {
 import { useLoadingStore } from "@/store/useLoadingStore";
 import { dateFormatter } from "@/public/assets";
 import { ArticlesCardValues } from "@/serverActions/GetUserArticles";
-import { JSX } from "react";
+import { JSX, useState } from "react";
 import { usePathname } from "next/navigation";
 import ArticleTypeFormatter from "./ArticleTypeFormatter";
+import ArticleEditModal from "./ArticleEditModal";
 
 type ArticleCardsProps = {
   currentArticles: ArticlesCardValues[];
@@ -38,6 +38,8 @@ const ArticleCardsView = ({
 }: ArticleCardsProps) => {
   const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
 
+  const [modalId, setModalId] = useState("");
+
   const pathname = usePathname();
   const baseLink =
     pathname === "/articles" ? "/articles" : "/dashboard/articles";
@@ -48,7 +50,7 @@ const ArticleCardsView = ({
         currentArticles.map((article) => (
           <article
             key={article.article_id}
-            className="flex flex-col rounded-xl border border-neutral-200 bg-neutral-50 p-6 transition-shadow hover:shadow-xs dark:border-neutral-800 dark:bg-neutral-900/50"
+            className="flex flex-col rounded-xl border border-neutral-200 bg-white p-6 shadow-xs transition-shadow hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700"
           >
             {/* Title */}
             <div className="flex items-center justify-between">
@@ -60,12 +62,30 @@ const ArticleCardsView = ({
               </h2>
               {/* The edit button */}
               {userId === article.user_id && article.can_edit && (
-                <button
-                  type="button"
-                  className="rounded-full p-2 hover:bg-neutral-200/50 dark:hover:bg-neutral-800"
-                >
-                  <PenLine className="h-4 w-4" />
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setModalId(article.article_id)}
+                    className="rounded-full p-2 hover:bg-neutral-200/50 dark:hover:bg-neutral-800"
+                  >
+                    <PenLine className="h-4 w-4" />
+                  </button>
+
+                  {/* Edit Modal */}
+                  {modalId === article.article_id && (
+                    <ArticleEditModal
+                      closeModal={() => setModalId("")}
+                      isModalOpen={modalId === article.article_id}
+                      articleData={{
+                        articleKey: article.article_id,
+                        articleTitle: article.article_title,
+                        articleSubtitle: article.article_subtitle,
+                        articleContent: article.article_content,
+                        articleType: article.article_type,
+                      }}
+                    />
+                  )}
+                </>
               )}
             </div>
 
@@ -107,10 +127,9 @@ const ArticleCardsView = ({
               <Link
                 href={`${baseLink}/${article.article_id}`}
                 onClick={() => setLoadingLine(true)}
-                className="inline-flex w-fit items-center gap-1.5 text-sm text-blue-500 underline-offset-4 hover:underline dark:text-blue-400"
+                className="w-fit text-sm text-blue-500 underline-offset-4 hover:underline dark:text-blue-400"
               >
-                Read more
-                <ArrowRight className="h-4 w-4" />
+                Read more...
               </Link>
             </div>
           </article>
