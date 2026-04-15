@@ -140,7 +140,7 @@ const TitleDescriptionModal = ({
         >
           {/* Header */}
           <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+            <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
               Update Title & Description
             </h2>
             <button
