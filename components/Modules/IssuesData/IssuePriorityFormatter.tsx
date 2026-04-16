@@ -36,9 +36,9 @@ const priorityColorFormatting: Record<
     icon: MoveHorizontal,
   },
   High: {
-    text: "text-orange-700 dark:text-orange-400",
-    bg: "bg-orange-50 dark:bg-orange-900/30",
-    border: "border-orange-100 dark:border-orange-950",
+    text: "text-yellow-700 dark:text-yellow-400",
+    bg: "bg-yellow-50 dark:bg-yellow-900/30",
+    border: "border-yellow-100 dark:border-yellow-950",
     icon: ArrowUp,
   },
   Critical: {
@@ -65,7 +65,7 @@ const IssuePriorityFormatter = ({
 
   return (
     <div
-      className={`inline-flex items-center rounded-full ${!showText ? "justify-center p-2" : "w-22 px-2 py-1"} border text-xs ${config.border} font-semibold ${config.bg} ${config.text} `}
+      className={`inline-flex items-center rounded-full ${!showText ? "justify-center p-1.5" : "w-22 px-2 py-1"} border text-xs ${config.border} font-semibold ${config.bg} ${config.text} `}
     >
       <Icon
         size={12}
