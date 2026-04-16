@@ -1,9 +1,9 @@
-import issue_desk_logo from "./web-app-manifest-512x512.png";
 import issue_desk_image from "./issue_desk_light.png";
+import hotpoint_black_logo from "./hotpoint_black_logo.png";
 
 export const assets = {
-  issue_desk_logo,
   issue_desk_image,
+  hotpoint_black_logo,
 };
 
 // get current year value and export it

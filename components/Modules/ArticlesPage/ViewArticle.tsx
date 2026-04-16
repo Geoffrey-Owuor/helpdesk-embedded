@@ -78,7 +78,9 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
   }
 
   return (
-    <div className={`flex flex-col px-4 py-6 ${paddingX} lg:flex-row lg:gap-6`}>
+    <div
+      className={`flex flex-col px-4 py-6 md:py-3.5 ${paddingX} lg:flex-row lg:gap-6`}
+    >
       <article className="w-full max-w-none">
         {/* Header Section */}
         <header className="mb-6">
