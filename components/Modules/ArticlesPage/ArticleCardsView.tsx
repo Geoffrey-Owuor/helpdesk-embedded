@@ -26,7 +26,7 @@ type ArticleCardsProps = {
     query: string,
   ) => string | (string | JSX.Element)[];
   getPreviewText: (content: string, maxLength?: number) => string;
-  userId: string;
+  userId?: string;
 };
 
 const ArticleCardsView = ({
@@ -125,7 +125,7 @@ const ArticleCardsView = ({
             <div className="flex items-center justify-between">
               <ArticleTypeFormatter type={article.article_type} />
               <Link
-                href={`${baseLink}/${article.article_id}`}
+                href={`${baseLink}/${article.article_id}?title=${encodeURIComponent(article.article_title)}&subtitle=${encodeURIComponent(article.article_subtitle)}`}
                 onClick={() => setLoadingLine(true)}
                 className="w-fit text-sm text-blue-500 underline-offset-4 hover:underline dark:text-blue-400"
               >

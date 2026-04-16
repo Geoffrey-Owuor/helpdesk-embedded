@@ -4,10 +4,7 @@ import Footer from "@/components/Home/Footer";
 
 const HomePage = () => {
   return (
-    <div
-      id="home-container"
-      className="layout-scrollbar h-screen overflow-y-auto bg-white dark:bg-neutral-950"
-    >
+    <div className="layout-scrollbar home-container h-screen overflow-y-auto bg-white dark:bg-neutral-950">
       <div className="mx-auto max-w-6xl 2xl:max-w-7xl">
         <HomeNavBar />
         <Hero />

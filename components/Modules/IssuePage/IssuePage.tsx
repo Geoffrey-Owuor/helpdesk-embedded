@@ -39,7 +39,6 @@ import CommentsSection from "./CommentsSection";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import IssueTypeModal from "./IssueTypeModal";
 import IssuePriorityFormatter from "../IssuesData/IssuePriorityFormatter";
-import { useSearchParams } from "next/navigation";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { fetchIssues } from "@/queries/fetchIssues";
@@ -53,12 +52,10 @@ const statusOptions = baseOptions.filter(
   (option) => option.value !== "pending",
 );
 
-export const IssuePage = ({ uuid }: { uuid: string }) => {
+export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
   // Initialize the query client
   const queryClient = useQueryClient();
 
-  const searchParams = useSearchParams();
-  const type = searchParams.get("type");
   const isAutomation = type === "automation";
 
   // 1. Grab the exact same filters from your search store to match the Query Keys
@@ -511,7 +508,10 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                 )}
             </div>
             <div className="prose prose-neutral dark:prose-invert max-w-none">
-              <p className="line-clamp-1 leading-relaxed text-neutral-600 dark:text-neutral-300">
+              <p
+                title={issueData.issue_description.toLocaleString()}
+                className="line-clamp-2 leading-relaxed text-neutral-600 dark:text-neutral-300"
+              >
                 {issueData.issue_description}
               </p>
             </div>

@@ -16,19 +16,24 @@ export interface ArticlesCardValues {
 }
 
 export const getUserArticles = async (
-  userId: string,
+  userId?: string,
 ): Promise<ArticlesCardValues[] | []> => {
-  if (!userId) return [];
+  const params = [];
 
-  const baseQuery = `
+  let baseQuery = `
   SELECT 
   user_id, article_id, article_type, article_title, article_subtitle, article_content,
   article_read_time, article_updated_at, user_department, user_name,
   can_edit
-  FROM articles WHERE user_id = $1`;
+  FROM articles`;
+
+  if (userId) {
+    baseQuery += ` WHERE user_id = $1`;
+    params.push(userId);
+  }
 
   try {
-    const userArticles = await query<ArticlesCardValues>(baseQuery, [userId]);
+    const userArticles = await query<ArticlesCardValues>(baseQuery, params);
 
     return userArticles;
   } catch (error) {
