@@ -28,7 +28,11 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
   const backToRoute = isInDashboard ? "/dashboard/articles" : "/articles";
   const paddingX = isInDashboard ? "" : "custom:px-8";
 
-  const { data: article, isPending: loading } = useQuery({
+  const {
+    data: article,
+    isPending: loading,
+    refetch: refetchArticle,
+  } = useQuery({
     queryKey: ["ArticleDataInfo", uuid],
     queryFn: async () => getArticle(uuid),
   });
@@ -84,8 +88,14 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
           </h1>
 
           {/* Article type pill */}
-          <div className="mb-3">
+          <div className="mb-3 inline-flex items-center gap-4">
             <ArticleTypeFormatter type={article.article_type} />
+            <button
+              onClick={() => refetchArticle()}
+              className="rounded-full bg-neutral-900 px-3 py-1 text-xs text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+            >
+              Refresh
+            </button>
           </div>
 
           {/* Subtitle */}

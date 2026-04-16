@@ -9,6 +9,7 @@ const footerLinks = [
   { name: "Changelog", href: "/changelog" },
   { name: "Manual", href: "/manual#user-manual" },
   { name: "Report a Bug", href: "/manual#bug-report" },
+  { name: "Knowledge Base", href: "/articles" },
 ];
 
 const Footer = () => {

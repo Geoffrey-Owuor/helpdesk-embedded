@@ -1,5 +1,6 @@
+import HomeArticlesPage from "@/components/Modules/ArticlesPage/HomeArticlesPage";
 const page = () => {
-  return <div>page</div>;
+  return <HomeArticlesPage />;
 };
 
 export default page;

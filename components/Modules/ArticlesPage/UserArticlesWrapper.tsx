@@ -17,7 +17,7 @@ const UserArticlesWrapper = () => {
   });
 
   const refetchData = async () => {
-    refetchUserArticles();
+    await refetchUserArticles();
   };
 
   return (

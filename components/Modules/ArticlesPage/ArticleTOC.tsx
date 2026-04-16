@@ -81,7 +81,7 @@ const ArticleTOC = ({ content, containerId }: ArticleTOCProps) => {
 
       if (headingElements.length === 0) return;
 
-      const offset = 50;
+      const offset = 120;
       let currentActiveId = "";
 
       for (let i = headingElements.length - 1; i >= 0; i--) {
