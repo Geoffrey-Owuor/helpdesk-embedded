@@ -91,6 +91,22 @@ export const PUT = withAuth(async ({ user, request }) => {
       queryParams,
     );
 
+    // Update date resolved when status is resolved
+    if (status === "resolved") {
+      await client.query(
+        `UPDATE issues_table SET issue_date_resolved = CURRENT_TIMESTAMP WHERE issue_uuid = $1`,
+        [uuid],
+      );
+    }
+
+    // Update date closed when status is closed
+    if (status === "closed") {
+      await client.query(
+        `UPDATE issues_table SET issue_date_closed = CURRENT_TIMESTAMP WHERE issue_uuid = $1`,
+        [uuid],
+      );
+    }
+
     // Commit the transaction
     await client.query("COMMIT");
 

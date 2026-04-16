@@ -19,7 +19,7 @@ export const GET = withAuth(async ({ user, request }) => {
     let baseQuery = `
     SELECT issue_uuid, issue_submitter_id, issue_reference_id, issue_submitter_name, issue_submitter_department,
     issue_target_department, issue_type, issue_priority, issue_title, issue_description, issue_remarks, issue_created_at, issue_updated_at, issue_status,
-    issue_agent_name, issue_agent_email
+    issue_agent_name, issue_agent_email, issue_date_resolved, issue_date_closed, issue_reopened, issue_reopened_reason
     FROM issues_table
     `;
 

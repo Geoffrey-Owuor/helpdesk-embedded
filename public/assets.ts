@@ -28,7 +28,7 @@ export const titleHelper = (value: IssueValueTypes) => {
 
 // Date formatter to format date for the ui
 export const dateFormatter = (dateString: IssueValueTypes) => {
-  if (!dateString) return "dd/mm/yy";
+  if (!dateString) return "N/A";
   const date = new Date(dateString);
 
   return date.toLocaleDateString("en-US", {

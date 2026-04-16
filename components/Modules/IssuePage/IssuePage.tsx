@@ -541,20 +541,20 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
         {/* --- BOTTOM GRID: Description summary card + Comments --- */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Summary card */}
-          <div className="flex flex-col rounded-xl border border-neutral-200 shadow-xs dark:border-neutral-800">
+          <div className="flex flex-col rounded-xl border-t-2 border-black dark:border-white">
             {/* Card header */}
-            <div className="flex items-center justify-between border-b border-neutral-100 px-6 py-4 dark:border-neutral-800">
+            <div className="flex items-center justify-between px-6 py-4">
               <div className="inline-flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800">
                   <FileText className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
                 </div>
 
                 <h2 className="font-semibold text-neutral-900 dark:text-white">
-                  Issue Summary
+                  Other Metadata
                 </h2>
               </div>
               <p className="hidden text-sm text-neutral-500 sm:inline-flex dark:text-neutral-400">
-                Key details at a glance
+                Relevant metadata
               </p>
             </div>
 
@@ -562,43 +562,28 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
             <div className="flex flex-col divide-y divide-neutral-100 px-6 dark:divide-neutral-800">
               {[
                 {
-                  label: "Status",
-                  value: (
-                    <IssueStatusFormatter status={issueData.issue_status} />
-                  ),
-                },
-                {
-                  label: "Priority",
-                  value: (
-                    <IssuePriorityFormatter
-                      priority={issueData.issue_priority}
-                    />
-                  ),
-                },
-                { label: "Assigned agent", value: issueData.issue_agent_name },
-                {
-                  label: "Department",
-                  value: issueData.issue_submitter_department,
-                },
-                {
-                  label: "Submitted by",
-                  value: issueData.issue_submitter_name,
-                },
-                {
-                  label: "Date Submitted",
-                  value: dateFormatter(issueData.issue_created_at),
-                },
-                {
                   label: "Date Updated",
                   value: dateFormatter(issueData.issue_updated_at),
                 },
                 {
-                  label: "Reference ID",
+                  label: "Date Resolved",
+                  value: dateFormatter(issueData.issue_date_resolved) ?? "N/A",
+                },
+                {
+                  label: "Date Closed",
+                  value: dateFormatter(issueData.issue_date_closed) ?? "N/A",
+                },
+                {
+                  label: "Issue Reopened",
                   value: (
-                    <span className="font-mono font-semibold text-blue-600 dark:text-blue-400">
-                      {issueData.issue_reference_id}
+                    <span className="rounded-full bg-gray-200 px-2 py-1 text-xs dark:bg-gray-800">
+                      {issueData.issue_reopened}
                     </span>
                   ),
+                },
+                {
+                  label: "Reason Reopened",
+                  value: issueData.issue_reopened_reason ?? "N/A",
                 },
               ].map(({ label, value }) => (
                 <div
@@ -608,7 +593,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                   <span className="text-sm text-neutral-500 dark:text-neutral-400">
                     {label}
                   </span>
-                  <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
+                  <span className="line-clamp-1 text-sm font-medium text-neutral-800 dark:text-neutral-200">
                     {value}
                   </span>
                 </div>
