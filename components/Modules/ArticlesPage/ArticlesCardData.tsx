@@ -118,7 +118,7 @@ const ArticlesCardData = ({
         </div>
         <button
           onClick={refetchData}
-          className="inline-flex h-fit items-center gap-2 rounded-xl bg-neutral-900 px-3 py-2 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+          className="inline-flex h-fit w-fit items-center gap-1.5 rounded-full bg-neutral-900 px-3.5 py-2 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
         >
           <RotateCcw className="h-4 w-4" />
           Refresh
