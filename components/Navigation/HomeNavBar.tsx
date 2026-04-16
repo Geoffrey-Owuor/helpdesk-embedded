@@ -4,6 +4,15 @@ import { useState, useEffect, useRef } from "react";
 import ThemeToggle from "../Themes/ThemeToggle";
 import HomePagesLogo from "../Modules/HomePagesLogo";
 
+{
+  /* Desktop Nav Links */
+}
+const navLinks = [
+  { href: "/manual", label: "Manual" },
+  { href: "/changelog", label: "Changelog" },
+  { href: "/articles", label: "Knowledge Base" },
+];
+
 const HomeNavBar = () => {
   const [scrolledUp, setScrolledUp] = useState(true); // Track if user scrolled up
   const [isScrolled, setIsScrolled] = useState(false);
@@ -50,6 +59,21 @@ const HomeNavBar = () => {
       <nav className="custom:px-8 mx-auto flex h-16 max-w-6xl items-center justify-between px-4 2xl:max-w-7xl">
         {/* App Logo */}
         <HomePagesLogo />
+
+        {/* Navbar links */}
+
+        <div className="hidden items-center gap-1 md:flex">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="rounded-full px-4 py-1.5 text-sm text-black hover:bg-gray-200 dark:text-white dark:hover:bg-neutral-800"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+
         <div className="flex items-center gap-4">
           <ThemeToggle />
           <div className="flex items-center gap-2">
