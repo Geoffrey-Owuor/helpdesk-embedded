@@ -84,7 +84,7 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar - Centered */}
-        <div className="mt-16 flex flex-col items-center gap-8 border-t border-neutral-100 pt-8 dark:border-neutral-900">
+        <div className="mt-10 flex flex-col items-center gap-8 pt-8">
           <span className="flex items-center gap-2 text-sm leading-5 text-neutral-500">
             <span> &copy; {currentYear} IssueDesk. Built by</span>
             <a

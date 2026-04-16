@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import ThemeToggle from "../Themes/ThemeToggle";
 import HomePagesLogo from "../Modules/HomePagesLogo";
-import { Files, FileText, GitCommitHorizontal } from "lucide-react";
+import { FileText, GitCommitHorizontal, Paperclip } from "lucide-react";
 
 {
   /* Desktop Nav Links */
@@ -11,7 +11,7 @@ import { Files, FileText, GitCommitHorizontal } from "lucide-react";
 const navLinks = [
   { href: "/manual", label: "Manual", icon: FileText },
   { href: "/changelog", label: "Changelog", icon: GitCommitHorizontal },
-  { href: "/articles", label: "Knowledge Base", icon: Files },
+  { href: "/articles", label: "Knowledge Base", icon: Paperclip },
 ];
 
 const HomeNavBar = () => {
