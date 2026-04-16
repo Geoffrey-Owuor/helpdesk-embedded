@@ -3,11 +3,11 @@
 import { useSearchStore } from "@/store/useSearchStore";
 import {
   Clock,
-  Activity,
   CheckCircle2,
-  XCircle,
   TrendingUp,
   RotateCw,
+  BookmarkCheck,
+  Sigma,
 } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
@@ -64,41 +64,40 @@ const IssuesCards = ({ type }: { type: string }) => {
   // We map specific colors to each status to make them distinct but cohesive
   const statItems = [
     {
-      label: "Pending",
-      count: cardCounts.pending.total,
-      breakdown: cardCounts.pending,
+      label: "Totals",
+      count: cardCounts.totals.total,
+      breakdown: cardCounts.totals,
+      icon: Sigma,
+      color: "text-indigo-600 dark:text-indigo-500",
+      bgColor: "bg-indigo-100 dark:bg-indigo-900/30",
+      borderColor: "border-indigo-200 dark:border-indigo-800/50",
+    },
+    {
+      label: "Open",
+      count: cardCounts.open.total,
+      breakdown: cardCounts.open,
       icon: Clock,
       color: "text-amber-600 dark:text-amber-500",
       bgColor: "bg-amber-100 dark:bg-amber-900/30",
-
       borderColor: "border-amber-200 dark:border-amber-800/50",
-    },
-    {
-      label: "In Progress",
-      count: cardCounts.inProgress.total,
-      breakdown: cardCounts.inProgress,
-      icon: Activity,
-      color: "text-blue-600 dark:text-blue-500",
-      bgColor: "bg-blue-100 dark:bg-blue-900/30",
-      borderColor: "border-blue-200 dark:border-blue-800/50",
     },
     {
       label: "Resolved",
       count: cardCounts.resolved.total,
       breakdown: cardCounts.resolved,
-      icon: CheckCircle2,
+      icon: BookmarkCheck,
       color: "text-emerald-600 dark:text-emerald-500",
       bgColor: "bg-emerald-100 dark:bg-emerald-900/30",
       borderColor: "border-emerald-200 dark:border-emerald-800/50",
     },
     {
-      label: "Unfeasible",
-      count: cardCounts.unfeasible.total,
-      breakdown: cardCounts.unfeasible,
-      icon: XCircle,
-      color: "text-rose-600 dark:text-rose-500",
-      bgColor: "bg-rose-100 dark:bg-rose-900/30",
-      borderColor: "border-rose-200 dark:border-rose-800/50",
+      label: "Closed",
+      count: cardCounts.closed.total,
+      breakdown: cardCounts.closed,
+      icon: CheckCircle2,
+      color: "text-blue-600 dark:text-blue-500",
+      bgColor: "bg-blue-100 dark:bg-blue-900/30",
+      borderColor: "border-blue-200 dark:border-blue-800/50",
     },
   ];
 
@@ -146,7 +145,7 @@ const IssuesCards = ({ type }: { type: string }) => {
             <div className="hidden items-center gap-2 rounded-xl bg-neutral-100 px-3 py-2 shadow-inner md:flex dark:bg-neutral-900">
               <TrendingUp className="h-4.5 w-4.5 text-neutral-700 dark:text-neutral-300" />
               <span className="text-sm font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
-                {cardCounts.totals}
+                {cardCounts.totals.total}
               </span>
             </div>
           )}

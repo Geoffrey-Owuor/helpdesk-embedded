@@ -224,7 +224,7 @@ function generateReminderEmail(
                     text-transform: uppercase; letter-spacing: 1px;
                     color: #9ca3af; padding-bottom: 12px;
                     border-bottom: 2px solid #f3f4f6;
-                  ">Pending Issues — ${department}</td>
+                  ">Open Issues — ${department}</td>
                 </tr>
               </table>
 
@@ -293,7 +293,7 @@ export async function GET(request: NextRequest) {
       groupEmailsResult.map(async ({ department, emails }) => {
         const issuesResult = await query<UnresolvedIssue>(unresolvedQuery, [
           "resolved",
-          "unfeasible",
+          "closed",
           department,
         ]);
 

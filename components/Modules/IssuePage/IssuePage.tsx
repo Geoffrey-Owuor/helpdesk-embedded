@@ -48,9 +48,7 @@ import { DEFAULT_FETCH_OPTIONS } from "@/public/assets";
 import { statusOptions as baseOptions } from "@/public/assets";
 import { priorityOptions } from "@/public/assets";
 
-const statusOptions = baseOptions.filter(
-  (option) => option.value !== "pending",
-);
+const statusOptions = baseOptions.filter((option) => option.value !== "open");
 
 export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
   // Initialize the query client
@@ -324,7 +322,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
             {((role === "admin" &&
               issueData.issue_target_department === department) ||
               isSuper) &&
-              issueData.issue_status !== "resolved" && (
+              issueData.issue_status !== "closed" && (
                 <div className="inline-flex items-center gap-2">
                   <button
                     onClick={() => setIsReassignModalOpen(true)}
@@ -388,7 +386,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
               isSuper ||
               (role === "admin" &&
                 issueData.issue_target_department === department)) &&
-              issueData.issue_status !== "resolved" && (
+              issueData.issue_status !== "closed" && (
                 <div className="relative w-fit" ref={dropdownRef}>
                   <button
                     type="button" // Prevent form submission if inside a form
@@ -473,7 +471,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           <DetailCard title="Issue Data" icon={Hash}>
             <div className="flex justify-between">
               <InfoBlock label="Issue Type" value={issueData.issue_type} />
-              {isSuper && issueData.issue_status !== "resolved" && (
+              {isSuper && issueData.issue_status !== "closed" && (
                 <IssueTypeModal
                   targetDepartment={issueData.issue_target_department}
                   uuid={uuid}
@@ -497,7 +495,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                 Description
               </h2>
               {(userId === issueData.issue_submitter_id || isSuper) &&
-                issueData.issue_status !== "resolved" && (
+                issueData.issue_status !== "closed" && (
                   <button
                     type="button"
                     onClick={() => setIsEditModalOpen(true)}

@@ -82,11 +82,10 @@ export interface PriorityBreakdown {
 }
 
 export interface DataCounts {
-  totals: number;
-  pending: PriorityBreakdown;
-  inProgress: PriorityBreakdown;
+  totals: PriorityBreakdown;
+  open: PriorityBreakdown;
   resolved: PriorityBreakdown;
-  unfeasible: PriorityBreakdown;
+  closed: PriorityBreakdown;
 }
 
 const defaultBreakdown: PriorityBreakdown = {
@@ -98,11 +97,10 @@ const defaultBreakdown: PriorityBreakdown = {
 };
 
 export const defaultCounts: DataCounts = {
-  totals: 0,
-  pending: { ...defaultBreakdown },
-  inProgress: { ...defaultBreakdown },
+  totals: { ...defaultBreakdown },
+  open: { ...defaultBreakdown },
   resolved: { ...defaultBreakdown },
-  unfeasible: { ...defaultBreakdown },
+  closed: { ...defaultBreakdown },
 };
 
 // User Count Types
@@ -149,10 +147,9 @@ export const AppVersion = "v2.0";
 
 // Status Options
 export const statusOptions = [
-  { label: "Pending", value: "pending" },
-  { label: "In Progress", value: "in progress" },
+  { label: "Open", value: "open" },
   { label: "Resolved", value: "resolved" },
-  { label: "Unfeasible", value: "unfeasible" },
+  { label: "Closed", value: "closed" },
 ];
 
 // Priority Options

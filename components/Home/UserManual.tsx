@@ -81,7 +81,7 @@ const steps = [
     icon: <LayoutDashboard className="h-5 w-5" />,
     title: "Track Your Issue on the Dashboard",
     description:
-      "After submission, your issue appears instantly in the dashboard content area. You can monitor its current status - Pending, In Progress, or Resolved - at a glance.",
+      "After submission, your issue appears instantly in the dashboard content area. You can monitor its current status - Open, Resolved, or Closed - at a glance.",
     detail: (
       <ul className="mt-3 space-y-2 text-sm text-neutral-500 dark:text-neutral-400">
         <li className="flex items-start gap-2">

@@ -33,7 +33,7 @@ export const PATCH = withAuth(async ({ user, request }) => {
     // Begin a transactiob
     await client.query("BEGIN");
 
-    // Check if issue is already marked as resolved
+    // Check if issue is already marked as closed
     const { rows } = await client.query(
       `
         SELECT issue_type, issue_reference_id, issue_status FROM issues_table WHERE issue_uuid = $1 FOR UPDATE
@@ -52,11 +52,11 @@ export const PATCH = withAuth(async ({ user, request }) => {
     const currentType = rows[0].issue_type;
     const referenceNumber = rows[0].issue_reference_id;
 
-    // Issue is already marked as resolved
-    if (currentStatus === "resolved") {
+    // Issue is already marked as closed
+    if (currentStatus === "closed") {
       await client.query("ROLLBACK");
       return NextResponse.json(
-        { message: "This issue is already marked as resolved" },
+        { message: "This issue is already marked as closed" },
         { status: 409 },
       );
     }
