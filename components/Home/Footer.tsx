@@ -21,7 +21,7 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="flex max-w-sm flex-col gap-3">
             <div className="flex items-center gap-1">
-              <div className="relative -ml-1.5 h-7 w-7">
+              <div className="relative -ml-1.5 h-6.5 w-6.5">
                 <Image
                   src={assets.hotpoint_black_logo}
                   alt="IssueDesk Logo"

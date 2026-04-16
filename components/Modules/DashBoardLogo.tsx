@@ -7,7 +7,7 @@ export const DashBoardLogo = ({
   isSideBarOpen?: boolean;
 }) => (
   <div className="relative flex items-center gap-0.5">
-    <div className="relative h-7 w-7">
+    <div className="relative h-6.5 w-6.5">
       <Image
         src={assets.hotpoint_black_logo}
         alt="IssueDesk Logo"

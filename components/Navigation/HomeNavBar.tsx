@@ -3,14 +3,15 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import ThemeToggle from "../Themes/ThemeToggle";
 import HomePagesLogo from "../Modules/HomePagesLogo";
+import { Files, FileText, GitCommitHorizontal } from "lucide-react";
 
 {
   /* Desktop Nav Links */
 }
 const navLinks = [
-  { href: "/manual", label: "Manual" },
-  { href: "/changelog", label: "Changelog" },
-  { href: "/articles", label: "Knowledge Base" },
+  { href: "/manual", label: "Manual", icon: FileText },
+  { href: "/changelog", label: "Changelog", icon: GitCommitHorizontal },
+  { href: "/articles", label: "Knowledge Base", icon: Files },
 ];
 
 const HomeNavBar = () => {
@@ -67,8 +68,9 @@ const HomeNavBar = () => {
             <Link
               key={link.href}
               href={link.href}
-              className="rounded-full px-4 py-1.5 text-sm text-black hover:bg-gray-200 dark:text-white dark:hover:bg-neutral-800"
+              className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm text-black hover:bg-gray-200 dark:text-white dark:hover:bg-neutral-800"
             >
+              <link.icon className="h-3.5 w-3.5" />
               {link.label}
             </Link>
           ))}
