@@ -79,7 +79,7 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
 
   return (
     <div
-      className={`flex flex-col px-4 py-6 md:py-3.5 ${paddingX} lg:flex-row lg:gap-6`}
+      className={`mb-8 flex flex-col px-4 py-6 md:py-3.5 ${paddingX} lg:flex-row lg:gap-6`}
     >
       <article className="w-full max-w-none">
         {/* Header Section */}
@@ -152,9 +152,6 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
             {article.article_content}
           </ReactMarkdown>
         </div>
-
-        {/* Bottom Divider */}
-        <div className="mt-12 h-px bg-linear-to-r from-transparent via-neutral-300 to-transparent sm:mt-16 dark:via-neutral-700" />
       </article>
 
       {/* Sidebar TOC — only visible on large screens */}
