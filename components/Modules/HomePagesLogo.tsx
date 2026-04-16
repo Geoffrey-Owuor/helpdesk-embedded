@@ -4,10 +4,10 @@ import Image from "next/image";
 
 const HomePagesLogo = () => {
   return (
-    <Link href="/" className="flex items-center gap-0.5">
-      <div className="relative h-8 w-8">
+    <Link href="/" className="flex items-center gap-1">
+      <div className="relative h-7 w-7">
         <Image
-          src={assets.issue_desk_image}
+          src={assets.hotpoint_black_logo}
           alt="IssueDesk Logo"
           sizes="32px"
           loading="eager"

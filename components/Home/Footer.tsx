@@ -20,10 +20,10 @@ const Footer = () => {
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-0">
           {/* Brand Column */}
           <div className="flex max-w-sm flex-col gap-3">
-            <div className="flex items-center gap-0.5">
-              <div className="relative -ml-1.5 h-8 w-8">
+            <div className="flex items-center gap-1">
+              <div className="relative -ml-1.5 h-7 w-7">
                 <Image
-                  src={assets.issue_desk_image}
+                  src={assets.hotpoint_black_logo}
                   alt="IssueDesk Logo"
                   className="object-contain dark:invert"
                   loading="eager"
