@@ -11,7 +11,7 @@ type ArticlesCardDataProps = {
   articles: ArticlesCardValues[];
   loading: boolean;
   refetchData: () => Promise<void>;
-  userId: string;
+  userId?: string;
 };
 
 const ArticlesCardData = ({

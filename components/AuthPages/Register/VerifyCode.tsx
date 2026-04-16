@@ -26,7 +26,7 @@ const VerifyCode = ({ email }: { email: string }) => {
   useEffect(() => {
     // Only trigger logic if the specific param exists
     if (searchParams.get("sent") === "true") {
-      triggerAlert("success", "Your password has been reset successfully");
+      triggerAlert("success", "Verification code sent successfully");
 
       // Now clean the URL
       const newUrl = window.location.pathname;

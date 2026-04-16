@@ -10,30 +10,36 @@ const HomeNavBar = () => {
   const lastScrollY = useRef(0);
 
   useEffect(() => {
-    const container = document.getElementById("home-container");
-    if (!container) return;
+    // Select all elements with the class "home-container"
+    const containers = document.querySelectorAll(".home-container");
 
-    const handleScroll = () => {
-      const currentScrollY = container.scrollTop;
+    if (containers.length === 0) return;
+
+    const handleScroll = (event: Event) => {
+      const target = event.target as HTMLElement; // cast to HTMLElement
+      const currentScrollY = target.scrollTop;
       setIsScrolled(currentScrollY > 0);
 
-      // 2. Safely determine scroll direction
       if (currentScrollY <= 0) {
-        // Always show the navbar when at the absolute top
         setScrolledUp(true);
       } else if (currentScrollY > lastScrollY.current) {
-        // Scrolling DOWN -> Hide the navbar
         setScrolledUp(false);
       } else if (currentScrollY < lastScrollY.current) {
-        // Scrolling UP -> Show the navbar
         setScrolledUp(true);
       }
       lastScrollY.current = currentScrollY;
     };
 
-    container.addEventListener("scroll", handleScroll);
+    // Attach listener to each container
+    containers.forEach((container) =>
+      container.addEventListener("scroll", handleScroll),
+    );
+
+    // Cleanup: remove listeners
     return () => {
-      container.removeEventListener("scroll", handleScroll);
+      containers.forEach((container) =>
+        container.removeEventListener("scroll", handleScroll),
+      );
     };
   }, []);
 
