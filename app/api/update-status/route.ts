@@ -33,7 +33,7 @@ export const PUT = withAuth(async ({ user, request }) => {
     // Begin a transaction
     await client.query("BEGIN");
 
-    //check if the issue is already marked as resolved
+    //check if the issue is already marked as closed
     const { rows } = await client.query(
       `SELECT issue_status, issue_reference_id, issue_agent_id FROM issues_table WHERE issue_uuid = $1 FOR UPDATE`,
       [uuid],
@@ -49,11 +49,11 @@ export const PUT = withAuth(async ({ user, request }) => {
     const assignedAgentId = rows[0].issue_agent_id;
     const referenceNumber = rows[0].issue_reference_id;
 
-    // Issue is already resolved
-    if (currentStatus === "resolved") {
+    // Issue is already closed
+    if (currentStatus === "closed") {
       await client.query("ROLLBACK");
       return NextResponse.json(
-        { message: "This issue is already marked as resolved" },
+        { message: "This issue is already marked as closed" },
         { status: 409 },
       );
     }
@@ -81,7 +81,7 @@ export const PUT = withAuth(async ({ user, request }) => {
     // Group our params
     const queryParams = [status, remarks, uuid];
 
-    // Issue is not resolved, so we can continue
+    // Issue is not closed, so we can continue
     await client.query(
       `UPDATE issues_table 
         SET issue_status = $1,

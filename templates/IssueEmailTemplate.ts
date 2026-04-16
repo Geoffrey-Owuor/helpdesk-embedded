@@ -37,25 +37,20 @@ const STATUS_STYLES: Record<
   IssueEmailStatus,
   { bg: string; color: string; label: string }
 > = {
-  pending: {
+  open: {
     bg: "#fef9ec",
     color: "#92680a",
-    label: "Pending",
-  },
-  "in progress": {
-    bg: "#eff6ff",
-    color: "#1d4ed8",
-    label: "In Progress",
+    label: "Open",
   },
   resolved: {
     bg: "#f0fdf4",
     color: "#166534",
     label: "Resolved",
   },
-  unfeasible: {
-    bg: "#fdf2f8",
-    color: "#86198f",
-    label: "Unfeasible",
+  closed: {
+    bg: "#eff6ff",
+    color: "#1d4ed8",
+    label: "Closed",
   },
 };
 

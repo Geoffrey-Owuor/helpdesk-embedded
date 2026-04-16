@@ -46,10 +46,9 @@ const NotificationModal = ({
 
   //circledot colors based on the issue status
   const dynamicCircleColor: Record<string | number, string> = {
-    pending: "text-amber-700 dark:text-amber-400",
-    "in progress": "text-blue-700 dark:text-blue-400",
+    open: "text-amber-700 dark:text-amber-400",
     resolved: "text-emerald-700 dark:text-emerald-400",
-    unfeasible: "text-red-700 dark:text-red-400",
+    closed: "text-blue-700 dark:text-blue-400",
   };
 
   return (

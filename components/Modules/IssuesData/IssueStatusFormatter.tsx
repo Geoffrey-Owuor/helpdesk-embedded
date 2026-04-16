@@ -1,10 +1,9 @@
 import {
   Clock,
-  Loader2,
   CheckCircle2,
-  XCircle,
   HelpCircle,
   LucideIcon,
+  BookmarkCheck,
 } from "lucide-react";
 import { IssueValueTypes } from "@/public/assets";
 
@@ -22,29 +21,23 @@ const issueColorFormatting: Record<
     border: string;
   }
 > = {
-  pending: {
+  open: {
     text: "text-amber-700 dark:text-amber-400",
     bg: "bg-amber-50 dark:bg-amber-900/30",
     border: "border-amber-200 dark:border-amber-800",
     icon: Clock,
   },
-  "in progress": {
-    text: "text-blue-700 dark:text-blue-400",
-    bg: "bg-blue-50 dark:bg-blue-900/30",
-    border: "border-blue-200 dark:border-blue-800",
-    icon: Loader2, // We can animate this icon
-  },
   resolved: {
     text: "text-emerald-700 dark:text-emerald-400",
     bg: "bg-emerald-50 dark:bg-emerald-900/30",
     border: "border-emerald-200 dark:border-emerald-800",
-    icon: CheckCircle2,
+    icon: BookmarkCheck,
   },
-  unfeasible: {
-    text: "text-red-700 dark:text-red-400",
-    bg: "bg-red-50 dark:bg-red-900/30",
-    border: "border-red-200 dark:border-red-800",
-    icon: XCircle,
+  closed: {
+    text: "text-blue-700 dark:text-blue-400",
+    bg: "bg-blue-50 dark:bg-blue-900/30",
+    border: "border-blue-200 dark:border-blue-800",
+    icon: CheckCircle2,
   },
 };
 
@@ -64,10 +57,7 @@ const IssueStatusFormatter = ({ status }: IssueStatusProps) => {
     <div
       className={`inline-flex w-22 items-center rounded-lg border px-2 py-1 text-xs font-semibold ${config.bg} ${config.text} ${config.border} `}
     >
-      <Icon
-        size={14}
-        className={`mr-1.5 ${status === "in progress" ? "animate-spin" : ""}`}
-      />
+      <Icon size={14} className="mr-1.5" />
       <span className="truncate">{status}</span>
     </div>
   );
