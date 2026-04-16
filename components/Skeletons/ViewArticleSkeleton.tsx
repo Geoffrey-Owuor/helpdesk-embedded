@@ -18,21 +18,23 @@ const TOCSidebarSkeleton = () => (
   </nav>
 );
 
-const ViewArticleSkeleton = () => {
+const ViewArticleSkeleton = ({ isInDashboard }: { isInDashboard: boolean }) => {
+  const paddingX = isInDashboard ? "" : "custom:px-8";
+
   return (
-    <div className="mx-auto flex max-w-6xl flex-col px-5 py-24 sm:px-6 lg:flex-row lg:gap-6 lg:px-8 2xl:max-w-7xl">
+    <div className={`flex flex-col px-4 py-6 ${paddingX} lg:flex-row lg:gap-6`}>
       {/* LEFT COLUMN: Main Article Content Skeleton */}
       <article className="w-full max-w-none">
         {/* Header Section */}
         <header className="mb-6">
-          {/* Article type pill */}
-          <SkeletonBox className="mb-4 h-6 w-24 bg-neutral-200 dark:bg-neutral-800" />
-
           {/* Title skeleton */}
           <div className="mb-3 space-y-3">
             <SkeletonBox className="h-9 w-full bg-neutral-200 sm:h-10 dark:bg-neutral-800" />
             <SkeletonBox className="h-9 w-3/4 bg-neutral-200 sm:h-10 dark:bg-neutral-800" />
           </div>
+
+          {/* Article type pill */}
+          <SkeletonBox className="mb-3 h-6 w-24 bg-neutral-200 dark:bg-neutral-800" />
 
           {/* Subtitle skeleton */}
           <div className="mb-5 space-y-2">

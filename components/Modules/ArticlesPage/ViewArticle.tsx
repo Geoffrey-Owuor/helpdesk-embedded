@@ -1,6 +1,5 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import ReactMarkdown, { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { UserRound, Calendar, Clock, Building2, ArrowLeft } from "lucide-react";
@@ -9,14 +8,25 @@ import ArticleTypeFormatter from "./ArticleTypeFormatter";
 import { dateFormatter } from "@/public/assets";
 import { generateSlug } from "@/utils/GenerateSlug";
 import ArticleTOC from "./ArticleTOC";
+import { usePathname } from "next/navigation";
+import { useLoadingStore } from "@/store/useLoadingStore";
 import ViewArticleSkeleton from "@/components/Skeletons/ViewArticleSkeleton";
+import Link from "next/link";
 
 type ViewArticleProps = {
   uuid: string;
 };
 
 const ViewArticle = ({ uuid }: ViewArticleProps) => {
-  const router = useRouter();
+  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
+
+  const pathname = usePathname();
+  const isInDashboard = pathname.includes("/dashboard/articles");
+
+  // Values to determine based on whether the user is in the dashboard or not
+  const containerId = isInDashboard ? "main-content" : "article-content";
+  const backToRoute = isInDashboard ? "/dashboard/articles" : "/articles";
+  const paddingX = isInDashboard ? "" : "custom:px-8";
 
   const { data: article, isPending: loading } = useQuery({
     queryKey: ["ArticleDataInfo", uuid],
@@ -29,14 +39,14 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
       const text = children?.toString() || "";
       const id = generateSlug(text);
       return (
-        <h2 id={id} style={{ scrollMarginTop: "6rem" }} {...props}>
+        <h2 id={id} style={{ scrollMarginTop: "1rem" }} {...props}>
           {children}
         </h2>
       );
     },
   };
 
-  if (loading) return <ViewArticleSkeleton />;
+  if (loading) return <ViewArticleSkeleton isInDashboard={isInDashboard} />;
 
   // Empty / not-found state
   if (!article || Object.keys(article).length === 0) {
@@ -50,32 +60,33 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
             The article you&apos;re looking for doesn&apos;t exist or has been
             removed.
           </p>
-          <button
-            onClick={() => router.back()}
+          <Link
+            href={backToRoute}
+            onClick={() => setLoadingLine(true)}
             className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-3 font-medium text-white transition-colors hover:bg-neutral-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300"
           >
             <ArrowLeft className="h-5 w-5" />
             Go Back
-          </button>
+          </Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col px-3 py-6 lg:flex-row lg:gap-6">
+    <div className={`flex flex-col px-4 py-6 ${paddingX} lg:flex-row lg:gap-6`}>
       <article className="w-full max-w-none">
         {/* Header Section */}
         <header className="mb-6">
-          {/* Article type pill */}
-          <div className="mb-4">
-            <ArticleTypeFormatter type={article.article_type} />
-          </div>
-
           {/* Title */}
           <h1 className="mb-3 text-3xl leading-tight font-bold text-neutral-900 sm:text-4xl dark:text-white">
             {article.article_title}
           </h1>
+
+          {/* Article type pill */}
+          <div className="mb-3">
+            <ArticleTypeFormatter type={article.article_type} />
+          </div>
 
           {/* Subtitle */}
           {article.article_subtitle && (
@@ -106,13 +117,14 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
               <span>{article.article_read_time}</span>
             </div>
 
-            <button
-              onClick={() => router.back()}
+            <Link
+              href={backToRoute}
+              onClick={() => setLoadingLine(true)}
               className="flex cursor-pointer items-center gap-2 transition-colors duration-200 hover:text-neutral-700 dark:hover:text-neutral-300"
             >
               <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
               <span>Go back</span>
-            </button>
+            </Link>
           </div>
         </header>
 
@@ -134,7 +146,7 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
       </article>
 
       {/* Sidebar TOC — only visible on large screens */}
-      <ArticleTOC content={article.article_content} />
+      <ArticleTOC content={article.article_content} containerId={containerId} />
     </div>
   );
 };
