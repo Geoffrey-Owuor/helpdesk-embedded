@@ -3,6 +3,11 @@ import { generateSlug } from "@/utils/GenerateSlug";
 import { useEffect, useState } from "react";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 
+type ArticleTOCProps = {
+  content: string;
+  containerId: string;
+};
+
 const ArticleTOCSkeleton = () => (
   <nav className="sticky top-12 hidden max-h-[calc(100vh-5rem)] w-70 shrink-0 flex-col overflow-y-auto rounded-xl p-4 lg:flex">
     <div className="mb-4 border-b-2 border-neutral-200 pb-2 dark:border-neutral-800">
@@ -19,7 +24,7 @@ const ArticleTOCSkeleton = () => (
   </nav>
 );
 
-const ArticleTOC = ({ content }: { content: string }) => {
+const ArticleTOC = ({ content, containerId }: ArticleTOCProps) => {
   const [headings, setHeadings] = useState<{ text: string; id: string }[]>([]);
   const [headingsLoading, setHeadingsLoading] = useState(true);
   const [activeId, setActiveId] = useState("");
@@ -60,7 +65,7 @@ const ArticleTOC = ({ content }: { content: string }) => {
 
   // Track scroll position to highlight the active heading
   useEffect(() => {
-    const container = document.getElementById("main-content");
+    const container = document.getElementById(containerId);
     if (!container) return;
 
     if (headings.length === 0) return;
@@ -76,7 +81,7 @@ const ArticleTOC = ({ content }: { content: string }) => {
 
       if (headingElements.length === 0) return;
 
-      const offset = 180;
+      const offset = 50;
       let currentActiveId = "";
 
       for (let i = headingElements.length - 1; i >= 0; i--) {
@@ -101,7 +106,7 @@ const ArticleTOC = ({ content }: { content: string }) => {
     doScrollMath();
     container.addEventListener("scroll", handleScroll, { passive: true });
     return () => container.removeEventListener("scroll", handleScroll);
-  }, [headings]);
+  }, [headings, containerId]);
 
   if (headingsLoading) return <ArticleTOCSkeleton />;
 
