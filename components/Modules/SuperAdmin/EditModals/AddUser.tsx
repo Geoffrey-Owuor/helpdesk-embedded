@@ -132,7 +132,7 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
         role: payload.role,
         user_id: Date.now().toLocaleString(), //Get a random generic id
         is_user_active: payload.status === "true",
-        created_at: new Date().toLocaleString(),
+        created_at: new Date().toISOString(),
       };
       queryClient.setQueryData(["UsersDataInfo"], (oldData: UserRecord[]) => {
         if (!oldData) return oldData;

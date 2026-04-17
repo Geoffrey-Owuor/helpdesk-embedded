@@ -162,7 +162,7 @@ const ArticleFormWrapper = ({
         {/* Word count / read time */}
         {wordCount > 0 && (
           <div className="mt-3 flex items-center gap-4 text-xs text-neutral-400 dark:text-neutral-500">
-            <span>{wordCount.toLocaleString()} words</span>
+            <span>{wordCount.toString()} words</span>
             <span className="inline-block h-1 w-1 rounded-full bg-neutral-300 dark:bg-neutral-700" />
             <span>~{readTime} min read</span>
           </div>

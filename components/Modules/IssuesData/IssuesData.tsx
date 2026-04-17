@@ -84,7 +84,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
       if (
         reference &&
         !record.issue_reference_id
-          .toLocaleString()
+          .toString()
           .toLocaleLowerCase()
           .includes(reference.toLowerCase())
       )
@@ -108,7 +108,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
       if (
         agent &&
         !record.issue_agent_name
-          .toLocaleString()
+          .toString()
           .toLocaleLowerCase()
           .includes(agent.toLocaleLowerCase())
       )
@@ -116,7 +116,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
       if (
         issueType &&
         !record.issue_type
-          .toLocaleString()
+          .toString()
           .toLocaleLowerCase()
           .includes(issueType.toLocaleLowerCase())
       )
@@ -126,7 +126,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
       if (
         submitter &&
         !record.issue_submitter_name
-          .toLocaleString()
+          .toString()
           .toLocaleLowerCase()
           .includes(submitter.toLocaleLowerCase())
       )

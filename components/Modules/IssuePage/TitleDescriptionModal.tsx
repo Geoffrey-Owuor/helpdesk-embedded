@@ -91,6 +91,7 @@ const TitleDescriptionModal = ({
                   ...issue,
                   issue_title: payload.issue_title,
                   issue_description: payload.issue_description,
+                  issue_updated_at: new Date().toISOString(),
                 }
               : issue,
           );

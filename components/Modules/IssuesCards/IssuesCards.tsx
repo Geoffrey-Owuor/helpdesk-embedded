@@ -7,7 +7,7 @@ import {
   TrendingUp,
   RotateCw,
   BookmarkCheck,
-  Sigma,
+  Tally5,
 } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
@@ -67,7 +67,7 @@ const IssuesCards = ({ type }: { type: string }) => {
       label: "Totals",
       count: cardCounts.totals.total,
       breakdown: cardCounts.totals,
-      icon: Sigma,
+      icon: Tally5,
       color: "text-indigo-600 dark:text-indigo-500",
       bgColor: "bg-indigo-100 dark:bg-indigo-900/30",
       borderColor: "border-indigo-200 dark:border-indigo-800/50",
