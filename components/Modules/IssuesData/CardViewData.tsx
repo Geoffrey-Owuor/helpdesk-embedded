@@ -51,7 +51,7 @@ const CardViewData = ({
                   setLoadingLine(true);
                 }}
                 href={`/dashboard/${issueData.issue_uuid}?type=${dynamicUrlParam}&title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`}
-                className="flex items-center gap-1.5 font-semibold text-neutral-500 transition-colors hover:text-blue-500 hover:underline dark:text-neutral-400"
+                className="flex items-center gap-1.5 text-sm font-semibold text-neutral-500 transition-colors hover:text-blue-500 hover:underline dark:text-neutral-400"
               >
                 {issueData.issue_reference_id}
               </Link>
