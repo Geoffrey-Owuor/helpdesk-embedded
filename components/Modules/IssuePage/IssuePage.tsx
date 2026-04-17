@@ -148,7 +148,11 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           if (!oldData) return oldData;
           return oldData.map((issue: Record<string, IssueValueTypes>) =>
             issue.issue_uuid === uuid
-              ? { ...issue, issue_priority: newPriority }
+              ? {
+                  ...issue,
+                  issue_priority: newPriority,
+                  issue_updated_at: new Date().toISOString(),
+                }
               : issue,
           );
         },
@@ -507,7 +511,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
             </div>
             <div className="prose prose-neutral dark:prose-invert max-w-none">
               <p
-                title={issueData.issue_description.toLocaleString()}
+                title={issueData.issue_description.toString()}
                 className="line-clamp-2 leading-relaxed text-neutral-600 dark:text-neutral-300"
               >
                 {issueData.issue_description}
@@ -576,7 +580,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                 {
                   label: "Issue Reopened",
                   value: (
-                    <span className="rounded-full bg-gray-200 px-2 py-1 text-xs dark:bg-gray-800">
+                    <span className="rounded-full bg-gray-200 px-2 py-px text-xs dark:bg-gray-800">
                       {issueData.issue_reopened}
                     </span>
                   ),

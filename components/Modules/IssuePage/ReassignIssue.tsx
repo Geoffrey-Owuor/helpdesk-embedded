@@ -97,6 +97,7 @@ const ReassignIssue = ({
                   ...issue,
                   issue_agent_name: payload.agentName,
                   issue_agent_email: payload.agentEmail,
+                  issue_updated_at: new Date().toISOString(),
                 }
               : issue,
           );

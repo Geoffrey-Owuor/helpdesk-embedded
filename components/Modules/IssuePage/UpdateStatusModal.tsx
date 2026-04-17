@@ -59,7 +59,20 @@ const UpdateStatusModal = ({
           if (!oldData) return oldData;
           return oldData.map((issue) =>
             issue.issue_uuid === uuid
-              ? { ...issue, issue_status: selectedStatus }
+              ? {
+                  ...issue,
+                  issue_status: selectedStatus,
+                  issue_remarks: remarks,
+                  issue_updated_at: new Date().toISOString(),
+                  issue_date_resolved:
+                    selectedStatus === "resolved"
+                      ? new Date().toISOString()
+                      : issue.issue_date_resolved,
+                  issue_date_closed:
+                    selectedStatus === "closed"
+                      ? new Date().toISOString()
+                      : issue.issue_date_closed,
+                }
               : issue,
           );
         },

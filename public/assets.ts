@@ -26,6 +26,13 @@ export const titleHelper = (value: IssueValueTypes) => {
   return value.toString();
 };
 
+// Handling cases where issue type is other and later other issue types that require formatting
+export const generateValueType = (value: string) => {
+  if (value.includes("Other")) return "Other Issue";
+  else if (value === "Automation") return "(RPA) Robotic Process Automation";
+  else return value;
+};
+
 // Date formatter to format date for the ui
 export const dateFormatter = (dateString: IssueValueTypes) => {
   if (!dateString) return "N/A";

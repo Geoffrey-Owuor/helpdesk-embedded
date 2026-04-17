@@ -95,7 +95,7 @@ const ArticleEditModal = ({
                 article_title: formData.articleTitle,
                 article_subtitle: formData.articleSubtitle,
                 article_type: formData.articleType,
-                article_updated_at: new Date().toLocaleDateString(),
+                article_updated_at: new Date().toISOString(),
                 article_content: formData.articleContent,
                 can_edit: false,
               };
