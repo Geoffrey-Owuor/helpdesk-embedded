@@ -29,6 +29,7 @@ export interface IssueNotificationEmailParams {
   body: IssueEmailBody;
   comment?: IssueEmailComment;
   remarks?: string;
+  reasonReopened?: string;
 }
 
 // ─── Badge Configs ────────────────────────────────────────────────────────────
@@ -130,9 +131,9 @@ function renderMetaRow(label: string, value: string): string {
     </tr>`;
 }
 
-function renderRemarksSection(remarks: string): string {
+function renderMessageSection(label: string, text: string): string {
   return `
-    <!-- Remarks Section -->
+    <!-- Message Section -->
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 24px;">
       <tr>
         <td>
@@ -147,11 +148,11 @@ function renderRemarksSection(remarks: string): string {
                 color: #9ca3af;
                 padding-bottom: 10px;
                 border-bottom: 1px solid #e5e7eb;
-              ">Remarks</td>
+              ">${label}</td>
             </tr>
           </table>
 
-          <!-- Remarks Card -->
+          <!-- Message Card -->
           <table width="100%" cellpadding="0" cellspacing="0" border="0" style="
             background: #fffbeb;
             border: 1px solid #fcd34d;
@@ -166,7 +167,7 @@ function renderRemarksSection(remarks: string): string {
                   color: #374151;
                   margin: 0;
                   padding: 0;
-                ">${remarks}</p>
+                ">${text}</p>
               </td>
             </tr>
           </table>
@@ -253,14 +254,17 @@ export function generateIssueNotificationEmail(
   params: IssueNotificationEmailParams,
   uuid: string,
 ): string {
-  const { title, description, body, comment, remarks } = params;
+  const { title, description, body, comment, remarks, reasonReopened } = params;
 
   const issueLink = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/${uuid}?type=issue&title=${encodeURIComponent(body.issueTitle)}&description=${encodeURIComponent(body.issueDescription)}`;
 
   const statusBadge = renderStatusBadge(body.status);
   const priorityBadge = renderPriorityBadge(body.priority);
   const commentHtml = comment ? renderCommentSection(comment) : "";
-  const remarksHtml = remarks ? renderRemarksSection(remarks) : "";
+  const remarksHtml = remarks ? renderMessageSection("Remarks", remarks) : "";
+  const reasonHtml = reasonReopened
+    ? renderMessageSection("Reason Reopened", reasonReopened)
+    : "";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -436,6 +440,8 @@ export function generateIssueNotificationEmail(
                 </tr>
               </table>
 
+              <!-- Optional Reason Reopened Section -->
+              ${reasonHtml}
 
               <!-- Optional Issue Remarks Section -->
               ${remarksHtml}
