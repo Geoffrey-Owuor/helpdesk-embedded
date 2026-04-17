@@ -22,6 +22,7 @@ import {
   MessageSquare,
   FileQuestion,
   LayoutDashboard,
+  UndoDot,
 } from "lucide-react";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import { dateFormatter, titleHelper } from "@/public/assets";
@@ -31,6 +32,7 @@ import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useUser } from "@/contexts/UserContext";
 import TitleDescriptionModal from "./TitleDescriptionModal";
+import ReopenIssueModal from "./ReopenIssueModal";
 import ReassignIssue from "./ReassignIssue";
 import { DetailCard } from "./HelperComponents/DetailCard";
 import { InfoBlock } from "./HelperComponents/InfoBlock";
@@ -117,6 +119,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
   // States for the update status modal
   const [statusModalOpen, setStatusModalOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [reopenModalOpen, setReopenModalOpen] = useState(false);
 
   // Status to hold our selected status
   const [isOpen, setIsOpen] = useState(false);
@@ -277,6 +280,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
         />
       )}
 
+      {/* Reassign Modal */}
       {isReassignModalOpen && (
         <ReassignIssue
           uuid={uuid}
@@ -286,6 +290,17 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           targetDepartment={issueData.issue_target_department}
           activeQueryKey={activeQueryKey}
           issueAgentEmail={issueData.issue_agent_email}
+        />
+      )}
+
+      {/* Reopen Modal */}
+      {reopenModalOpen && (
+        <ReopenIssueModal
+          uuid={uuid}
+          closeModal={() => setReopenModalOpen(false)}
+          isModalOpen={reopenModalOpen}
+          activeQueryKey={activeQueryKey}
+          activeCardsKey={activeCardsKey}
         />
       )}
       <div className="mx-auto max-w-6xl py-6 md:py-3.5">
@@ -321,6 +336,17 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
             >
               <RotateCcw className="h-4.5 w-4.5" />
             </button>
+
+            {/* Reopening an issue */}
+            {issueData.issue_status === "closed" && (
+              <button
+                onClick={() => setReopenModalOpen(true)}
+                className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3.5 py-1.5 text-sm font-medium text-green-700 transition-colors hover:bg-green-200 dark:bg-green-900/40 dark:text-green-300 dark:hover:bg-green-900/60"
+              >
+                <UndoDot className="h-3.5 w-3.5" />
+                Reopen
+              </button>
+            )}
 
             {/* Reassigning an issue and changing the issue priority */}
             {((role === "admin" &&

@@ -1,56 +1,50 @@
 "use client";
-
 import ClientPortal from "../ClientPortal";
-import { useFocusTrapping } from "@/hooks/useFocusTrapping";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useRef, useState, useEffect } from "react";
-import { X, MessageSquareText, BookmarkCheck } from "lucide-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { IssueValueTypes } from "@/public/assets";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
+import { FormEvent, useRef, useState } from "react";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
-import { IssueValueTypes } from "@/public/assets";
+import { useFocusTrapping } from "@/hooks/useFocusTrapping";
+import { BookmarkCheck, MessageSquareText, X } from "lucide-react";
 
-type UpdateStatusModalProps = {
-  isOpen: boolean;
-  closeModal: () => void;
+type ReopenIssueModalProps = {
   uuid: string;
-  selectedStatus: string;
+  closeModal: () => void;
+  isModalOpen: boolean;
   activeQueryKey: (string | boolean)[];
   activeCardsKey: (string | boolean)[];
 };
 
-const UpdateStatusModal = ({
-  isOpen,
-  closeModal,
+const ReopenIssueModal = ({
   uuid,
-  selectedStatus,
+  closeModal,
+  isModalOpen,
   activeQueryKey,
   activeCardsKey,
-}: UpdateStatusModalProps) => {
+}: ReopenIssueModalProps) => {
   const queryClient = useQueryClient();
+
   const modalRef = useRef<HTMLDivElement | null>(null);
+
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
 
-  const [remarks, setRemarks] = useState(`Issue ${selectedStatus}`);
+  useFocusTrapping(modalRef, isModalOpen, closeModal);
 
-  // Sync default value whenever the selected status changes
-  useEffect(() => {
-    setRemarks(`Issue ${selectedStatus}`);
-  }, [selectedStatus]);
+  const [reason, setReason] = useState("");
 
-  useFocusTrapping(modalRef, isOpen, closeModal);
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    reopenIssue();
+  };
 
-  const { mutate: updateStatus, isPending } = useMutation({
-    mutationFn: () =>
-      apiClient.put("/update-status", {
-        uuid,
-        status: selectedStatus,
-        remarks,
-      }),
+  const { mutate: reopenIssue, isPending } = useMutation({
+    mutationFn: () => apiClient.put("/reopen-issue", { uuid, reason }),
     onMutate: () => showOverlay("Updating"),
     onSuccess: (response) => {
       queryClient.setQueryData(
@@ -61,17 +55,11 @@ const UpdateStatusModal = ({
             issue.issue_uuid === uuid
               ? {
                   ...issue,
-                  issue_status: selectedStatus,
-                  issue_remarks: remarks,
                   issue_updated_at: new Date().toISOString(),
-                  issue_date_resolved:
-                    selectedStatus === "resolved"
-                      ? new Date().toISOString()
-                      : issue.issue_date_resolved,
-                  issue_date_closed:
-                    selectedStatus === "closed"
-                      ? new Date().toISOString()
-                      : issue.issue_date_closed,
+                  issue_created_at: new Date().toISOString(),
+                  issue_reopened_reason: reason,
+                  issue_reopened: "Yes",
+                  issue_status: "open",
                 }
               : issue,
           );
@@ -90,12 +78,7 @@ const UpdateStatusModal = ({
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    updateStatus();
-  };
-
-  if (!isOpen) return null;
+  if (!isModalOpen) return null;
 
   return (
     <ClientPortal>
@@ -112,10 +95,10 @@ const UpdateStatusModal = ({
           <div className="flex items-center justify-between border-b border-neutral-100 px-6 py-4 dark:border-neutral-800">
             <div>
               <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
-                Update Status
+                Reopen Issue
               </h2>
               <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
-                Add optional remarks before confirming
+                Reopen a closed issue for some reason
               </p>
             </div>
             <button
@@ -135,28 +118,28 @@ const UpdateStatusModal = ({
             <div className="flex flex-col gap-1.5">
               <span className="flex items-center gap-1.5 text-sm font-medium text-neutral-700 dark:text-neutral-300">
                 <BookmarkCheck className="h-4 w-4 shrink-0 text-neutral-400" />
-                Selected Status
+                Status
               </span>
               <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-neutral-50 px-3.5 py-2.5 dark:border-neutral-800 dark:bg-neutral-900/30">
-                <IssueStatusFormatter status={selectedStatus} />
+                <IssueStatusFormatter status="open" />
               </div>
             </div>
 
-            {/* Remarks textarea */}
+            {/* Reason Text Area */}
             <div className="flex flex-col gap-1.5">
               <label
-                htmlFor="remarks"
+                htmlFor="reason"
                 className="flex items-center gap-1.5 text-sm font-medium text-neutral-700 dark:text-neutral-300"
               >
                 <MessageSquareText className="h-3.5 w-3.5 text-neutral-400" />
-                Agent Remarks
+                Reopen Reason
               </label>
               <textarea
-                id="remarks"
+                id="reason"
                 rows={4}
-                value={remarks}
-                onChange={(e) => setRemarks(e.target.value)}
-                placeholder="Add a remark..."
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                placeholder="Add a reason for reopening this issue..."
                 required
                 className="w-full resize-none rounded-xl border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900 shadow-sm transition-all duration-150 placeholder:text-neutral-400 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
               />
@@ -173,10 +156,10 @@ const UpdateStatusModal = ({
               </button>
               <button
                 type="submit"
-                disabled={isPending || !remarks.trim()}
+                disabled={isPending || !reason.trim()}
                 className="rounded-xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-neutral-700 focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100 dark:focus:ring-white dark:focus:ring-offset-neutral-950"
               >
-                {isPending ? "Updating…" : "Update Status"}
+                {isPending ? "Reopening…" : "Reopen Issue"}
               </button>
             </div>
           </form>
@@ -186,4 +169,4 @@ const UpdateStatusModal = ({
   );
 };
 
-export default UpdateStatusModal;
+export default ReopenIssueModal;
