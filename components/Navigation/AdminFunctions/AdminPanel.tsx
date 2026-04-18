@@ -39,7 +39,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   } = useQuery({
     queryKey: ["AgentInfo", department],
     queryFn: () => fetchedIssueAgents(department),
-    enabled: showAdminPanel && !!department,
+    enabled: !!department,
   });
 
   // Refetch agents and issue types data
