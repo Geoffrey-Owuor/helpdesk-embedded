@@ -82,7 +82,7 @@ const OptionsDropDown = ({
             {value
               ? generateValueType(value)
               : dropDownType === "department"
-                ? "Direct this issue to..."
+                ? "Select a department..."
                 : "Select an issue type..."}
           </span>
         </div>
