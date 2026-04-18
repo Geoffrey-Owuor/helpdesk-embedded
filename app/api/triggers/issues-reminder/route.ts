@@ -315,12 +315,9 @@ export async function GET(request: NextRequest) {
       r.status === "fulfilled" ? r.value : { error: r.reason?.message },
     );
 
-    return NextResponse.json({ success: true, summary });
+    return NextResponse.json({ success: true, summary }, { status: 200 });
   } catch (error) {
     console.error("[reminder-cron] Fatal error:", error);
-    return NextResponse.json(
-      { success: false, error: "Internal server error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ success: false, error: error }, { status: 500 });
   }
 }
