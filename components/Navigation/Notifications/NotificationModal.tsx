@@ -5,7 +5,8 @@ import ClientPortal from "@/components/Modules/ClientPortal";
 import { dateFormatter } from "@/public/assets";
 import { IssueValueTypes } from "@/public/assets";
 import { ChangelogItem } from "./Notifications";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useRef } from "react";
+import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import { ChangelogTypePill } from "@/components/Home/ChangeLog";
 
 export type RouteChangeProps = {
@@ -16,6 +17,7 @@ export type RouteChangeProps = {
 
 type NotificationModalProps = {
   closeModal: () => void;
+  isModalOpen: boolean;
   isClosing: boolean;
   handleRouteChange: ({ uuid, title, description }: RouteChangeProps) => void;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
@@ -26,6 +28,7 @@ type NotificationModalProps = {
 
 const NotificationModal = ({
   closeModal,
+  isModalOpen,
   isClosing,
   handleRouteChange,
   setIsModalOpen,
@@ -37,18 +40,24 @@ const NotificationModal = ({
   const hasChangelogs = changelogs.length > 0;
   const isEmpty = !hasIssues && !hasChangelogs;
 
+  const modalRef = useRef<HTMLDivElement | null>(null);
+
+  useFocusTrapping(modalRef, isModalOpen, () => setIsModalOpen(false));
+
   //circledot colors based on the issue status
   const dynamicCircleColor: Record<string | number, string> = {
-    pending: "text-amber-700 dark:text-amber-400",
-    "in progress": "text-blue-700 dark:text-blue-400",
+    open: "text-amber-700 dark:text-amber-400",
     resolved: "text-emerald-700 dark:text-emerald-400",
-    unfeasible: "text-red-700 dark:text-red-400",
+    closed: "text-blue-700 dark:text-blue-400",
   };
 
   return (
     <ClientPortal>
-      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 transition-all dark:bg-black/70">
-        <div className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
+      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 transition-all dark:bg-black/60">
+        <div
+          ref={modalRef}
+          className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
+        >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-neutral-200 px-6 py-4 dark:border-neutral-800">
             <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">

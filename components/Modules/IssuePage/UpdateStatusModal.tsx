@@ -59,7 +59,20 @@ const UpdateStatusModal = ({
           if (!oldData) return oldData;
           return oldData.map((issue) =>
             issue.issue_uuid === uuid
-              ? { ...issue, issue_status: selectedStatus }
+              ? {
+                  ...issue,
+                  issue_status: selectedStatus,
+                  issue_remarks: remarks,
+                  issue_updated_at: new Date().toISOString(),
+                  issue_date_resolved:
+                    selectedStatus === "resolved"
+                      ? new Date().toISOString()
+                      : issue.issue_date_resolved,
+                  issue_date_closed:
+                    selectedStatus === "closed"
+                      ? new Date().toISOString()
+                      : issue.issue_date_closed,
+                }
               : issue,
           );
         },
@@ -87,7 +100,7 @@ const UpdateStatusModal = ({
   return (
     <ClientPortal>
       {/* Backdrop */}
-      <div className="custom-blur fixed inset-0 z-50 bg-black/40 transition-opacity dark:bg-black/60" />
+      <div className="custom-blur fixed inset-0 z-50 bg-black/50 transition-opacity dark:bg-black/60" />
 
       {/* Modal */}
       <div
@@ -144,6 +157,7 @@ const UpdateStatusModal = ({
                 value={remarks}
                 onChange={(e) => setRemarks(e.target.value)}
                 placeholder="Add a remark..."
+                required
                 className="w-full resize-none rounded-xl border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900 shadow-sm transition-all duration-150 placeholder:text-neutral-400 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
               />
             </div>

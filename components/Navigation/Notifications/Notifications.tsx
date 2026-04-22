@@ -121,6 +121,7 @@ const Notifications = () => {
           changelogs={notificationData.changelogs}
           issues={filteredIssues}
           setIsModalOpen={setIsModalOpen}
+          isModalOpen={isModalOpen}
           handleRouteChange={handleRouteChange}
           count={count}
           isClosing={closing}

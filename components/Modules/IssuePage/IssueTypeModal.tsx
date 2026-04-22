@@ -7,6 +7,7 @@ import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { IssueValueTypes } from "@/public/assets";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useAlertStore } from "@/store/useAlertStore";
+import { generateValueType } from "@/public/assets";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
 type IssueTypeModalProps = {
@@ -63,7 +64,13 @@ const IssueTypeModal = ({
         (oldData: Record<string, IssueValueTypes>[]) => {
           if (!oldData) return oldData;
           return oldData.map((issue: Record<string, IssueValueTypes>) =>
-            issue.issue_uuid === uuid ? { ...issue, issue_type: value } : issue,
+            issue.issue_uuid === uuid
+              ? {
+                  ...issue,
+                  issue_type: value,
+                  issue_updated_at: new Date().toISOString(),
+                }
+              : issue,
           );
         },
       );
@@ -136,7 +143,12 @@ const IssueTypeModal = ({
                 disabled={currentType === option.value || isUpdating}
                 className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-800"
               >
-                <span>{option.option}</span>
+                <span
+                  title={generateValueType(option.option)}
+                  className="max-w-35 truncate"
+                >
+                  {generateValueType(option.option)}
+                </span>
                 {currentType === option.value && (
                   <Check className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 )}

@@ -224,7 +224,7 @@ function generateReminderEmail(
                     text-transform: uppercase; letter-spacing: 1px;
                     color: #9ca3af; padding-bottom: 12px;
                     border-bottom: 2px solid #f3f4f6;
-                  ">Pending Issues — ${department}</td>
+                  ">Open Issues — ${department}</td>
                 </tr>
               </table>
 
@@ -293,7 +293,7 @@ export async function GET(request: NextRequest) {
       groupEmailsResult.map(async ({ department, emails }) => {
         const issuesResult = await query<UnresolvedIssue>(unresolvedQuery, [
           "resolved",
-          "unfeasible",
+          "closed",
           department,
         ]);
 
@@ -315,12 +315,9 @@ export async function GET(request: NextRequest) {
       r.status === "fulfilled" ? r.value : { error: r.reason?.message },
     );
 
-    return NextResponse.json({ success: true, summary });
+    return NextResponse.json({ success: true, summary }, { status: 200 });
   } catch (error) {
     console.error("[reminder-cron] Fatal error:", error);
-    return NextResponse.json(
-      { success: false, error: "Internal server error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ success: false, error: error }, { status: 500 });
   }
 }

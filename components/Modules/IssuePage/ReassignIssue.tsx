@@ -97,6 +97,7 @@ const ReassignIssue = ({
                   ...issue,
                   issue_agent_name: payload.agentName,
                   issue_agent_email: payload.agentEmail,
+                  issue_updated_at: new Date().toISOString(),
                 }
               : issue,
           );
@@ -147,7 +148,7 @@ const ReassignIssue = ({
   return (
     <ClientPortal>
       {/* Backdrop */}
-      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 dark:bg-black/60">
+      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 dark:bg-black/60">
         {/* Modal Container*/}
         <div
           ref={modalRef}

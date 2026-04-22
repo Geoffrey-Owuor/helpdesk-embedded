@@ -6,7 +6,7 @@ IssueDesk is a lightweight, centralized issue-tracking application for teams to 
 
 - Centralized dashboard for user-reported issues
 - Assign issues to team members and track ownership
-- Issue status workflow (Open, In Progress, Resolved)
+- Issue status workflow (Open,Resolved, Closed)
 - Modern React UI with Tailwind CSS and `lucide-react` icons
 - Server routes (API) for issues, comments, authentication, and automations
 

@@ -9,6 +9,7 @@ const footerLinks = [
   { name: "Changelog", href: "/changelog" },
   { name: "Manual", href: "/manual#user-manual" },
   { name: "Report a Bug", href: "/manual#bug-report" },
+  { name: "Knowledge Base", href: "/articles" },
 ];
 
 const Footer = () => {
@@ -19,10 +20,10 @@ const Footer = () => {
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-0">
           {/* Brand Column */}
           <div className="flex max-w-sm flex-col gap-3">
-            <div className="flex items-center gap-0.5">
-              <div className="relative -ml-1.5 h-8 w-8">
+            <div className="flex items-center gap-1">
+              <div className="relative -ml-1.5 h-6.5 w-6.5">
                 <Image
-                  src={assets.issue_desk_image}
+                  src={assets.hotpoint_black_logo}
                   alt="IssueDesk Logo"
                   className="object-contain dark:invert"
                   loading="eager"
@@ -83,7 +84,7 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar - Centered */}
-        <div className="mt-16 flex flex-col items-center gap-8 border-t border-neutral-100 pt-8 dark:border-neutral-900">
+        <div className="mt-10 flex flex-col items-center gap-8 pt-8">
           <span className="flex items-center gap-2 text-sm leading-5 text-neutral-500">
             <span> &copy; {currentYear} IssueDesk. Built by</span>
             <a

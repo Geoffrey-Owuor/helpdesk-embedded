@@ -13,21 +13,20 @@ export const GET = withAuth(async ({ request }) => {
   // We will append the department filter only if it exists.
   let sql = `
     SELECT 
-      COUNT(*) AS totals,
-      
-      -- Pending Counts
-      COUNT(*) FILTER (WHERE issue_status = 'pending') AS pending_total,
-      COUNT(*) FILTER (WHERE issue_status = 'pending' AND issue_priority = 'Low') AS pending_low,
-      COUNT(*) FILTER (WHERE issue_status = 'pending' AND issue_priority = 'Medium') AS pending_medium,
-      COUNT(*) FILTER (WHERE issue_status = 'pending' AND issue_priority = 'High') AS pending_high,
-      COUNT(*) FILTER (WHERE issue_status = 'pending' AND issue_priority = 'Critical') AS pending_critical,
 
-      -- In Progress Counts
-      COUNT(*) FILTER (WHERE issue_status = 'in progress') AS in_progress_total,
-      COUNT(*) FILTER (WHERE issue_status = 'in progress' AND issue_priority = 'Low') AS in_progress_low,
-      COUNT(*) FILTER (WHERE issue_status = 'in progress' AND issue_priority = 'Medium') AS in_progress_medium,
-      COUNT(*) FILTER (WHERE issue_status = 'in progress' AND issue_priority = 'High') AS in_progress_high,
-      COUNT(*) FILTER (WHERE issue_status = 'in progress' AND issue_priority = 'Critical') AS in_progress_critical,
+    -- Totals Counts
+      COUNT(*) AS totals_total,
+      COUNT(*) FILTER (WHERE issue_priority = 'Low') AS totals_low,
+      COUNT(*) FILTER (WHERE issue_priority = 'Medium') AS totals_medium,
+      COUNT(*) FILTER (WHERE issue_priority = 'High') AS totals_high,
+      COUNT(*) FILTER (WHERE issue_priority = 'Critical') AS totals_critical,
+      
+      -- Open Counts
+      COUNT(*) FILTER (WHERE issue_status = 'open') AS open_total,
+      COUNT(*) FILTER (WHERE issue_status = 'open' AND issue_priority = 'Low') AS open_low,
+      COUNT(*) FILTER (WHERE issue_status = 'open' AND issue_priority = 'Medium') AS open_medium,
+      COUNT(*) FILTER (WHERE issue_status = 'open' AND issue_priority = 'High') AS open_high,
+      COUNT(*) FILTER (WHERE issue_status = 'open' AND issue_priority = 'Critical') AS open_critical,
 
       -- Resolved Counts
       COUNT(*) FILTER (WHERE issue_status = 'resolved') AS resolved_total,
@@ -36,12 +35,12 @@ export const GET = withAuth(async ({ request }) => {
       COUNT(*) FILTER (WHERE issue_status = 'resolved' AND issue_priority = 'High') AS resolved_high,
       COUNT(*) FILTER (WHERE issue_status = 'resolved' AND issue_priority = 'Critical') AS resolved_critical,
 
-      -- Unfeasible Counts
-      COUNT(*) FILTER (WHERE issue_status = 'unfeasible') AS unfeasible_total,
-      COUNT(*) FILTER (WHERE issue_status = 'unfeasible' AND issue_priority = 'Low') AS unfeasible_low,
-      COUNT(*) FILTER (WHERE issue_status = 'unfeasible' AND issue_priority = 'Medium') AS unfeasible_medium,
-      COUNT(*) FILTER (WHERE issue_status = 'unfeasible' AND issue_priority = 'High') AS unfeasible_high,
-      COUNT(*) FILTER (WHERE issue_status = 'unfeasible' AND issue_priority = 'Critical') AS unfeasible_critical
+      -- Closed Counts
+      COUNT(*) FILTER (WHERE issue_status = 'closed') AS closed_total,
+      COUNT(*) FILTER (WHERE issue_status = 'closed' AND issue_priority = 'Low') AS closed_low,
+      COUNT(*) FILTER (WHERE issue_status = 'closed' AND issue_priority = 'Medium') AS closed_medium,
+      COUNT(*) FILTER (WHERE issue_status = 'closed' AND issue_priority = 'High') AS closed_high,
+      COUNT(*) FILTER (WHERE issue_status = 'closed' AND issue_priority = 'Critical') AS closed_critical
     FROM issues_table
     WHERE issue_type = $1
   `;
@@ -68,20 +67,19 @@ export const GET = withAuth(async ({ request }) => {
     // 4. Return Data
     return NextResponse.json(
       {
-        totals: getCount(row.totals),
-        pending: {
-          total: getCount(row.pending_total),
-          low: getCount(row.pending_low),
-          medium: getCount(row.pending_medium),
-          high: getCount(row.pending_high),
-          critical: getCount(row.pending_critical),
+        totals: {
+          total: getCount(row.totals_total),
+          low: getCount(row.totals_low),
+          medium: getCount(row.totals_medium),
+          high: getCount(row.totals_high),
+          critical: getCount(row.totals_critical),
         },
-        inProgress: {
-          total: getCount(row.in_progress_total),
-          low: getCount(row.in_progress_low),
-          medium: getCount(row.in_progress_medium),
-          high: getCount(row.in_progress_high),
-          critical: getCount(row.in_progress_critical),
+        open: {
+          total: getCount(row.open_total),
+          low: getCount(row.open_low),
+          medium: getCount(row.open_medium),
+          high: getCount(row.open_high),
+          critical: getCount(row.open_critical),
         },
         resolved: {
           total: getCount(row.resolved_total),
@@ -90,12 +88,12 @@ export const GET = withAuth(async ({ request }) => {
           high: getCount(row.resolved_high),
           critical: getCount(row.resolved_critical),
         },
-        unfeasible: {
-          total: getCount(row.unfeasible_total),
-          low: getCount(row.unfeasible_low),
-          medium: getCount(row.unfeasible_medium),
-          high: getCount(row.unfeasible_high),
-          critical: getCount(row.unfeasible_critical),
+        closed: {
+          total: getCount(row.closed_total),
+          low: getCount(row.closed_low),
+          medium: getCount(row.closed_medium),
+          high: getCount(row.closed_high),
+          critical: getCount(row.closed_critical),
         },
       },
       { status: 200 },
