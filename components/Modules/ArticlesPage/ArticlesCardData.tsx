@@ -11,12 +11,14 @@ type ArticlesCardDataProps = {
   articles: ArticlesCardValues[];
   loading: boolean;
   refetchData: () => Promise<void>;
+  userId?: string;
 };
 
 const ArticlesCardData = ({
   articles,
   loading,
   refetchData,
+  userId,
 }: ArticlesCardDataProps) => {
   // Search query states
   const [searchQuery, setSearchQuery] = useState("");
@@ -103,7 +105,7 @@ const ArticlesCardData = ({
               placeholder="Search for an article..."
               value={searchQuery}
               onChange={handleSearchQuery}
-              className="w-60 rounded-full border border-neutral-300 bg-white py-3 pr-10 pl-11 text-sm text-neutral-900 placeholder-neutral-500 shadow-2xs focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none sm:w-80 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-400 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+              className="w-60 rounded-xl border border-neutral-300 py-2.5 pr-10 pl-11 text-sm text-neutral-900 placeholder-neutral-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none sm:w-80 dark:border-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-400 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
             />
             <button
               className="absolute top-1/2 right-4 -translate-y-1/2 rounded-full p-1 text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700"
@@ -116,7 +118,7 @@ const ArticlesCardData = ({
         </div>
         <button
           onClick={refetchData}
-          className="inline-flex h-fit items-center gap-2 rounded-xl bg-neutral-900 px-3 py-2 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+          className="inline-flex h-fit w-fit items-center gap-1.5 rounded-xl bg-neutral-900 px-3.5 py-2 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
         >
           <RotateCcw className="h-4 w-4" />
           Refresh
@@ -128,6 +130,7 @@ const ArticlesCardData = ({
         searchQuery={searchQuery}
         highlightText={highlightText}
         getPreviewText={getPreviewText}
+        userId={userId}
       />
 
       {/* Pagination */}

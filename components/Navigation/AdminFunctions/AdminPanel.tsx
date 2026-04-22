@@ -39,7 +39,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   } = useQuery({
     queryKey: ["AgentInfo", department],
     queryFn: () => fetchedIssueAgents(department),
-    enabled: showAdminPanel && !!department,
+    enabled: !!department,
   });
 
   // Refetch agents and issue types data
@@ -66,7 +66,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   return (
     <ClientPortal>
       {/* The Backdrop */}
-      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 dark:bg-black/60">
         {/* Modal Container */}
         <div
           ref={modalRef}

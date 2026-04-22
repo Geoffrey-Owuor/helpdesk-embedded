@@ -3,6 +3,16 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import ThemeToggle from "../Themes/ThemeToggle";
 import HomePagesLogo from "../Modules/HomePagesLogo";
+import { FileText, GitCommitHorizontal, Paperclip } from "lucide-react";
+
+{
+  /* Desktop Nav Links */
+}
+const navLinks = [
+  { href: "/manual", label: "Manual", icon: FileText },
+  { href: "/changelog", label: "Changelog", icon: GitCommitHorizontal },
+  { href: "/articles", label: "Knowledge Base", icon: Paperclip },
+];
 
 const HomeNavBar = () => {
   const [scrolledUp, setScrolledUp] = useState(true); // Track if user scrolled up
@@ -10,30 +20,36 @@ const HomeNavBar = () => {
   const lastScrollY = useRef(0);
 
   useEffect(() => {
-    const container = document.getElementById("home-container");
-    if (!container) return;
+    // Select all elements with the class "home-container"
+    const containers = document.querySelectorAll(".home-container");
 
-    const handleScroll = () => {
-      const currentScrollY = container.scrollTop;
+    if (containers.length === 0) return;
+
+    const handleScroll = (event: Event) => {
+      const target = event.target as HTMLElement; // cast to HTMLElement
+      const currentScrollY = target.scrollTop;
       setIsScrolled(currentScrollY > 0);
 
-      // 2. Safely determine scroll direction
       if (currentScrollY <= 0) {
-        // Always show the navbar when at the absolute top
         setScrolledUp(true);
       } else if (currentScrollY > lastScrollY.current) {
-        // Scrolling DOWN -> Hide the navbar
         setScrolledUp(false);
       } else if (currentScrollY < lastScrollY.current) {
-        // Scrolling UP -> Show the navbar
         setScrolledUp(true);
       }
       lastScrollY.current = currentScrollY;
     };
 
-    container.addEventListener("scroll", handleScroll);
+    // Attach listener to each container
+    containers.forEach((container) =>
+      container.addEventListener("scroll", handleScroll),
+    );
+
+    // Cleanup: remove listeners
     return () => {
-      container.removeEventListener("scroll", handleScroll);
+      containers.forEach((container) =>
+        container.removeEventListener("scroll", handleScroll),
+      );
     };
   }, []);
 
@@ -44,6 +60,22 @@ const HomeNavBar = () => {
       <nav className="custom:px-8 mx-auto flex h-16 max-w-6xl items-center justify-between px-4 2xl:max-w-7xl">
         {/* App Logo */}
         <HomePagesLogo />
+
+        {/* Navbar links */}
+
+        <div className="hidden items-center gap-1 md:flex">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm text-black hover:bg-gray-200 dark:text-white dark:hover:bg-neutral-800"
+            >
+              <link.icon className="h-3.5 w-3.5" />
+              {link.label}
+            </Link>
+          ))}
+        </div>
+
         <div className="flex items-center gap-4">
           <ThemeToggle />
           <div className="flex items-center gap-2">

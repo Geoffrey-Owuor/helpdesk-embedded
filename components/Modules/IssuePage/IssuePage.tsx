@@ -22,6 +22,7 @@ import {
   MessageSquare,
   FileQuestion,
   LayoutDashboard,
+  UndoDot,
 } from "lucide-react";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import { dateFormatter, titleHelper } from "@/public/assets";
@@ -31,6 +32,7 @@ import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useUser } from "@/contexts/UserContext";
 import TitleDescriptionModal from "./TitleDescriptionModal";
+import ReopenIssueModal from "./ReopenIssueModal";
 import ReassignIssue from "./ReassignIssue";
 import { DetailCard } from "./HelperComponents/DetailCard";
 import { InfoBlock } from "./HelperComponents/InfoBlock";
@@ -39,7 +41,6 @@ import CommentsSection from "./CommentsSection";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import IssueTypeModal from "./IssueTypeModal";
 import IssuePriorityFormatter from "../IssuesData/IssuePriorityFormatter";
-import { useSearchParams } from "next/navigation";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { fetchIssues } from "@/queries/fetchIssues";
@@ -49,16 +50,12 @@ import { DEFAULT_FETCH_OPTIONS } from "@/public/assets";
 import { statusOptions as baseOptions } from "@/public/assets";
 import { priorityOptions } from "@/public/assets";
 
-const statusOptions = baseOptions.filter(
-  (option) => option.value !== "pending",
-);
+const statusOptions = baseOptions.filter((option) => option.value !== "open");
 
-export const IssuePage = ({ uuid }: { uuid: string }) => {
+export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
   // Initialize the query client
   const queryClient = useQueryClient();
 
-  const searchParams = useSearchParams();
-  const type = searchParams.get("type");
   const isAutomation = type === "automation";
 
   // 1. Grab the exact same filters from your search store to match the Query Keys
@@ -122,6 +119,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
   // States for the update status modal
   const [statusModalOpen, setStatusModalOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [reopenModalOpen, setReopenModalOpen] = useState(false);
 
   // Status to hold our selected status
   const [isOpen, setIsOpen] = useState(false);
@@ -153,7 +151,11 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           if (!oldData) return oldData;
           return oldData.map((issue: Record<string, IssueValueTypes>) =>
             issue.issue_uuid === uuid
-              ? { ...issue, issue_priority: newPriority }
+              ? {
+                  ...issue,
+                  issue_priority: newPriority,
+                  issue_updated_at: new Date().toISOString(),
+                }
               : issue,
           );
         },
@@ -278,6 +280,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
         />
       )}
 
+      {/* Reassign Modal */}
       {isReassignModalOpen && (
         <ReassignIssue
           uuid={uuid}
@@ -287,6 +290,17 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           targetDepartment={issueData.issue_target_department}
           activeQueryKey={activeQueryKey}
           issueAgentEmail={issueData.issue_agent_email}
+        />
+      )}
+
+      {/* Reopen Modal */}
+      {reopenModalOpen && (
+        <ReopenIssueModal
+          uuid={uuid}
+          closeModal={() => setReopenModalOpen(false)}
+          isModalOpen={reopenModalOpen}
+          activeQueryKey={activeQueryKey}
+          activeCardsKey={activeCardsKey}
         />
       )}
       <div className="mx-auto max-w-6xl py-6 md:py-3.5">
@@ -323,11 +337,22 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
               <RotateCcw className="h-4.5 w-4.5" />
             </button>
 
+            {/* Reopening an issue */}
+            {issueData.issue_status === "closed" && (
+              <button
+                onClick={() => setReopenModalOpen(true)}
+                className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3.5 py-1.5 text-sm font-medium text-green-700 transition-colors hover:bg-green-200 dark:bg-green-900/40 dark:text-green-300 dark:hover:bg-green-900/60"
+              >
+                <UndoDot className="h-3.5 w-3.5" />
+                Reopen
+              </button>
+            )}
+
             {/* Reassigning an issue and changing the issue priority */}
             {((role === "admin" &&
               issueData.issue_target_department === department) ||
               isSuper) &&
-              issueData.issue_status !== "resolved" && (
+              issueData.issue_status !== "closed" && (
                 <div className="inline-flex items-center gap-2">
                   <button
                     onClick={() => setIsReassignModalOpen(true)}
@@ -391,7 +416,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
               isSuper ||
               (role === "admin" &&
                 issueData.issue_target_department === department)) &&
-              issueData.issue_status !== "resolved" && (
+              issueData.issue_status !== "closed" && (
                 <div className="relative w-fit" ref={dropdownRef}>
                   <button
                     type="button" // Prevent form submission if inside a form
@@ -476,7 +501,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           <DetailCard title="Issue Data" icon={Hash}>
             <div className="flex justify-between">
               <InfoBlock label="Issue Type" value={issueData.issue_type} />
-              {isSuper && issueData.issue_status !== "resolved" && (
+              {isSuper && issueData.issue_status !== "closed" && (
                 <IssueTypeModal
                   targetDepartment={issueData.issue_target_department}
                   uuid={uuid}
@@ -491,7 +516,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
 
         <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* --- DESCRIPTION SECTION --- */}
-          <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
+          <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-xs dark:border-neutral-800 dark:bg-neutral-950">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="flex items-center gap-2 text-lg font-semibold text-neutral-900 dark:text-white">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
@@ -500,7 +525,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                 Description
               </h2>
               {(userId === issueData.issue_submitter_id || isSuper) &&
-                issueData.issue_status !== "resolved" && (
+                issueData.issue_status !== "closed" && (
                   <button
                     type="button"
                     onClick={() => setIsEditModalOpen(true)}
@@ -511,14 +536,17 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                 )}
             </div>
             <div className="prose prose-neutral dark:prose-invert max-w-none">
-              <p className="line-clamp-1 leading-relaxed text-neutral-600 dark:text-neutral-300">
+              <p
+                title={issueData.issue_description.toString()}
+                className="line-clamp-2 leading-relaxed text-neutral-600 dark:text-neutral-300"
+              >
                 {issueData.issue_description}
               </p>
             </div>
           </div>
 
           {/* --- ISSUE REMARKS AREA --- */}
-          <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
+          <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-xs dark:border-neutral-800 dark:bg-neutral-950">
             <div className="mb-4 flex items-center">
               <h2 className="flex items-center gap-2 text-lg font-semibold text-neutral-900 dark:text-white">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400">
@@ -543,20 +571,20 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
         {/* --- BOTTOM GRID: Description summary card + Comments --- */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Summary card */}
-          <div className="flex flex-col rounded-xl border border-neutral-200 shadow-sm dark:border-neutral-800">
+          <div className="flex flex-col rounded-xl border-t-2 border-black dark:border-white">
             {/* Card header */}
-            <div className="flex items-center justify-between border-b border-neutral-100 px-6 py-4 dark:border-neutral-800">
+            <div className="flex items-center justify-between px-6 py-4">
               <div className="inline-flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800">
                   <FileText className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
                 </div>
 
                 <h2 className="font-semibold text-neutral-900 dark:text-white">
-                  Issue Summary
+                  Other Metadata
                 </h2>
               </div>
               <p className="hidden text-sm text-neutral-500 sm:inline-flex dark:text-neutral-400">
-                Key details at a glance
+                Relevant metadata
               </p>
             </div>
 
@@ -564,43 +592,28 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
             <div className="flex flex-col divide-y divide-neutral-100 px-6 dark:divide-neutral-800">
               {[
                 {
-                  label: "Status",
-                  value: (
-                    <IssueStatusFormatter status={issueData.issue_status} />
-                  ),
-                },
-                {
-                  label: "Priority",
-                  value: (
-                    <IssuePriorityFormatter
-                      priority={issueData.issue_priority}
-                    />
-                  ),
-                },
-                { label: "Assigned agent", value: issueData.issue_agent_name },
-                {
-                  label: "Department",
-                  value: issueData.issue_submitter_department,
-                },
-                {
-                  label: "Submitted by",
-                  value: issueData.issue_submitter_name,
-                },
-                {
-                  label: "Date Submitted",
-                  value: dateFormatter(issueData.issue_created_at),
-                },
-                {
                   label: "Date Updated",
                   value: dateFormatter(issueData.issue_updated_at),
                 },
                 {
-                  label: "Reference ID",
+                  label: "Date Resolved",
+                  value: dateFormatter(issueData.issue_date_resolved) ?? "N/A",
+                },
+                {
+                  label: "Date Closed",
+                  value: dateFormatter(issueData.issue_date_closed) ?? "N/A",
+                },
+                {
+                  label: "Issue Reopened",
                   value: (
-                    <span className="font-mono font-semibold text-blue-600 dark:text-blue-400">
-                      {issueData.issue_reference_id}
+                    <span className="rounded-full bg-gray-200 px-2 py-px text-xs dark:bg-gray-800">
+                      {issueData.issue_reopened}
                     </span>
                   ),
+                },
+                {
+                  label: "Reason Reopened",
+                  value: issueData.issue_reopened_reason ?? "N/A",
                 },
               ].map(({ label, value }) => (
                 <div
@@ -610,7 +623,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                   <span className="text-sm text-neutral-500 dark:text-neutral-400">
                     {label}
                   </span>
-                  <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
+                  <span className="line-clamp-1 text-sm font-medium text-neutral-800 dark:text-neutral-200">
                     {value}
                   </span>
                 </div>

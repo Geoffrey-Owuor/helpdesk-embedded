@@ -1,6 +1,6 @@
 "use client";
 
-import { fetchedBaseDepartments } from "@/serverActions/GetBaseDepartments";
+import { baseDepartments } from "@/public/assets";
 import ClientPortal from "../../ClientPortal";
 import { useState, useRef, FocusEvent } from "react";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
@@ -19,7 +19,7 @@ import CustomDropdown from "./CustomDropDown";
 import FormAsterisk from "../../FormAsterisk";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useConfirmStore } from "@/store/useConfirmStore";
@@ -64,13 +64,6 @@ const EditUserModal = ({
   userInfo,
 }: EditUserModalProps) => {
   const queryClient = useQueryClient();
-
-  // Fetch the departments
-  const { data: baseDepartments = [], isPending: isLoading } = useQuery({
-    queryKey: ["BaseDepartmentsData"],
-    queryFn: fetchedBaseDepartments,
-    enabled: isModalOpen,
-  });
 
   // The query key
   const activeQueryKey = ["UsersDataInfo"];
@@ -187,7 +180,7 @@ const EditUserModal = ({
   return (
     <ClientPortal>
       {/* Backdrop */}
-      <div className="custom-blur fixed inset-0 z-50 bg-black/40 transition-opacity dark:bg-black/60" />
+      <div className="custom-blur fixed inset-0 z-50 bg-black/50 transition-opacity dark:bg-black/60" />
 
       {/* Modal */}
       <div
@@ -293,7 +286,6 @@ const EditUserModal = ({
             <CustomDropdown
               label="Department"
               options={baseDepartments}
-              loading={isLoading}
               value={formData.department}
               onChange={(val) => handleDropdownChange("department", val)}
             />

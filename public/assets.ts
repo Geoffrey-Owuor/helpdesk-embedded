@@ -1,9 +1,9 @@
-import issue_desk_logo from "./web-app-manifest-512x512.png";
 import issue_desk_image from "./issue_desk_light.png";
+import hotpoint_black_logo from "./hotpoint_black_logo.png";
 
 export const assets = {
-  issue_desk_logo,
   issue_desk_image,
+  hotpoint_black_logo,
 };
 
 // get current year value and export it
@@ -26,9 +26,16 @@ export const titleHelper = (value: IssueValueTypes) => {
   return value.toString();
 };
 
+// Handling cases where issue type is other and later other issue types that require formatting
+export const generateValueType = (value: string) => {
+  if (value.includes("Other")) return "Other Issue";
+  else if (value === "Automation") return "(RPA) Robotic Process Automation";
+  else return value;
+};
+
 // Date formatter to format date for the ui
 export const dateFormatter = (dateString: IssueValueTypes) => {
-  if (!dateString) return "dd/mm/yy";
+  if (!dateString) return "N/A";
   const date = new Date(dateString);
 
   return date.toLocaleDateString("en-US", {
@@ -82,11 +89,10 @@ export interface PriorityBreakdown {
 }
 
 export interface DataCounts {
-  totals: number;
-  pending: PriorityBreakdown;
-  inProgress: PriorityBreakdown;
+  totals: PriorityBreakdown;
+  open: PriorityBreakdown;
   resolved: PriorityBreakdown;
-  unfeasible: PriorityBreakdown;
+  closed: PriorityBreakdown;
 }
 
 const defaultBreakdown: PriorityBreakdown = {
@@ -98,11 +104,10 @@ const defaultBreakdown: PriorityBreakdown = {
 };
 
 export const defaultCounts: DataCounts = {
-  totals: 0,
-  pending: { ...defaultBreakdown },
-  inProgress: { ...defaultBreakdown },
+  totals: { ...defaultBreakdown },
+  open: { ...defaultBreakdown },
   resolved: { ...defaultBreakdown },
-  unfeasible: { ...defaultBreakdown },
+  closed: { ...defaultBreakdown },
 };
 
 // User Count Types
@@ -149,10 +154,9 @@ export const AppVersion = "v2.0";
 
 // Status Options
 export const statusOptions = [
-  { label: "Pending", value: "pending" },
-  { label: "In Progress", value: "in progress" },
+  { label: "Open", value: "open" },
   { label: "Resolved", value: "resolved" },
-  { label: "Unfeasible", value: "unfeasible" },
+  { label: "Closed", value: "closed" },
 ];
 
 // Priority Options

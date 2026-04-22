@@ -15,6 +15,9 @@ import {
   ArrowDown,
   Ellipsis,
   MoveHorizontal,
+  ChevronDown,
+  ContactRound,
+  UserRound,
 } from "lucide-react";
 import { fetchedIssueAgentsMapping } from "@/serverActions/GetIssueTypes";
 import { IssueAgentMapping } from "@/serverActions/GetIssueTypes";
@@ -29,6 +32,8 @@ import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useSearchStore } from "@/store/useSearchStore";
+import { useUser } from "@/contexts/UserContext";
+import SubmitForAUser, { SubmitForUserData } from "./SubmitForAUser";
 
 // Priority icon types
 const priorityIcons: Record<string, LucideIcon> = {
@@ -60,6 +65,8 @@ type MainIssueModalProps = {
 const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   const queryClient = useQueryClient();
 
+  const { role } = useUser();
+
   // Fetch the departments
   const { data: baseDepartments = [], isPending: loading } = useQuery({
     queryKey: ["BaseDepartmentsData"],
@@ -72,7 +79,20 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     issue_type: "",
     issue_title: "",
     issue_description: "",
+    // new optional fields — only sent when submitForUserData is set
+    behalf_user_name: "",
+    behalf_user_email: "",
+    behalf_user_department: "",
   });
+
+  // Submit for user states
+  const [isSubmitForUserOpen, setIsSubmitForUserOpen] = useState(false);
+  const [submitForUserData, setSubmitForUserData] =
+    useState<SubmitForUserData | null>(null);
+
+  const handleSubmitForUserConfirm = (data: SubmitForUserData) => {
+    setSubmitForUserData(data);
+  };
 
   // Tab Focus Trapping
   const closeModal = useCallback(() => setIsOpen(false), [setIsOpen]);
@@ -176,13 +196,21 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
 
   // Function for handling issue submission
   const handleFormSubmit = async () => {
+    const payload = {
+      ...formData,
+      ...(submitForUserData && {
+        behalf_user_name: submitForUserData.user_name,
+        behalf_user_email: submitForUserData.user_email,
+        behalf_user_department: submitForUserData.user_department,
+      }),
+    };
     hideDialog();
 
     showOverlay("Adding");
 
     try {
       // post issue api endpoint
-      const response = await apiClient.post("/post-issue", formData);
+      const response = await apiClient.post("/post-issue", payload);
 
       // Refetch issues data in the background
       queryClient.invalidateQueries({ queryKey: activeQueryKey });
@@ -203,7 +231,13 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
         issue_type: "",
         issue_title: "",
         issue_description: "",
+        behalf_user_name: "",
+        behalf_user_email: "",
+        behalf_user_department: "",
       });
+
+      // Clear submitForUserData
+      setSubmitForUserData(null);
 
       setAssignmentInfo(null); // Clear assignment info
 
@@ -242,11 +276,11 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   return (
     <ClientPortal>
       {/* Backdrop */}
-      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 dark:bg-black/60">
+      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 dark:bg-black/60">
         {/* Modal Container */}
         <div
           ref={modalRef}
-          className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-2xl border border-neutral-300 bg-neutral-50 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
+          className="flex max-h-[90vh] w-full max-w-xl flex-col rounded-2xl border border-neutral-300 bg-neutral-50 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
         >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-neutral-100 p-4 dark:border-neutral-900">
@@ -268,6 +302,66 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
               autoComplete="off"
               className="space-y-4"
             >
+              {/* Button for submitting for another user */}
+              {role !== "user" && (
+                <div className="inline-flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsSubmitForUserOpen((prev) => !prev)}
+                    className="inline-flex items-center justify-between gap-2.5 rounded-xl bg-neutral-950 px-3 py-2 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200"
+                  >
+                    <div className="inline-flex items-center gap-1.5">
+                      <ContactRound className="h-4 w-4" />
+                      <span>Submit for a user</span>
+                    </div>
+                    <ChevronDown
+                      className={`h-4 w-4 transition-transform ${isSubmitForUserOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+
+                  {/* Clear button — only visible when user data has been set */}
+                  {submitForUserData && !isSubmitForUserOpen && (
+                    <button
+                      type="button"
+                      onClick={() => setSubmitForUserData(null)}
+                      className="inline-flex items-center gap-1.5 rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-600 hover:border-red-300 hover:bg-red-50 hover:text-red-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:border-red-800 dark:hover:bg-red-950/30 dark:hover:text-red-400"
+                    >
+                      <X size={14} />
+                      <span>Clear</span>
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Submit for user modal */}
+              <SubmitForAUser
+                isOpen={isSubmitForUserOpen}
+                setIsOpen={setIsSubmitForUserOpen}
+                onConfirm={handleSubmitForUserConfirm}
+              />
+
+              {/* A card that displays the selected user info - only displayed when all required submitForUserData is available and isSubmitForUserOpen is false */}
+              {submitForUserData && !isSubmitForUserOpen && (
+                <div className="w-fit rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
+                      <UserRound size={16} />
+                    </div>
+                    <div className="flex min-w-0 flex-1 flex-col">
+                      <span className="truncate text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                        {submitForUserData.user_name}
+                      </span>
+                      <span className="truncate text-xs text-neutral-500 dark:text-neutral-400">
+                        {submitForUserData.user_email}
+                      </span>
+                    </div>
+                    <span className="shrink-0 rounded-lg bg-neutral-100 px-2 py-1 text-xs font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
+                      {submitForUserData.user_department}
+                    </span>
+                  </div>
+                </div>
+              )}
+
               {/* Row: Department & Target Department */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="flex flex-col gap-1">

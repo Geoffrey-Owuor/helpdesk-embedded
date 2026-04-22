@@ -100,7 +100,7 @@ export function DbStatusOverlay({
   const config = STATUS_CONFIG[status] ?? STATUS_CONFIG.checking;
 
   return (
-    <div className="custom-blur fixed inset-0 z-9999 flex items-center justify-center bg-white/60 dark:bg-neutral-950/80">
+    <div className="custom-blur fixed inset-0 z-9999 flex items-center justify-center bg-black/50 dark:bg-black/60">
       <div className="mx-4 w-full max-w-md overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-2xl dark:border-neutral-700/60 dark:bg-neutral-900 dark:shadow-[0_25px_60px_-12px_rgba(0,0,0,0.8)]">
         {/* Header Section */}
         <div

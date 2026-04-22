@@ -9,6 +9,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { IssueOption } from "@/serverActions/GetIssueTypes";
+import { generateValueType } from "@/public/assets";
 
 interface OptionsDropDownProps {
   value: string;
@@ -51,13 +52,6 @@ const OptionsDropDown = ({
     setIsOpen(false);
   };
 
-  // Handling cases where issue type is other and later other issue types that require formatting
-  const generateValue = (value: string) => {
-    if (value.includes("_Other")) return "Other Issue";
-    else if (value === "Automation") return "(RPA) Robotic Process Automation";
-    else return value;
-  };
-
   return (
     <div className="relative w-full" ref={dropdownRef}>
       <button
@@ -86,9 +80,9 @@ const OptionsDropDown = ({
             className={`${!value ? "text-neutral-500" : "max-w-35 truncate text-neutral-900 dark:text-neutral-100"}`}
           >
             {value
-              ? generateValue(value)
+              ? generateValueType(value)
               : dropDownType === "department"
-                ? "Direct this issue to..."
+                ? "Select a department..."
                 : "Select an issue type..."}
           </span>
         </div>
@@ -119,10 +113,10 @@ const OptionsDropDown = ({
                 className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
               >
                 <span
-                  title={generateValue(option.option)}
+                  title={generateValueType(option.option)}
                   className="max-w-35 truncate"
                 >
-                  {generateValue(option.option)}
+                  {generateValueType(option.option)}
                 </span>
                 {value === option.value && (
                   <Check className="h-4 w-4 text-blue-600 dark:text-blue-400" />

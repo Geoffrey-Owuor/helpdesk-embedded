@@ -1,6 +1,6 @@
 "use client";
 
-import { fetchedBaseDepartments } from "@/serverActions/GetBaseDepartments";
+import { baseDepartments } from "@/public/assets";
 import ClientPortal from "../../ClientPortal";
 import { useState, useRef, FocusEvent, FormEvent } from "react";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
@@ -20,7 +20,7 @@ import NameRulesCard from "../../NameRulesCard";
 import FormAsterisk from "../../FormAsterisk";
 import { baseRoles, baseStatuses } from "./EditUserModal";
 import apiClient from "@/lib/AxiosClient";
-import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
@@ -44,13 +44,6 @@ interface AddUserData {
 
 const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
   const queryClient = useQueryClient();
-
-  // Fetch the departments
-  const { data: baseDepartments = [], isPending: loading } = useQuery({
-    queryKey: ["BaseDepartmentsData"],
-    queryFn: fetchedBaseDepartments,
-    enabled: isModalOpen,
-  });
 
   const [formData, setFormData] = useState<AddUserData>({
     name: "",
@@ -132,7 +125,7 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
         role: payload.role,
         user_id: Date.now().toLocaleString(), //Get a random generic id
         is_user_active: payload.status === "true",
-        created_at: new Date().toLocaleString(),
+        created_at: new Date().toISOString(),
       };
       queryClient.setQueryData(["UsersDataInfo"], (oldData: UserRecord[]) => {
         if (!oldData) return oldData;
@@ -174,7 +167,7 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
   return (
     <ClientPortal>
       {/* Backdrop */}
-      <div className="custom-blur fixed inset-0 z-50 bg-black/40 transition-opacity dark:bg-black/60" />
+      <div className="custom-blur fixed inset-0 z-50 bg-black/50 transition-opacity dark:bg-black/60" />
 
       {/* Modal */}
       <div
@@ -281,7 +274,6 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
             <CustomDropdown
               label="Department"
               options={baseDepartments}
-              loading={loading}
               value={formData.department}
               onChange={(val) => handleDropdownChange("department", val)}
             />

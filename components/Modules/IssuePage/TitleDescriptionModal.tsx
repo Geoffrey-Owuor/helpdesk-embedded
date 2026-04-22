@@ -91,6 +91,7 @@ const TitleDescriptionModal = ({
                   ...issue,
                   issue_title: payload.issue_title,
                   issue_description: payload.issue_description,
+                  issue_updated_at: new Date().toISOString(),
                 }
               : issue,
           );
@@ -132,7 +133,7 @@ const TitleDescriptionModal = ({
   return (
     <ClientPortal>
       {/* Backdrop */}
-      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 dark:bg-black/60">
+      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 dark:bg-black/60">
         {/* Modal Container */}
         <div
           ref={modalRef}
@@ -140,7 +141,7 @@ const TitleDescriptionModal = ({
         >
           {/* Header */}
           <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+            <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
               Update Title & Description
             </h2>
             <button

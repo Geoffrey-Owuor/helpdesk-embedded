@@ -6,10 +6,7 @@ import { DbStatusPill } from "../Modules/DbStatus/DbStatusPill";
 
 const AuthShell = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div
-      id="home-container"
-      className="layout-scrollbar h-screen overflow-y-auto bg-white dark:bg-neutral-950"
-    >
+    <div className="layout-scrollbar home-container h-screen overflow-y-auto bg-white dark:bg-neutral-950">
       <div className="mx-auto flex h-full w-full max-w-6xl flex-col items-center 2xl:max-w-7xl">
         {/* Logo and Theme Toggle*/}
         <div className="fixed top-0 right-0 left-0 z-50">

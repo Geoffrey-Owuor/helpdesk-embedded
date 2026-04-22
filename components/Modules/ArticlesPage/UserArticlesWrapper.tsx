@@ -17,7 +17,7 @@ const UserArticlesWrapper = () => {
   });
 
   const refetchData = async () => {
-    refetchUserArticles();
+    await refetchUserArticles();
   };
 
   return (
@@ -25,6 +25,7 @@ const UserArticlesWrapper = () => {
       articles={userArticles}
       loading={loading}
       refetchData={refetchData}
+      userId={userId}
     />
   );
 };
