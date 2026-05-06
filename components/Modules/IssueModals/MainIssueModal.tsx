@@ -283,7 +283,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
           className="flex max-h-[90vh] w-full max-w-xl flex-col rounded-2xl border border-neutral-300 bg-neutral-50 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-neutral-100 p-4 dark:border-neutral-900">
+          <div className="flex items-center justify-between border-b border-neutral-200/50 p-4 dark:border-neutral-900">
             <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
               Create A New Issue
             </h2>
