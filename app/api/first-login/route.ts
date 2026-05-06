@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
   let client: PoolClient | undefined;
 
   try {
-    const { token, password } = await request.json();
+    const { token, previousPassword, newPassword } = await request.json();
 
     client = await pool.connect();
 
@@ -18,7 +18,6 @@ export async function POST(request: NextRequest) {
       `
             SELECT user_id, password FROM users
             WHERE reset_token = $1
-            AND reset_token_expiry > NOW()
             `,
       [token],
     );
@@ -28,29 +27,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           message:
-            "Looks like your token has expired, please request a new one",
+            "Provided reset token is invalid, please request a new one or contact your admin",
         },
         { status: 400 },
       );
     }
 
+    // Get the user id and password
     // Get user id and password
     const userId = verifyToken[0].user_id;
     const oldPassword = verifyToken[0].password;
 
     // Prevent re-use of the old password
-    const isSameAsCurrent = await verifyPassword(password, oldPassword);
+    const isSameAsCurrent = await verifyPassword(previousPassword, oldPassword);
 
-    if (isSameAsCurrent) {
+    if (!isSameAsCurrent) {
       await client.query("ROLLBACK");
       return NextResponse.json(
-        { message: "New password cannot be the same as your current password" },
+        {
+          message: "Previous password seems to be incorrect, please try again",
+        },
         { status: 400 },
       );
     }
 
     // Hash the new password
-    const hashedPassword = await hashPassword(password);
+    const hashedPassword = await hashPassword(newPassword);
 
     // Update the password and clear the token
     await client.query(

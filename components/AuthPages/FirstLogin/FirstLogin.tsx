@@ -12,11 +12,12 @@ import {
   CheckCircle2,
   XCircle,
   ArrowLeft,
+  KeyRound,
 } from "lucide-react";
 import AuthShell from "../AuthShell";
 import { ApiHandler } from "@/utils/ApiHandler";
 
-const ResetPassword = ({
+const FirstLogin = ({
   isValid,
   token,
 }: {
@@ -26,7 +27,8 @@ const ResetPassword = ({
   const router = useRouter();
 
   const [formData, setFormData] = useState({
-    password: "",
+    previousPassword: "",
+    newPassword: "",
     confirmPassword: "",
   });
 
@@ -36,14 +38,14 @@ const ResetPassword = ({
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const alertType = useAlertStore((state) => state.alertType);
 
-  // Derived State to check if passwords are matching
+  // Derived State to check if new passwords are matching
   const passwordsMatch =
-    Boolean(formData.password) &&
-    formData.password === formData.confirmPassword;
+    Boolean(formData.newPassword) &&
+    formData.newPassword === formData.confirmPassword;
 
   const passwordsMismatch =
     Boolean(formData.confirmPassword) &&
-    formData.password !== formData.confirmPassword;
+    formData.newPassword !== formData.confirmPassword;
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -59,23 +61,24 @@ const ResetPassword = ({
     e.preventDefault();
 
     if (!passwordsMatch) {
-      triggerAlert("error", "Passwords do not match");
+      triggerAlert("error", "New passwords do not match");
       return;
     }
 
     setLoading(true);
 
     try {
-      const response = await ApiHandler("/api/reset-password", "POST", {
+      const response = await ApiHandler("/api/first-login", "POST", {
+        previousPassword: formData.previousPassword,
+        newPassword: formData.newPassword,
         token,
-        password: formData.password,
       });
 
       const data = await response.json();
       if (!response.ok)
-        throw new Error(data.message || "Failed to reset password");
+        throw new Error(data.message || "Failed to update password");
 
-      // Redirect to login with success flag
+      // Redirect to login after successful reset
       router.push("/login?reset=success");
     } catch (error) {
       if (error instanceof Error) {
@@ -98,7 +101,7 @@ const ResetPassword = ({
           </h1>
           <p className="mb-8 text-neutral-600 dark:text-neutral-400">
             This password reset link is invalid or has expired. <br />
-            Please request a new one.
+            Please request a new one or contact your admin for support.
           </p>
           <Link
             href="/forgot-password"
@@ -112,26 +115,51 @@ const ResetPassword = ({
     );
   }
 
-  // --- RENDER: VALID FORM STATE ---
   return (
     <AuthShell>
-      <div className="w-full max-w-90">
+      <div className="w-full max-w-90 px-2 py-20">
         {/* Header */}
         <div className="mb-8">
           <h1 className="mb-2 text-center text-3xl font-semibold text-neutral-900 dark:text-white">
-            Reset Password
+            Welcome Aboard
           </h1>
           <p className="text-center text-neutral-600 dark:text-neutral-400">
-            Please enter your new password below.
+            Set your own password from the old one
           </p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} autoComplete="off" className="space-y-6">
+          {/* Previous / Default Password Input */}
+          <div>
+            <label
+              htmlFor="previousPassword"
+              className="mb-2 block text-sm font-semibold text-neutral-700 dark:text-neutral-300"
+            >
+              Previous / Default Password
+            </label>
+            <div className="relative">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-6">
+                <KeyRound className="h-5 w-5 text-neutral-400" />
+              </div>
+              <input
+                id="previousPassword"
+                name="previousPassword"
+                type={showPassword ? "text" : "password"}
+                value={formData.previousPassword}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className="w-full rounded-full border border-neutral-400 bg-white py-3 pr-12 pl-14 text-neutral-900 placeholder-neutral-400 focus:border-neutral-600 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900/50 dark:text-white dark:focus:border-neutral-500"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+          </div>
+
           {/* New Password Input */}
           <div>
             <label
-              htmlFor="password"
+              htmlFor="newPassword"
               className="mb-2 block text-sm font-semibold text-neutral-700 dark:text-neutral-300"
             >
               New Password
@@ -141,10 +169,10 @@ const ResetPassword = ({
                 <Lock className="h-5 w-5 text-neutral-400" />
               </div>
               <input
-                id="password"
-                name="password"
+                id="newPassword"
+                name="newPassword"
                 type={showPassword ? "text" : "password"}
-                value={formData.password}
+                value={formData.newPassword}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className="w-full rounded-full border border-neutral-400 bg-white py-3 pr-12 pl-14 text-neutral-900 placeholder-neutral-400 focus:border-neutral-600 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900/50 dark:text-white dark:focus:border-neutral-500"
@@ -166,7 +194,7 @@ const ResetPassword = ({
             </div>
           </div>
 
-          {/* Confirm Password Input */}
+          {/* Confirm New Password Input */}
           <div>
             <label
               htmlFor="confirmPassword"
@@ -211,7 +239,12 @@ const ResetPassword = ({
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={loading || passwordsMismatch || !formData.password}
+            disabled={
+              loading ||
+              passwordsMismatch ||
+              !formData.newPassword ||
+              !formData.previousPassword
+            }
             className={`flex w-full items-center ${
               alertType === "error"
                 ? "bg-red-500 text-white hover:bg-red-400 focus:ring-red-500 dark:ring-offset-neutral-950"
@@ -221,10 +254,10 @@ const ResetPassword = ({
             {loading ? (
               <>
                 <Loader2 className="h-5 w-5 animate-spin" />
-                Resetting...
+                Saving...
               </>
             ) : (
-              "Reset Password"
+              "Save"
             )}
           </button>
 
@@ -243,4 +276,4 @@ const ResetPassword = ({
   );
 };
 
-export default ResetPassword;
+export default FirstLogin;

@@ -1,13 +1,14 @@
-import ResetPassword from "@/components/AuthPages/ForgotPassword/ResetPassword";
+import FirstLogin from "@/components/AuthPages/FirstLogin/FirstLogin";
 import { Suspense } from "react";
-import { redirect } from "next/navigation";
 import { query } from "@/lib/Db";
+import { redirect } from "next/navigation";
 import SuspenseSkeleton from "@/components/Skeletons/SuspenseSkeleton";
 
 // Props for the searchParams
 type Props = {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 };
+
 const page = async ({ searchParams }: Props) => {
   // get the token
   const searchparams = await searchParams;
@@ -25,7 +26,6 @@ const page = async ({ searchParams }: Props) => {
         `
             SELECT user_id FROM users
             WHERE reset_token = $1
-            AND reset_token_expiry > NOW()
             `,
         [token],
       );
@@ -35,9 +35,10 @@ const page = async ({ searchParams }: Props) => {
   } catch (error) {
     console.error("Error validating reset token", error);
   }
+
   return (
     <Suspense fallback={<SuspenseSkeleton />}>
-      <ResetPassword isValid={isValid} token={token} />
+      <FirstLogin isValid={isValid} token={token} />
     </Suspense>
   );
 };

@@ -1,4 +1,5 @@
 import { sendEmail } from "@/services/EmailService";
+import FirstLoginLinkTemplate from "@/templates/FirstLoginLinkTemplate";
 import { query } from "@/lib/Db";
 import { hashPassword } from "@/lib/Auth";
 import crypto from "crypto";
@@ -26,7 +27,7 @@ export const CheckBehalfUser = async ({
     const existingUser = await query(
       `
       SELECT user_id, username, email, department
-      FROM users WHERE email = $1
+      FROM users WHERE email = $1 LIMIT 1
       `,
       [email],
     );
@@ -70,10 +71,18 @@ export const CheckBehalfUser = async ({
       const result = await query(insertQuery, insertParams);
       const returnedUser = result[0];
 
-      // Log password for now for testing purposes
-      console.log(`Password for ${returnedUser.username} is: ${tempPassword}`);
-
       // Emailing logic will go here - template generation for notifying the user of the created account
+      const emailTemplate = FirstLoginLinkTemplate(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/firstlogin?token=${resetToken}`,
+        tempPassword,
+      );
+
+      // Fire and Forget - Send Email
+      sendEmail({
+        to: email,
+        subject: `Welcome ${name}!`,
+        html: emailTemplate,
+      });
 
       return {
         userId: returnedUser.user_id,
