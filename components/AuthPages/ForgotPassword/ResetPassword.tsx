@@ -3,7 +3,7 @@
 import { useState, FormEvent, ChangeEvent } from "react";
 import Link from "next/link";
 import { useAlertStore } from "@/store/useAlertStore";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   Lock,
   Eye,
@@ -16,10 +16,14 @@ import {
 import AuthShell from "../AuthShell";
 import { ApiHandler } from "@/utils/ApiHandler";
 
-const ResetPassword = ({ isValid }: { isValid: boolean }) => {
+const ResetPassword = ({
+  isValid,
+  token,
+}: {
+  isValid: boolean;
+  token: string;
+}) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
 
   const [formData, setFormData] = useState({
     password: "",
