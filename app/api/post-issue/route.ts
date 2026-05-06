@@ -3,17 +3,35 @@ import { PoolClient } from "pg";
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { emailSender } from "@/services/EmailSender";
+import { CheckBehalfUser } from "@/serverActions/CheckBehalfUser";
 
 export const POST = withAuth(async ({ request, user }) => {
   // initialze the pool client variable
   let client: PoolClient | undefined;
 
+  // Destructure the user information
+  const { username, userId, email, department } = user;
+
+  // Variables for holding the user info
+  let selectedName = username;
+  let selectedId = userId;
+  let selectedEmail = email;
+  let selectedDepartment = department;
+
   // Define our default agent value
   const defaultAgent = "Not Assigned";
 
   try {
-    const { target_department, issue_type, issue_title, issue_description } =
-      await request.json();
+    const {
+      target_department,
+      issue_type,
+      issue_title,
+      issue_description,
+      // Optional fields - Submitting on behalf of another user
+      behalf_user_name,
+      behalf_user_email,
+      behalf_user_department,
+    } = await request.json();
 
     // Check if we have all the data
     if (
@@ -26,6 +44,31 @@ export const POST = withAuth(async ({ request, user }) => {
         { message: "Missing some required fields" },
         { status: 400 },
       );
+    }
+
+    // Function to create/return the user who is being created a ticket for
+    // And return the user details required for proceeding
+    if (behalf_user_department && behalf_user_name && behalf_user_email) {
+      const returnedUser = await CheckBehalfUser({
+        name: behalf_user_name,
+        email: behalf_user_email,
+        department: behalf_user_department,
+      });
+
+      if (!returnedUser) {
+        return NextResponse.json(
+          {
+            message:
+              "Could not verify/create the user you're trying to submit for, please contact your admin",
+          },
+          { status: 422 },
+        );
+      }
+
+      selectedName = returnedUser.name;
+      selectedId = returnedUser.userId;
+      selectedEmail = returnedUser.email;
+      selectedDepartment = returnedUser.department;
     }
 
     // get a pool client
@@ -44,10 +87,10 @@ export const POST = withAuth(async ({ request, user }) => {
 
     // construct the params
     const params = [
-      user.userId,
-      user.username,
-      user.email,
-      user.department,
+      selectedId,
+      selectedName,
+      selectedEmail,
+      selectedDepartment,
       target_department,
       issue_type,
       issue_title,
@@ -122,11 +165,11 @@ export const POST = withAuth(async ({ request, user }) => {
     const description = `A new issue has been raised to ${target_department} by ${user.username}`;
 
     // Fire and forget - calling the email sender service
-    emailSender({
-      title,
-      description,
-      uuid: resultantUuid,
-    });
+    // emailSender({
+    //   title,
+    //   description,
+    //   uuid: resultantUuid,
+    // });
 
     // Return a response to the client
     return NextResponse.json(

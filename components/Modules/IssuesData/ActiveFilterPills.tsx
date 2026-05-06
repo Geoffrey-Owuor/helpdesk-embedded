@@ -128,13 +128,13 @@ const ActiveFilterPills = ({
 
       {/* Render the Combined Date Pill if it exists */}
       {hasDateFilter && (
-        <div className="flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 transition-colors dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+        <div className="flex items-center gap-1.5 rounded-full bg-blue-100 px-3 py-1.5 text-xs font-medium text-blue-900 transition-colors dark:bg-blue-900/30 dark:text-blue-100">
           <span>
-            Date: <span className="font-semibold">{getDateRangeText()}</span>
+            Date: <span className="font-normal">{getDateRangeText()}</span>
           </span>
           <button
             onClick={handleRemoveDate}
-            className="ml-1 rounded-full p-0.5 hover:bg-neutral-300 dark:hover:bg-neutral-600"
+            className="ml-1 rounded-full p-0.5 hover:bg-blue-200 dark:hover:bg-blue-900/70"
             aria-label="Remove date filter"
           >
             <X className="h-3 w-3" />
@@ -146,17 +146,17 @@ const ActiveFilterPills = ({
       {standardKeys.map((key) => (
         <div
           key={key}
-          className="flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 transition-colors dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+          className="flex items-center gap-1.5 rounded-full bg-blue-100 px-3 py-1.5 text-xs font-medium text-blue-900 transition-colors dark:bg-blue-900/30 dark:text-blue-100"
         >
           <span className="capitalize">
             {filterLabels[key]}:{" "}
-            <span className="font-semibold">
+            <span className="font-normal">
               {committedFilters[key as keyof Options]}
             </span>
           </span>
           <button
             onClick={() => handleRemoveFilter(key as keyof Options)}
-            className="ml-1 rounded-full p-0.5 hover:bg-neutral-300 dark:hover:bg-neutral-600"
+            className="ml-1 rounded-full p-0.5 hover:bg-blue-200 dark:hover:bg-blue-900/70"
             aria-label={`Remove ${key} filter`}
           >
             <X className="h-3 w-3" />
