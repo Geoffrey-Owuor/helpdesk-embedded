@@ -1,12 +1,12 @@
 "use client";
 
 import { Dispatch, SetStateAction, useState, ChangeEvent } from "react";
-
 import { baseDepartments } from "@/public/assets";
 import OptionsDropDown from "./OptionsDropDown";
-
 import FormAsterisk from "../FormAsterisk";
 import { UserRoundPlus } from "lucide-react";
+import UserEmailAutocomplete from "./UserEmailAutocomplete";
+import { UserRecord } from "@/serverActions/FetchUserRecords";
 
 export type SubmitForUserData = {
   user_name: string;
@@ -45,6 +45,16 @@ const SubmitForAUser = ({
     setFormData((prev) => ({ ...prev, user_department: value }));
   };
 
+  // NEW: Handler for when a user is selected from the autocomplete dropdown
+  const handleUserAutofill = (user: UserRecord) => {
+    setFormData((prev) => ({
+      ...prev,
+      user_email: user.email,
+      user_name: user.name,
+      user_department: user.department,
+    }));
+  };
+
   const handleConfirm = () => {
     onConfirm(formData);
     setIsOpen(false);
@@ -61,7 +71,7 @@ const SubmitForAUser = ({
     <div className="flex w-full flex-col rounded-2xl border border-neutral-300 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950">
       {/* Form */}
       <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2">
-        {/* User Email */}
+        {/* User Email (Replaced with Autocomplete Component) */}
         <div className="flex flex-col gap-1">
           <label
             htmlFor="user_email"
@@ -69,18 +79,17 @@ const SubmitForAUser = ({
           >
             Email Address <FormAsterisk />
           </label>
-          <input
-            type="email"
+          <UserEmailAutocomplete
             id="user_email"
             name="user_email"
             value={formData.user_email}
             onChange={handleChange}
             onBlur={handleBlur}
-            required
-            placeholder="User's email address"
-            className="rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+            onSelectUser={handleUserAutofill}
+            placeholder="User's email..."
           />
         </div>
+
         {/* User Name */}
         <div className="flex flex-col gap-1">
           <label
