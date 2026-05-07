@@ -291,15 +291,13 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
                       className="flex items-center gap-1 text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
                     >
                       Email Address <FormAsterisk />{" "}
-                      {formData.user_email && !isValidEmail ? (
-                        <span className="text-[10px] font-normal text-red-500 lowercase">
-                          Invalid hotpoint email.
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-normal lowercase">
-                          Double-check for follow-up alerts.
-                        </span>
-                      )}
+                      <span
+                        className={`text-[10px] font-normal ${formData.user_email && !isValidEmail ? "text-red-500" : ""} lowercase`}
+                      >
+                        {formData.user_email && !isValidEmail
+                          ? "Invalid hotpoint email."
+                          : "Double-check for follow-up alerts."}
+                      </span>
                     </label>
 
                     <UserEmailAutocomplete

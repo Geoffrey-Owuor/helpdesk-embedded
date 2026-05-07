@@ -22,7 +22,7 @@ const AuthShell = ({ children }: { children: React.ReactNode }) => {
         </div>
 
         {/* Auth Cards */}
-        <div className="flex w-full flex-1 items-center justify-center">
+        <div className="flex w-full flex-1 items-center justify-center px-3">
           {children}
         </div>
 

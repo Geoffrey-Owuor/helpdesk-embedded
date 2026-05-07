@@ -14,6 +14,7 @@ import {
   X,
 } from "lucide-react";
 import { NameValidationResult, NameValidator } from "@/utils/Validators";
+import { validateHotpointEmail } from "@/utils/Validators";
 import NameRulesCard from "../../NameRulesCard";
 import CustomDropdown from "./CustomDropDown";
 import FormAsterisk from "../../FormAsterisk";
@@ -71,6 +72,8 @@ const EditUserModal = ({
 
   const [formData, setFormData] = useState<UserInfo>(userInfo);
   const modalRef = useRef<HTMLDivElement | null>(null);
+
+  const isEmailValid = validateHotpointEmail(formData.email);
 
   // Name validation states
   const [isNameFocused, setIsNameFocused] = useState(false);
@@ -262,9 +265,14 @@ const EditUserModal = ({
                 htmlFor="email"
                 className="flex items-center gap-1 text-sm font-medium text-neutral-700 dark:text-neutral-300"
               >
-                Email Address{" "}
-                <span className="text-xs">(should be accurate)</span>
-                <FormAsterisk />
+                Email Address <FormAsterisk />
+                <span
+                  className={`text-[10px] ${formData.email && !isEmailValid ? "text-red-500" : ""}`}
+                >
+                  {formData.email && !isEmailValid
+                    ? "invalid hotpoint email"
+                    : "should be accurate"}
+                </span>
               </label>
               <div className="relative">
                 <Mail className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-neutral-400" />
