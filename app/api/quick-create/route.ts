@@ -1,74 +1,70 @@
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
-import { NextResponse } from "next/server";
-import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
+import { NextResponse, NextRequest } from "next/server";
 import { emailSender } from "@/services/EmailSender";
 import { CheckBehalfUser } from "@/serverActions/CheckBehalfUser";
 
-export const POST = withAuth(async ({ request, user }) => {
+export async function POST(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+
+  const secret = searchParams.get("secret");
+
+  if (secret !== process.env.NEXT_PUBLIC_APIS_KEY) {
+    return NextResponse.json(
+      {
+        message:
+          "Wrong secret, please provide the right one or contact your admin",
+      },
+      { status: 400 },
+    );
+  }
+
   // initialze the pool client variable
   let client: PoolClient | undefined;
-
-  // Destructure the user information
-  const { username, userId, email, department } = user;
-
-  // Variables for holding the user info
-  let selectedName = username;
-  let selectedId = userId;
-  let selectedEmail = email;
-  let selectedDepartment = department;
 
   // Define our default agent value
   const defaultAgent = "Not Assigned";
 
   try {
+    // Payload definition
+    const payload = await request.json();
+
+    // Destructure the payload
     const {
+      user_name,
+      user_email,
+      user_department,
       target_department,
       issue_type,
       issue_title,
       issue_description,
-      // Optional fields - Submitting on behalf of another user
-      behalf_user_name,
-      behalf_user_email,
-      behalf_user_department,
-    } = await request.json();
+    } = payload;
 
-    // Check if we have all the data
-    if (
-      !target_department ||
-      !issue_type ||
-      !issue_title ||
-      !issue_description
-    ) {
+    // Bad request - Missing some required fields
+    const someFieldsMissing = Object.values(payload).some((value) => !value);
+
+    if (someFieldsMissing) {
       return NextResponse.json(
-        { message: "Missing some required fields" },
+        { message: "Some required fields are missing, please try again" },
         { status: 400 },
       );
     }
 
-    // Function to create/return the user who is being created a ticket for
-    // And return the user details required for proceeding
-    if (behalf_user_department && behalf_user_name && behalf_user_email) {
-      const returnedUser = await CheckBehalfUser({
-        name: behalf_user_name,
-        email: behalf_user_email,
-        department: behalf_user_department,
-      });
+    // Call the check behalf user to verify the user submitting an issue
+    const returnedUser = await CheckBehalfUser({
+      name: user_name,
+      email: user_email,
+      department: user_department,
+    });
 
-      if (!returnedUser) {
-        return NextResponse.json(
-          {
-            message:
-              "Could not verify/create the user you're trying to submit for, please contact your admin",
-          },
-          { status: 422 },
-        );
-      }
-
-      selectedName = returnedUser.name;
-      selectedId = returnedUser.userId;
-      selectedEmail = returnedUser.email;
-      selectedDepartment = returnedUser.department;
+    if (!returnedUser) {
+      return NextResponse.json(
+        {
+          message:
+            "Could not verify/create the user you're trying to submit for, please contact your admin",
+        },
+        { status: 422 },
+      );
     }
 
     // get a pool client
@@ -87,10 +83,10 @@ export const POST = withAuth(async ({ request, user }) => {
 
     // construct the params
     const params = [
-      selectedId,
-      selectedName,
-      selectedEmail,
-      selectedDepartment,
+      returnedUser.userId,
+      returnedUser.name,
+      returnedUser.email,
+      returnedUser.department,
       target_department,
       issue_type,
       issue_title,
@@ -161,15 +157,15 @@ export const POST = withAuth(async ({ request, user }) => {
     await client.query("COMMIT");
 
     // EMAIL SERVICE
-    const title = `New Issue ${issueReferenceNumber} Raised By ${user.username}`;
-    const description = `A new issue has been raised to ${target_department} by ${user.username}`;
+    const title = `New Issue ${issueReferenceNumber} Raised By ${returnedUser.name}`;
+    const description = `A new issue has been raised to ${target_department} by ${returnedUser.name}`;
 
     // Fire and forget - calling the email sender service
-    // emailSender({
-    //   title,
-    //   description,
-    //   uuid: resultantUuid,
-    // });
+    emailSender({
+      title,
+      description,
+      uuid: resultantUuid,
+    });
 
     // Return a response to the client
     return NextResponse.json(
@@ -177,14 +173,13 @@ export const POST = withAuth(async ({ request, user }) => {
       { status: 200 },
     );
   } catch (error) {
-    if (client) await client.query("ROLLBACK");
-    console.error("Error while submitting the issue", error);
-
+    await client?.query("ROLLBACK");
+    console.error("Error while trying to submit a quick create issue:", error);
     return NextResponse.json(
-      { message: "Error while trying to submit your issue" },
+      { message: "An error occurred while trying to submit your issue" },
       { status: 500 },
     );
   } finally {
     if (client) client.release();
   }
-});
+}

@@ -191,19 +191,12 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
     hideDialog();
     showOverlay("Adding");
 
-    const payload = {
-      target_department: formData.target_department,
-      issue_type: formData.issue_type,
-      issue_title: formData.issue_title,
-      issue_description: formData.issue_description,
-      user_name: formData.user_name,
-      user_email: formData.user_email,
-      user_department: formData.user_department,
-    };
-
     try {
       // TODO: Verify if you use a separate endpoint for Quick Create or the standard "/post-issue"
-      const response = await apiClient.post("/quick-create", payload);
+      const response = await apiClient.post(
+        `/quick-create?secret=${process.env.NEXT_PUBLIC_APIS_KEY}`,
+        formData,
+      );
 
       hideOverlay();
       setIsOpen(false);
