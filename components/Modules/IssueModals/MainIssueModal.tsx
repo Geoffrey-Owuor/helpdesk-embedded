@@ -18,6 +18,7 @@ import {
   ChevronDown,
   ContactRound,
   UserRound,
+  Send,
 } from "lucide-react";
 import { fetchedIssueAgentsMapping } from "@/serverActions/GetIssueTypes";
 import { IssueAgentMapping } from "@/serverActions/GetIssueTypes";
@@ -280,13 +281,19 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
         {/* Modal Container */}
         <div
           ref={modalRef}
-          className="flex max-h-[90vh] w-full max-w-xl flex-col rounded-2xl border border-neutral-300 bg-neutral-50 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
+          className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-2xl border border-neutral-300 bg-neutral-50 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
         >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-neutral-200/50 p-4 dark:border-neutral-900">
-            <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
-              Create A New Issue
-            </h2>
+            <div>
+              <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+                Create A New Issue
+              </h2>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                Enter the required issue details and submit.
+              </p>
+            </div>
+
             <button
               onClick={() => setIsOpen(false)}
               className="rounded-full p-2 text-neutral-500 hover:bg-neutral-200 hover:text-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
@@ -518,9 +525,10 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                     !formData.issue_type ||
                     !formData.target_department
                   }
-                  className="w-full rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:focus:ring-offset-neutral-900"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:focus:ring-offset-neutral-900"
                 >
                   Submit Issue
+                  <Send className="h-4 w-4" />
                 </button>
               </div>
             </form>
