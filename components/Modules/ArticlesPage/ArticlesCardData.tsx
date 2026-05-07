@@ -96,7 +96,7 @@ const ArticlesCardData = ({
         <div className="flex flex-col gap-3">
           {/* Search input */}
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Use an article title to search
+            Use the article title to search
           </p>
           <div className="relative w-fit">
             <Search className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-neutral-400" />

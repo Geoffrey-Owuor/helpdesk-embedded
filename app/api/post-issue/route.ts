@@ -173,7 +173,7 @@ export const POST = withAuth(async ({ request, user }) => {
 
     // Return a response to the client
     return NextResponse.json(
-      { message: "Your issue has been submitted!" },
+      { message: "Your issue has been submitted successfully!" },
       { status: 200 },
     );
   } catch (error) {
