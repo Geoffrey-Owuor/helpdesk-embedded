@@ -29,7 +29,6 @@ export const titleHelper = (value: IssueValueTypes) => {
 // Handling cases where issue type is other and later other issue types that require formatting
 export const generateValueType = (value: string) => {
   if (value.includes("Other")) return "Other Issue";
-  else if (value === "Automation") return "(RPA) Robotic Process Automation";
   else return value;
 };
 

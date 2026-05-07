@@ -360,7 +360,7 @@ const UserManual = () => {
         {/* --- Dashboard Section --- */}
         <div>
           <h3 className="mb-6 flex items-center gap-2 text-xl font-semibold text-neutral-900 dark:text-white">
-            <LayoutDashboard className="h-6 w-6 text-violet-500" />
+            <LayoutDashboard className="h-6 w-6 text-blue-500" />
             Dashboard Submission (Logged In)
           </h3>
           <StepList
