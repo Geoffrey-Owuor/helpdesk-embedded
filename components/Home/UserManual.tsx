@@ -54,7 +54,7 @@ const quickCreateSteps = [
     icon: <UserRoundPlus className="h-5 w-5" />,
     title: "Provide Your Contact Details",
     description:
-      "Because you are not logged in, you must provide your name, department, and a valid email address.",
+      "Because you are not logged in, you must provide your name, department, and a valid Hotpoint work email.",
     detail: (
       <ul className="mt-3 space-y-2 text-sm text-neutral-500 dark:text-neutral-400">
         <li className="flex items-start gap-2">
@@ -74,9 +74,9 @@ const quickCreateSteps = [
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
           <span className="text-neutral-700 dark:text-neutral-300">
-            <strong>Crucial:</strong> Providing an accurate/correct email
-            address is vital if you want to receive follow-up email
-            notifications regarding the status of your issue.
+            <strong>Crucial:</strong> Providing a valid Hotpoint work email is
+            vital if you want to receive follow-up email notifications regarding
+            the status of your issue.
           </span>
         </li>
       </ul>

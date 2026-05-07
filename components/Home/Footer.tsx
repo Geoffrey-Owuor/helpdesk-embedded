@@ -14,8 +14,8 @@ const footerLinks = [
 
 const Footer = () => {
   return (
-    <footer className="border-t border-neutral-100 dark:border-neutral-900">
-      <div className="custom:px-8 mx-auto max-w-6xl px-6 py-12">
+    <footer>
+      <div className="custom:px-8 mx-auto max-w-6xl border-t border-neutral-100 px-6 py-12 dark:border-neutral-900">
         {/* Main Grid */}
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-0">
           {/* Brand Column */}
