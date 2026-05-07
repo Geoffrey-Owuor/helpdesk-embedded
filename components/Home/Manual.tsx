@@ -3,12 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import UserManual from "./UserManual";
+import IssuesDocs from "./IssuesDocs";
 import BugReport from "./BugReport";
-import { ArrowLeft, BookOpen, Bug, FileText } from "lucide-react";
+import { ArrowLeft, BookOpen, Bug, Files, FileText } from "lucide-react";
 import HomeNavBar from "../Navigation/HomeNavBar";
 import Footer from "./Footer";
 
-type Section = "user-manual" | "bug-report";
+type Section = "user-manual" | "issues-docs" | "bug-report";
 
 const navItems = [
   {
@@ -16,6 +17,12 @@ const navItems = [
     link: "#user-manual",
     label: "User Manual",
     icon: <BookOpen className="h-4 w-4" />,
+  },
+  {
+    id: "issues-docs",
+    link: "#issues-docs",
+    label: "Issues Docs",
+    icon: <Files className="h-4 w-4" />,
   },
   {
     id: "bug-report",
@@ -91,6 +98,7 @@ const Manual = () => {
           {/* Content */}
           <div className="min-w-0 flex-1 space-y-20">
             <UserManual />
+            <IssuesDocs />
             <BugReport />
           </div>
         </div>
