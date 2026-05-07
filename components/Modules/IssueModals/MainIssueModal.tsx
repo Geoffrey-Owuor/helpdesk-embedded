@@ -436,11 +436,8 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
 
                             <div className="flex items-center gap-1.5 opacity-75">
                               <span>
-                                (
-                                <span className="font-semibold">
-                                  Dept Admin
-                                </span>
-                                : {assignmentInfo?.admin_name || "None found"})
+                                (<span className="font-semibold">Admin</span>:{" "}
+                                {assignmentInfo?.admin_name || "None found"})
                               </span>
                             </div>
 
