@@ -28,6 +28,7 @@ import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { NameValidator, NameValidationResult } from "@/utils/Validators";
 import NameRulesCard from "@/components/Modules/NameRulesCard";
 import { useOverlayStore } from "@/store/useOverlayStore";
+import { validateHotpointEmail } from "@/utils/Validators";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { RefetchFunction } from "./AgentsInfo";
 
@@ -59,6 +60,9 @@ const AddAgent = ({
     password: "",
     confirmPassword: "",
   });
+
+  // Check if email is a valid Hotpoint email
+  const isValidEmail = validateHotpointEmail(formData.email);
 
   // State for showing/hiding password
   const [showPassword, setShowPassword] = useState(false);
@@ -219,11 +223,14 @@ const AddAgent = ({
           {/* Email */}
           <div className="space-y-1.5">
             <label className="flex items-center gap-1 text-xs font-semibold text-neutral-600 dark:text-neutral-400">
-              Email{" "}
-              <span className="font-normal text-gray-500">
-                (should be accurate)
+              Email <FormAsterisk />
+              <span
+                className={`font-normal ${formData.email && !isValidEmail ? "text-red-500" : "text-gray-500"}`}
+              >
+                {formData.email && !isValidEmail
+                  ? "invalid hotpoint email"
+                  : "should be accurate"}
               </span>
-              <FormAsterisk />
             </label>
             <div className="relative">
               <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-neutral-400" />
@@ -350,7 +357,10 @@ const AddAgent = ({
           <button
             type="submit"
             disabled={
-              !!shortPassword || !!passwordsMismatch || !nameValidation.isValid
+              !!shortPassword ||
+              !!passwordsMismatch ||
+              !nameValidation.isValid ||
+              !isValidEmail
             }
             className="flex items-center gap-1.5 rounded-xl bg-neutral-900 px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-neutral-700 disabled:opacity-50 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
           >

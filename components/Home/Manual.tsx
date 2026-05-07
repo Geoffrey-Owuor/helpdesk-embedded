@@ -38,7 +38,7 @@ const Manual = () => {
   return (
     <main className="layout-scrollbar home-container h-screen overflow-y-auto scroll-smooth bg-white dark:bg-neutral-950">
       <HomeNavBar />
-      <div className="custom:px-8 mx-auto mb-8 max-w-6xl px-6 py-6 2xl:max-w-7xl">
+      <div className="custom:px-8 mx-auto mb-8 max-w-6xl px-4 py-6 2xl:max-w-7xl">
         <div className="flex flex-col gap-12 lg:flex-row lg:gap-16">
           {/* Sticky sidebar nav */}
           <aside className="shrink-0 lg:w-56">
@@ -75,13 +75,13 @@ const Manual = () => {
               <p className="mb-2 px-1 text-xs font-semibold tracking-widest text-neutral-400 uppercase dark:text-neutral-600">
                 Sections
               </p>
-              <nav className="flex flex-row gap-2 lg:flex-col">
+              <nav className="scrollbar-hide flex flex-row gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
                 {navItems.map((item) => (
                   <a
                     key={item.id}
                     href={item.link}
                     onClick={() => setActiveSection(item.id as Section)}
-                    className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium transition-all ${
+                    className={`flex w-auto shrink-0 items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium transition-all lg:w-full ${
                       activeSection === item.id
                         ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-900 dark:text-white"
                         : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900 dark:hover:bg-neutral-900 dark:hover:text-white"

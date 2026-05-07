@@ -35,11 +35,8 @@ const quickCreateSteps = [
       <ul className="mt-3 space-y-2 text-sm text-neutral-500 dark:text-neutral-400">
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
-          Click the floating blue
-          <strong className="font-medium text-neutral-700 dark:text-neutral-300">
-            Quick Create
-          </strong>
-          button located at the bottom right of the homepage.
+          Click the floating blue &quot;Quick Create&quot; button located at the
+          bottom right of the homepage.
         </li>
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
@@ -59,17 +56,8 @@ const quickCreateSteps = [
       <ul className="mt-3 space-y-2 text-sm text-neutral-500 dark:text-neutral-400">
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
-          Ensure your
-          <strong className="font-medium text-neutral-700 dark:text-neutral-300">
-            {" "}
-            Full Name{" "}
-          </strong>
-          and
-          <strong className="font-medium text-neutral-700 dark:text-neutral-300">
-            {" "}
-            Department{" "}
-          </strong>
-          are accurate so agents know who they are assisting.
+          Ensure your Full Name and Department are accurate so agents know who
+          they are assisting.
         </li>
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
@@ -97,11 +85,8 @@ const quickCreateSteps = [
         </li>
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
-          Click
-          <strong className="font-medium text-neutral-700 dark:text-neutral-300">
-            Submit Quick Issue
-          </strong>
-          to finalize. You will receive an email confirmation shortly after.
+          Click &quot;Submit Quick Issue&quot; to finalize. You will receive an
+          email confirmation shortly after.
         </li>
       </ul>
     ),
@@ -120,19 +105,12 @@ const dashboardSteps = [
       <ul className="mt-3 space-y-2 text-sm text-neutral-500 dark:text-neutral-400">
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
-          Navigate to{" "}
-          <code className="rounded bg-neutral-100 px-1.5 py-0.5 font-mono text-xs dark:bg-neutral-800">
-            /register
-          </code>{" "}
-          to sign up with your work email.
+          Navigate to &quot;/register&quot; to sign up with your work email.
         </li>
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
-          Already have an account? Go to{" "}
-          <code className="rounded bg-neutral-100 px-1.5 py-0.5 font-mono text-xs dark:bg-neutral-800">
-            /login
-          </code>{" "}
-          and enter your credentials.
+          Already have an account? Go to &quot;/login&quot; and enter your
+          credentials.
         </li>
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
@@ -151,11 +129,7 @@ const dashboardSteps = [
       <ul className="mt-3 space-y-2 text-sm text-neutral-500 dark:text-neutral-400">
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
-          Locate{" "}
-          <strong className="font-medium text-neutral-700 dark:text-neutral-300">
-            New Issue
-          </strong>{" "}
-          in the left navigation sidebar.
+          Locate &quot;New Issue&quot; in the left navigation sidebar.
         </li>
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
@@ -164,10 +138,7 @@ const dashboardSteps = [
         </li>
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
-          You can review the details then hit{" "}
-          <strong className="font-medium text-neutral-700 dark:text-neutral-300">
-            Submit.
-          </strong>
+          You can review the details then hit &quot;Submit&quot;
         </li>
       </ul>
     ),
@@ -215,10 +186,7 @@ const dashboardSteps = [
         </li>
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />A
-          final email is sent when your issue is marked as{" "}
-          <strong className="font-medium text-neutral-700 dark:text-neutral-300">
-            Resolved.
-          </strong>
+          final email is sent when your issue is marked as &quot;Resolved&quot;
         </li>
       </ul>
     ),
@@ -238,11 +206,7 @@ const dashboardSteps = [
         </li>
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
-          Scroll to the{" "}
-          <strong className="font-medium text-neutral-700 dark:text-neutral-300">
-            Comments
-          </strong>{" "}
-          section at the bottom of the page.
+          Scroll to the &quot;Comments&quot; section at the bottom of the page.
         </li>
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
@@ -361,7 +325,7 @@ const UserManual = () => {
         <div>
           <h3 className="mb-6 flex items-center gap-2 text-xl font-semibold text-neutral-900 dark:text-white">
             <LayoutDashboard className="h-6 w-6 text-blue-500" />
-            Dashboard Submission (Logged In)
+            Dashboard Submission
           </h3>
           <StepList
             steps={dashboardSteps}
