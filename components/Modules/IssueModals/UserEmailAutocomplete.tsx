@@ -90,6 +90,9 @@ export default function UserEmailAutocomplete({
   return (
     <div className="relative flex w-full flex-col" ref={wrapperRef}>
       <div className="relative">
+        <div className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2">
+          <Mail className="h-4 w-4 text-neutral-400" />
+        </div>
         <input
           type="email"
           id={id}
@@ -104,7 +107,7 @@ export default function UserEmailAutocomplete({
           onBlur={onBlur}
           required
           placeholder={placeholder}
-          className="peer w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 transition-all focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+          className="peer w-full rounded-xl border border-neutral-300 bg-white py-2 pr-3 pl-9 text-sm text-neutral-900 placeholder-neutral-400 transition-all focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
           autoComplete="off"
         />
       </div>

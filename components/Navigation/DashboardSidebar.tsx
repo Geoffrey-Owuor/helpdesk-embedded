@@ -59,10 +59,12 @@ const DashboardSidebar = () => {
         sideBarOpen={sideBarOpen}
         setSideBarOpen={setSideBarOpen}
       />
-      <MainIssueModal
-        isOpen={isIssueModalOpen}
-        setIsOpen={setIsIssueModalOpen}
-      />
+      {isIssueModalOpen && (
+        <MainIssueModal
+          isOpen={isIssueModalOpen}
+          setIsOpen={setIsIssueModalOpen}
+        />
+      )}
       <AdminPanel
         showAdminPanel={showAdminPanel}
         setShowAdminPanel={setShowAdminPanel}
