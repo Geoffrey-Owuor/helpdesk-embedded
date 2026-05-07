@@ -46,11 +46,11 @@ export default function UserEmailAutocomplete({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Debounce logic (waits 500ms after user stops typing)
+  // Debounce logic (waits 300ms after user stops typing)
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(value);
-    }, 500);
+    }, 300); //Between 300 and 500
 
     return () => clearTimeout(timer);
   }, [value]);
