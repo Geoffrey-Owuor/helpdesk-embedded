@@ -1,10 +1,12 @@
 "use client";
 
 import { Dispatch, SetStateAction, useState, ChangeEvent } from "react";
+import { NameValidationResult, NameValidator } from "@/utils/Validators";
+import NameRulesCard from "../NameRulesCard";
 import { baseDepartments } from "@/public/assets";
 import OptionsDropDown from "./OptionsDropDown";
 import FormAsterisk from "../FormAsterisk";
-import { UserRoundPlus } from "lucide-react";
+import { CheckCircle2, UserRound, UserRoundPlus } from "lucide-react";
 import UserEmailAutocomplete from "./UserEmailAutocomplete";
 import { UserRecord } from "@/serverActions/FetchUserRecords";
 
@@ -31,9 +33,23 @@ const SubmitForAUser = ({
     user_department: "",
   });
 
+  // Name validation states
+  const [isNameFocused, setIsNameFocused] = useState(false);
+  const [nameValidation, setNameValidation] = useState<NameValidationResult>({
+    hasTwoNames: true,
+    isCapitalized: true,
+    singleSpace: true,
+    isValid: true,
+  });
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "user_name") {
+      const validationResult = NameValidator(value);
+      setNameValidation(validationResult);
+    }
   };
 
   const handleBlur = (e: ChangeEvent<HTMLInputElement>) => {
@@ -91,24 +107,47 @@ const SubmitForAUser = ({
         </div>
 
         {/* User Name */}
-        <div className="flex flex-col gap-1">
+        <div className="relative flex flex-col gap-1">
+          <NameRulesCard
+            validation={nameValidation}
+            isVisible={isNameFocused}
+          />
           <label
             htmlFor="user_name"
             className="flex items-center gap-1 text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
           >
             Full Name <FormAsterisk />
           </label>
-          <input
-            type="text"
-            id="user_name"
-            name="user_name"
-            value={formData.user_name}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            required
-            placeholder="User's full name"
-            className="rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
-          />
+          <div className="relative">
+            <div className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2">
+              {formData.user_name && nameValidation.isValid ? (
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+              ) : (
+                <UserRound className="h-4 w-4 text-neutral-400" />
+              )}
+            </div>
+            <input
+              type="text"
+              id="user_name"
+              name="user_name"
+              value={formData.user_name}
+              onFocus={() => setIsNameFocused(true)}
+              onChange={handleChange}
+              onBlur={(e) => {
+                setIsNameFocused(false);
+                handleBlur(e);
+              }}
+              required
+              placeholder="User's full name"
+              className={`w-full rounded-xl border bg-white py-2 pr-3 pl-9 text-sm text-neutral-900 placeholder-neutral-400 focus:ring-1 focus:outline-none dark:bg-neutral-900 dark:text-neutral-100 ${
+                !nameValidation.isValid &&
+                formData.user_name.length > 0 &&
+                !isNameFocused
+                  ? "border-red-400 focus:border-red-400 focus:ring-red-200 dark:border-red-500 dark:focus:border-red-500 dark:focus:ring-red-900"
+                  : "border-neutral-300 focus:border-blue-500 focus:ring-blue-500 dark:border-neutral-700"
+              }`}
+            />
+          </div>
         </div>
 
         {/* User Department */}
