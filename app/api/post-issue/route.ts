@@ -165,11 +165,11 @@ export const POST = withAuth(async ({ request, user }) => {
     const description = `A new issue has been raised to ${target_department} by ${user.username}`;
 
     // Fire and forget - calling the email sender service
-    // emailSender({
-    //   title,
-    //   description,
-    //   uuid: resultantUuid,
-    // });
+    emailSender({
+      title,
+      description,
+      uuid: resultantUuid,
+    });
 
     // Return a response to the client
     return NextResponse.json(

@@ -2,6 +2,7 @@
 
 import { Dispatch, SetStateAction, useState, ChangeEvent } from "react";
 import { NameValidationResult, NameValidator } from "@/utils/Validators";
+import { validateHotpointEmail } from "@/utils/Validators";
 import NameRulesCard from "../NameRulesCard";
 import { baseDepartments } from "@/public/assets";
 import OptionsDropDown from "./OptionsDropDown";
@@ -32,6 +33,8 @@ const SubmitForAUser = ({
     user_email: "",
     user_department: "",
   });
+
+  const isValidEmail = validateHotpointEmail(formData.user_email);
 
   // Name validation states
   const [isNameFocused, setIsNameFocused] = useState(false);
@@ -93,7 +96,12 @@ const SubmitForAUser = ({
             htmlFor="user_email"
             className="flex items-center gap-1 text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
           >
-            Email Address <FormAsterisk />
+            Email Address <FormAsterisk />{" "}
+            {formData.user_email && !isValidEmail && (
+              <span className="text-[10px] font-normal text-red-500 lowercase">
+                Invalid hotpoint email.
+              </span>
+            )}
           </label>
 
           <UserEmailAutocomplete
@@ -170,7 +178,7 @@ const SubmitForAUser = ({
         <div className="pt-5">
           <button
             onClick={handleConfirm}
-            disabled={!isValid}
+            disabled={!isValid || !nameValidation.isValid || isValidEmail}
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-neutral-950 px-4 py-2.25 text-sm text-white hover:bg-neutral-800 focus:outline-none disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
           >
             <UserRoundPlus className="h-4 w-4" />

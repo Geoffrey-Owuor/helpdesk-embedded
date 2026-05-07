@@ -206,7 +206,7 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
             </span>
 
             <span className="text-xs text-neutral-500">
-              Returned result: {filteredData.length || "none"}
+              Returned results: {filteredData.length || "none"}
             </span>
           </div>
           {role !== "user" && !isAutomations && <ViewAgentAdminFilter />}

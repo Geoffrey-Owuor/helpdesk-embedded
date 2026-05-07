@@ -27,6 +27,7 @@ import {
   Send,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { validateHotpointEmail } from "@/utils/Validators";
 
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
@@ -94,6 +95,8 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
     issue_title: "",
     issue_description: "",
   });
+
+  const isValidEmail = validateHotpointEmail(formData.user_email);
 
   // Name validation states
   const [isNameFocused, setIsNameFocused] = useState(false);
@@ -288,9 +291,15 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
                       className="flex items-center gap-1 text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
                     >
                       Email Address <FormAsterisk />{" "}
-                      <span className="text-[10px] font-normal lowercase">
-                        Double-check for follow-up alerts.
-                      </span>
+                      {formData.user_email && !isValidEmail ? (
+                        <span className="text-[10px] font-normal text-red-500 lowercase">
+                          Invalid hotpoint email.
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-normal lowercase">
+                          Double-check for follow-up alerts.
+                        </span>
+                      )}
                     </label>
 
                     <UserEmailAutocomplete
@@ -513,7 +522,9 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
               <div className="pt-4">
                 <button
                   type="submit"
-                  disabled={!isFormValid}
+                  disabled={
+                    !isFormValid || !isValidEmail || !nameValidation.isValid
+                  }
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:focus:ring-offset-neutral-900"
                 >
                   Submit Quick Issue
