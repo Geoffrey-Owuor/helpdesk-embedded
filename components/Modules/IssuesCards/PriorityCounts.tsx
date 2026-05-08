@@ -72,7 +72,7 @@ const PriorityCounts = ({
             >
               <Icon className={`h-3 w-3 shrink-0 ${text}`} strokeWidth={2} />
               <span className={`text-xs font-medium tabular-nums ${text}`}>
-                {count}
+                {count > 500 ? "500+" : count}
               </span>
             </div>
           ))}

@@ -73,7 +73,7 @@ const UserCards = () => {
                 {loading ? (
                   <SkeletonBox className="h-9 w-9 rounded-full" />
                 ) : (
-                  item.value
+                  <>{item.value > 500 ? "500+" : item.value}</>
                 )}
               </h3>
             </div>

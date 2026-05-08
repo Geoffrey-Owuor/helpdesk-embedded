@@ -165,3 +165,9 @@ export const priorityOptions = [
   { label: "Medium", value: "Medium" },
   { label: "Low", value: "Low" },
 ];
+
+export const footerQuickLinks = [
+  { label: "Changelog", href: "/changelog" },
+  { label: "Manual", href: "/manual" },
+  { label: "Knowledge Base", href: "/articles" },
+];
