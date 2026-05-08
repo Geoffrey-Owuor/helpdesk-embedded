@@ -518,10 +518,11 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
               <div className="flex items-center justify-between gap-4">
                 <Link
                   href="/manual#issues-docs"
+                  target="_blank"
                   className="inline-flex items-center gap-1 text-xs text-blue-500 hover:underline"
                 >
                   <CircleQuestionMark className="h-3 w-3" />
-                  issue types docs
+                  Issue types docs
                 </Link>
                 <button
                   type="submit"

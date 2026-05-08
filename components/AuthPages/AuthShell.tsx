@@ -2,7 +2,9 @@ import ThemeToggle from "../Themes/ThemeToggle";
 import { currentYear } from "@/public/assets";
 import HomePagesLogo from "../Modules/HomePagesLogo";
 import { Sparkles } from "lucide-react";
+import { footerQuickLinks } from "@/public/assets";
 import { DbStatusPill } from "../Modules/DbStatus/DbStatusPill";
+import Link from "next/link";
 
 const AuthShell = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -27,19 +29,37 @@ const AuthShell = ({ children }: { children: React.ReactNode }) => {
         </div>
 
         {/* Bottom Footer */}
-        <div className="p-4">
-          <span className="inline-flex items-center gap-2 text-sm leading-5 text-neutral-500">
-            <span> &copy; {currentYear} IssueDesk. Built by</span>
+        <div className="flex w-full flex-col items-center justify-between gap-4 p-6 text-sm text-neutral-500 md:flex-row">
+          {/* Left Area: Copyright & Attribution */}
+          <span className="inline-flex items-center gap-2 leading-5">
+            <span>&copy; {currentYear} IssueDesk. Hotpoint Appliances Ltd</span>
+          </span>
+
+          <span className="inline-flex items-center gap-2">
+            Built by{" "}
             <a
               href="https://jeff-portfolio-web.vercel.app"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 font-semibold text-neutral-700 hover:underline dark:text-neutral-300"
+              className="inline-flex items-center gap-0.5 font-semibold text-neutral-700 hover:underline dark:text-neutral-300"
             >
               <Sparkles className="h-4 w-4" />
               Jeff
             </a>
           </span>
+
+          {/* Right Area: Quick Links */}
+          <nav className="flex items-center gap-4 sm:gap-6">
+            {footerQuickLinks.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className="text-[13px] text-neutral-500 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
         </div>
       </div>
     </div>
