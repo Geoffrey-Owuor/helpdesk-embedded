@@ -277,7 +277,7 @@ const EditIssueTypeInfo = ({
         </div>
 
         {/* 3. Action Buttons */}
-        <div className="flex items-center justify-end gap-2 pt-2">
+        <div className="flex items-center justify-end gap-2">
           <button
             onClick={handleConfirmationDialog}
             disabled={
@@ -288,7 +288,7 @@ const EditIssueTypeInfo = ({
               !selectedType ||
               !selectedPriority
             } //We will also repeat this logic in our handleUpdate function for double security
-            className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50"
+            className="flex items-center justify-center gap-2 rounded-xl bg-zinc-900 px-4 py-2 text-sm text-white transition-all hover:bg-zinc-800 active:scale-[0.98] disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
           >
             <Save size={16} />
             Update Configuration

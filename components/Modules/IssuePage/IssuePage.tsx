@@ -305,7 +305,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
       )}
       <div className="mx-auto max-w-6xl py-6 md:py-3.5">
         {/* --- HEADER SECTION (Unchanged) --- */}
-        <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-start">
+        <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div className="flex flex-col gap-3">
             <h1
               title={titleHelper(issueData.issue_title)}
@@ -549,7 +549,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-xs dark:border-neutral-800 dark:bg-neutral-950">
             <div className="mb-4 flex items-center">
               <h2 className="flex items-center gap-2 text-lg font-semibold text-neutral-900 dark:text-white">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
                   <MessageSquare className="h-4 w-4" />
                 </div>
                 Remarks
@@ -570,6 +570,9 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
         </div>
         {/* --- BOTTOM GRID: Description summary card + Comments --- */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Comments Section */}
+          <CommentsSection uuid={uuid} />
+
           {/* Summary card */}
           <div className="flex flex-col rounded-xl border-t-2 border-black dark:border-white">
             {/* Card header */}
@@ -630,9 +633,6 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
               ))}
             </div>
           </div>
-
-          {/* Comments Section */}
-          <CommentsSection uuid={uuid} />
         </div>
       </div>
     </>

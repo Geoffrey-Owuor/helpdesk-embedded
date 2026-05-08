@@ -266,7 +266,7 @@ const AddIssueType = ({
         </div>
 
         {/* 3. Action Buttons */}
-        <div className="flex items-center justify-end gap-2 pt-2">
+        <div className="flex items-center justify-end gap-2">
           <button
             onClick={handleConfirmSubmit}
             disabled={!issueType || !agentEmail || !issuePriority} //We will also repeat this logic in our handleSubmit function for double security

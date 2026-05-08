@@ -256,7 +256,7 @@ const ReassignIssue = ({
           )}
 
           {/* The Reassign Button */}
-          <div className="mt-8 flex justify-center">
+          <div className="mt-4 flex justify-center">
             <button
               onClick={handleConfirmationDialog}
               disabled={!agentEmail || !agentName || isUpdating}

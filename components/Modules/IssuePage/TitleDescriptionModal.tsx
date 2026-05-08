@@ -200,7 +200,7 @@ const TitleDescriptionModal = ({
             </div>
 
             {/* Update button */}
-            <div className="pt-2">
+            <div>
               <button
                 type="submit"
                 disabled={
