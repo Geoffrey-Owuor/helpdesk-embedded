@@ -9,6 +9,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { useDbStore } from "@/store/useDbStore";
+import ClientPortal from "../ClientPortal";
 
 type DbStatusOverlayProps = {
   isDashboard?: boolean;
@@ -109,90 +110,92 @@ export function DbStatusOverlay({
   const config = STATUS_CONFIG[status] ?? STATUS_CONFIG.checking;
 
   return (
-    // Backdrop blur to match the app's premium feel
-    <div className="fixed inset-0 z-9999 flex items-center justify-center bg-neutral-900/40 p-4 backdrop-blur-md transition-all">
-      {/* Modal Container: Extra rounded, glassmorphism border, soft deep shadow */}
-      <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/60 bg-white/80 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.15)] backdrop-blur-xl transition-all duration-500 dark:border-neutral-700/60 dark:bg-neutral-900/80 dark:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)]">
-        {/* Header Section */}
-        <div
-          className={`relative px-8 pt-10 pb-6 text-center transition-colors duration-500 ${config.headerBg}`}
-        >
-          {!isDashboard && (
-            <button
-              onClick={hideOverlay}
-              aria-label="Close overlay"
-              className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-400 transition-all hover:scale-105 hover:bg-neutral-200 hover:text-neutral-700 active:scale-95 dark:bg-neutral-800 dark:text-neutral-500 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
-            >
-              <X size={16} strokeWidth={2.5} />
-            </button>
-          )}
-
-          {/* Elevated Icon Avatar */}
-          <div className="relative mx-auto mb-5 flex h-14 w-14 items-center justify-center">
-            {/* Soft background pulse behind the icon for degraded/ok states */}
-            {status !== "checking" && (
-              <div
-                className={`absolute inset-0 animate-ping rounded-full opacity-20 ${config.iconWrapper.split(" ")[0]}`}
-              />
-            )}
-            <div
-              className={`relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl transition-all duration-500 ${config.iconWrapper}`}
-            >
-              {config.icon}
-            </div>
-          </div>
-
-          <h2 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
-            {config.title}
-          </h2>
-          <p className="mx-auto mt-2 max-w-70 text-[13px] leading-relaxed text-neutral-500 dark:text-neutral-400">
-            {config.description}
-          </p>
-        </div>
-
-        {/* Content Section */}
-        <div className="px-8 pt-2 pb-8">
-          {/* Information Pill */}
+    <ClientPortal>
+      {/*  Backdrop blur to match the app's premium feel */}
+      <div className="fixed inset-0 z-9999 flex items-center justify-center bg-neutral-900/40 p-4 backdrop-blur-md transition-all">
+        {/* Modal Container: Extra rounded, glassmorphism border, soft deep shadow */}
+        <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/60 bg-white/80 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.15)] backdrop-blur-xl transition-all duration-500 dark:border-neutral-700/60 dark:bg-neutral-900/80 dark:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)]">
+          {/* Header Section */}
           <div
-            className={`flex items-start gap-3 rounded-2xl border p-4 transition-colors duration-500 ${config.alert.box}`}
+            className={`relative px-8 pt-10 pb-6 text-center transition-colors duration-500 ${config.headerBg}`}
           >
-            <div className="mt-0.5">{config.alert.icon}</div>
-            <p
-              className={`text-[13px] leading-relaxed font-medium ${config.alert.text}`}
-            >
-              {config.alert.message}
-            </p>
-          </div>
-
-          <div className="mt-8 space-y-5">
-            {config.showReload && (
+            {!isDashboard && (
               <button
-                onClick={() => window.location.reload()}
-                className="group flex w-full items-center justify-center gap-2 rounded-2xl bg-linear-to-br from-neutral-800 to-neutral-900 py-3.5 text-[14px] font-bold text-white shadow-md transition-all hover:shadow-xl hover:shadow-neutral-900/20 active:scale-[0.98] dark:from-neutral-100 dark:to-neutral-200 dark:text-neutral-900 dark:hover:shadow-white/10"
+                onClick={hideOverlay}
+                aria-label="Close overlay"
+                className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-400 transition-all hover:scale-105 hover:bg-neutral-200 hover:text-neutral-700 active:scale-95 dark:bg-neutral-800 dark:text-neutral-500 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
               >
-                <RefreshCcw
-                  size={16}
-                  className="transition-transform duration-500 group-hover:rotate-180"
-                />
-                Reload Application
+                <X size={16} strokeWidth={2.5} />
               </button>
             )}
 
-            {/* Status Ping */}
-            <div className="flex items-center justify-center gap-2 text-[11px] font-bold tracking-widest text-neutral-400 uppercase dark:text-neutral-500">
-              <span className="relative flex h-2 w-2">
-                <span
-                  className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${config.pingColor}`}
+            {/* Elevated Icon Avatar */}
+            <div className="relative mx-auto mb-5 flex h-14 w-14 items-center justify-center">
+              {/* Soft background pulse behind the icon for degraded/ok states */}
+              {status !== "checking" && (
+                <div
+                  className={`absolute inset-0 animate-ping rounded-full opacity-20 ${config.iconWrapper.split(" ")[0]}`}
                 />
-                <span
-                  className={`relative inline-flex h-2 w-2 rounded-full ${config.pingBg}`}
-                />
-              </span>
-              {config.statusLabel}
+              )}
+              <div
+                className={`relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl transition-all duration-500 ${config.iconWrapper}`}
+              >
+                {config.icon}
+              </div>
+            </div>
+
+            <h2 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+              {config.title}
+            </h2>
+            <p className="mx-auto mt-2 max-w-70 text-[13px] leading-relaxed text-neutral-500 dark:text-neutral-400">
+              {config.description}
+            </p>
+          </div>
+
+          {/* Content Section */}
+          <div className="px-8 pt-2 pb-8">
+            {/* Information Pill */}
+            <div
+              className={`flex items-start gap-3 rounded-2xl border p-4 transition-colors duration-500 ${config.alert.box}`}
+            >
+              <div className="mt-0.5">{config.alert.icon}</div>
+              <p
+                className={`text-[13px] leading-relaxed font-medium ${config.alert.text}`}
+              >
+                {config.alert.message}
+              </p>
+            </div>
+
+            <div className="mt-8 space-y-5">
+              {config.showReload && (
+                <button
+                  onClick={() => window.location.reload()}
+                  className="group flex w-full items-center justify-center gap-2 rounded-2xl bg-linear-to-br from-neutral-800 to-neutral-900 py-3.5 text-[14px] font-bold text-white shadow-md transition-all hover:shadow-xl hover:shadow-neutral-900/20 active:scale-[0.98] dark:from-neutral-100 dark:to-neutral-200 dark:text-neutral-900 dark:hover:shadow-white/10"
+                >
+                  <RefreshCcw
+                    size={16}
+                    className="transition-transform duration-500 group-hover:rotate-180"
+                  />
+                  Reload Application
+                </button>
+              )}
+
+              {/* Status Ping */}
+              <div className="flex items-center justify-center gap-2 text-[11px] font-bold tracking-widest text-neutral-400 uppercase dark:text-neutral-500">
+                <span className="relative flex h-2 w-2">
+                  <span
+                    className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${config.pingColor}`}
+                  />
+                  <span
+                    className={`relative inline-flex h-2 w-2 rounded-full ${config.pingBg}`}
+                  />
+                </span>
+                {config.statusLabel}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </ClientPortal>
   );
 }
