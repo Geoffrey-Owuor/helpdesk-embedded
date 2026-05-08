@@ -353,7 +353,7 @@ const AddAgent = ({
         )}
 
         {/* Submit Button */}
-        <div className="flex justify-end pt-2">
+        <div className="flex justify-end">
           <button
             type="submit"
             disabled={

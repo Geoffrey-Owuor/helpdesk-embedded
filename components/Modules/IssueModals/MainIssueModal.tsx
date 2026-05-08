@@ -19,6 +19,7 @@ import {
   ContactRound,
   UserRound,
   Send,
+  CircleQuestionMark,
 } from "lucide-react";
 import { fetchedIssueAgentsMapping } from "@/serverActions/GetIssueTypes";
 import { IssueAgentMapping } from "@/serverActions/GetIssueTypes";
@@ -35,6 +36,7 @@ import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useUser } from "@/contexts/UserContext";
 import SubmitForAUser, { SubmitForUserData } from "./SubmitForAUser";
+import Link from "next/link";
 
 // Priority icon types
 const priorityIcons: Record<string, LucideIcon> = {
@@ -307,7 +309,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
             <form
               onSubmit={handleConfirmSubmit}
               autoComplete="off"
-              className="space-y-4"
+              className="space-y-6"
             >
               {/* Button for submitting for another user */}
               {role !== "user" && (
@@ -513,7 +515,14 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
               </div>
 
               {/* Submit Button */}
-              <div className="pt-2">
+              <div className="flex items-center justify-between gap-4">
+                <Link
+                  href="/manual#issues-docs"
+                  className="inline-flex items-center gap-1 text-xs text-blue-500 hover:underline"
+                >
+                  <CircleQuestionMark className="h-3 w-3" />
+                  issue types docs
+                </Link>
                 <button
                   type="submit"
                   disabled={
@@ -522,7 +531,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                     !formData.issue_type ||
                     !formData.target_department
                   }
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:focus:ring-offset-neutral-900"
+                  className="flex items-center justify-center gap-2 rounded-xl bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800 focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 dark:focus:ring-zinc-400 dark:focus:ring-offset-neutral-900"
                 >
                   Submit Issue
                   <Send className="h-4 w-4" />

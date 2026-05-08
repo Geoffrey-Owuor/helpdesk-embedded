@@ -25,6 +25,7 @@ import {
   CheckCircle2,
   UserRound,
   Send,
+  CircleQuestionMark,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { validateHotpointEmail } from "@/utils/Validators";
@@ -51,6 +52,7 @@ import OptionsDropDown from "../Modules/IssueModals/OptionsDropDown";
 import FormAsterisk from "../Modules/FormAsterisk";
 import UserEmailAutocomplete from "../Modules/IssueModals/UserEmailAutocomplete";
 import NameRulesCard from "../Modules/NameRulesCard";
+import Link from "next/link";
 
 // Priority icon types & helper (Kept inline for reliability)
 const priorityIcons: Record<string, LucideIcon> = {
@@ -275,7 +277,7 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
             <form
               onSubmit={handleConfirmSubmit}
               autoComplete="off"
-              className="space-y-8"
+              className="space-y-6"
             >
               {/* --- SECTION 1: USER DETAILS --- */}
               <div className="space-y-4">
@@ -513,13 +515,20 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
               </div>
 
               {/* Submit Button */}
-              <div className="pt-4">
+              <div className="flex items-center justify-between gap-4">
+                <Link
+                  href="/manual#issues-docs"
+                  className="inline-flex items-center gap-1 text-xs text-blue-500 hover:underline"
+                >
+                  <CircleQuestionMark className="h-3 w-3" />
+                  issue types docs
+                </Link>
                 <button
                   type="submit"
                   disabled={
                     !isFormValid || !isValidEmail || !nameValidation.isValid
                   }
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:focus:ring-offset-neutral-900"
+                  className="flex items-center justify-center gap-2 rounded-xl bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800 focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 dark:focus:ring-zinc-400 dark:focus:ring-offset-neutral-900"
                 >
                   Submit Quick Issue
                   <Send className="h-4 w-4" />
