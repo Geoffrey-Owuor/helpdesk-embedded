@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import { FileText, PenLine } from "lucide-react";
 import PostArticle from "./PostArticle";
 import UserArticlesWrapper from "./UserArticlesWrapper";
+import { useActiveTabStore } from "@/store/useActiveTabStore";
 
 const Articles = () => {
-  const [activeTab, setActiveTab] = useState<"articles" | "post">("articles");
+  const activeTab = useActiveTabStore((state) => state.activeTab);
+  const setActiveTab = useActiveTabStore((state) => state.setActiveTab);
 
   return (
     <div className="flex h-full w-full flex-col py-6 md:py-3.5">

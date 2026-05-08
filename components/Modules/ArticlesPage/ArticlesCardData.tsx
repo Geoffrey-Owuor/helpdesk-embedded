@@ -2,9 +2,10 @@
 
 import { useState, useMemo, ChangeEvent } from "react";
 import { ArticlesCardValues } from "@/serverActions/GetUserArticles";
-import { FileSearchCorner, RotateCcw, Search, X } from "lucide-react";
+import { FileSearchCorner, PenLine, RotateCcw, Search, X } from "lucide-react";
 import Pagination from "../IssuesData/Pagination";
 import ArticleCardsView from "./ArticleCardsView";
+import { useActiveTabStore } from "@/store/useActiveTabStore";
 import ArticleCardsSkeleton from "@/components/Skeletons/ArticleCardsSkeleton";
 
 type ArticlesCardDataProps = {
@@ -24,6 +25,8 @@ const ArticlesCardData = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [articlesPerPage, setArticlesPerPage] = useState(6);
   const perPageOptions = [6, 12, 24, 48, 96, 192];
+
+  const setActiveTab = useActiveTabStore((state) => state.setActiveTab);
 
   // Function to filter blogs based on blog title
   const filteredArticles = useMemo(() => {
@@ -82,9 +85,16 @@ const ArticlesCardData = ({
             No Articles Found
           </span>
 
-          <p className="mb-8 text-neutral-600 dark:text-neutral-400">
-            Seems like you have not yet posted any article
+          <p className="mb-4 text-neutral-600 dark:text-neutral-400">
+            Seems like you haven&apos;t posted any article
           </p>
+          <button
+            className="inline-flex items-center gap-1.5 rounded-xl bg-zinc-900 px-3 py-2 text-sm text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+            onClick={() => setActiveTab("post")}
+          >
+            <PenLine className="h-4 w-4" />
+            New Article
+          </button>
         </div>
       </div>
     );
