@@ -538,7 +538,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
             <div className="prose prose-neutral dark:prose-invert max-w-none">
               <p
                 title={issueData.issue_description.toString()}
-                className="line-clamp-2 leading-relaxed text-neutral-600 dark:text-neutral-300"
+                className="line-clamp-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300"
               >
                 {issueData.issue_description}
               </p>
@@ -557,11 +557,11 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
             </div>
             <div className="prose prose-neutral dark:prose-invert max-w-none">
               {issueData.issue_remarks ? (
-                <p className="line-clamp-1 leading-relaxed text-neutral-600 dark:text-neutral-300">
+                <p className="line-clamp-1 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
                   {issueData.issue_remarks}
                 </p>
               ) : (
-                <p className="text-neutral-400 italic dark:text-neutral-500">
+                <p className="text-sm text-neutral-400 italic dark:text-neutral-500">
                   No remarks provided.
                 </p>
               )}

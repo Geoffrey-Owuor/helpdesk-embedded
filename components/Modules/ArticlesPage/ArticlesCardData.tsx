@@ -83,7 +83,7 @@ const ArticlesCardData = ({
           </span>
 
           <p className="mb-8 text-neutral-600 dark:text-neutral-400">
-            We couldn&apos;t find any articles at the moment.
+            Seems like you have not yet posted any article
           </p>
         </div>
       </div>
