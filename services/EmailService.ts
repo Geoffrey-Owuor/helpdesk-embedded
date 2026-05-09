@@ -83,6 +83,7 @@ interface EmailOptions {
   attachments?: {
     filename: string;
     content: string; //We'll already have converted the attachments to base64 string at this point
+    contentType: string;
   }[];
 }
 
@@ -122,6 +123,7 @@ export const sendEmail = async ({
     const formattedAttachments = attachments?.map((file) => ({
       "@odata.type": "#microsoft.graph.fileAttachment",
       name: file.filename,
+      contentType: file.contentType,
       // Graph requires content to be a Base64 string
       contentBytes: file.content,
     }));

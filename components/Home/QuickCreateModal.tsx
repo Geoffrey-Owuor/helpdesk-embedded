@@ -29,8 +29,6 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { validateHotpointEmail } from "@/utils/Validators";
-
-import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import {
   fetchedIssueAgentsMapping,
@@ -53,6 +51,9 @@ import FormAsterisk from "../Modules/FormAsterisk";
 import UserEmailAutocomplete from "../Modules/IssueModals/UserEmailAutocomplete";
 import NameRulesCard from "../Modules/NameRulesCard";
 import Link from "next/link";
+
+// Document Upload
+import DocumentUpload from "../Modules/IssueModals/DocumentUpload";
 
 // Priority icon types & helper (Kept inline for reliability)
 const priorityIcons: Record<string, LucideIcon> = {
@@ -97,6 +98,9 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
     issue_title: "",
     issue_description: "",
   });
+
+  // State for adding files
+  const [files, setFiles] = useState<File[]>([]);
 
   const isValidEmail = validateHotpointEmail(formData.user_email);
 
@@ -197,11 +201,37 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
     showOverlay("Adding");
 
     try {
+      const submitData = new FormData();
+
+      // Append all our text form fields dynamically
+      Object.entries(formData).forEach(([key, value]) => {
+        submitData.append(key, value);
+      });
+
+      // Append the files (using the same key "attachments" so the backend expects an array)
+      files.forEach((file) => {
+        submitData.append("attachments", file);
+      });
+
       // TODO: Verify if you use a separate endpoint for Quick Create or the standard "/post-issue"
-      const response = await apiClient.post(
-        `/quick-create?secret=${process.env.NEXT_PUBLIC_APIS_KEY}`,
-        formData,
+      const response = await fetch(
+        `/api/quick-create?secret=${process.env.NEXT_PUBLIC_APIS_KEY}`,
+        {
+          method: "POST",
+          body: submitData,
+          // Notice: We specifically leave out the 'Content-Type' header.
+          // The browser automatically sets it to multipart/form-data and calculates the boundary!
+        },
       );
+
+      const responseData = await response.json();
+
+      // Native fetch doesn't throw errors automatically on 4xx/5xx status codes like Axios does
+      if (!response.ok) {
+        throw new Error(
+          responseData.message || "An error occurred while submitting.",
+        );
+      }
 
       hideOverlay();
       setIsOpen(false);
@@ -214,10 +244,12 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
         issue_title: "",
         issue_description: "",
       });
+
+      setFiles([]); //Reset files
       setAssignmentInfo(null);
       triggerAlert(
         "success",
-        response.data.message || "Issue created successfully",
+        responseData.message || "Issue created successfully",
       );
     } catch (error) {
       hideOverlay();
@@ -512,6 +544,13 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
                     className="resize-none rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
                   />
                 </div>
+
+                {/* Document Upload */}
+                <DocumentUpload
+                  files={files}
+                  setFiles={setFiles}
+                  maxTotalSizeMB={2}
+                />
               </div>
 
               {/* Submit Button */}
