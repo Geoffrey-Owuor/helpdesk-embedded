@@ -22,8 +22,8 @@ import {
   CircleQuestionMark,
 } from "lucide-react";
 import { fetchedIssueAgentsMapping } from "@/serverActions/GetIssueTypes";
-import { IssueAgentMapping } from "@/serverActions/GetIssueTypes";
 import apiClient from "@/lib/AxiosClient";
+import { IssueAgentMapping } from "@/serverActions/GetIssueTypes";
 import DynamicIssueTypes from "./DynamicIssueTypes";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlertStore } from "@/store/useAlertStore";
@@ -36,6 +36,7 @@ import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useUser } from "@/contexts/UserContext";
 import SubmitForAUser, { SubmitForUserData } from "./SubmitForAUser";
+import DocumentUpload from "./DocumentUpload";
 import Link from "next/link";
 
 // Priority icon types
@@ -87,6 +88,9 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     behalf_user_email: "",
     behalf_user_department: "",
   });
+
+  // State for adding files
+  const [files, setFiles] = useState<File[]>([]);
 
   // Submit for user states
   const [isSubmitForUserOpen, setIsSubmitForUserOpen] = useState(false);
@@ -207,13 +211,29 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
         behalf_user_department: submitForUserData.user_department,
       }),
     };
+
     hideDialog();
 
     showOverlay("Adding");
 
     try {
-      // post issue api endpoint
-      const response = await apiClient.post("/post-issue", payload);
+      const submitData = new FormData();
+
+      // Append all our text payload fields dynamically
+      Object.entries(payload).forEach(([key, value]) => {
+        submitData.append(key, value);
+      });
+
+      // Append the files (using the same key "attachments" so the backend expects an array)
+      files.forEach((file) => {
+        submitData.append("attachments", file);
+      });
+
+      const response = await apiClient.post("/post-issue", submitData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       // Refetch issues data in the background
       queryClient.invalidateQueries({ queryKey: activeQueryKey });
@@ -242,20 +262,20 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       // Clear submitForUserData
       setSubmitForUserData(null);
 
+      setFiles([]);
       setAssignmentInfo(null); // Clear assignment info
 
       // Close issue modal
       setIsOpen(false);
 
       // Trigger alert on success
-      triggerAlert("success", response.data.message);
+      triggerAlert(
+        "success",
+        response.data.message || "Issue created successfully",
+      );
     } catch (error) {
       hideOverlay();
-      // Call the error helper
-      const errorMessage = getApiErrorMessage(error);
-      // 4. Trigger alert on error
-      triggerAlert("error", errorMessage);
-      console.error("Error submitting the issue:", error);
+      triggerAlert("error", getApiErrorMessage(error));
     }
   };
 
@@ -513,6 +533,13 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                   className="resize-none rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
                 />
               </div>
+
+              {/* Document Upload */}
+              <DocumentUpload
+                files={files}
+                setFiles={setFiles}
+                maxTotalSizeMB={2}
+              />
 
               {/* Submit Button */}
               <div className="flex items-center justify-between gap-4">

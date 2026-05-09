@@ -234,7 +234,6 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
       }
 
       hideOverlay();
-      setIsOpen(false);
       setFormData({
         user_email: "",
         user_name: "",
@@ -247,6 +246,7 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
 
       setFiles([]); //Reset files
       setAssignmentInfo(null);
+      setIsOpen(false);
       triggerAlert(
         "success",
         responseData.message || "Issue created successfully",
