@@ -4,6 +4,7 @@ import IssueDetailsSkeleton from "@/components/Skeletons/IssueDetailsSkeleton";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import UpdateStatusModal from "./UpdateStatusModal";
+import IssueAttachmentsViewer from "../IssueModals/IssueAttachmentsViewer";
 import { AssignedAgentFormatter } from "../IssuesData/AssignedAgentFormatter";
 import {
   ArrowLeft,
@@ -568,6 +569,13 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
             </div>
           </div>
         </div>
+
+        {/* --- ADD THE VIEWER HERE --- */}
+        {/* It sits neatly between Remarks and Comments. If there are no attachments, it returns null and takes up no space. */}
+        <div className="mb-6">
+          <IssueAttachmentsViewer uuid={uuid} />
+        </div>
+
         {/* --- BOTTOM GRID: Description summary card + Comments --- */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Comments Section */}

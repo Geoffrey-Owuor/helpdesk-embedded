@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
       `;
       for (const att of dbAttachments) {
         await client.query(insertAttachmentQuery, [
-          resultantId,
+          resultantUuid,
           att.filename,
           att.contentType,
           att.size,
