@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // initialze the pool client variable
+  // initialize the pool client variable
   let client: PoolClient | undefined;
 
   // Define our default agent value
