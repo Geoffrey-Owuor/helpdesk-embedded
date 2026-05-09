@@ -3,6 +3,8 @@ import { PoolClient } from "pg";
 import { NextResponse, NextRequest } from "next/server";
 import { emailSender } from "@/services/EmailSender";
 import { CheckBehalfUser } from "@/serverActions/CheckBehalfUser";
+import { writeFile, mkdir } from "fs/promises";
+import path from "path";
 
 export async function POST(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -26,28 +28,74 @@ export async function POST(request: NextRequest) {
   const defaultAgent = "Not Assigned";
 
   try {
-    // Payload definition
-    const payload = await request.json();
+    // Parse formData (we do not use JSON here)
+    const formData = await request.formData();
 
-    // Destructure the payload
-    const {
-      user_name,
-      user_email,
-      user_department,
-      target_department,
-      issue_type,
-      issue_title,
-      issue_description,
-    } = payload;
+    // 2. Extract Text Fields
+    const user_name = formData.get("user_name") as string;
+    const user_email = formData.get("user_email") as string;
+    const user_department = formData.get("user_department") as string;
+    const target_department = formData.get("target_department") as string;
+    const issue_type = formData.get("issue_type") as string;
+    const issue_title = formData.get("issue_title") as string;
+    const issue_description = formData.get("issue_description") as string;
 
     // Bad request - Missing some required fields
-    const someFieldsMissing = Object.values(payload).some((value) => !value);
-
-    if (someFieldsMissing) {
+    if (
+      !user_name ||
+      !user_email ||
+      !user_department ||
+      !target_department ||
+      !issue_type ||
+      !issue_title ||
+      !issue_description
+    ) {
       return NextResponse.json(
         { message: "Some required fields are missing, please try again" },
         { status: 400 },
       );
+    }
+
+    // 3. Extract and Process Files
+    const files = formData.getAll("attachments") as File[];
+    const emailAttachments = [];
+    const dbAttachments = [];
+
+    // Create the uploads directory path safely
+    const uploadDir = path.join(process.cwd(), "public", "uploads");
+
+    // Ensure the uploads directory exists on your VPS, if not, create it silently
+    await mkdir(uploadDir, { recursive: true });
+
+    // Prepare email attachments, db attachments, and writing the files to our /public/uploads folder
+    for (const file of files) {
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      // Prepare for Email (Base64)
+      emailAttachments.push({
+        filename: file.name,
+        content: buffer.toString("base64"),
+        contentType: file.type,
+      });
+
+      // Save to VPS Hard Drive
+      const cleanFileName = file.name
+        .replace(/[^a-zA-Z0-9.\-_]/g, "-") // 1. Replace anything NOT a letter, number, dot, or underscore with a hyphen
+        .replace(/-+/g, "-") // 2. Collapse multiple hyphens into a single hyphen
+        .replace(/^-+|-+$/g, ""); // 3. Trim hyphens from the very beginning or end
+      const uniqueFilename = `${Date.now()}-${cleanFileName}`;
+      const filePath = path.join(uploadDir, uniqueFilename);
+
+      await writeFile(filePath, buffer);
+
+      // Prepare for Database
+      dbAttachments.push({
+        filename: file.name,
+        contentType: file.type,
+        size: file.size,
+        localUrl: `/uploads/${uniqueFilename}`,
+      });
     }
 
     // Call the check behalf user to verify the user submitting an issue
@@ -61,7 +109,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           message:
-            "Could not verify/create the user you're trying to submit for, please contact your admin",
+            "Could not verify/create the user trying to submit, please contact your admin",
         },
         { status: 422 },
       );
@@ -101,6 +149,23 @@ export async function POST(request: NextRequest) {
     const resultantId = returnedId[0].issue_id;
     const resultantUuid = returnedId[0].issue_uuid;
     const issueReferenceNumber = returnedId[0].issue_reference_id;
+
+    // Insert Attachments
+    if (dbAttachments.length > 0) {
+      const insertAttachmentQuery = `
+        INSERT INTO issue_attachments (issue_id, file_name, file_type, file_size, file_url)
+        VALUES ($1, $2, $3, $4, $5)
+      `;
+      for (const att of dbAttachments) {
+        await client.query(insertAttachmentQuery, [
+          resultantId,
+          att.filename,
+          att.contentType,
+          att.size,
+          att.localUrl,
+        ]);
+      }
+    }
 
     // Query to auto-assign the issue to an agent based on the target department and issue type
     //First, we fetch the necessary agent and admin info based on the issue type and target department.
@@ -165,6 +230,7 @@ export async function POST(request: NextRequest) {
       title,
       description,
       uuid: resultantUuid,
+      attachments: emailAttachments.length > 0 ? emailAttachments : undefined,
     });
 
     // Return a response to the client
