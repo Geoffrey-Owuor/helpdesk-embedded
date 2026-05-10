@@ -15,6 +15,7 @@ import {
   Paperclip,
 } from "lucide-react";
 import IssuePriorityFormatter from "./IssuePriorityFormatter";
+import RelativeTimeBadge from "./RelativeTimeBadge";
 
 type CardViewDataProps = {
   currentIssues: Record<string, string | number>[];
@@ -71,7 +72,7 @@ const CardViewData = ({
           </div>
 
           {/* Body: Title & Description */}
-          <div className="mb-6 space-y-2">
+          <div className="mb-4 space-y-2">
             <h3
               className="line-clamp-1 text-sm font-semibold text-neutral-900 dark:text-neutral-100"
               title={titleHelper(issueData.issue_title)}
@@ -88,6 +89,11 @@ const CardViewData = ({
                 {issueData.issue_description}
               </p>
             </div>
+
+            {/* dynamic time badge */}
+            {issueData.issue_status === "open" && (
+              <RelativeTimeBadge createdAt={issueData.issue_created_at} />
+            )}
           </div>
 
           {/* Footer: Metadata & Agent */}
