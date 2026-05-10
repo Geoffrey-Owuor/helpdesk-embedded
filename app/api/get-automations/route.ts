@@ -17,10 +17,18 @@ export const GET = withAuth(async ({ request }) => {
   try {
     // Simple testing version to see the nature of the api response
     let baseQuery = `
-    SELECT issue_uuid, issue_submitter_id, issue_reference_id, issue_submitter_name, issue_submitter_department,
-    issue_target_department, issue_type, issue_priority, issue_title, issue_description, issue_remarks, issue_created_at, issue_updated_at, issue_status,
-    issue_agent_name, issue_agent_email, issue_date_resolved, issue_date_closed, issue_reopened, issue_reopened_reason
-    FROM issues_table
+      SELECT 
+        a.issue_uuid, a.issue_submitter_id, a.issue_reference_id, 
+        a.issue_submitter_name, a.issue_submitter_department,
+        a.issue_target_department, a.issue_type, a.issue_priority, 
+        a.issue_title, a.issue_description, a.issue_remarks, 
+        a.issue_created_at, a.issue_updated_at, a.issue_status,
+        a.issue_agent_name, a.issue_agent_email, a.issue_date_resolved, 
+        a.issue_date_closed, a.issue_reopened, a.issue_reopened_reason,
+        COUNT(b.issue_id) AS attachments_count
+      FROM issues_table a
+      LEFT JOIN issue_attachments b
+      ON a.issue_uuid = b.issue_id
     `;
 
     const whereClauses: string[] = [];
@@ -42,7 +50,14 @@ export const GET = withAuth(async ({ request }) => {
     }
 
     // Our final query
-    baseQuery += ` ORDER BY issue_created_at DESC LIMIT $${params.length + 1}`;
+    baseQuery += ` GROUP BY a.issue_uuid, a.issue_submitter_id, a.issue_reference_id,
+      a.issue_submitter_name, a.issue_submitter_department,
+        a.issue_target_department, a.issue_type, 
+        a.issue_priority, a.issue_title, a.issue_description, 
+        a.issue_remarks, a.issue_created_at, a.issue_updated_at, a.issue_status,
+        a.issue_agent_name, a.issue_agent_email, a.issue_date_resolved, 
+        a.issue_date_closed, a.issue_reopened, a.issue_reopened_reason 
+        ORDER BY issue_created_at DESC LIMIT $${params.length + 1}`;
     params.push(limit);
 
     const automationsData = await query(baseQuery, params);
