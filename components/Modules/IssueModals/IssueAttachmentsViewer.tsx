@@ -46,7 +46,7 @@ export default function IssueAttachmentsViewer({ uuid }: Props) {
             <Paperclip className="h-4 w-4" />
           </div>
           Attachments
-          <span className="ml-2 rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
+          <span className="ml-2 rounded-full bg-neutral-100 px-2 py-0.75 text-xs font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
             {attachments.length}
           </span>
         </h2>

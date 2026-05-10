@@ -306,7 +306,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
       )}
       <div className="mx-auto max-w-6xl py-6 md:py-3.5">
         {/* --- HEADER SECTION (Unchanged) --- */}
-        <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
+        <div className="mb-8 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
           <div className="flex flex-col gap-3">
             <h1
               title={titleHelper(issueData.issue_title)}

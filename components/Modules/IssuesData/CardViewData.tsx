@@ -6,7 +6,14 @@ import IssueStatusFormatter from "./IssueStatusFormatter";
 import { AssignedAgentFormatter } from "./AssignedAgentFormatter";
 import { useRouter } from "next/navigation";
 import { useLoadingStore } from "@/store/useLoadingStore";
-import { Calendar, Tag, AlignLeft, ArrowRight, UserRound } from "lucide-react";
+import {
+  Calendar,
+  Tag,
+  AlignLeft,
+  ArrowRight,
+  UserRound,
+  Paperclip,
+} from "lucide-react";
 import IssuePriorityFormatter from "./IssuePriorityFormatter";
 
 type CardViewDataProps = {
@@ -86,7 +93,7 @@ const CardViewData = ({
           {/* Footer: Metadata & Agent */}
           <div className="space-y-4 border-t border-neutral-100 pt-4 dark:border-neutral-800">
             {/* Dept/Type Row */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 text-[11px] font-medium text-neutral-500">
                 <Tag size={12} className="opacity-70" />
                 <span className="truncate">{issueData.issue_type}</span>
@@ -116,10 +123,17 @@ const CardViewData = ({
                 <AssignedAgentFormatter
                   agentName={issueData.issue_agent_name}
                 />
-                <ArrowRight
-                  size={14}
-                  className="text-neutral-300 transition-colors group-hover:text-neutral-500"
-                />
+                {Number(issueData.attachments_count) > 0 ? (
+                  <Paperclip
+                    size={14}
+                    className="text-neutral-400 transition-colors group-hover:text-neutral-600 dark:text-neutral-500 dark:group-hover:text-neutral-300"
+                  />
+                ) : (
+                  <ArrowRight
+                    size={14}
+                    className="text-neutral-400 transition-colors group-hover:text-neutral-600 dark:text-neutral-500 dark:group-hover:text-neutral-300"
+                  />
+                )}
               </div>
             </div>
           </div>
