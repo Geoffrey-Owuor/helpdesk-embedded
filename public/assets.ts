@@ -29,7 +29,6 @@ export const titleHelper = (value: IssueValueTypes) => {
 // Handling cases where issue type is other and later other issue types that require formatting
 export const generateValueType = (value: string) => {
   if (value.includes("Other")) return "Other Issue";
-  else if (value === "Automation") return "(RPA) Robotic Process Automation";
   else return value;
 };
 
@@ -165,4 +164,10 @@ export const priorityOptions = [
   { label: "High", value: "High" },
   { label: "Medium", value: "Medium" },
   { label: "Low", value: "Low" },
+];
+
+export const footerQuickLinks = [
+  { label: "Changelog", href: "/changelog" },
+  { label: "Manual", href: "/manual" },
+  { label: "Knowledge Base", href: "/articles" },
 ];

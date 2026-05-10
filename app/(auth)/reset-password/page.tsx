@@ -6,7 +6,7 @@ import SuspenseSkeleton from "@/components/Skeletons/SuspenseSkeleton";
 
 // Props for the searchParams
 type Props = {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams: Promise<{ [key: string]: string | undefined }>;
 };
 const page = async ({ searchParams }: Props) => {
   // get the token
@@ -37,7 +37,7 @@ const page = async ({ searchParams }: Props) => {
   }
   return (
     <Suspense fallback={<SuspenseSkeleton />}>
-      <ResetPassword isValid={isValid} />
+      <ResetPassword isValid={isValid} token={token} />
     </Suspense>
   );
 };

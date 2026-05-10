@@ -169,9 +169,12 @@ function generateReminderEmail(
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td align="left">
-                    <span style="font-size: 18px; font-weight: 800; color: #ffffff; letter-spacing: -0.3px;">
-                      Issue<span style="color: #a3a3a3;">Desk</span>
-                    </span>
+                    <span style="
+                      font-size: 20px;
+                      font-weight: 600;
+                      color: #ffffff;
+                      letter-spacing: -0.3px;
+                    ">Issue<span style="color: #a3a3a3;">Desk</span></span>
                   </td>
                   <td align="right">
                     <span style="font-size: 11px; font-weight: 600; color: #737373; letter-spacing: 0.5px; text-transform: uppercase;">
@@ -183,9 +186,6 @@ function generateReminderEmail(
             </td>
           </tr>
 
-          <tr>
-            <td style="height: 3px; background: linear-gradient(90deg, #dc2626 0%, #f87171 100%);"></td>
-          </tr>
 
           <tr>
             <td style="
@@ -206,7 +206,7 @@ function generateReminderEmail(
                 <tr>
                   <td style="padding: 16px 20px;">
                     <div style="font-size: 14px; font-weight: 700; color: #991b1b; margin-bottom: 6px;">
-                      ⚠ Issues Unresolved after 7 days
+                      Issues Unresolved after 7 days
                     </div>
                     <p style="font-size: 13.5px; color: #b91c1c; margin: 0; line-height: 1.5;">
                       The <strong>${department}</strong> department has <strong>${issues.length} unresolved issue${issues.length !== 1 ? "s" : ""}</strong>
@@ -224,7 +224,7 @@ function generateReminderEmail(
                     text-transform: uppercase; letter-spacing: 1px;
                     color: #9ca3af; padding-bottom: 12px;
                     border-bottom: 2px solid #f3f4f6;
-                  ">Open Issues — ${department}</td>
+                  ">Open Issues - ${department}</td>
                 </tr>
               </table>
 

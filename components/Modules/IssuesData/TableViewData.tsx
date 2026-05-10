@@ -9,6 +9,7 @@ import { AssignedAgentFormatter } from "./AssignedAgentFormatter";
 import { useRouter } from "next/navigation";
 import { useLoadingStore } from "@/store/useLoadingStore";
 import IssuePriorityFormatter from "./IssuePriorityFormatter";
+import { Paperclip } from "lucide-react";
 
 type TableViewDataProps = {
   currentIssues: Record<string, string | number>[];
@@ -119,16 +120,21 @@ const TableViewData = ({
 
                 {visibleColumns.ref && (
                   <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
-                    <Link
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setLoadingLine(true);
-                      }}
-                      href={`/dashboard/${issueData.issue_uuid}?type=${dynamicUrlParam}&title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`}
-                      className="max-w-30 truncate text-sm font-semibold text-neutral-900 hover:text-blue-500 hover:underline dark:text-neutral-100"
-                    >
-                      {issueData.issue_reference_id}
-                    </Link>
+                    <div className="inline-flex items-center gap-2">
+                      <Link
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setLoadingLine(true);
+                        }}
+                        href={`/dashboard/${issueData.issue_uuid}?type=${dynamicUrlParam}&title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`}
+                        className="max-w-30 truncate text-sm font-semibold text-neutral-900 hover:text-blue-500 hover:underline dark:text-neutral-100"
+                      >
+                        {issueData.issue_reference_id}
+                      </Link>
+                      {Number(issueData.attachments_count) > 0 && (
+                        <Paperclip className="h-3.5 w-3.5 text-neutral-600 dark:text-neutral-400" />
+                      )}
+                    </div>
                   </td>
                 )}
 

@@ -183,3 +183,8 @@ html {
 [data-theme="dark"] .sidebar-nav::-webkit-scrollbar-thumb {
   background-color: rgb(115 115 115 / 0.4); /* neutral-500 at 40% */
 }
+
+/* Hide scrollbar */
+.scrollbar-hide {
+  scrollbar-width: none;
+}

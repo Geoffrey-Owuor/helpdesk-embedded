@@ -151,12 +151,8 @@ const PostArticle = () => {
                 disabled={fetching}
                 value={formData.articleKey}
                 onChange={handleChange}
-                placeholder={
-                  fetching
-                    ? "Loading, please wait..."
-                    : "Enter a valid article key..."
-                }
-                className="text-neutral-900 outline-none placeholder:text-neutral-300 disabled:cursor-not-allowed dark:text-neutral-100 dark:placeholder:text-neutral-600"
+                placeholder="Enter a valid article key..."
+                className="text-neutral-900 outline-none placeholder:text-neutral-300 dark:text-neutral-100 dark:placeholder:text-neutral-600"
               />
               {keyIsValid && (
                 <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500 dark:text-green-400" />
@@ -165,6 +161,7 @@ const PostArticle = () => {
             {/* Refresh button */}
             <button
               type="button"
+              disabled={fetching}
               onClick={() => refetchKey()}
               className="inline-flex items-center gap-2 rounded-xl bg-neutral-900 px-3.5 py-2.5 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
             >
@@ -190,8 +187,8 @@ const PostArticle = () => {
         />
 
         {/* Footer / Submit */}
-        <div className="flex items-center justify-between py-4">
-          <p className="text-xs text-neutral-400 dark:text-neutral-600">
+        <div className="flex items-center justify-between py-2">
+          <p className="text-xs text-red-500 dark:text-red-400">
             **All fields are required**
           </p>
           <button

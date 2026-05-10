@@ -1,13 +1,20 @@
-import { query } from "@/lib/Db";
+import { pool } from "@/lib/Db";
+import { PoolClient } from "pg";
 import { hashPassword, verifyPassword } from "@/lib/Auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
+  let client: PoolClient | undefined;
+
   try {
     const { token, password } = await request.json();
 
+    client = await pool.connect();
+
+    await client.query("BEGIN");
+
     // verify the token
-    const verifyToken = await query(
+    const { rows: verifyToken } = await client.query(
       `
             SELECT user_id, password FROM users
             WHERE reset_token = $1
@@ -17,8 +24,12 @@ export async function POST(request: NextRequest) {
     );
 
     if (verifyToken.length === 0) {
+      await client.query("ROLLBACK");
       return NextResponse.json(
-        { message: "Looks like your token has expired" },
+        {
+          message:
+            "Looks like your token has expired, please request a new one",
+        },
         { status: 400 },
       );
     }
@@ -31,6 +42,7 @@ export async function POST(request: NextRequest) {
     const isSameAsCurrent = await verifyPassword(password, oldPassword);
 
     if (isSameAsCurrent) {
+      await client.query("ROLLBACK");
       return NextResponse.json(
         { message: "New password cannot be the same as your current password" },
         { status: 400 },
@@ -41,7 +53,7 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await hashPassword(password);
 
     // Update the password and clear the token
-    await query(
+    await client.query(
       `
         UPDATE users
         SET password = $1,
@@ -52,15 +64,20 @@ export async function POST(request: NextRequest) {
       [hashedPassword, userId],
     );
 
+    await client.query("COMMIT");
+
     return NextResponse.json(
       { message: "Your password has been updated successfully" },
       { status: 200 },
     );
   } catch (error) {
+    await client?.query("ROLLBACK");
     console.error("Password reset error", error);
     return NextResponse.json(
       { message: "Error while trying to update your password" },
       { status: 500 },
     );
+  } finally {
+    if (client) client.release();
   }
 }

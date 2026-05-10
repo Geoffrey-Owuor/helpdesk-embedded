@@ -167,7 +167,7 @@ const IssuesCards = ({ type }: { type: string }) => {
                   {cardLoading ? (
                     <SkeletonBox className="h-9 w-9 rounded-full" />
                   ) : (
-                    item.count
+                    <>{item.count > 500 ? "500+" : item.count}</>
                   )}
                 </h3>
               </div>
