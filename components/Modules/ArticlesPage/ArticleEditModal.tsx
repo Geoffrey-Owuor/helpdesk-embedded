@@ -155,8 +155,8 @@ const ArticleEditModal = ({
               />
 
               {/* Footer/Submit */}
-              <div className="flex items-center justify-between py-4">
-                <p className="text-xs text-neutral-400 dark:text-neutral-600">
+              <div className="flex items-center justify-between py-2">
+                <p className="text-xs text-red-500">
                   **All fields are required**
                 </p>
                 <button

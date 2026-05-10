@@ -306,8 +306,8 @@ export function generateIssueNotificationEmail(
                 <tr>
                   <td align="left" style="padding-right: 10px;">
                     <span style="
-                      font-size: 18px;
-                      font-weight: 800;
+                      font-size: 20px;
+                      font-weight: 600;
                       color: #ffffff;
                       letter-spacing: -0.3px;
                     ">Issue<span style="color: #a3a3a3;">Desk</span></span>
@@ -325,11 +325,6 @@ export function generateIssueNotificationEmail(
                 </tr>
               </table>
             </td>
-          </tr>
-
-          <!-- Thin accent bar -->
-          <tr>
-            <td style="height: 3px; background: linear-gradient(90deg, #404040 0%, #737373 100%);"></td>
           </tr>
 
           <!-- ── BODY ── -->

@@ -35,6 +35,9 @@ yarn-error.log*
 .prettierrc*
 issues_schema.txt
 
+# User uploaded files
+/public/uploads
+
 # vercel
 .vercel
 

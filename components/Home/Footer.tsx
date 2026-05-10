@@ -14,8 +14,8 @@ const footerLinks = [
 
 const Footer = () => {
   return (
-    <footer className="border-t border-neutral-100 dark:border-neutral-900">
-      <div className="custom:px-8 mx-auto max-w-6xl px-6 py-12">
+    <footer>
+      <div className="custom:px-8 mx-auto max-w-6xl border-t border-neutral-100 px-6 py-12 dark:border-neutral-900">
         {/* Main Grid */}
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-0">
           {/* Brand Column */}
@@ -72,7 +72,7 @@ const Footer = () => {
                   href="mailto:helpdesk@hotpoint.co.ke"
                   className="text-blue-500 underline hover:text-blue-400"
                 >
-                  us
+                  IT
                 </a>{" "}
                 anytime.
               </p>
@@ -85,18 +85,32 @@ const Footer = () => {
 
         {/* Bottom Bar - Centered */}
         <div className="mt-10 flex flex-col items-center gap-8 pt-8">
-          <span className="flex items-center gap-2 text-sm leading-5 text-neutral-500">
-            <span> &copy; {currentYear} IssueDesk. Built by</span>
-            <a
-              href="https://jeff-portfolio-web.vercel.app"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 font-semibold text-neutral-700 hover:underline dark:text-neutral-300"
-            >
-              <Sparkles className="h-4 w-4" />
-              Jeff
-            </a>
-          </span>
+          <div className="flex w-full flex-col items-center justify-between gap-4 text-sm text-neutral-500 md:flex-row">
+            {/* Left Area: Copyright & Attribution */}
+            <span className="inline-flex items-center gap-2 leading-5">
+              <span>
+                &copy; {currentYear} IssueDesk. Hotpoint Appliances Ltd
+              </span>
+            </span>
+
+            <span className="inline-flex items-center gap-2">
+              Built by{" "}
+              <a
+                href="https://jeff-portfolio-web.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-0.5 font-semibold text-neutral-700 hover:underline dark:text-neutral-300"
+              >
+                <Sparkles className="h-4 w-4" />
+                Jeff
+              </a>
+            </span>
+
+            {/* Right Area */}
+            <span className="font-mono tracking-[-0.08em]">
+              Streamlining support, one issue at a time
+            </span>
+          </div>
 
           <span className="text-center font-mono text-6xl leading-none font-black tracking-tighter text-neutral-300 select-none md:text-9xl dark:text-neutral-800">
             ISSUEDESK

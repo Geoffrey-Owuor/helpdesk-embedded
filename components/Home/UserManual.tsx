@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { ReactNode, useState, Dispatch, SetStateAction } from "react";
 
 import {
   BookOpen,
@@ -11,11 +11,92 @@ import {
   MessageSquareText,
   PlusSquare,
   UserRoundPlus,
+  Zap,
+  CheckCircle2,
 } from "lucide-react";
 
-const steps = [
+interface Steps {
+  id: string;
+  icon: ReactNode;
+  title: string;
+  description: string;
+  detail: ReactNode;
+}
+
+// --- QUICK CREATE MANUAL STEPS ---
+const quickCreateSteps = [
   {
-    id: 1,
+    id: "qc-1",
+    icon: <Zap className="h-5 w-5" />,
+    title: "Open the Quick Create Form",
+    description:
+      "Submit an issue instantly without creating an account or logging in. Ideal for urgent requests or users without dashboard access.",
+    detail: (
+      <ul className="mt-3 space-y-2 text-sm text-neutral-500 dark:text-neutral-400">
+        <li className="flex items-start gap-2">
+          <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
+          Click the floating blue &quot;Quick Create&quot; button located at the
+          bottom right of the homepage.
+        </li>
+        <li className="flex items-start gap-2">
+          <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
+          This opens a streamlined issue submission form directly on your
+          screen.
+        </li>
+      </ul>
+    ),
+  },
+  {
+    id: "qc-2",
+    icon: <UserRoundPlus className="h-5 w-5" />,
+    title: "Provide Your Contact Details",
+    description:
+      "Because you are not logged in, you must provide your name, department, and a valid Hotpoint work email.",
+    detail: (
+      <ul className="mt-3 space-y-2 text-sm text-neutral-500 dark:text-neutral-400">
+        <li className="flex items-start gap-2">
+          <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
+          Ensure your Full Name and Department are accurate so agents know who
+          they are assisting.
+        </li>
+        <li className="flex items-start gap-2">
+          <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+          <span className="text-neutral-700 dark:text-neutral-300">
+            <strong>Crucial:</strong> Providing a valid Hotpoint work email is
+            vital if you want to receive follow-up email notifications regarding
+            the status of your issue.
+          </span>
+        </li>
+      </ul>
+    ),
+  },
+  {
+    id: "qc-3",
+    icon: <CheckCircle2 className="h-5 w-5" />,
+    title: "Submit Issue Details",
+    description:
+      "Select the target department, the type of issue, and provide a detailed description before submitting.",
+    detail: (
+      <ul className="mt-3 space-y-2 text-sm text-neutral-500 dark:text-neutral-400">
+        <li className="flex items-start gap-2">
+          <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
+          The Auto-Assignment Bot will show you which agent will likely handle
+          your request based on your selections.
+        </li>
+        <li className="flex items-start gap-2">
+          <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
+          Click &quot;Submit Quick Issue&quot; to finalize. You will receive an
+          email confirmation shortly after.
+        </li>
+      </ul>
+    ),
+  },
+];
+
+// --- DASHBOARD MANUAL STEPS ---
+const dashboardSteps = [
+  {
+    id: "db-1",
     icon: <UserRoundPlus className="h-5 w-5" />,
     title: "Create an Account or Log In",
     description:
@@ -24,19 +105,12 @@ const steps = [
       <ul className="mt-3 space-y-2 text-sm text-neutral-500 dark:text-neutral-400">
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
-          Navigate to{" "}
-          <code className="rounded bg-neutral-100 px-1.5 py-0.5 font-mono text-xs dark:bg-neutral-800">
-            /register
-          </code>{" "}
-          to sign up with your work email.
+          Navigate to &quot;/register&quot; to sign up with your work email.
         </li>
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
-          Already have an account? Go to{" "}
-          <code className="rounded bg-neutral-100 px-1.5 py-0.5 font-mono text-xs dark:bg-neutral-800">
-            /login
-          </code>{" "}
-          and enter your credentials.
+          Already have an account? Go to &quot;/login&quot; and enter your
+          credentials.
         </li>
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
@@ -46,7 +120,7 @@ const steps = [
     ),
   },
   {
-    id: 2,
+    id: "db-2",
     icon: <PlusSquare className="h-5 w-5" />,
     title: "Submit a New Issue",
     description:
@@ -55,11 +129,7 @@ const steps = [
       <ul className="mt-3 space-y-2 text-sm text-neutral-500 dark:text-neutral-400">
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
-          Locate{" "}
-          <strong className="font-medium text-neutral-700 dark:text-neutral-300">
-            New Issue
-          </strong>{" "}
-          in the left navigation sidebar.
+          Locate &quot;New Issue&quot; in the left navigation sidebar.
         </li>
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
@@ -68,16 +138,13 @@ const steps = [
         </li>
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
-          You can review the details then hit{" "}
-          <strong className="font-medium text-neutral-700 dark:text-neutral-300">
-            Submit.
-          </strong>
+          You can review the details then hit &quot;Submit&quot;
         </li>
       </ul>
     ),
   },
   {
-    id: 3,
+    id: "db-3",
     icon: <LayoutDashboard className="h-5 w-5" />,
     title: "Track Your Issue on the Dashboard",
     description:
@@ -101,7 +168,7 @@ const steps = [
     ),
   },
   {
-    id: 4,
+    id: "db-4",
     icon: <Mail className="h-5 w-5" />,
     title: "Receive Email Notifications",
     description:
@@ -119,16 +186,13 @@ const steps = [
         </li>
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />A
-          final email is sent when your issue is marked as{" "}
-          <strong className="font-medium text-neutral-700 dark:text-neutral-300">
-            Resolved.
-          </strong>
+          final email is sent when your issue is marked as &quot;Resolved&quot;
         </li>
       </ul>
     ),
   },
   {
-    id: 5,
+    id: "db-5",
     icon: <MessageSquareText className="h-5 w-5" />,
     title: "Add Comments to an Issue",
     description:
@@ -142,11 +206,7 @@ const steps = [
         </li>
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
-          Scroll to the{" "}
-          <strong className="font-medium text-neutral-700 dark:text-neutral-300">
-            Comments
-          </strong>{" "}
-          section at the bottom of the page.
+          Scroll to the &quot;Comments&quot; section at the bottom of the page.
         </li>
         <li className="flex items-start gap-2">
           <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
@@ -163,12 +223,73 @@ const steps = [
   },
 ];
 
+type StepListProps = {
+  steps: Steps[];
+  prefix: string;
+  expanded: string | null;
+  setExpanded: Dispatch<SetStateAction<string | null>>;
+};
+
+// Helper component to render a list of steps
+const StepList = ({ steps, prefix, expanded, setExpanded }: StepListProps) => (
+  <div className="relative">
+    <ol className="space-y-4">
+      {steps.map((step, index) => {
+        const isOpen = expanded === step.id;
+        return (
+          <li key={step.id}>
+            <button
+              onClick={() => setExpanded(isOpen ? null : step.id)}
+              className="group w-full rounded-xl border border-neutral-200 bg-white p-5 text-left transition-all hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700"
+              aria-expanded={isOpen}
+            >
+              <div className="flex items-start gap-4">
+                {/* Step number + icon */}
+                <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-neutral-200 bg-neutral-50 text-neutral-500 transition-colors group-hover:border-neutral-300 group-hover:text-neutral-900 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400 dark:group-hover:border-neutral-700 dark:group-hover:text-white">
+                  {step.icon}
+                </div>
+
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-sm text-neutral-400 dark:text-neutral-600">
+                        {/* Prefixing helps differentiate the numbers visually e.g. Q-01 vs D-01 */}
+                        {prefix}
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">
+                        {step.title}
+                      </h3>
+                    </div>
+                    <ChevronRight
+                      className={`h-4 w-4 shrink-0 text-neutral-400 transition-transform duration-200 ${isOpen ? "rotate-90" : ""}`}
+                    />
+                  </div>
+                  <p className="mt-1.5 text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
+                    {step.description}
+                  </p>
+                  {isOpen && (
+                    <div className="mt-2 border-t border-neutral-100 pt-3 dark:border-neutral-800">
+                      {step.detail}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </button>
+          </li>
+        );
+      })}
+    </ol>
+  </div>
+);
+
 const UserManual = () => {
-  const [expanded, setExpanded] = useState<number | null>(null);
+  // We use string IDs now to handle both sets of steps smoothly
+  const [expanded, setExpanded] = useState<string | null>(null);
 
   return (
     <div id="user-manual" className="scroll-mt-24">
-      {/* Section header */}
+      {/* Global Section Header */}
       <div className="mb-10">
         <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-medium text-neutral-500 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400">
           <BookOpen className="h-3.5 w-3.5" />
@@ -178,63 +299,45 @@ const UserManual = () => {
           User Manual
         </h2>
         <p className="mt-3 max-w-xl text-base text-neutral-500 dark:text-neutral-400">
-          Everything you need to start submitting and tracking issues. Follow
-          these steps to get up and running quickly. Click on a step section
-          view more details.
+          Everything you need to start submitting and tracking issues. Choose a
+          method below that best fits your needs. Click on a step to view more
+          details.
         </p>
       </div>
 
-      {/* Steps */}
-      <div className="relative">
-        <ol className="space-y-4">
-          {steps.map((step) => {
-            const isOpen = expanded === step.id;
-            return (
-              <li key={step.id}>
-                <button
-                  onClick={() => setExpanded(isOpen ? null : step.id)}
-                  className="group w-full rounded-xl border border-neutral-200 bg-white p-5 text-left transition-all hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700"
-                  aria-expanded={isOpen}
-                >
-                  <div className="flex items-start gap-4">
-                    {/* Step number + icon */}
-                    <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-neutral-200 bg-neutral-50 text-neutral-500 transition-colors group-hover:border-neutral-300 group-hover:text-neutral-900 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400 dark:group-hover:border-neutral-700 dark:group-hover:text-white">
-                      {step.icon}
-                    </div>
+      {/* Two-Column Layout (or stacked on mobile) for the Manuals */}
+      <div className="grid grid-cols-1 gap-10">
+        {/* --- Quick Create Section --- */}
+        <div>
+          <h3 className="mb-6 flex items-center gap-2 text-xl font-semibold text-neutral-900 dark:text-white">
+            <Zap className="h-6 w-6 text-blue-500" />
+            Quick Create Submission
+          </h3>
+          <StepList
+            steps={quickCreateSteps}
+            prefix="Q-"
+            expanded={expanded}
+            setExpanded={setExpanded}
+          />
+        </div>
 
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-sm text-neutral-400 dark:text-neutral-600">
-                            {String(step.id).padStart(2, "0")}
-                          </span>
-                          <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">
-                            {step.title}
-                          </h3>
-                        </div>
-                        <ChevronRight
-                          className={`h-4 w-4 shrink-0 text-neutral-400 transition-transform duration-200 ${isOpen ? "rotate-90" : ""}`}
-                        />
-                      </div>
-                      <p className="mt-1.5 text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
-                        {step.description}
-                      </p>
-                      {isOpen && (
-                        <div className="mt-2 border-t border-neutral-100 pt-3 dark:border-neutral-800">
-                          {step.detail}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </button>
-              </li>
-            );
-          })}
-        </ol>
+        {/* --- Dashboard Section --- */}
+        <div>
+          <h3 className="mb-6 flex items-center gap-2 text-xl font-semibold text-neutral-900 dark:text-white">
+            <LayoutDashboard className="h-6 w-6 text-blue-500" />
+            Dashboard Submission
+          </h3>
+          <StepList
+            steps={dashboardSteps}
+            prefix="D-"
+            expanded={expanded}
+            setExpanded={setExpanded}
+          />
+        </div>
       </div>
 
       {/* Quick tip callout */}
-      <div className="mt-8 flex gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4 dark:border-blue-900/40 dark:bg-blue-950/30">
+      <div className="mt-12 flex gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4 dark:border-blue-900/40 dark:bg-blue-950/30">
         <Lightbulb className="mt-0.5 h-5 w-5 shrink-0 text-blue-500" />
         <div>
           <p className="text-sm font-medium text-blue-900 dark:text-blue-300">

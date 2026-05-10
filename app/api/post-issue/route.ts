@@ -3,17 +3,40 @@ import { PoolClient } from "pg";
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { emailSender } from "@/services/EmailSender";
+import { CheckBehalfUser } from "@/serverActions/CheckBehalfUser";
+import { writeFile, mkdir } from "fs/promises";
+import path from "path";
 
 export const POST = withAuth(async ({ request, user }) => {
-  // initialze the pool client variable
+  // initialize the pool client variable
   let client: PoolClient | undefined;
+
+  // Destructure the user information
+  const { username, userId, email, department } = user;
+
+  // Variables for holding the user info
+  let selectedName = username;
+  let selectedId = userId;
+  let selectedEmail = email;
+  let selectedDepartment = department;
 
   // Define our default agent value
   const defaultAgent = "Not Assigned";
 
   try {
-    const { target_department, issue_type, issue_title, issue_description } =
-      await request.json();
+    // Parse formData (we do not use JSON here)
+    const formData = await request.formData();
+
+    const target_department = formData.get("target_department") as string;
+    const issue_type = formData.get("issue_type") as string;
+    const issue_title = formData.get("issue_title") as string;
+    const issue_description = formData.get("issue_description") as string;
+    // Optional fields - Submitting on behalf of another user
+    const behalf_user_name = formData.get("behalf_user_name") as string;
+    const behalf_user_email = formData.get("behalf_user_email") as string;
+    const behalf_user_department = formData.get(
+      "behalf_user_department",
+    ) as string;
 
     // Check if we have all the data
     if (
@@ -26,6 +49,73 @@ export const POST = withAuth(async ({ request, user }) => {
         { message: "Missing some required fields" },
         { status: 400 },
       );
+    }
+
+    // 3. Extract and Process Files
+    const files = formData.getAll("attachments") as File[];
+    const emailAttachments = [];
+    const dbAttachments = [];
+
+    // Create the uploads directory path safely
+    const uploadDir = path.join(process.cwd(), "public", "uploads");
+
+    // Ensure the uploads directory exists on your VPS, if not, create it silently
+    await mkdir(uploadDir, { recursive: true });
+
+    // Prepare email attachments, db attachments, and writing the files to our /public/uploads folder
+    for (const file of files) {
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      // Prepare for Email (Base64)
+      emailAttachments.push({
+        filename: file.name,
+        content: buffer.toString("base64"),
+        contentType: file.type,
+      });
+
+      // Save to VPS Hard Drive
+      const cleanFileName = file.name
+        .replace(/[^a-zA-Z0-9.\-_]/g, "-") // 1. Replace anything NOT a letter, number, dot, or underscore with a hyphen
+        .replace(/-+/g, "-") // 2. Collapse multiple hyphens into a single hyphen
+        .replace(/^-+|-+$/g, ""); // 3. Trim hyphens from the very beginning or end
+      const uniqueFilename = `${Date.now()}-${cleanFileName}`;
+      const filePath = path.join(uploadDir, uniqueFilename);
+
+      await writeFile(filePath, buffer);
+
+      // Prepare for Database
+      dbAttachments.push({
+        filename: file.name,
+        contentType: file.type,
+        size: file.size,
+        localUrl: `/uploads/${uniqueFilename}`,
+      });
+    }
+
+    // Function to create/return the user who is being created a ticket for
+    // And return the user details required for proceeding
+    if (behalf_user_department && behalf_user_name && behalf_user_email) {
+      const returnedUser = await CheckBehalfUser({
+        name: behalf_user_name,
+        email: behalf_user_email,
+        department: behalf_user_department,
+      });
+
+      if (!returnedUser) {
+        return NextResponse.json(
+          {
+            message:
+              "Could not verify/create the user you're trying to submit for, please contact your admin",
+          },
+          { status: 422 },
+        );
+      }
+
+      selectedName = returnedUser.name;
+      selectedId = returnedUser.userId;
+      selectedEmail = returnedUser.email;
+      selectedDepartment = returnedUser.department;
     }
 
     // get a pool client
@@ -44,10 +134,10 @@ export const POST = withAuth(async ({ request, user }) => {
 
     // construct the params
     const params = [
-      user.userId,
-      user.username,
-      user.email,
-      user.department,
+      selectedId,
+      selectedName,
+      selectedEmail,
+      selectedDepartment,
       target_department,
       issue_type,
       issue_title,
@@ -62,6 +152,23 @@ export const POST = withAuth(async ({ request, user }) => {
     const resultantId = returnedId[0].issue_id;
     const resultantUuid = returnedId[0].issue_uuid;
     const issueReferenceNumber = returnedId[0].issue_reference_id;
+
+    // Insert Attachments
+    if (dbAttachments.length > 0) {
+      const insertAttachmentQuery = `
+        INSERT INTO issue_attachments (issue_id, file_name, file_type, file_size, file_url)
+        VALUES ($1, $2, $3, $4, $5)
+      `;
+      for (const att of dbAttachments) {
+        await client.query(insertAttachmentQuery, [
+          resultantUuid,
+          att.filename,
+          att.contentType,
+          att.size,
+          att.localUrl,
+        ]);
+      }
+    }
 
     // Query to auto-assign the issue to an agent based on the target department and issue type
     //First, we fetch the necessary agent and admin info based on the issue type and target department.
@@ -122,15 +229,16 @@ export const POST = withAuth(async ({ request, user }) => {
     const description = `A new issue has been raised to ${target_department} by ${user.username}`;
 
     // Fire and forget - calling the email sender service
-    emailSender({
-      title,
-      description,
-      uuid: resultantUuid,
-    });
+    // emailSender({
+    //   title,
+    //   description,
+    //   uuid: resultantUuid,
+    //   attachments: emailAttachments.length > 0 ? emailAttachments : undefined,
+    // });
 
     // Return a response to the client
     return NextResponse.json(
-      { message: "Your issue has been submitted!" },
+      { message: "Your issue has been submitted successfully!" },
       { status: 200 },
     );
   } catch (error) {

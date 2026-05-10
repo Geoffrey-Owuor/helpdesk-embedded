@@ -1,5 +1,6 @@
 import HomeNavBar from "@/components/Navigation/HomeNavBar";
 import Hero from "@/components/Home/Hero";
+import QuickCreateButton from "./QuickCreateButton";
 import Footer from "@/components/Home/Footer";
 
 const HomePage = () => {
@@ -8,6 +9,9 @@ const HomePage = () => {
       <div className="mx-auto max-w-6xl 2xl:max-w-7xl">
         <HomeNavBar />
         <Hero />
+
+        {/* The quick create button */}
+        <QuickCreateButton />
         <Footer />
       </div>
     </div>

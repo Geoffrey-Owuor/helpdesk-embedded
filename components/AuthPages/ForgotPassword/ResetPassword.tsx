@@ -3,7 +3,7 @@
 import { useState, FormEvent, ChangeEvent } from "react";
 import Link from "next/link";
 import { useAlertStore } from "@/store/useAlertStore";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   Lock,
   Eye,
@@ -16,10 +16,14 @@ import {
 import AuthShell from "../AuthShell";
 import { ApiHandler } from "@/utils/ApiHandler";
 
-const ResetPassword = ({ isValid }: { isValid: boolean }) => {
+const ResetPassword = ({
+  isValid,
+  token,
+}: {
+  isValid: boolean;
+  token: string;
+}) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
 
   const [formData, setFormData] = useState({
     password: "",
@@ -85,7 +89,7 @@ const ResetPassword = ({ isValid }: { isValid: boolean }) => {
   if (!isValid) {
     return (
       <AuthShell>
-        <div className="w-full max-w-90 px-2 text-center">
+        <div className="w-full max-w-90 px-2 py-20 text-center">
           <div className="mb-6 flex justify-center">
             <XCircle className="h-16 w-16 text-red-500" />
           </div>

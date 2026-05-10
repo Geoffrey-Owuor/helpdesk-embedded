@@ -13,6 +13,11 @@ type EmailSenderProps = {
   description: string;
   comment?: string;
   author?: string;
+  attachments?: {
+    filename: string;
+    content: string;
+    contentType: string;
+  }[];
 };
 export const emailSender = async ({
   title,
@@ -20,6 +25,7 @@ export const emailSender = async ({
   description,
   comment = "",
   author = "",
+  attachments,
 }: EmailSenderProps) => {
   // Constructing our comment data
   const formattedDate = dateFormatter(new Date().toLocaleDateString());
@@ -50,5 +56,6 @@ export const emailSender = async ({
     cc: ccEmails,
     subject: title,
     html: emailHtml,
+    attachments: attachments,
   });
 };

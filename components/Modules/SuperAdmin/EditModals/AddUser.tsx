@@ -20,6 +20,7 @@ import NameRulesCard from "../../NameRulesCard";
 import FormAsterisk from "../../FormAsterisk";
 import { baseRoles, baseStatuses } from "./EditUserModal";
 import apiClient from "@/lib/AxiosClient";
+import { validateHotpointEmail } from "@/utils/Validators";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useConfirmStore } from "@/store/useConfirmStore";
@@ -54,6 +55,8 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
     role: "user", //default to user
     status: "",
   });
+
+  const isEmailValid = validateHotpointEmail(formData.email);
 
   // Name validation states
   const [isNameFocused, setIsNameFocused] = useState(false);
@@ -250,9 +253,14 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
                 htmlFor="email"
                 className="flex items-center gap-1 text-sm font-medium text-neutral-700 dark:text-neutral-300"
               >
-                Email Address{" "}
-                <span className="text-xs">(should be accurate)</span>
-                <FormAsterisk />
+                Email Address <FormAsterisk />{" "}
+                <span
+                  className={`text-[10px] ${formData.email && !isEmailValid ? "text-red-500" : ""}`}
+                >
+                  {formData.email && !isEmailValid
+                    ? "invalid hotpoint email"
+                    : "should be accurate"}
+                </span>
               </label>
               <div className="relative">
                 <Mail className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-neutral-400" />
@@ -378,7 +386,8 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
                   adding ||
                   !formData ||
                   passwordMismatch ||
-                  !nameValidation.isValid
+                  !nameValidation.isValid ||
+                  !isEmailValid
                 }
                 className="rounded-xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-neutral-700 focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100 dark:focus:ring-white dark:focus:ring-offset-neutral-950"
               >

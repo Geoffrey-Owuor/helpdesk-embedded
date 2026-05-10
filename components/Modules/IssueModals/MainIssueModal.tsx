@@ -18,10 +18,12 @@ import {
   ChevronDown,
   ContactRound,
   UserRound,
+  Send,
+  CircleQuestionMark,
 } from "lucide-react";
 import { fetchedIssueAgentsMapping } from "@/serverActions/GetIssueTypes";
-import { IssueAgentMapping } from "@/serverActions/GetIssueTypes";
 import apiClient from "@/lib/AxiosClient";
+import { IssueAgentMapping } from "@/serverActions/GetIssueTypes";
 import DynamicIssueTypes from "./DynamicIssueTypes";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlertStore } from "@/store/useAlertStore";
@@ -34,6 +36,8 @@ import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useUser } from "@/contexts/UserContext";
 import SubmitForAUser, { SubmitForUserData } from "./SubmitForAUser";
+import DocumentUpload from "./DocumentUpload";
+import Link from "next/link";
 
 // Priority icon types
 const priorityIcons: Record<string, LucideIcon> = {
@@ -84,6 +88,9 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     behalf_user_email: "",
     behalf_user_department: "",
   });
+
+  // State for adding files
+  const [files, setFiles] = useState<File[]>([]);
 
   // Submit for user states
   const [isSubmitForUserOpen, setIsSubmitForUserOpen] = useState(false);
@@ -204,13 +211,29 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
         behalf_user_department: submitForUserData.user_department,
       }),
     };
+
     hideDialog();
 
     showOverlay("Adding");
 
     try {
-      // post issue api endpoint
-      const response = await apiClient.post("/post-issue", payload);
+      const submitData = new FormData();
+
+      // Append all our text payload fields dynamically
+      Object.entries(payload).forEach(([key, value]) => {
+        submitData.append(key, value);
+      });
+
+      // Append the files (using the same key "attachments" so the backend expects an array)
+      files.forEach((file) => {
+        submitData.append("attachments", file);
+      });
+
+      const response = await apiClient.post("/post-issue", submitData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       // Refetch issues data in the background
       queryClient.invalidateQueries({ queryKey: activeQueryKey });
@@ -239,20 +262,20 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       // Clear submitForUserData
       setSubmitForUserData(null);
 
+      setFiles([]);
       setAssignmentInfo(null); // Clear assignment info
 
       // Close issue modal
       setIsOpen(false);
 
       // Trigger alert on success
-      triggerAlert("success", response.data.message);
+      triggerAlert(
+        "success",
+        response.data.message || "Issue created successfully",
+      );
     } catch (error) {
       hideOverlay();
-      // Call the error helper
-      const errorMessage = getApiErrorMessage(error);
-      // 4. Trigger alert on error
-      triggerAlert("error", errorMessage);
-      console.error("Error submitting the issue:", error);
+      triggerAlert("error", getApiErrorMessage(error));
     }
   };
 
@@ -280,13 +303,19 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
         {/* Modal Container */}
         <div
           ref={modalRef}
-          className="flex max-h-[90vh] w-full max-w-xl flex-col rounded-2xl border border-neutral-300 bg-neutral-50 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
+          className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-2xl border border-neutral-300 bg-neutral-50 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-neutral-100 p-4 dark:border-neutral-900">
-            <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
-              Create A New Issue
-            </h2>
+          <div className="flex items-center justify-between border-b border-neutral-200/50 p-4 dark:border-neutral-900">
+            <div>
+              <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+                Create A New Issue
+              </h2>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                Enter the required issue details and submit.
+              </p>
+            </div>
+
             <button
               onClick={() => setIsOpen(false)}
               className="rounded-full p-2 text-neutral-500 hover:bg-neutral-200 hover:text-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
@@ -300,7 +329,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
             <form
               onSubmit={handleConfirmSubmit}
               autoComplete="off"
-              className="space-y-4"
+              className="space-y-6"
             >
               {/* Button for submitting for another user */}
               {role !== "user" && (
@@ -429,11 +458,8 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
 
                             <div className="flex items-center gap-1.5 opacity-75">
                               <span>
-                                (
-                                <span className="font-semibold">
-                                  Dept Admin
-                                </span>
-                                : {assignmentInfo?.admin_name || "None found"})
+                                (<span className="font-semibold">Admin</span>:{" "}
+                                {assignmentInfo?.admin_name || "None found"})
                               </span>
                             </div>
 
@@ -508,8 +534,23 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                 />
               </div>
 
+              {/* Document Upload */}
+              <DocumentUpload
+                files={files}
+                setFiles={setFiles}
+                maxTotalSizeMB={2}
+              />
+
               {/* Submit Button */}
-              <div className="pt-2">
+              <div className="flex items-center justify-between gap-4">
+                <Link
+                  href="/manual#issues-docs"
+                  target="_blank"
+                  className="inline-flex items-center gap-1 text-xs text-blue-500 hover:underline"
+                >
+                  <CircleQuestionMark className="h-3 w-3" />
+                  Issue types docs
+                </Link>
                 <button
                   type="submit"
                   disabled={
@@ -518,9 +559,10 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                     !formData.issue_type ||
                     !formData.target_department
                   }
-                  className="w-full rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:focus:ring-offset-neutral-900"
+                  className="flex items-center justify-center gap-2 rounded-xl bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800 focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 dark:focus:ring-zinc-400 dark:focus:ring-offset-neutral-900"
                 >
                   Submit Issue
+                  <Send className="h-4 w-4" />
                 </button>
               </div>
             </form>

@@ -17,7 +17,7 @@ IssueDesk is a lightweight, centralized issue-tracking application for teams to 
 - Tailwind CSS
 - PostgreSQL
 - Axios for client HTTP
-- nodemailer for email notifications
+- nodemailer/microsoft graph api for email notifications
 
 ## Quick Start (local development)
 

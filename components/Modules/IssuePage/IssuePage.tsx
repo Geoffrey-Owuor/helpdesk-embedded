@@ -4,6 +4,7 @@ import IssueDetailsSkeleton from "@/components/Skeletons/IssueDetailsSkeleton";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import UpdateStatusModal from "./UpdateStatusModal";
+import IssueAttachmentsViewer from "../IssueModals/IssueAttachmentsViewer";
 import { AssignedAgentFormatter } from "../IssuesData/AssignedAgentFormatter";
 import {
   ArrowLeft,
@@ -49,6 +50,7 @@ import { IssueValueTypes } from "@/public/assets";
 import { DEFAULT_FETCH_OPTIONS } from "@/public/assets";
 import { statusOptions as baseOptions } from "@/public/assets";
 import { priorityOptions } from "@/public/assets";
+import RelativeTimeBadge from "../IssuesData/RelativeTimeBadge";
 
 const statusOptions = baseOptions.filter((option) => option.value !== "open");
 
@@ -305,7 +307,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
       )}
       <div className="mx-auto max-w-6xl py-6 md:py-3.5">
         {/* --- HEADER SECTION (Unchanged) --- */}
-        <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-start">
+        <div className="mb-4 flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
           <div className="flex flex-col gap-3">
             <h1
               title={titleHelper(issueData.issue_title)}
@@ -329,80 +331,134 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              onClick={refetchData}
-              className="rounded-xl bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
-            >
-              <RotateCcw className="h-4.5 w-4.5" />
-            </button>
-
-            {/* Reopening an issue */}
-            {issueData.issue_status === "closed" && (
+          <div className="flex flex-col items-start gap-2 lg:items-end">
+            <div className="flex flex-wrap items-center gap-2">
               <button
-                onClick={() => setReopenModalOpen(true)}
-                className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3.5 py-1.5 text-sm font-medium text-green-700 transition-colors hover:bg-green-200 dark:bg-green-900/40 dark:text-green-300 dark:hover:bg-green-900/60"
+                onClick={refetchData}
+                className="rounded-xl bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
               >
-                <UndoDot className="h-3.5 w-3.5" />
-                Reopen
+                <RotateCcw className="h-4.5 w-4.5" />
               </button>
-            )}
 
-            {/* Reassigning an issue and changing the issue priority */}
-            {((role === "admin" &&
-              issueData.issue_target_department === department) ||
-              isSuper) &&
-              issueData.issue_status !== "closed" && (
-                <div className="inline-flex items-center gap-2">
-                  <button
-                    onClick={() => setIsReassignModalOpen(true)}
-                    className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold transition-colors duration-200 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-transparent dark:hover:bg-neutral-900"
-                  >
-                    <UserRoundPen className="h-4 w-4" />
-                    <span>Reassign</span>
-                  </button>
-                  <div className="relative w-fit" ref={priorityDropDownRef}>
+              {/* Reopening an issue */}
+              {issueData.issue_status === "closed" && (
+                <button
+                  onClick={() => setReopenModalOpen(true)}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3.5 py-1.5 text-sm font-medium text-green-700 transition-colors hover:bg-green-200 dark:bg-green-900/40 dark:text-green-300 dark:hover:bg-green-900/60"
+                >
+                  <UndoDot className="h-3.5 w-3.5" />
+                  Reopen
+                </button>
+              )}
+
+              {/* Reassigning an issue and changing the issue priority */}
+              {((role === "admin" &&
+                issueData.issue_target_department === department) ||
+                isSuper) &&
+                issueData.issue_status !== "closed" && (
+                  <div className="inline-flex items-center gap-2">
                     <button
-                      type="button"
-                      onClick={() => setIsPriorityOpen(!isPriorityOpen)}
+                      onClick={() => setIsReassignModalOpen(true)}
+                      className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold transition-colors duration-200 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-transparent dark:hover:bg-neutral-900"
+                    >
+                      <UserRoundPen className="h-4 w-4" />
+                      <span>Reassign</span>
+                    </button>
+                    <div className="relative w-fit" ref={priorityDropDownRef}>
+                      <button
+                        type="button"
+                        onClick={() => setIsPriorityOpen(!isPriorityOpen)}
+                        className={`flex h-9.5 w-full min-w-43 items-center justify-between rounded-xl border bg-white px-3 text-sm transition-all sm:w-auto dark:bg-neutral-950 ${
+                          isPriorityOpen
+                            ? "border-blue-500 ring-2 ring-blue-500/20"
+                            : "border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300">
+                          <ArrowUpDown className="h-4 w-4" />
+                          <span className="font-semibold text-neutral-700 dark:text-neutral-300">
+                            Change Priority:
+                          </span>
+                        </div>
+                        <ChevronDown
+                          className={`h-4 w-4 text-neutral-400 transition-transform ${
+                            isPriorityOpen ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
+                      {/* Dropdown Menu */}
+                      {isPriorityOpen && (
+                        <div className="default-scrollbar absolute top-full right-0 z-20 mt-2 max-h-80 w-full min-w-43 origin-top-right overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-950 dark:shadow-none">
+                          <div className="px-2 py-2 text-xs font-semibold text-neutral-500 uppercase">
+                            Priority options
+                          </div>
+                          {priorityOptions.map((option) => (
+                            <button
+                              key={option.value}
+                              onClick={() =>
+                                handlePriorityConfirmation(option.value)
+                              }
+                              disabled={
+                                option.value === issueData.issue_priority ||
+                                updatePriorityMutation.isPending
+                              }
+                              className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-900"
+                            >
+                              {option.label}
+                              {issueData.issue_priority === option.value && (
+                                <Check className="h-4 w-4 text-blue-600" />
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              {(issueData.issue_agent_email === email ||
+                isSuper ||
+                (role === "admin" &&
+                  issueData.issue_target_department === department)) &&
+                issueData.issue_status !== "closed" && (
+                  <div className="relative w-fit" ref={dropdownRef}>
+                    <button
+                      type="button" // Prevent form submission if inside a form
+                      onClick={() => setIsOpen(!isOpen)}
                       className={`flex h-9.5 w-full min-w-43 items-center justify-between rounded-xl border bg-white px-3 text-sm transition-all sm:w-auto dark:bg-neutral-950 ${
-                        isPriorityOpen
+                        isOpen
                           ? "border-blue-500 ring-2 ring-blue-500/20"
                           : "border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900"
                       }`}
                     >
                       <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300">
-                        <ArrowUpDown className="h-4 w-4" />
+                        <SquareCheckBig className="h-4 w-4" />
                         <span className="font-semibold text-neutral-700 dark:text-neutral-300">
-                          Change Priority:
+                          Update Status:
                         </span>
                       </div>
                       <ChevronDown
                         className={`h-4 w-4 text-neutral-400 transition-transform ${
-                          isPriorityOpen ? "rotate-180" : ""
+                          isOpen ? "rotate-180" : ""
                         }`}
                       />
                     </button>
                     {/* Dropdown Menu */}
-                    {isPriorityOpen && (
+                    {isOpen && (
                       <div className="default-scrollbar absolute top-full right-0 z-20 mt-2 max-h-80 w-full min-w-43 origin-top-right overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-950 dark:shadow-none">
                         <div className="px-2 py-2 text-xs font-semibold text-neutral-500 uppercase">
-                          Priority options
+                          Status options
                         </div>
-                        {priorityOptions.map((option) => (
+                        {statusOptions.map((option) => (
                           <button
                             key={option.value}
                             onClick={() =>
-                              handlePriorityConfirmation(option.value)
+                              handleConfirmationDialog(option.value)
                             }
-                            disabled={
-                              option.value === issueData.issue_priority ||
-                              updatePriorityMutation.isPending
-                            }
+                            disabled={option.value === issueData.issue_status}
                             className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-900"
                           >
                             {option.label}
-                            {issueData.issue_priority === option.value && (
+                            {issueData.issue_status === option.value && (
                               <Check className="h-4 w-4 text-blue-600" />
                             )}
                           </button>
@@ -410,58 +466,13 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                       </div>
                     )}
                   </div>
-                </div>
-              )}
-            {(issueData.issue_agent_email === email ||
-              isSuper ||
-              (role === "admin" &&
-                issueData.issue_target_department === department)) &&
-              issueData.issue_status !== "closed" && (
-                <div className="relative w-fit" ref={dropdownRef}>
-                  <button
-                    type="button" // Prevent form submission if inside a form
-                    onClick={() => setIsOpen(!isOpen)}
-                    className={`flex h-9.5 w-full min-w-43 items-center justify-between rounded-xl border bg-white px-3 text-sm transition-all sm:w-auto dark:bg-neutral-950 ${
-                      isOpen
-                        ? "border-blue-500 ring-2 ring-blue-500/20"
-                        : "border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300">
-                      <SquareCheckBig className="h-4 w-4" />
-                      <span className="font-semibold text-neutral-700 dark:text-neutral-300">
-                        Update Status:
-                      </span>
-                    </div>
-                    <ChevronDown
-                      className={`h-4 w-4 text-neutral-400 transition-transform ${
-                        isOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-                  {/* Dropdown Menu */}
-                  {isOpen && (
-                    <div className="default-scrollbar absolute top-full right-0 z-20 mt-2 max-h-80 w-full min-w-43 origin-top-right overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-950 dark:shadow-none">
-                      <div className="px-2 py-2 text-xs font-semibold text-neutral-500 uppercase">
-                        Status options
-                      </div>
-                      {statusOptions.map((option) => (
-                        <button
-                          key={option.value}
-                          onClick={() => handleConfirmationDialog(option.value)}
-                          disabled={option.value === issueData.issue_status}
-                          className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-900"
-                        >
-                          {option.label}
-                          {issueData.issue_status === option.value && (
-                            <Check className="h-4 w-4 text-blue-600" />
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+                )}
+            </div>
+
+            {/* Relative time badge */}
+            {issueData.issue_status === "open" && (
+              <RelativeTimeBadge createdAt={issueData.issue_created_at} />
+            )}
           </div>
         </div>
 
@@ -538,7 +549,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
             <div className="prose prose-neutral dark:prose-invert max-w-none">
               <p
                 title={issueData.issue_description.toString()}
-                className="line-clamp-2 leading-relaxed text-neutral-600 dark:text-neutral-300"
+                className="line-clamp-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300"
               >
                 {issueData.issue_description}
               </p>
@@ -549,7 +560,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-xs dark:border-neutral-800 dark:bg-neutral-950">
             <div className="mb-4 flex items-center">
               <h2 className="flex items-center gap-2 text-lg font-semibold text-neutral-900 dark:text-white">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
                   <MessageSquare className="h-4 w-4" />
                 </div>
                 Remarks
@@ -557,19 +568,29 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
             </div>
             <div className="prose prose-neutral dark:prose-invert max-w-none">
               {issueData.issue_remarks ? (
-                <p className="line-clamp-1 leading-relaxed text-neutral-600 dark:text-neutral-300">
+                <p className="line-clamp-1 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
                   {issueData.issue_remarks}
                 </p>
               ) : (
-                <p className="text-neutral-400 italic dark:text-neutral-500">
+                <p className="text-sm text-neutral-400 italic dark:text-neutral-500">
                   No remarks provided.
                 </p>
               )}
             </div>
           </div>
         </div>
+
+        {/* --- ADD THE VIEWER HERE --- */}
+        {/* It sits neatly between Remarks and Comments. If there are no attachments, it returns null and takes up no space. */}
+        <div className="mb-6">
+          <IssueAttachmentsViewer uuid={uuid} />
+        </div>
+
         {/* --- BOTTOM GRID: Description summary card + Comments --- */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Comments Section */}
+          <CommentsSection uuid={uuid} />
+
           {/* Summary card */}
           <div className="flex flex-col rounded-xl border-t-2 border-black dark:border-white">
             {/* Card header */}
@@ -630,9 +651,6 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
               ))}
             </div>
           </div>
-
-          {/* Comments Section */}
-          <CommentsSection uuid={uuid} />
         </div>
       </div>
     </>

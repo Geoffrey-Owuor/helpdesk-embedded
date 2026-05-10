@@ -222,7 +222,7 @@ const ArticleSearchFilter = ({
           {committedFilters.map((pill) => (
             <div
               key={pill.id}
-              className="flex items-center gap-1.5 rounded-full border border-neutral-300 bg-white px-3 py-1 text-sm text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"
+              className="flex items-center gap-1.5 rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-900 dark:bg-blue-900/30 dark:text-blue-100"
             >
               <span className="font-semibold capitalize">
                 {pill.category.replace("_", " ")}:
@@ -230,7 +230,7 @@ const ArticleSearchFilter = ({
               <span>{pill.value}</span>
               <button
                 onClick={() => removeFilter(pill.id)}
-                className="ml-1 rounded-full p-0.5 hover:bg-neutral-200 dark:hover:bg-neutral-700"
+                className="ml-1 rounded-full p-0.5 hover:bg-blue-200 dark:hover:bg-blue-900/70"
               >
                 <X className="h-3 w-3" />
               </button>
