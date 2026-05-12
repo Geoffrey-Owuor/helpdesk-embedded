@@ -7,6 +7,7 @@ type ColumnVisibilityState = {
   type: boolean;
   priority: boolean;
   submitter: boolean;
+  relativeTime: boolean;
   date: boolean;
   subDept: boolean; // Submitter Department
   targetDept: boolean; // Target Department
@@ -22,6 +23,7 @@ const defaultVisibility: ColumnVisibilityState = {
   type: true,
   priority: true,
   submitter: true,
+  relativeTime: true,
   date: true,
   subDept: true,
   targetDept: true,
@@ -37,6 +39,7 @@ export const columnLabels: Record<keyof ColumnVisibilityState, string> = {
   type: "Issue Type",
   priority: "Issue Priority",
   submitter: "Submitter Name",
+  relativeTime: "Relative Time",
   date: "Date Submitted",
   subDept: "Submitter Dept",
   targetDept: "Target Dept",

@@ -87,7 +87,7 @@ export const PUT = withAuth(async ({ request, user }) => {
     issue_escalator_name = $5,
     issue_agent_id = $6,
     issue_agent_name = $7,
-    issue_agent_email = $8,
+    issue_agent_email = $8
     WHERE issue_uuid = $9
     `;
 

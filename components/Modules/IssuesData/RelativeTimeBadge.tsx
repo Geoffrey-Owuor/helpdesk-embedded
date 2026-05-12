@@ -53,7 +53,7 @@ const RelativeTimeBadge = ({ createdAt }: { createdAt: string | number }) => {
 
   if (!mounted) {
     return (
-      <div className="my-2 inline-flex w-fit items-center gap-1.5 rounded-full bg-linear-to-br from-violet-100 via-purple-50 to-fuchsia-200 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-violet-900 transition-colors dark:from-violet-950/50 dark:via-purple-900/20 dark:to-pink-900/40 dark:text-violet-200">
+      <div className="inline-flex w-fit items-center gap-1.5 rounded-full bg-linear-to-br from-violet-100 via-purple-50 to-fuchsia-200 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-violet-900 transition-colors dark:from-violet-950/50 dark:via-purple-900/20 dark:to-pink-900/40 dark:text-violet-200">
         <Clock size={12} className="text-violet-900 dark:text-violet-200" />
         <span>Loading some time...</span>
       </div>
@@ -64,7 +64,7 @@ const RelativeTimeBadge = ({ createdAt }: { createdAt: string | number }) => {
 
   return (
     <div
-      className={`my-2 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide transition-colors ${
+      className={`inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide transition-colors ${
         isUrgent
           ? "bg-linear-to-br from-amber-100 via-orange-50 to-red-200 text-red-900 dark:from-amber-900/40 dark:via-orange-900/20 dark:to-red-800/40 dark:text-red-300"
           : "bg-linear-to-br from-violet-100 via-purple-50 to-fuchsia-200 text-violet-900 dark:from-violet-950/50 dark:via-purple-900/20 dark:to-pink-900/40 dark:text-violet-200"

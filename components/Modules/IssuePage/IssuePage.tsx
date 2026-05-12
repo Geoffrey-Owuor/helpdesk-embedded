@@ -24,6 +24,7 @@ import {
   FileQuestion,
   LayoutDashboard,
   UndoDot,
+  GitBranchPlus,
 } from "lucide-react";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import { dateFormatter, titleHelper } from "@/public/assets";
@@ -50,6 +51,7 @@ import { IssueValueTypes } from "@/public/assets";
 import { DEFAULT_FETCH_OPTIONS } from "@/public/assets";
 import { statusOptions as baseOptions } from "@/public/assets";
 import { priorityOptions } from "@/public/assets";
+import EscalateIssueModal from "./EscalateIssueModal";
 import RelativeTimeBadge from "../IssuesData/RelativeTimeBadge";
 
 const statusOptions = baseOptions.filter((option) => option.value !== "open");
@@ -118,10 +120,11 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
   const hideDialog = useConfirmStore((state) => state.hideDialog);
   const { role, email, department, userId, isSuper } = useUser();
 
-  // States for the update status modal
+  // States for the modals
   const [statusModalOpen, setStatusModalOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [reopenModalOpen, setReopenModalOpen] = useState(false);
+  const [escalateModalOpen, setEscalateModalOpen] = useState(false);
 
   // Status to hold our selected status
   const [isOpen, setIsOpen] = useState(false);
@@ -305,6 +308,19 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           activeCardsKey={activeCardsKey}
         />
       )}
+
+      {/* Escalate Modal */}
+      {escalateModalOpen && (
+        <EscalateIssueModal
+          uuid={uuid}
+          closeModal={() => setEscalateModalOpen(false)}
+          isModalOpen={escalateModalOpen}
+          activeQueryKey={activeQueryKey}
+          issueAgentEmail={issueData.issue_agent_email}
+          issueType={issueData.issue_type}
+          targetDepartment={issueData.issue_target_department}
+        />
+      )}
       <div className="mx-auto max-w-6xl py-6 md:py-3.5">
         {/* --- HEADER SECTION (Unchanged) --- */}
         <div className="mb-4 flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
@@ -331,7 +347,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
             </div>
           </div>
 
-          <div className="flex flex-col items-start gap-2 lg:items-end">
+          <div className="flex flex-col items-start gap-3 lg:items-end">
             <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={refetchData}
@@ -344,7 +360,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
               {issueData.issue_status === "closed" && (
                 <button
                   onClick={() => setReopenModalOpen(true)}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3.5 py-1.5 text-sm font-medium text-green-700 transition-colors hover:bg-green-200 dark:bg-green-900/40 dark:text-green-300 dark:hover:bg-green-900/60"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-3.5 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
                 >
                   <UndoDot className="h-3.5 w-3.5" />
                   Reopen
@@ -355,7 +371,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
               {((role === "admin" &&
                 issueData.issue_target_department === department) ||
                 isSuper) &&
-                issueData.issue_status !== "closed" && (
+                issueData.issue_status === "open" && (
                   <div className="inline-flex items-center gap-2">
                     <button
                       onClick={() => setIsReassignModalOpen(true)}
@@ -419,7 +435,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                 isSuper ||
                 (role === "admin" &&
                   issueData.issue_target_department === department)) &&
-                issueData.issue_status !== "closed" && (
+                issueData.issue_status === "open" && (
                   <div className="relative w-fit" ref={dropdownRef}>
                     <button
                       type="button" // Prevent form submission if inside a form
@@ -469,10 +485,21 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                 )}
             </div>
 
-            {/* Relative time badge */}
-            {issueData.issue_status === "open" && (
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Escalation button */}
+              {role !== "user" && issueData.issue_status === "open" && (
+                <button
+                  type="button"
+                  onClick={() => setEscalateModalOpen(true)}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-red-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-red-800"
+                >
+                  <GitBranchPlus size={12} />
+                  Escalate
+                </button>
+              )}
+              {/* Relative time badge */}
               <RelativeTimeBadge createdAt={issueData.issue_created_at} />
-            )}
+            </div>
           </div>
         </div>
 
@@ -512,7 +539,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           <DetailCard title="Issue Data" icon={Hash}>
             <div className="flex justify-between">
               <InfoBlock label="Issue Type" value={issueData.issue_type} />
-              {isSuper && issueData.issue_status !== "closed" && (
+              {isSuper && issueData.issue_status === "open" && (
                 <IssueTypeModal
                   targetDepartment={issueData.issue_target_department}
                   uuid={uuid}
@@ -536,7 +563,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                 Description
               </h2>
               {(userId === issueData.issue_submitter_id || isSuper) &&
-                issueData.issue_status !== "closed" && (
+                issueData.issue_status === "open" && (
                   <button
                     type="button"
                     onClick={() => setIsEditModalOpen(true)}
@@ -580,11 +607,12 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           </div>
         </div>
 
-        {/* --- ADD THE VIEWER HERE --- */}
-        {/* It sits neatly between Remarks and Comments. If there are no attachments, it returns null and takes up no space. */}
-        <div className="mb-6">
-          <IssueAttachmentsViewer uuid={uuid} />
-        </div>
+        {/* --- ATTACHMENTS VIEWER --- */}
+        {Number(issueData.attachments_count) > 0 && (
+          <div className="mb-6">
+            <IssueAttachmentsViewer uuid={uuid} />
+          </div>
+        )}
 
         {/* --- BOTTOM GRID: Description summary card + Comments --- */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
