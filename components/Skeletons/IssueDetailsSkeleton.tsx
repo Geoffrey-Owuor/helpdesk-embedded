@@ -2,7 +2,7 @@ import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 
 const IssueDetailsSkeleton = () => {
   return (
-    <div className="mx-auto max-w-6xl py-6 md:py-3.5">
+    <div className="mx-auto py-6 md:py-3.5">
       {/* --- HEADER SECTION SKELETON --- */}
       <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-start">
         <div className="flex flex-col gap-3">
