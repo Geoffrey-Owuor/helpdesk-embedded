@@ -5,7 +5,7 @@ import { footerQuickLinks } from "@/public/assets";
 
 const DashboardFooter = () => {
   return (
-    <footer className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-4 p-6 text-sm text-neutral-500 md:flex-row 2xl:max-w-7xl">
+    <footer className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-4 p-6 text-sm text-neutral-500 md:flex-row">
       {/* Left Area: Copyright & Attribution */}
       <span className="inline-flex items-center gap-2 leading-5">
         <span>&copy; {currentYear} IssueDesk. Hotpoint Appliances Ltd</span>

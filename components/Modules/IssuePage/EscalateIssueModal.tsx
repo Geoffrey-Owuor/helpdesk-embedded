@@ -152,7 +152,7 @@ const EscalateIssueModal = ({
         >
           {/* Header */}
           <div className="mb-4 flex items-center justify-between border-b border-neutral-200 pb-2 dark:border-neutral-800">
-            <h2 className="text-xl font-semibold text-red-600 dark:text-red-500">
+            <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-200">
               Escalate Issue
             </h2>
             <button

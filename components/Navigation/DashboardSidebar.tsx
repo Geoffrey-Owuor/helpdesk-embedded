@@ -17,12 +17,12 @@ import { useUser } from "@/contexts/UserContext";
 import UserInfoCard from "../Modules/UserInfoCard";
 import MobileSideBar from "./MobileSideBar";
 import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
-import { DashBoardLogo } from "../Modules/DashBoardLogo";
 import { usePathname, useRouter } from "next/navigation";
 import { useLoadingStore } from "@/store/useLoadingStore";
 import AdminPanel from "./AdminFunctions/AdminPanel";
 import UserSettings from "./UserSettings/UserSettings";
 import Notifications from "./Notifications/Notifications";
+import { useSidebarToggleStore } from "@/store/useSidebarToggleStore";
 
 const DashboardSidebar = () => {
   const { username, role, isSuper } = useUser();
@@ -30,13 +30,12 @@ const DashboardSidebar = () => {
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [showUserSettings, setShowUserSettings] = useState(false);
+  const showSidebar = useSidebarToggleStore((state) => state.showSidebar);
 
   // splitting states and refs for mobile and desktop user icons to prevent race conditions
   const [isMobileUserCardOpen, setIsMobileUserCardOpen] = useState(false);
-  const [isDesktopUserCardOpen, setIsDesktopUserCardOpen] = useState(false);
 
   const mobileUserDivRef = useRef<HTMLDivElement>(null);
-  const desktopUserDivRef = useRef<HTMLDivElement>(null);
 
   const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
   const pathname = usePathname();
@@ -119,13 +118,10 @@ const DashboardSidebar = () => {
         </div>
       </div>
 
-      {/* Left sidebar — visible on md+ screens */}
-      <aside className="fixed top-0 bottom-0 left-0 z-50 hidden w-20 flex-col items-center border-neutral-200 py-4 lg:flex dark:border-neutral-800">
-        {/* Logo at the top */}
-        <div className="mt-1 mb-4 flex items-center justify-center">
-          <DashBoardLogo />
-        </div>
-
+      {/* Left sidebar — visible on lg+ screens */}
+      <aside
+        className={`fixed top-16 bottom-0 transition-transform duration-200 ease-in-out ${showSidebar ? "translate-x-0" : "-translate-x-full"} left-0 z-50 hidden w-20 flex-col items-center border-neutral-200 pb-4 lg:flex dark:border-neutral-800`}
+      >
         {/* Nav items — grow to fill space */}
         <nav className="sidebar-nav mb-2 flex w-full flex-1 flex-col items-center gap-1 px-2">
           {/* Home */}
@@ -189,40 +185,6 @@ const DashboardSidebar = () => {
             label="Back"
           />
         </nav>
-
-        {/* Bottom section: theme toggle + avatar */}
-        <div className="mt-auto flex flex-col items-center gap-4">
-          {/* The theme toggle */}
-          <ThemeToggle />
-
-          {/* The notification bell icon */}
-          <Notifications />
-
-          {/* User avatar */}
-          <div
-            className="relative flex flex-col items-center gap-1"
-            ref={desktopUserDivRef}
-          >
-            <button
-              onClick={() => setIsDesktopUserCardOpen((prev) => !prev)}
-              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-neutral-900 text-white hover:bg-neutral-700 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
-            >
-              <span className="text-xs font-semibold">
-                {abbreviateUserName(username)}
-              </span>
-            </button>
-            <span className="text-[10px] text-neutral-500 dark:text-neutral-400">
-              Profile
-            </span>
-            <UserInfoCard
-              isUserCardOpen={isDesktopUserCardOpen}
-              openDownwards={false}
-              openUserSettings={() => setShowUserSettings(true)}
-              closeUserCard={() => setIsDesktopUserCardOpen(false)}
-              triggerRef={desktopUserDivRef}
-            />
-          </div>
-        </div>
       </aside>
     </>
   );
