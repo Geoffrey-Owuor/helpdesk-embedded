@@ -155,7 +155,7 @@ const ReassignIssue = ({
           className="flex max-h-120 w-full max-w-lg flex-col rounded-2xl border border-neutral-300 bg-neutral-50 p-6 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
         >
           {/* Header */}
-          <div className="mb-6 flex items-center justify-between">
+          <div className="mb-6 flex items-center justify-between border-b border-neutral-200 pb-2 dark:border-neutral-800">
             <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
               Department Agents
             </h2>
@@ -260,7 +260,7 @@ const ReassignIssue = ({
             <button
               onClick={handleConfirmationDialog}
               disabled={!agentEmail || !agentName || isUpdating}
-              className="inline-flex items-center gap-2 rounded-xl bg-blue-700 px-3 py-2 text-white hover:bg-blue-800 disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-neutral-900 px-3 py-2 text-sm text-white hover:bg-neutral-800 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
             >
               <UserRoundPen className="h-4 w-4" />
               Reassign
