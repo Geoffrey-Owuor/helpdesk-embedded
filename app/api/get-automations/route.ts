@@ -25,6 +25,9 @@ export const GET = withAuth(async ({ request }) => {
         a.issue_created_at, a.issue_updated_at, a.issue_status,
         a.issue_agent_name, a.issue_agent_email, a.issue_date_resolved, 
         a.issue_date_closed, a.issue_reopened, a.issue_reopened_reason,
+        a.issue_reopener_name, a.issue_reopened_date,
+        a.issue_escalated, a.issue_escalation_reason, 
+        a.issue_escalator_name, a.issue_escalation_date,
         COUNT(b.issue_id) AS attachments_count
       FROM issues_table a
       LEFT JOIN issue_attachments b
@@ -56,7 +59,10 @@ export const GET = withAuth(async ({ request }) => {
         a.issue_priority, a.issue_title, a.issue_description, 
         a.issue_remarks, a.issue_created_at, a.issue_updated_at, a.issue_status,
         a.issue_agent_name, a.issue_agent_email, a.issue_date_resolved, 
-        a.issue_date_closed, a.issue_reopened, a.issue_reopened_reason 
+        a.issue_date_closed, a.issue_reopened, a.issue_reopened_reason,
+        a.issue_reopener_name, a.issue_reopened_date,
+        a.issue_escalated, a.issue_escalation_reason, 
+        a.issue_escalator_name, a.issue_escalation_date 
         ORDER BY issue_created_at DESC LIMIT $${params.length + 1}`;
     params.push(limit);
 

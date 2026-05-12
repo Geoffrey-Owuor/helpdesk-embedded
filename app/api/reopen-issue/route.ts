@@ -5,7 +5,7 @@ import { PoolClient } from "pg";
 import { emailSender } from "@/services/EmailSender";
 
 export const PUT = withAuth(async ({ request, user }) => {
-  const { username } = user;
+  const { username, userId, email } = user;
   let client: PoolClient | undefined;
 
   try {
@@ -49,7 +49,7 @@ export const PUT = withAuth(async ({ request, user }) => {
     }
 
     // Grouping our params
-    const queryParams = ["open", "Yes", reason, uuid];
+    const queryParams = ["open", "Yes", reason, userId, email, username, uuid];
 
     // Issue is not closed, so we can continue
     await client.query(
@@ -58,8 +58,12 @@ export const PUT = withAuth(async ({ request, user }) => {
         issue_reopened = $2,
         issue_reopened_reason = $3,
         issue_created_at = CURRENT_TIMESTAMP,
-        issue_updated_at = CURRENT_TIMESTAMP
-        WHERE issue_uuid = $4`,
+        issue_updated_at = CURRENT_TIMESTAMP,
+        issue_reopener_id = $4,
+        issue_reopener_email = $5,
+        issue_reopener_name = $6,
+        issue_reopened_date = CURRENT_TIMESTAMP
+        WHERE issue_uuid = $7`,
       queryParams,
     );
 
@@ -68,10 +72,10 @@ export const PUT = withAuth(async ({ request, user }) => {
 
     // EMAIL SERVICE
     const title = `Issue ${referenceNumber} Reopened by ${username}`;
-    const description = `Issue ${referenceNumber} has been reopned by ${username}`;
+    const description = `Issue ${referenceNumber} has been reopened by ${username}`;
 
     // Fire and forget - Calling the email sender service
-    emailSender({ title, description, uuid });
+    // emailSender({ title, description, uuid });
 
     // return a response to the user
     return NextResponse.json(

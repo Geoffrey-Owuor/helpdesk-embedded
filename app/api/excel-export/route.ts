@@ -12,14 +12,19 @@ export const GET = withAuth(async ({ request, user }) => {
   try {
     //Our base query
     let baseQuery = `
-    SELECT issue_uuid, issue_reference_id, issue_submitter_name, issue_submitter_department,
-    issue_target_department, issue_type, issue_priority, issue_title, issue_description, 
+    SELECT issue_uuid, 
     TO_CHAR(issue_created_at, 'YYYY-MM-DD HH24:MI:SS') AS issue_created_at, 
+    issue_reference_id, issue_submitter_name, issue_submitter_department,
+    issue_target_department, issue_type, issue_priority, issue_title, 
+    issue_description, issue_status, issue_agent_name, issue_agent_email, 
+    issue_assigner_name, issue_assigner_email, issue_remarks,
     TO_CHAR(issue_updated_at, 'YYYY-MM-DD HH24:MI:SS') AS issue_updated_at, 
     TO_CHAR(issue_date_resolved, 'YYYY-MM-DD HH24:MI:SS') AS issue_date_resolved,
     TO_CHAR(issue_date_closed, 'YYYY-MM-DD HH24:MI:SS') AS issue_date_closed,
-    issue_status, issue_remarks, issue_reopened, issue_reopened_reason,
-    issue_agent_name, issue_agent_email, issue_assigner_name, issue_assigner_email
+    issue_reopened, issue_reopened_reason, issue_reopener_name, issue_reopener_email,
+    TO_CHAR(issue_reopened_date, 'YYYY-MM-DD HH24:MI:SS') AS issue_reopened_date,
+    issue_escalated, issue_escalation_reason, issue_escalator_name, issue_escalator_email,
+    TO_CHAR(issue_escalation_date, 'YYYY-MM-DD HH24:MI:SS') AS issue_escalation_date
     FROM issues_table
     `;
 

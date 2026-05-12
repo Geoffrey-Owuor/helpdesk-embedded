@@ -592,15 +592,15 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           <CommentsSection uuid={uuid} />
 
           {/* Summary card */}
-          <div className="flex flex-col rounded-xl border-t-2 border-black dark:border-white">
+          <div className="flex flex-col rounded-xl border border-neutral-200 shadow-xs dark:border-neutral-800">
             {/* Card header */}
-            <div className="flex items-center justify-between px-6 py-4">
+            <div className="flex items-center justify-between p-6">
               <div className="inline-flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800">
-                  <FileText className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/20">
+                  <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 </div>
 
-                <h2 className="font-semibold text-neutral-900 dark:text-white">
+                <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
                   Other Metadata
                 </h2>
               </div>
@@ -635,6 +635,35 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                 {
                   label: "Reason Reopened",
                   value: issueData.issue_reopened_reason ?? "N/A",
+                },
+                {
+                  label: "Issue Reopener",
+                  value: issueData.issue_reopener_name ?? "N/A",
+                },
+                {
+                  label: "Date Reopened",
+                  value: dateFormatter(issueData.issue_reopened_date) ?? "N/A",
+                },
+                {
+                  label: "Issue Escalated",
+                  value: (
+                    <span className="rounded-full bg-gray-200 px-2 py-px text-xs dark:bg-gray-800">
+                      {issueData.issue_escalated}
+                    </span>
+                  ),
+                },
+                {
+                  label: "Reason Escalated",
+                  value: issueData.issue_escalation_reason ?? "N/A",
+                },
+                {
+                  label: "Issue Escalator",
+                  value: issueData.issue_escalator_name ?? "N/A",
+                },
+                {
+                  label: "Date Escalated",
+                  value:
+                    dateFormatter(issueData.issue_escalation_date) ?? "N/A",
                 },
               ].map(({ label, value }) => (
                 <div
