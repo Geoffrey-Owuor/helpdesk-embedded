@@ -25,6 +25,8 @@ import {
   LayoutDashboard,
   UndoDot,
   GitBranchPlus,
+  ClockPlus,
+  ClockArrowUp,
 } from "lucide-react";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import { dateFormatter, titleHelper } from "@/public/assets";
@@ -486,6 +488,21 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
+              {/* Escalation history button */}
+              {Number(issueData.reopened_count) > 0 && (
+                <button className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200">
+                  <ClockPlus size={12} />
+                  reopening history
+                </button>
+              )}
+
+              {/* Reopen history button */}
+              {Number(issueData.escalated_count) > 0 && (
+                <button className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200">
+                  <ClockArrowUp size={12} />
+                  escalation history
+                </button>
+              )}
               {/* Escalation button */}
               {role !== "user" && issueData.issue_status === "open" && (
                 <button
@@ -620,7 +637,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           <CommentsSection uuid={uuid} />
 
           {/* Summary card */}
-          <div className="flex flex-col rounded-xl border border-neutral-200 shadow-xs dark:border-neutral-800">
+          <div className="flex flex-col rounded-xl border-t-2 border-black dark:border-white">
             {/* Card header */}
             <div className="flex items-center justify-between p-6">
               <div className="inline-flex items-center gap-2">
@@ -651,47 +668,6 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                 {
                   label: "Date Closed",
                   value: dateFormatter(issueData.issue_date_closed) ?? "N/A",
-                },
-                {
-                  label: "Issue Reopened",
-                  value: (
-                    <span className="rounded-full bg-gray-200 px-2 py-px text-xs dark:bg-gray-800">
-                      {issueData.issue_reopened}
-                    </span>
-                  ),
-                },
-                {
-                  label: "Reason Reopened",
-                  value: issueData.issue_reopened_reason ?? "N/A",
-                },
-                {
-                  label: "Issue Reopener",
-                  value: issueData.issue_reopener_name ?? "N/A",
-                },
-                {
-                  label: "Date Reopened",
-                  value: dateFormatter(issueData.issue_reopened_date) ?? "N/A",
-                },
-                {
-                  label: "Issue Escalated",
-                  value: (
-                    <span className="rounded-full bg-gray-200 px-2 py-px text-xs dark:bg-gray-800">
-                      {issueData.issue_escalated}
-                    </span>
-                  ),
-                },
-                {
-                  label: "Reason Escalated",
-                  value: issueData.issue_escalation_reason ?? "N/A",
-                },
-                {
-                  label: "Issue Escalator",
-                  value: issueData.issue_escalator_name ?? "N/A",
-                },
-                {
-                  label: "Date Escalated",
-                  value:
-                    dateFormatter(issueData.issue_escalation_date) ?? "N/A",
                 },
               ].map(({ label, value }) => (
                 <div
