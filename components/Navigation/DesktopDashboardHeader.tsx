@@ -16,7 +16,7 @@ const ModernSidebarIcon = ({ className }: { className?: string }) => (
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    strokeWidth="2.5"
+    strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -59,15 +59,11 @@ const DesktopDashboardHeader = () => {
             {/* Dashboard sidebar toggle icon */}
             <button
               onClick={() => setShowSidebar(!showSidebar)}
-              className="group rounded-lg p-1.5 transition-all duration-200 hover:bg-neutral-300/50 active:scale-90 dark:hover:bg-neutral-800/50"
+              className="group rounded-full p-2 hover:bg-neutral-200 dark:hover:bg-neutral-800"
               aria-label="Toggle Sidebar"
               title="Toggle sidebar"
             >
-              <ModernSidebarIcon
-                className={`h-5 w-5 transition-transform duration-200 ${
-                  showSidebar ? "rotate-0" : "rotate-180"
-                } text-neutral-600 group-hover:text-neutral-900 dark:text-neutral-400 dark:group-hover:text-neutral-100`}
-              />
+              <ModernSidebarIcon className="h-5 w-5 text-neutral-600 group-hover:text-neutral-900 dark:text-neutral-400 dark:group-hover:text-neutral-100" />
             </button>
           </div>
 
