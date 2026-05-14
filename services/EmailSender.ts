@@ -13,6 +13,8 @@ type EmailSenderProps = {
   description: string;
   comment?: string;
   author?: string;
+  reasonReopened?: string;
+  reasonEscalated?: string;
   attachments?: {
     filename: string;
     content: string;
@@ -24,6 +26,8 @@ export const emailSender = async ({
   uuid,
   description,
   comment = "",
+  reasonReopened = "",
+  reasonEscalated = "",
   author = "",
   attachments,
 }: EmailSenderProps) => {
@@ -35,8 +39,7 @@ export const emailSender = async ({
     : undefined;
 
   // Getting the issue data for the email body
-  const { issueData, emails, ccEmails, remarks, reasonReopened } =
-    await getEmailData(uuid);
+  const { issueData, emails, ccEmails, remarks } = await getEmailData(uuid);
 
   const emailParams: IssueNotificationEmailParams = {
     title: title,
@@ -44,6 +47,7 @@ export const emailSender = async ({
     body: issueData,
     remarks: remarks,
     reasonReopened: reasonReopened,
+    reasonEscalated: reasonEscalated,
     comment: commentData,
   };
 

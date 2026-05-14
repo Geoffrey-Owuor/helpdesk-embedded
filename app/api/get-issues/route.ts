@@ -42,22 +42,24 @@ export const GET = withAuth(async ({ user, request }) => {
     // SuperAdmin filter only applys to super users
     if (!superAdminFilter || !isSuper) {
       if (role === "user") {
-        whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
+        whereClauses.push(`a.issue_submitter_id = $${params.length + 1}`);
         params.push(userId);
       } else if (role === "admin") {
         if (agentAdminFilter === "agentAdminFilter") {
-          whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
+          whereClauses.push(`a.issue_submitter_id = $${params.length + 1}`);
           params.push(userId);
         } else {
-          whereClauses.push(`issue_target_department = $${params.length + 1}`);
+          whereClauses.push(
+            `a.issue_target_department = $${params.length + 1}`,
+          );
           params.push(department);
         }
       } else if (role === "agent") {
         if (agentAdminFilter === "agentAdminFilter") {
-          whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
+          whereClauses.push(`a.issue_submitter_id = $${params.length + 1}`);
           params.push(userId);
         } else {
-          whereClauses.push(`issue_agent_email = $${params.length + 1}`);
+          whereClauses.push(`a.issue_agent_email = $${params.length + 1}`);
           params.push(email);
         }
       }

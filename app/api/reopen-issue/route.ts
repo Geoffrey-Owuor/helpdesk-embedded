@@ -26,7 +26,10 @@ export const PUT = withAuth(async ({ request, user }) => {
 
     //check if the issue is not marked as closed
     const { rows } = await client.query(
-      `SELECT issue_status, issue_reference_id FROM issues_table WHERE issue_uuid = $1 FOR UPDATE`,
+      `SELECT issue_status, issue_reference_id,
+       issue_created_at, issue_submitter_id, 
+       issue_submitter_email, issue_submitter_name
+      FROM issues_table WHERE issue_uuid = $1 FOR UPDATE`,
       [uuid],
     );
 
@@ -39,6 +42,13 @@ export const PUT = withAuth(async ({ request, user }) => {
     const currentStatus = rows[0].issue_status;
     const referenceNumber = rows[0].issue_reference_id;
 
+    // Our first reopen history data
+    const currentCreatedAt = rows[0].issue_created_at;
+    const currentSubmitterId = rows[0].issue_submitter_id;
+    const currentSubmitterEmail = rows[0].issue_submitter_email;
+    const currentSubmitterName = rows[0].issue_submitter_name;
+    const currentReason = "Issue first created";
+
     // Issue is already closed
     if (currentStatus !== "closed") {
       await client.query("ROLLBACK");
@@ -48,23 +58,53 @@ export const PUT = withAuth(async ({ request, user }) => {
       );
     }
 
-    // Grouping our params
-    const queryParams = ["open", "Yes", reason, userId, email, username, uuid];
+    // Check if there's re-open history for this particular issue
+    const { rows: existingHistory } = await client.query(
+      `SELECT id FROM issue_reopening WHERE issue_id = $1`,
+      [uuid],
+    );
 
-    // Issue is not closed, so we can continue
+    // No history - insert first history - issue first creation
+    if (existingHistory.length === 0) {
+      await client.query(
+        `
+        INSERT INTO issue_reopening
+        (issue_id, issue_reopen_reason, issue_reopener_id, issue_reopener_email, issue_reopener_name, issue_reopen_date)
+        VALUES
+        ($1, $2, $3, $4, $5, $6)
+        `,
+        [
+          uuid,
+          currentReason,
+          currentSubmitterId,
+          currentSubmitterEmail,
+          currentSubmitterName,
+          currentCreatedAt,
+        ],
+      );
+    }
+
+    // Insert new reopen row
     await client.query(
-      `UPDATE issues_table 
-        SET issue_status = $1,
-        issue_reopened = $2,
-        issue_reopened_reason = $3,
-        issue_created_at = CURRENT_TIMESTAMP,
-        issue_updated_at = CURRENT_TIMESTAMP,
-        issue_reopener_id = $4,
-        issue_reopener_email = $5,
-        issue_reopener_name = $6,
-        issue_reopened_date = CURRENT_TIMESTAMP
-        WHERE issue_uuid = $7`,
-      queryParams,
+      `
+      INSERT INTO issue_reopening
+      (issue_id, issue_reopen_reason, issue_reopener_id, issue_reopener_email, issue_reopener_name, issue_reopen_date)
+        VALUES
+        ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP)
+      `,
+      [uuid, reason, userId, email, username],
+    );
+
+    // Update issues_table to set the issue to open and reset the creation date
+    await client.query(
+      `
+      UPDATE issues_table
+      SET issue_status = $1,
+      issue_created_at = CURRENT_TIMESTAMP,
+      issue_updated_at = CURRENT_TIMESTAMP
+      WHERE issue_uuid = $2
+      `,
+      ["open", uuid],
     );
 
     // Commit the transaction
@@ -73,9 +113,10 @@ export const PUT = withAuth(async ({ request, user }) => {
     // EMAIL SERVICE
     const title = `Issue ${referenceNumber} Reopened by ${username}`;
     const description = `Issue ${referenceNumber} has been reopened by ${username}`;
+    const reasonReopened = reason;
 
     // Fire and forget - Calling the email sender service
-    // emailSender({ title, description, uuid });
+    // emailSender({ title, description, uuid, reasonReopened });
 
     // return a response to the user
     return NextResponse.json(
