@@ -10,7 +10,6 @@ import { FormEvent, useRef, useState } from "react";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import { BookmarkCheck, MessageSquareText, X } from "lucide-react";
-import { useUser } from "@/contexts/UserContext";
 
 type ReopenIssueModalProps = {
   uuid: string;
@@ -28,8 +27,6 @@ const ReopenIssueModal = ({
   activeCardsKey,
 }: ReopenIssueModalProps) => {
   const queryClient = useQueryClient();
-
-  const { username } = useUser();
 
   const modalRef = useRef<HTMLDivElement | null>(null);
 
@@ -58,13 +55,9 @@ const ReopenIssueModal = ({
             issue.issue_uuid === uuid
               ? {
                   ...issue,
+                  issue_status: "open",
                   issue_updated_at: new Date().toISOString(),
                   issue_created_at: new Date().toISOString(),
-                  issue_reopened_reason: reason,
-                  issue_reopened: "Yes",
-                  issue_status: "open",
-                  issue_reopener_name: username,
-                  issue_reopened_date: new Date().toISOString(),
                 }
               : issue,
           );

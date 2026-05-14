@@ -39,12 +39,12 @@ export const GET = withAuth(async ({ request }) => {
 
     // General filters for the Automations query
     if (IssueTypeFilter) {
-      whereClauses.push(`issue_type = $${params.length + 1}`);
+      whereClauses.push(`a.issue_type = $${params.length + 1}`);
       params.push(IssueTypeFilter);
     }
 
     if (departmentFilter) {
-      whereClauses.push(`issue_submitter_department = $${params.length + 1}`);
+      whereClauses.push(`a.issue_submitter_department = $${params.length + 1}`);
       params.push(departmentFilter);
     }
 

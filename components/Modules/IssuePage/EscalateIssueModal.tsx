@@ -15,7 +15,6 @@ import { useConfirmStore } from "@/store/useConfirmStore";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { useUser } from "@/contexts/UserContext";
 
 type Payload = {
   uuid: string;
@@ -44,8 +43,6 @@ const EscalateIssueModal = ({
 }: EscalateIssueProps) => {
   const queryClient = useQueryClient();
   const department = targetDepartment.toString();
-
-  const { username } = useUser();
 
   // Focus Trapping
   const modalRef = useRef<HTMLDivElement | null>(null);
@@ -95,11 +92,6 @@ const EscalateIssueModal = ({
                   issue_agent_name: payload.agentName,
                   issue_agent_email: payload.agentEmail,
                   issue_updated_at: new Date().toISOString(),
-                  // Optimistic updates for escalation fields
-                  issue_escalated: "Yes",
-                  issue_escalator_name: username,
-                  issue_escalation_reason: payload.reason,
-                  issue_escalation_date: new Date().toISOString(),
                 }
               : issue,
           );

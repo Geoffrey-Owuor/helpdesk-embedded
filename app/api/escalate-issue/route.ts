@@ -26,7 +26,10 @@ export const PUT = withAuth(async ({ request, user }) => {
 
     // Check if the issue is marked as closed
     const { rows } = await client.query(
-      `SELECT issue_status, issue_reference_id, issue_agent_email FROM issues_table WHERE issue_uuid = $1 FOR UPDATE`,
+      `SELECT issue_status, issue_reference_id, issue_agent_id, 
+       issue_updated_at, issue_agent_name, issue_agent_email 
+       FROM issues_table 
+       WHERE issue_uuid = $1 FOR UPDATE`,
       [uuid],
     );
 
@@ -38,7 +41,13 @@ export const PUT = withAuth(async ({ request, user }) => {
     //our current issue status
     const currentStatus = rows[0].issue_status;
     const referenceNumber = rows[0].issue_reference_id;
+
+    // Current assigned agent information
     const currentAgentEmail = rows[0].issue_agent_email;
+    const currentAgentName = rows[0].issue_agent_name;
+    const currentAgentId = rows[0].issue_agent_id;
+    const currentAgentDate = rows[0].issue_updated_at;
+    const currentAgentReason = "First assigned agent";
 
     // Issue is already closed
     if (currentStatus === "closed") {
@@ -46,6 +55,38 @@ export const PUT = withAuth(async ({ request, user }) => {
       return NextResponse.json(
         { message: "This issue is already marked as closed" },
         { status: 409 },
+      );
+    }
+
+    // Check if there's escalation history for this particular issue
+    const { rows: existingHistory } = await client.query(
+      `
+      SELECT id FROM issue_escalation WHERE issue_id = $1
+      `,
+      [uuid],
+    );
+
+    if (existingHistory.length === 0) {
+      await client.query(
+        `
+        INSERT INTO issue_escalation
+        (issue_id, issue_escalation_reason, issue_escalator_id, issue_escalator_email, 
+        issue_escalator_name, issue_escalation_date, issue_escalated_agent_name,
+        issue_escalated_agent_email, issue_escalated_agent_id)
+        VALUES
+        ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        `,
+        [
+          uuid,
+          currentAgentReason,
+          currentAgentId,
+          currentAgentEmail,
+          currentAgentName,
+          currentAgentDate,
+          currentAgentName,
+          currentAgentEmail,
+          currentAgentId,
+        ],
       );
     }
 
@@ -75,34 +116,31 @@ export const PUT = withAuth(async ({ request, user }) => {
     // Get the returned agent id
     const agentId = agentInfo[0].user_id;
 
+    // Insert the new escalation history
+    await client.query(
+      `
+      INSERT INTO issue_escalation
+        (issue_id, issue_escalation_reason, issue_escalator_id, issue_escalator_email, 
+        issue_escalator_name, issue_escalation_date, issue_escalated_agent_name,
+        issue_escalated_agent_email, issue_escalated_agent_id)
+        VALUES
+        ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, $6, $7, $8)
+      `,
+      [uuid, reason, userId, email, username, agentName, agentEmail, agentId],
+    );
+
     // Our baseQuery
     const baseQuery = `
-    UPDATE issues_table
-    SET issue_escalated = $1,
-    issue_escalation_reason = $2,
+    UPDATE issues_table SET
     issue_updated_at = CURRENT_TIMESTAMP,
-    issue_escalation_date = CURRENT_TIMESTAMP,
-    issue_escalator_id = $3,
-    issue_escalator_email = $4,
-    issue_escalator_name = $5,
-    issue_agent_id = $6,
-    issue_agent_name = $7,
-    issue_agent_email = $8
-    WHERE issue_uuid = $9
+    issue_agent_id = $1,
+    issue_agent_name = $2,
+    issue_agent_email = $3
+    WHERE issue_uuid = $4
     `;
 
     // Our params
-    const baseParams = [
-      "Yes",
-      reason,
-      userId,
-      email,
-      username,
-      agentId,
-      agentName,
-      agentEmail,
-      uuid,
-    ];
+    const baseParams = [agentId, agentName, agentEmail, uuid];
 
     // Run the query
     await client.query(baseQuery, baseParams);
@@ -113,9 +151,10 @@ export const PUT = withAuth(async ({ request, user }) => {
     // EMAIL SERVICE
     const title = `Issue ${referenceNumber} Escalated to ${agentName}`;
     const description = `Issue ${referenceNumber} has been escalated to ${agentName} by ${username}`;
+    const reasonEscalated = reason;
 
     // Fire and forget - Calling the email sender service
-    // emailSender({ title, description, uuid });
+    // emailSender({ title, description, uuid, reasonEscalated });
 
     // return a response
     return NextResponse.json(

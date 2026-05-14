@@ -504,16 +504,20 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                 </button>
               )}
               {/* Escalation button */}
-              {role !== "user" && issueData.issue_status === "open" && (
-                <button
-                  type="button"
-                  onClick={() => setEscalateModalOpen(true)}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-red-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-red-800"
-                >
-                  <GitBranchPlus size={12} />
-                  Escalate
-                </button>
-              )}
+              {(issueData.issue_agent_email === email ||
+                isSuper ||
+                (role === "admin" &&
+                  issueData.issue_target_department === department)) &&
+                issueData.issue_status === "open" && (
+                  <button
+                    type="button"
+                    onClick={() => setEscalateModalOpen(true)}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-red-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-red-800"
+                  >
+                    <GitBranchPlus size={12} />
+                    Escalate
+                  </button>
+                )}
               {/* Relative time badge */}
               <RelativeTimeBadge createdAt={issueData.issue_created_at} />
             </div>

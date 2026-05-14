@@ -30,6 +30,7 @@ export interface IssueNotificationEmailParams {
   comment?: IssueEmailComment;
   remarks?: string;
   reasonReopened?: string;
+  reasonEscalated?: string;
 }
 
 // ─── Badge Configs ────────────────────────────────────────────────────────────
@@ -254,7 +255,15 @@ export function generateIssueNotificationEmail(
   params: IssueNotificationEmailParams,
   uuid: string,
 ): string {
-  const { title, description, body, comment, remarks, reasonReopened } = params;
+  const {
+    title,
+    description,
+    body,
+    comment,
+    remarks,
+    reasonReopened,
+    reasonEscalated,
+  } = params;
 
   const issueLink = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/${uuid}?type=issue&title=${encodeURIComponent(body.issueTitle)}&description=${encodeURIComponent(body.issueDescription)}`;
 
@@ -264,6 +273,9 @@ export function generateIssueNotificationEmail(
   const remarksHtml = remarks ? renderMessageSection("Remarks", remarks) : "";
   const reasonHtml = reasonReopened
     ? renderMessageSection("Reason Reopened", reasonReopened)
+    : "";
+  const escalatedHtml = reasonEscalated
+    ? renderMessageSection("Reason Escalated", reasonEscalated)
     : "";
 
   return `<!DOCTYPE html>
@@ -437,6 +449,9 @@ export function generateIssueNotificationEmail(
 
               <!-- Optional Reason Reopened Section -->
               ${reasonHtml}
+
+              <!-- Optional Reason Escalated Section -->
+              ${escalatedHtml}
 
               <!-- Optional Issue Remarks Section -->
               ${remarksHtml}
