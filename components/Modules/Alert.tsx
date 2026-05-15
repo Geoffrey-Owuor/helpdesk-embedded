@@ -46,18 +46,18 @@ const Alert = () => {
 
   return (
     <div
-      className={`fixed top-0 left-1/2 z-9999 max-w-2xl -translate-x-1/2 ${
-        isClosing ? "animate-slideUp" : "animate-slideDown"
+      className={`fixed right-4 bottom-4 left-4 z-9999 sm:left-auto sm:max-w-md ${
+        isClosing ? "animate-slideDown" : "animate-slideUp"
       }`}
     >
       <div
-        className={`mt-4 flex items-center justify-between rounded-full bg-black px-4 py-4.5 text-white shadow-md dark:bg-white dark:text-black`}
+        className={`mt-4 flex items-center justify-between rounded-xl bg-black px-4 py-4.5 text-white shadow-md dark:bg-white dark:text-black`}
       >
         <div className="flex items-center gap-2">
           {/* Render the appropriate icon */}
           <IconComponent className={`h-5 w-5 shrink-0 ${iconColorClass}`} />
           <p
-            className="max-w-70 truncate text-sm md:max-w-2xl"
+            className="line-clamp-2 text-sm wrap-break-word"
             title={alertMessage}
           >
             {alertMessage}

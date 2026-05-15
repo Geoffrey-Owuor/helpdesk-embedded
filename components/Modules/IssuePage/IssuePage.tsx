@@ -27,6 +27,7 @@ import {
   GitBranchPlus,
   ClockPlus,
   ClockArrowUp,
+  GitMerge,
 } from "lucide-react";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import { dateFormatter, titleHelper } from "@/public/assets";
@@ -54,6 +55,7 @@ import { DEFAULT_FETCH_OPTIONS } from "@/public/assets";
 import { statusOptions as baseOptions } from "@/public/assets";
 import { priorityOptions } from "@/public/assets";
 import EscalateIssueModal from "./EscalateIssueModal";
+import EscalationHistoryModal from "./EscalationHistoryModal";
 import RelativeTimeBadge from "../IssuesData/RelativeTimeBadge";
 
 const statusOptions = baseOptions.filter((option) => option.value !== "open");
@@ -127,6 +129,10 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [reopenModalOpen, setReopenModalOpen] = useState(false);
   const [escalateModalOpen, setEscalateModalOpen] = useState(false);
+
+  // Escalation and Reopen History modals states
+  const [escalationHistoryOpen, setEscalationHistoryOpen] = useState(false);
+  const [reopenHistoryOpen, setReopenHistoryOpen] = useState(false);
 
   // Status to hold our selected status
   const [isOpen, setIsOpen] = useState(false);
@@ -323,6 +329,15 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           targetDepartment={issueData.issue_target_department}
         />
       )}
+
+      {/* Escalation History Modal */}
+      {escalationHistoryOpen && (
+        <EscalationHistoryModal
+          isOpen={escalationHistoryOpen}
+          uuid={uuid}
+          closeModal={() => setEscalationHistoryOpen(false)}
+        />
+      )}
       <div className="mx-auto py-6 md:py-4">
         {/* --- HEADER SECTION (Unchanged) --- */}
         <div className="mb-4 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
@@ -351,6 +366,44 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
 
           <div className="flex flex-col items-start gap-3 lg:items-end">
             <div className="flex flex-wrap items-center gap-2">
+              {/* Escalation history button */}
+              {Number(issueData.reopened_count) > 0 && (
+                <button className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200">
+                  <ClockPlus size={12} />
+                  reopening history
+                </button>
+              )}
+
+              {/* Reopen history button */}
+              {Number(issueData.escalated_count) > 0 && (
+                <button
+                  onClick={() => setEscalationHistoryOpen(true)}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+                >
+                  <GitMerge size={12} />
+                  escalation history
+                </button>
+              )}
+              {/* Escalation button */}
+              {(issueData.issue_agent_email === email ||
+                isSuper ||
+                (role === "admin" &&
+                  issueData.issue_target_department === department)) &&
+                issueData.issue_status === "open" && (
+                  <button
+                    type="button"
+                    onClick={() => setEscalateModalOpen(true)}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-red-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-red-800"
+                  >
+                    <GitBranchPlus size={12} />
+                    Escalate
+                  </button>
+                )}
+              {/* Relative time badge */}
+              <RelativeTimeBadge createdAt={issueData.issue_created_at} />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={refetchData}
                 className="rounded-xl bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
@@ -361,7 +414,9 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
               {/* Reopening an issue */}
               {issueData.issue_status === "closed" && (
                 <button
-                  onClick={() => setReopenModalOpen(true)}
+                  onClick={() =>
+                    triggerAlert("error", "Testing the alert message")
+                  } //setReopenModalOpen(true)
                   className="inline-flex items-center gap-1.5 rounded-xl bg-neutral-900 px-3.5 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
                 >
                   <UndoDot className="h-3.5 w-3.5" />
@@ -485,41 +540,6 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                     )}
                   </div>
                 )}
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Escalation history button */}
-              {Number(issueData.reopened_count) > 0 && (
-                <button className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200">
-                  <ClockPlus size={12} />
-                  reopening history
-                </button>
-              )}
-
-              {/* Reopen history button */}
-              {Number(issueData.escalated_count) > 0 && (
-                <button className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200">
-                  <ClockArrowUp size={12} />
-                  escalation history
-                </button>
-              )}
-              {/* Escalation button */}
-              {(issueData.issue_agent_email === email ||
-                isSuper ||
-                (role === "admin" &&
-                  issueData.issue_target_department === department)) &&
-                issueData.issue_status === "open" && (
-                  <button
-                    type="button"
-                    onClick={() => setEscalateModalOpen(true)}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-red-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-red-800"
-                  >
-                    <GitBranchPlus size={12} />
-                    Escalate
-                  </button>
-                )}
-              {/* Relative time badge */}
-              <RelativeTimeBadge createdAt={issueData.issue_created_at} />
             </div>
           </div>
         </div>
