@@ -55,11 +55,9 @@ const ReopenIssueModal = ({
             issue.issue_uuid === uuid
               ? {
                   ...issue,
+                  issue_status: "open",
                   issue_updated_at: new Date().toISOString(),
                   issue_created_at: new Date().toISOString(),
-                  issue_reopened_reason: reason,
-                  issue_reopened: "Yes",
-                  issue_status: "open",
                 }
               : issue,
           );

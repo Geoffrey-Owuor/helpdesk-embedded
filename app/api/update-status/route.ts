@@ -115,7 +115,7 @@ export const PUT = withAuth(async ({ user, request }) => {
     const description = `Status of Issue ${referenceNumber} has been updated to ${status} by ${username}`;
 
     // Fire and forget - Calling the email sender service
-    emailSender({ title, description, uuid });
+    // emailSender({ title, description, uuid });
 
     // return a response to the user
     return NextResponse.json(

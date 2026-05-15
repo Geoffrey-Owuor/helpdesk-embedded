@@ -72,7 +72,7 @@ const CardViewData = ({
           </div>
 
           {/* Body: Title & Description */}
-          <div className="mb-4 space-y-2">
+          <div className="mb-4 flex flex-1 flex-col gap-2">
             <h3
               className="line-clamp-1 text-sm font-semibold text-neutral-900 dark:text-neutral-100"
               title={titleHelper(issueData.issue_title)}
@@ -91,9 +91,8 @@ const CardViewData = ({
             </div>
 
             {/* dynamic time badge */}
-            {issueData.issue_status === "open" && (
-              <RelativeTimeBadge createdAt={issueData.issue_created_at} />
-            )}
+
+            <RelativeTimeBadge createdAt={issueData.issue_created_at} />
           </div>
 
           {/* Footer: Metadata & Agent */}

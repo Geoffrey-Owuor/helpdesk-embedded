@@ -9,6 +9,7 @@ import { AssignedAgentFormatter } from "./AssignedAgentFormatter";
 import { useRouter } from "next/navigation";
 import { useLoadingStore } from "@/store/useLoadingStore";
 import IssuePriorityFormatter from "./IssuePriorityFormatter";
+import RelativeTimeBadge from "./RelativeTimeBadge";
 import { Paperclip } from "lucide-react";
 
 type TableViewDataProps = {
@@ -54,6 +55,11 @@ const TableViewData = ({
             {visibleColumns.submitter && (
               <th className="px-4 pb-2 text-xs font-semibold tracking-wider whitespace-nowrap text-gray-500 uppercase dark:text-gray-400">
                 Submitter
+              </th>
+            )}
+            {visibleColumns.relativeTime && (
+              <th className="px-4 pb-2 text-xs font-semibold tracking-wider whitespace-nowrap text-gray-500 uppercase dark:text-gray-400">
+                Relative Time Badge
               </th>
             )}
             {visibleColumns.date && (
@@ -165,6 +171,12 @@ const TableViewData = ({
                     <p className="max-w-30 truncate text-sm text-gray-900 dark:text-white">
                       {issueData.issue_submitter_name}
                     </p>
+                  </td>
+                )}
+
+                {visibleColumns.relativeTime && (
+                  <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
+                    <RelativeTimeBadge createdAt={issueData.issue_created_at} />
                   </td>
                 )}
 
