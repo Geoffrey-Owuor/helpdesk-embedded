@@ -6,15 +6,9 @@ import { useAlertStore } from "@/store/useAlertStore";
 import apiClient from "@/lib/AxiosClient";
 import { IssueAgentsSkeleton } from "@/components/Skeletons/IssueAgentsSkeleton";
 import ClientPortal from "../ClientPortal";
-import {
-  AlertCircle,
-  Mail,
-  Sparkles,
-  UserRound,
-  UserRoundPen,
-  X,
-} from "lucide-react";
+import { AlertCircle, Mail, UserRound, X, GitBranchPlus } from "lucide-react";
 import { arrayReducer } from "@/utils/ArrayReducer";
+import FormAsterisk from "../FormAsterisk";
 import { IssueValueTypes } from "@/public/assets";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useConfirmStore } from "@/store/useConfirmStore";
@@ -26,9 +20,10 @@ type Payload = {
   uuid: string;
   agentName: IssueValueTypes;
   agentEmail: IssueValueTypes;
+  reason: string;
 };
 
-type ReassignIssueProps = {
+type EscalateIssueProps = {
   uuid: string;
   closeModal: () => void;
   isModalOpen: boolean;
@@ -38,15 +33,14 @@ type ReassignIssueProps = {
   issueAgentEmail: IssueValueTypes;
 };
 
-const ReassignIssue = ({
+const EscalateIssueModal = ({
   uuid,
   closeModal,
   isModalOpen,
-  issueType,
   activeQueryKey,
   targetDepartment,
   issueAgentEmail,
-}: ReassignIssueProps) => {
+}: EscalateIssueProps) => {
   const queryClient = useQueryClient();
   const department = targetDepartment.toString();
 
@@ -60,8 +54,10 @@ const ReassignIssue = ({
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
-  const [agentEmail, setAgentEmail] = useState(""); //will be sent to the api
-  const [agentName, setAgentName] = useState(""); //will be sent to the api
+
+  const [agentEmail, setAgentEmail] = useState("");
+  const [agentName, setAgentName] = useState("");
+  const [escalationReason, setEscalationReason] = useState("");
 
   const { data: issueAgents = [], isLoading: loading } = useQuery({
     queryKey: ["IssuePageAgents", department],
@@ -69,28 +65,26 @@ const ReassignIssue = ({
     enabled: !!department,
   });
 
-  //Get the organized array from the Array Reducer
   const organizedIssueAgents = arrayReducer(issueAgents);
 
-  //Handling the selectedAgent
   const handleSelectedAgent = (
     e: MouseEvent<HTMLButtonElement>,
-    agentEmail: string,
-    agentName: string,
+    email: string,
+    name: string,
   ) => {
     e.stopPropagation();
-    setAgentEmail(agentEmail);
-    setAgentName(agentName);
+    setAgentEmail(email);
+    setAgentName(name);
   };
 
-  const { mutate: updateAgent, isPending: isUpdating } = useMutation({
-    mutationFn: (payload: Payload) => apiClient.put("/reassign-issue", payload),
+  const { mutate: escalateIssue, isPending: isUpdating } = useMutation({
+    // TODO: Confirm this is the correct endpoint for your escalation route
+    mutationFn: (payload: Payload) => apiClient.put("/escalate-issue", payload),
     onSuccess: (response, payload) => {
       queryClient.setQueryData(
         activeQueryKey,
         (oldData: Record<string, IssueValueTypes>[]) => {
           if (!oldData) return oldData;
-          // Map through the array and update the specific issue's status
           return oldData.map((issue: Record<string, IssueValueTypes>) =>
             issue.issue_uuid === payload.uuid
               ? {
@@ -104,17 +98,11 @@ const ReassignIssue = ({
         },
       );
 
-      // Hide overlay on success
       hideOverlay();
-
-      //   clear data
       setAgentEmail("");
       setAgentName("");
-
-      // close the modal
+      setEscalationReason("");
       closeModal();
-
-      // Show the alert on success
       triggerAlert("success", response.data.message);
     },
     onError: (error) => {
@@ -123,25 +111,25 @@ const ReassignIssue = ({
       triggerAlert("error", errorMessage);
     },
   });
-  //function for calling the api endpoint to handle reassigning
-  const handleReAssigning = async () => {
+
+  const handleEscalating = async () => {
     const payload: Payload = {
       uuid,
       agentEmail,
       agentName,
+      reason: escalationReason.trim(),
     };
 
     hideDialog();
-    showOverlay("Reassigning");
-
-    updateAgent(payload);
+    showOverlay("Updating");
+    escalateIssue(payload);
   };
 
   const handleConfirmationDialog = () => {
     triggerDialog({
-      title: "Reassign Issue",
-      description: `Confirm reassigning of issue to ${agentName}`,
-      onConfirm: handleReAssigning,
+      title: "Escalate Issue",
+      description: `Are you sure you want to escalate this issue to ${agentName}?`,
+      onConfirm: handleEscalating,
     });
   };
 
@@ -152,12 +140,12 @@ const ReassignIssue = ({
         {/* Modal Container*/}
         <div
           ref={modalRef}
-          className="flex max-h-120 w-full max-w-lg flex-col rounded-2xl border border-neutral-300 bg-neutral-50 p-6 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
+          className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-2xl border border-neutral-300 bg-neutral-50 p-6 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
         >
           {/* Header */}
-          <div className="mb-6 flex items-center justify-between border-b border-neutral-200 pb-2 dark:border-neutral-800">
-            <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
-              Department Agents
+          <div className="mb-4 flex items-center justify-between border-b border-neutral-200 pb-2 dark:border-neutral-800">
+            <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-200">
+              Escalate Issue
             </h2>
             <button
               onClick={closeModal}
@@ -167,25 +155,43 @@ const ReassignIssue = ({
             </button>
           </div>
 
-          {loading ? (
-            <IssueAgentsSkeleton />
-          ) : (
-            <div className="layout-scrollbar flex flex-wrap items-center gap-3 overflow-y-auto">
-              {organizedIssueAgents.length === 0 ? (
-                // Empty State - Added subtle blue background
-                <div className="flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-3 text-blue-800 dark:border-blue-900/30 dark:bg-blue-950/20 dark:text-blue-300">
-                  <AlertCircle className="h-5 w-5" />
-                  <span className="text-sm font-medium">
-                    No agents found for this issue type.
-                  </span>
-                </div>
-              ) : (
-                <>
-                  {organizedIssueAgents.map((issueAgent) => {
-                    const isBestFit =
-                      issueAgent.supported_issues.includes(issueType);
+          <div className="layout-scrollbar flex flex-col overflow-y-auto pr-1">
+            {/* Escalation Reason TextArea */}
+            <div className="mb-5 flex flex-col gap-1.5">
+              <label
+                htmlFor="escalationReason"
+                className="inline-flex items-center gap-1 text-sm font-semibold text-neutral-700 dark:text-neutral-300"
+              >
+                Escalation Reason <FormAsterisk />
+              </label>
+              <textarea
+                id="escalationReason"
+                value={escalationReason}
+                onChange={(e) => setEscalationReason(e.target.value)}
+                placeholder="Please provide a reason for escalating this issue..."
+                rows={3}
+                className="resize-none rounded-xl border border-neutral-300 bg-white p-3 text-sm text-neutral-900 placeholder-neutral-400 focus:border-red-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+              />
+            </div>
 
-                    return (
+            <h3 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-300">
+              Select Agent to Escalate To
+            </h3>
+
+            {loading ? (
+              <IssueAgentsSkeleton />
+            ) : (
+              <div className="flex flex-wrap items-center gap-3">
+                {organizedIssueAgents.length === 0 ? (
+                  <div className="flex items-center gap-2 rounded-lg border border-red-100 bg-red-50/50 px-4 py-3 text-red-800 dark:border-red-900/30 dark:bg-red-950/20 dark:text-red-300">
+                    <AlertCircle className="h-5 w-5" />
+                    <span className="text-sm font-medium">
+                      No agents found for this department.
+                    </span>
+                  </div>
+                ) : (
+                  <>
+                    {organizedIssueAgents.map((issueAgent) => (
                       <button
                         key={issueAgent.email}
                         disabled={issueAgentEmail === issueAgent.email}
@@ -198,16 +204,16 @@ const ReassignIssue = ({
                         }
                         className={`relative flex cursor-pointer items-center gap-3 rounded-xl border py-1.5 pr-4 pl-1.5 transition-all duration-200 select-none disabled:cursor-default disabled:opacity-50 ${
                           agentEmail === issueAgent.email
-                            ? "border-blue-200 bg-blue-50 shadow-sm dark:border-blue-800 dark:bg-blue-900/20"
-                            : "border-neutral-300 bg-white opacity-90 hover:border-blue-200 hover:bg-blue-50/30 hover:opacity-100 dark:border-neutral-700 dark:bg-neutral-950 dark:hover:border-blue-800 dark:hover:bg-blue-900/10"
+                            ? "border-red-200 bg-red-50 shadow-sm dark:border-red-800 dark:bg-red-900/20"
+                            : "border-neutral-300 bg-white opacity-90 hover:border-red-200 hover:bg-red-50/30 hover:opacity-100 dark:border-neutral-700 dark:bg-neutral-950 dark:hover:border-red-800 dark:hover:bg-red-900/10"
                         } `}
                       >
                         {/* Avatar Circle */}
                         <div
                           className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
                             agentEmail === issueAgent.email
-                              ? "bg-blue-600 text-white dark:bg-blue-500 dark:text-white"
-                              : "bg-neutral-100 text-neutral-500 group-hover:bg-blue-100 group-hover:text-blue-600 dark:bg-neutral-800 dark:text-neutral-400"
+                              ? "bg-red-600 text-white dark:bg-red-500 dark:text-white"
+                              : "bg-neutral-100 text-neutral-500 group-hover:bg-red-100 group-hover:text-red-600 dark:bg-neutral-800 dark:text-neutral-400"
                           } `}
                         >
                           <UserRound className="h-4 w-4" />
@@ -215,55 +221,50 @@ const ReassignIssue = ({
 
                         {/* Agent Info Stack */}
                         <div className="flex flex-col items-start">
-                          <span
-                            className={`text-sm leading-none font-semibold ${
-                              isBestFit
-                                ? "text-blue-900 dark:text-blue-300"
-                                : "text-neutral-700 dark:text-neutral-200"
-                            }`}
-                          >
+                          <span className="text-sm leading-none font-semibold text-neutral-700 dark:text-neutral-200">
                             {issueAgent.name}
                           </span>
-
-                          {/* Email with Icon */}
                           <div className="mt-0.5 flex items-center gap-1">
                             <Mail
-                              className={`h-3 w-3 ${agentEmail === issueAgent.email ? "text-blue-400 dark:text-blue-400" : "text-neutral-400"}`}
+                              className={`h-3 w-3 ${
+                                agentEmail === issueAgent.email
+                                  ? "text-red-400 dark:text-red-400"
+                                  : "text-neutral-400"
+                              }`}
                             />
                             <span
-                              className={`text-xs ${agentEmail === issueAgent.email ? "text-blue-600/80 dark:text-blue-300/70" : "text-neutral-500 dark:text-neutral-400"}`}
+                              className={`text-xs ${
+                                agentEmail === issueAgent.email
+                                  ? "text-red-600/80 dark:text-red-300/70"
+                                  : "text-neutral-500 dark:text-neutral-400"
+                              }`}
                             >
                               {issueAgent.email}
                             </span>
                           </div>
                         </div>
-
-                        {/* Best Fit Badge - Now Blue & Distinct */}
-                        {isBestFit && (
-                          <div className="ml-2 flex items-center gap-1 border-l border-blue-200 pl-3 dark:border-blue-700/50">
-                            <Sparkles className="h-3.5 w-3.5 fill-current text-blue-600 dark:text-blue-400" />
-                            <span className="text-xs font-bold tracking-wide text-blue-700 uppercase dark:text-blue-300">
-                              Best Fit
-                            </span>
-                          </div>
-                        )}
                       </button>
-                    );
-                  })}
-                </>
-              )}
-            </div>
-          )}
+                    ))}
+                  </>
+                )}
+              </div>
+            )}
+          </div>
 
-          {/* The Reassign Button */}
-          <div className="mt-4 flex justify-center">
+          {/* The Escalate Button */}
+          <div className="mt-6 flex justify-center border-t border-neutral-200 pt-4 dark:border-neutral-800">
             <button
               onClick={handleConfirmationDialog}
-              disabled={!agentEmail || !agentName || isUpdating}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-neutral-900 px-3 py-2 text-sm text-white hover:bg-neutral-800 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+              disabled={
+                !agentEmail ||
+                !agentName ||
+                !escalationReason.trim() ||
+                isUpdating
+              }
+              className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-red-700 dark:hover:bg-red-600"
             >
-              <UserRoundPen className="h-4 w-4" />
-              Reassign
+              <GitBranchPlus className="h-4 w-4" />
+              Escalate Issue
             </button>
           </div>
         </div>
@@ -272,4 +273,4 @@ const ReassignIssue = ({
   );
 };
 
-export default ReassignIssue;
+export default EscalateIssueModal;

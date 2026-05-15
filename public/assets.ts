@@ -58,6 +58,7 @@ export const baseDepartments = [
   { option: "Internal Audit", value: "Internal Audit" },
   { option: "Engineering & HVAC", value: "Engineering & HVAC" },
   { option: "Security", value: "Security" },
+  { option: "Service Center", value: "Service Center" },
   { option: "Directorate", value: "Directorate" },
 ];
 

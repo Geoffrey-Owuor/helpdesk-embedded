@@ -12,15 +12,26 @@ export const GET = withAuth(async ({ request, user }) => {
   try {
     //Our base query
     let baseQuery = `
-    SELECT issue_uuid, issue_reference_id, issue_submitter_name, issue_submitter_department,
-    issue_target_department, issue_type, issue_priority, issue_title, issue_description, 
-    TO_CHAR(issue_created_at, 'YYYY-MM-DD HH24:MI:SS') AS issue_created_at, 
-    TO_CHAR(issue_updated_at, 'YYYY-MM-DD HH24:MI:SS') AS issue_updated_at, 
-    TO_CHAR(issue_date_resolved, 'YYYY-MM-DD HH24:MI:SS') AS issue_date_resolved,
-    TO_CHAR(issue_date_closed, 'YYYY-MM-DD HH24:MI:SS') AS issue_date_closed,
-    issue_status, issue_remarks, issue_reopened, issue_reopened_reason,
-    issue_agent_name, issue_agent_email, issue_assigner_name, issue_assigner_email
-    FROM issues_table
+      SELECT issue_uuid, 
+        TO_CHAR(a.issue_created_at, 'YYYY-MM-DD HH24:MI:SS') AS issue_created_at, 
+        a.issue_reference_id, a.issue_submitter_name, a.issue_submitter_department,
+        a.issue_target_department, a.issue_type, a.issue_priority, a.issue_title, 
+        a.issue_description, a.issue_status, a.issue_agent_name, a.issue_agent_email, 
+        a.issue_assigner_name, a.issue_assigner_email, a.issue_remarks,
+        TO_CHAR(a.issue_updated_at, 'YYYY-MM-DD HH24:MI:SS') AS issue_updated_at, 
+        TO_CHAR(a.issue_date_resolved, 'YYYY-MM-DD HH24:MI:SS') AS issue_date_resolved,
+        TO_CHAR(a.issue_date_closed, 'YYYY-MM-DD HH24:MI:SS') AS issue_date_closed,
+        b.issue_reopen_reason, b.issue_reopener_name, b.issue_reopen_date,
+        c.issue_escalation_reason, c.issue_escalator_name, c.issue_escalation_date
+      FROM issues_table a
+      LEFT JOIN (
+        SELECT *, ROW_NUMBER() OVER (PARTITION BY issue_id ORDER BY id DESC) AS rn
+        FROM issue_reopening
+      ) b ON a.issue_uuid = b.issue_id AND b.rn = 1
+      LEFT JOIN (
+        SELECT *, ROW_NUMBER() OVER (PARTITION BY issue_id ORDER BY id DESC) AS rn
+        FROM issue_escalation
+      ) c ON a.issue_uuid = c.issue_id AND c.rn = 1
     `;
 
     // Our params
@@ -46,24 +57,24 @@ export const GET = withAuth(async ({ request, user }) => {
       if (!isSuper || !superAdminFilter) {
         if (role === "admin") {
           if (agentAdminFilter === "agentAdminFilter") {
-            whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
+            whereClauses.push(`a.issue_submitter_id = $${params.length + 1}`);
             params.push(userId);
           } else {
             whereClauses.push(
-              `issue_target_department = $${params.length + 1}`,
+              `a.issue_target_department = $${params.length + 1}`,
             );
             params.push(department);
           }
         } else if (role === "agent") {
           if (agentAdminFilter === "agentAdminFilter") {
-            whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
+            whereClauses.push(`a.issue_submitter_id = $${params.length + 1}`);
             params.push(userId);
           } else {
-            whereClauses.push(`issue_agent_email = $${params.length + 1}`);
+            whereClauses.push(`a.issue_agent_email = $${params.length + 1}`);
             params.push(email);
           }
         } else if (role === "user") {
-          whereClauses.push(`issue_submitter_id = $${params.length + 1}`);
+          whereClauses.push(`a.issue_submitter_id = $${params.length + 1}`);
           params.push(userId);
         }
       }

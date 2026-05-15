@@ -6,15 +6,14 @@ interface EmailData {
   emails: string[];
   ccEmails?: string;
   remarks?: string;
-  reasonReopened?: string;
 }
 
 export const getEmailData = async (uuid: string): Promise<EmailData> => {
   const baseQuery = `
-    SELECT issue_reference_id, issue_target_department, issue_type, issue_agent_name,
-    issue_priority, issue_status, issue_submitter_name,
-    issue_assigner_name, issue_title, issue_description, issue_reopened_reason,
-    issue_submitter_email, issue_agent_email, issue_created_at, issue_remarks, issue_assigner_email
+    SELECT issue_reference_id, issue_target_department, issue_type, 
+    issue_agent_name, issue_priority, issue_status, issue_submitter_name,
+    issue_assigner_name, issue_title, issue_description, issue_submitter_email, 
+    issue_agent_email, issue_created_at, issue_remarks, issue_assigner_email
     FROM issues_table WHERE issue_uuid = $1
     `;
 
@@ -23,7 +22,6 @@ export const getEmailData = async (uuid: string): Promise<EmailData> => {
 
   // Issue Remarks
   const remarks = emailData.issue_remarks ?? undefined;
-  const reasonReopened = emailData.issue_reopened_reason ?? undefined;
 
   // The group emails query
   const ccEmailsQuery = await query(
@@ -60,6 +58,5 @@ export const getEmailData = async (uuid: string): Promise<EmailData> => {
     emails: issueEmails,
     ccEmails: ccEmails,
     remarks: remarks,
-    reasonReopened: reasonReopened,
   };
 };

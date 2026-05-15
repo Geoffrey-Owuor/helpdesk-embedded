@@ -66,7 +66,7 @@ export default function IssueAttachmentsViewer({ uuid }: Props) {
             >
               <div className="flex items-center gap-3 overflow-hidden">
                 {/* Icon Thumbnail */}
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm dark:bg-neutral-950">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-950">
                   {isImage ? (
                     <ImageIcon className="h-5 w-5 text-blue-500 dark:text-blue-400" />
                   ) : (

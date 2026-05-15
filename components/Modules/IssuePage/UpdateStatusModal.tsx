@@ -39,7 +39,7 @@ const UpdateStatusModal = ({
 
   // Sync default value whenever the selected status changes
   useEffect(() => {
-    setRemarks(`Issue ${selectedStatus}`);
+    Promise.resolve().then(() => setRemarks(`Issue ${selectedStatus}`));
   }, [selectedStatus]);
 
   useFocusTrapping(modalRef, isOpen, closeModal);
