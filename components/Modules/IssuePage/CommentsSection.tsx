@@ -120,7 +120,7 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder="Enter your comment here..."
-            className="w-full resize-none rounded-xl border border-neutral-300 py-4 pr-14 pl-4 text-sm text-neutral-900 placeholder-neutral-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100"
+            className="w-full resize-none rounded-xl border border-neutral-300 py-4 pr-14 pl-4 text-sm text-neutral-900 placeholder-neutral-400 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100"
           />
 
           <button

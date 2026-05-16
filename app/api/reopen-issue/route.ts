@@ -27,7 +27,7 @@ export const PUT = withAuth(async ({ request, user }) => {
     //check if the issue is not marked as closed
     const { rows } = await client.query(
       `SELECT issue_status, issue_reference_id,
-       issue_created_at, issue_submitter_id, 
+       issue_created_at, issue_description, issue_submitter_id, 
        issue_submitter_email, issue_submitter_name
       FROM issues_table WHERE issue_uuid = $1 FOR UPDATE`,
       [uuid],
@@ -47,7 +47,7 @@ export const PUT = withAuth(async ({ request, user }) => {
     const currentSubmitterId = rows[0].issue_submitter_id;
     const currentSubmitterEmail = rows[0].issue_submitter_email;
     const currentSubmitterName = rows[0].issue_submitter_name;
-    const currentReason = "Issue first created";
+    const currentReason = rows[0].issue_description;
 
     // Issue is already closed
     if (currentStatus !== "closed") {
