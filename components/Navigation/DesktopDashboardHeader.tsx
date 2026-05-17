@@ -64,7 +64,7 @@ const DesktopDashboardHeader = () => {
               aria-label="Toggle Sidebar"
               title={showSidebar ? "Close Sidebar" : "Open Sidebar"}
             >
-              <PanelIcon className="h-5 w-5 text-neutral-700 transition-colors group-hover:text-neutral-900 dark:text-neutral-300 dark:group-hover:text-neutral-100" />
+              <PanelIcon className="h-4.5 w-4.5 text-neutral-700 transition-colors group-hover:text-neutral-900 dark:text-neutral-300 dark:group-hover:text-neutral-100" />
             </button>
           </div>
 

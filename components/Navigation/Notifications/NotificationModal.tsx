@@ -26,6 +26,13 @@ type NotificationModalProps = {
   issues: Record<string, IssueValueTypes>[];
 };
 
+//circledot colors based on the issue status
+export const dynamicCircleColor: Record<string | number, string> = {
+  open: "text-amber-700 dark:text-amber-400",
+  resolved: "text-emerald-700 dark:text-emerald-400",
+  closed: "text-blue-700 dark:text-blue-400",
+};
+
 const NotificationModal = ({
   closeModal,
   isModalOpen,
@@ -43,13 +50,6 @@ const NotificationModal = ({
   const modalRef = useRef<HTMLDivElement | null>(null);
 
   useFocusTrapping(modalRef, isModalOpen, () => setIsModalOpen(false));
-
-  //circledot colors based on the issue status
-  const dynamicCircleColor: Record<string | number, string> = {
-    open: "text-amber-700 dark:text-amber-400",
-    resolved: "text-emerald-700 dark:text-emerald-400",
-    closed: "text-blue-700 dark:text-blue-400",
-  };
 
   return (
     <ClientPortal>
@@ -115,7 +115,15 @@ const NotificationModal = ({
                         <CircleDot className="h-4 w-4" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-1">
+                        <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+                          {issue.issue_title}
+                        </p>
+                        {issue.issue_description && (
+                          <p className="mt-0.5 line-clamp-2 text-xs text-neutral-500 dark:text-neutral-400">
+                            {issue.issue_description}
+                          </p>
+                        )}
+                        <div className="mt-0.5 flex flex-wrap items-center gap-1">
                           <span className="text-xs font-semibold text-neutral-400 dark:text-neutral-500">
                             {issue.issue_reference_id}
                           </span>
@@ -132,14 +140,6 @@ const NotificationModal = ({
                             {issue.issue_submitter_name}
                           </span>
                         </div>
-                        <p className="mt-0.5 text-sm font-semibold text-neutral-800 dark:text-neutral-200">
-                          {issue.issue_title}
-                        </p>
-                        {issue.issue_description && (
-                          <p className="mt-0.5 line-clamp-2 text-xs text-neutral-500 dark:text-neutral-400">
-                            {issue.issue_description}
-                          </p>
-                        )}
                       </div>
                     </li>
                   ))}
