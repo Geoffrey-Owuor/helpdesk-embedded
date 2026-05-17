@@ -133,7 +133,7 @@ const TitleDescriptionModal = ({
   return (
     <ClientPortal>
       {/* Backdrop */}
-      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 dark:bg-black/60">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 dark:bg-black/80">
         {/* Modal Container */}
         <div
           ref={modalRef}

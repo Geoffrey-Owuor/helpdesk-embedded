@@ -103,7 +103,7 @@ const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
   };
 
   return (
-    <div className="flex h-[60vh] flex-col">
+    <div className="flex max-h-[60vh] flex-col">
       {/* ── TOP SECTION (Fixed/Non-Scrolling) ── */}
       <div className="shrink-0 border-b border-neutral-100 px-4 dark:border-neutral-800">
         <h3 className="mb-2 text-xs font-semibold tracking-wider text-neutral-400 uppercase">
