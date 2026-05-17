@@ -77,7 +77,7 @@ const EscalationHistoryModal = ({
             {isLoading ? (
               // Loading Skeleton
               <div className="flex flex-col gap-6 p-4">
-                {[1, 2, 3].map((i) => (
+                {[1, 2, 3, 4].map((i) => (
                   <div key={i} className="flex gap-4">
                     <div className="h-full w-0.5 bg-neutral-200 dark:bg-neutral-800"></div>
                     <div className="flex-1 space-y-3 py-2">
