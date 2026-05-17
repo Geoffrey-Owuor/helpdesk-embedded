@@ -425,9 +425,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
               {/* Reopening an issue */}
               {issueData.issue_status === "closed" && (
                 <button
-                  onClick={() =>
-                    triggerAlert("error", "Testing the alert message")
-                  } //setReopenModalOpen(true)
+                  onClick={() => setReopenModalOpen(true)}
                   className="inline-flex items-center gap-1.5 rounded-xl bg-neutral-900 px-3.5 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
                 >
                   <UndoDot className="h-3.5 w-3.5" />
