@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Search } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import { abbreviateUserName } from "@/public/assets";
 import { DashBoardLogo } from "../Modules/DashBoardLogo";
@@ -9,6 +8,7 @@ import UserInfoCard from "../Modules/UserInfoCard";
 import UserSettings from "./UserSettings/UserSettings";
 import ThemeToggle from "../Themes/ThemeToggle";
 import Notifications from "./Notifications/Notifications";
+import MiddleBar from "./MiddleBar";
 import { useSidebarToggleStore } from "@/store/useSidebarToggleStore";
 
 const ModernSidebarIcon = ({ className }: { className?: string }) => (
@@ -67,18 +67,8 @@ const DesktopDashboardHeader = () => {
             </button>
           </div>
 
-          {/* Middle: Search Bar Placeholder */}
-          <div className="flex flex-1 items-center justify-center px-8">
-            {/* TODO: Wire up actual search functionality and state to this div/input */}
-            <div className="relative w-full max-w-lg">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <Search className="h-4 w-4 text-neutral-400 dark:text-neutral-500" />
-              </div>
-              <div className="flex h-10 w-full cursor-text items-center rounded-xl border border-neutral-200 bg-white pr-4 pl-10 text-sm text-neutral-400 transition-colors hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900/50 dark:hover:border-neutral-700">
-                Search issues, articles, or users...
-              </div>
-            </div>
-          </div>
+          {/* Middle: Middle bar placeholder */}
+          <MiddleBar />
 
           {/* Far Right: User Initials & Dropdown */}
           <div className="flex shrink-0 items-center gap-4">
@@ -91,7 +81,6 @@ const DesktopDashboardHeader = () => {
             >
               <button
                 onClick={() => setIsUserCardOpen((prev) => !prev)}
-                // TODO: Remove the user avatar section from the bottom of your DashboardSidebar component
                 className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black dark:hover:bg-neutral-200"
               >
                 <span className="text-xs font-semibold">
