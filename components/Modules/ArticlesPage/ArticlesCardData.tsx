@@ -2,7 +2,14 @@
 
 import { useState, useMemo, ChangeEvent } from "react";
 import { ArticlesCardValues } from "@/serverActions/GetUserArticles";
-import { FileSearchCorner, PenLine, RotateCcw, Search, X } from "lucide-react";
+import {
+  FileSearchCorner,
+  Lightbulb,
+  PenLine,
+  RotateCcw,
+  Search,
+  X,
+} from "lucide-react";
 import Pagination from "../IssuesData/Pagination";
 import ArticleCardsView from "./ArticleCardsView";
 import { useActiveTabStore } from "@/store/useActiveTabStore";
@@ -106,7 +113,10 @@ const ArticlesCardData = ({
         <div className="flex flex-col gap-3">
           {/* Search input */}
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Use the article title to search
+            <span className="inline-flex items-center gap-1">
+              <Lightbulb className="h-4 w-4" />
+              Use the article title as your search query
+            </span>
           </p>
           <div className="relative w-fit">
             <Search className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-neutral-400" />
