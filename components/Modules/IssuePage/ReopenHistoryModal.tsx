@@ -146,7 +146,9 @@ const ReopenHistoryModal = ({
                         {/* Reason */}
                         <div className="flex flex-col gap-1">
                           <span className="text-[11px] font-bold tracking-wider text-neutral-500 uppercase dark:text-neutral-500">
-                            Reason for {isFirst ? "Creation" : "Reopening"}
+                            {isFirst
+                              ? "Issue Description"
+                              : "Reason for Reopening"}
                           </span>
                           <p className="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
                             {event.issue_reopen_reason}

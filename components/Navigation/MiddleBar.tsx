@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useUser } from "@/contexts/UserContext";
 import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
@@ -14,13 +14,14 @@ import {
   ShieldUser,
   NotebookPen,
   ChevronLeft,
+  SlidersHorizontal,
 } from "lucide-react";
 import { useLoadingStore } from "@/store/useLoadingStore";
+import ClientPortal from "../Modules/ClientPortal";
 import SearchArea from "./SearchArea";
 
 const MiddleBar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   //   States for opening the admin panel and new issue
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
@@ -37,6 +38,12 @@ const MiddleBar = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Don't trigger if the user is typing in a text input or textarea somewhere else
       const target = e.target as HTMLElement;
+
+      // Close when a user presses the escape key
+      if (e.key === "Escape" && isOpen) {
+        setIsOpen(false);
+      }
+
       if (
         ["INPUT", "TEXTAREA"].includes(target.tagName) ||
         target.isContentEditable
@@ -47,27 +54,13 @@ const MiddleBar = () => {
       if (e.key === "/") {
         e.preventDefault(); // Prevent typing the '/' character
         setIsOpen((prev) => !prev);
-      } else if (e.key === "Escape" && isOpen) {
-        setIsOpen(false);
-      }
-    };
-
-    // Handle clicking outside the component to close it
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
-        setIsOpen(false);
       }
     };
 
     document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen]);
 
@@ -95,102 +88,111 @@ const MiddleBar = () => {
         setShowAdminPanel={setIsAdminPanelOpen}
       />
 
-      <div
-        className="relative flex max-w-lg flex-1 items-center justify-center px-8"
-        ref={containerRef}
-      >
-        {/* ── TRIGGER BUTTON ── */}
-        <div className="relative w-full">
+      <div className="w-full max-w-md px-8">
+        {/* Changed from div to button to be semantically correct and focusable */}
+        <button
+          onClick={() => setIsOpen((prev) => !prev)}
+          className="relative flex h-10 w-full cursor-pointer items-center rounded-xl border border-neutral-200 bg-white pr-4 pl-10 text-sm text-neutral-400 transition-colors hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900/50 dark:hover:border-neutral-700"
+        >
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-            <Search className="h-4 w-4 text-neutral-400 dark:text-neutral-500" />
+            <Search className="h-4.5 w-4.5 text-neutral-400 dark:text-neutral-500" />
           </div>
+          <span className="inline-flex flex-1 items-center text-left">
+            Type{" "}
+            <kbd className="mx-2 rounded-md border border-neutral-300 bg-neutral-100 px-2 py-0.5 text-xs font-semibold text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400">
+              /
+            </kbd>{" "}
+            to toggle...
+          </span>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+            <SlidersHorizontal className="h-4.5 w-4.5 text-neutral-400 dark:text-neutral-500" />
+          </div>
+        </button>
+      </div>
 
-          {/* Changed from div to button to be semantically correct and focusable */}
-          <button
-            onClick={() => setIsOpen((prev) => !prev)}
-            className="flex h-10 w-full cursor-pointer items-center rounded-xl border border-neutral-200 bg-white pr-4 pl-10 text-sm text-neutral-400 transition-colors hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900/50 dark:hover:border-neutral-700"
+      {/* ── DROPDOWN PANEL ── */}
+      {isOpen && (
+        <ClientPortal>
+          <div
+            onClick={() => setIsOpen(false)}
+            className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 pt-3 dark:bg-black/80"
           >
-            <span className="flex-1 text-left">Quick actions & search...</span>
-            <kbd className="hidden items-center gap-1 rounded border border-neutral-200 bg-neutral-100 px-2 py-0.5 text-[11px] font-semibold text-neutral-500 sm:flex dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400">
-              Press /
-            </kbd>
-          </button>
-        </div>
-
-        {/* ── DROPDOWN PANEL ── */}
-        {isOpen && (
-          <div className="absolute top-[calc(100%-40px)] z-50 w-full overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-[0_16px_40px_-12px_rgba(0,0,0,0.15)] dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]">
-            {/* Section 1: Quick Links (Rounded Pills) */}
-            <div className="p-4">
-              <h3 className="mb-3 text-xs font-semibold tracking-wider text-neutral-400 uppercase">
-                Quick Navigation
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                <PillButton
-                  icon={<LayoutDashboard size={14} />}
-                  label="Home"
-                  onClick={() => handleNavigation("/dashboard")}
-                />
-
-                {/* TODO: To trigger this modal from here, you either need to pass `setIsIssueModalOpen` as a prop down to this header, OR move `isIssueModalOpen` to a global Zustand store. */}
-                <PillButton
-                  icon={<CirclePlus size={14} />}
-                  label="New Issue"
-                  onClick={() => {
-                    setIsIssueModalOpen(true);
-                    setIsOpen(false);
-                  }}
-                  accent
-                />
-
-                <PillButton
-                  icon={<Bot size={14} />}
-                  label="Automate"
-                  onClick={() => handleNavigation("/dashboard/automations")}
-                />
-
-                <PillButton
-                  icon={<NotebookPen size={14} />}
-                  label="Articles"
-                  onClick={() => handleNavigation("/dashboard/articles")}
-                />
-
-                {isSuper && (
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-lg overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-[0_16px_40px_-12px_rgba(0,0,0,0.15)] dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]"
+            >
+              {/* Section 1: Quick Links (Rounded Pills) */}
+              <div className="p-4">
+                <h3 className="mb-3 text-xs font-semibold tracking-wider text-neutral-400 uppercase">
+                  Quick Navigation
+                </h3>
+                <div className="flex flex-wrap gap-2">
                   <PillButton
-                    icon={<ShieldPlus size={14} />}
-                    label="Super Admin"
-                    onClick={() => handleNavigation("/dashboard/superadmin")}
+                    icon={<LayoutDashboard size={14} />}
+                    label="Home"
+                    onClick={() => handleNavigation("/dashboard")}
                   />
-                )}
 
-                {/* Trigger opening of the admin panel */}
-                {role === "admin" && (
+                  {/* TODO: To trigger this modal from here, you either need to pass `setIsIssueModalOpen` as a prop down to this header, OR move `isIssueModalOpen` to a global Zustand store. */}
                   <PillButton
-                    icon={<ShieldUser size={14} />}
-                    label="Admin Panel"
+                    icon={<CirclePlus size={14} />}
+                    label="New Issue"
                     onClick={() => {
-                      setIsAdminPanelOpen(true);
+                      setIsIssueModalOpen(true);
+                      setIsOpen(false);
+                    }}
+                    accent
+                  />
+
+                  <PillButton
+                    icon={<Bot size={14} />}
+                    label="Automate"
+                    onClick={() => handleNavigation("/dashboard/automations")}
+                  />
+
+                  <PillButton
+                    icon={<NotebookPen size={14} />}
+                    label="Articles"
+                    onClick={() => handleNavigation("/dashboard/articles")}
+                  />
+
+                  {isSuper && (
+                    <PillButton
+                      icon={<ShieldPlus size={14} />}
+                      label="Super Admin"
+                      onClick={() => handleNavigation("/dashboard/superadmin")}
+                    />
+                  )}
+
+                  {/* Trigger opening of the admin panel */}
+                  {role === "admin" && (
+                    <PillButton
+                      icon={<ShieldUser size={14} />}
+                      label="Admin Panel"
+                      onClick={() => {
+                        setIsAdminPanelOpen(true);
+                        setIsOpen(false);
+                      }}
+                    />
+                  )}
+
+                  <PillButton
+                    icon={<ChevronLeft size={14} />}
+                    label="Go Back"
+                    onClick={() => {
+                      router.back();
                       setIsOpen(false);
                     }}
                   />
-                )}
-
-                <PillButton
-                  icon={<ChevronLeft size={14} />}
-                  label="Go Back"
-                  onClick={() => {
-                    router.back();
-                    setIsOpen(false);
-                  }}
-                />
+                </div>
               </div>
-            </div>
 
-            {/* Section 2: Search Area */}
-            <SearchArea closeBar={() => setIsOpen(false)} />
+              {/* Section 2: Search Area */}
+              <SearchArea closeBar={() => setIsOpen(false)} />
+            </div>
           </div>
-        )}
-      </div>
+        </ClientPortal>
+      )}
     </>
   );
 };

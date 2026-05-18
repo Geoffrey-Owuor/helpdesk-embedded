@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useRouter } from "next/navigation";
 import { useState, useMemo } from "react";
+import { usePathname } from "next/navigation";
 import { dateFormatter } from "@/public/assets";
 import { dynamicCircleColor } from "./Notifications/NotificationModal";
 import {
@@ -22,6 +23,7 @@ import {
 
 const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
   const router = useRouter();
+  const pathname = usePathname();
 
   // Local States
   const [isAutomation, setIsAutomation] = useState(false);
@@ -91,13 +93,18 @@ const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
   // --- Routing Handler ---
   const handleIssueRoute = (record: Record<string, IssueValueTypes>) => {
     closeBar();
-    setLoadingLine(true);
+
+    const basePath = `/dashboard/${record.issue_uuid}`;
 
     const typeParam = isAutomation ? "automation" : "issue";
     // TODO: Verify that `record.issue_uuid` exists on both issues and automations.
-    const route = `/dashboard/${record.issue_uuid}?type=${typeParam}&title=${encodeURIComponent(
+    const route = `${basePath}?type=${typeParam}&title=${encodeURIComponent(
       record.issue_title || "",
     )}&description=${encodeURIComponent(record.issue_description || "")}`;
+
+    if (pathname === basePath) return;
+
+    setLoadingLine(true);
 
     router.push(route);
   };
@@ -154,7 +161,13 @@ const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
             placeholder={`Search ${isAutomation ? "automations" : "issues"}...`}
             className="h-11 w-full px-0.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none dark:text-white dark:placeholder:text-neutral-500"
           />
-          {searchQuery && (
+
+          {!searchQuery.trim() && (
+            <kbd className="absolute top-1/2 right-0.5 -translate-y-1/2 rounded-md border border-neutral-300 px-1 py-0.5 text-xs font-semibold dark:border-neutral-700">
+              ESC
+            </kbd>
+          )}
+          {searchQuery.trim() && (
             <button
               onClick={() => setSearchQuery("")}
               className="absolute top-1/2 right-0.5 -translate-y-1/2 rounded-full p-1 text-neutral-500 hover:bg-neutral-200 dark:hover:bg-neutral-800"
@@ -236,7 +249,7 @@ const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
                     <div className="flex items-center gap-2">
                       <CircleDot
                         size={14}
-                        className={`shrink-0 text-blue-500 ${dynamicCircleColor[record.issue_status]}`}
+                        className={`shrink-0 ${dynamicCircleColor[record.issue_status]}`}
                       />
                       {/* Truncated Title */}
                       <span className="line-clamp-1 text-sm font-semibold text-neutral-900 dark:text-neutral-100">
