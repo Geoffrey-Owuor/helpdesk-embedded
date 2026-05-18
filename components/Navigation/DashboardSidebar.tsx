@@ -123,7 +123,7 @@ const DashboardSidebar = () => {
         className={`fixed top-16 bottom-0 transition-all duration-200 ease-in-out ${showSidebar ? "translate-x-0" : "-translate-x-full"} left-0 z-50 hidden w-20 flex-col items-center border-neutral-200 pb-2 lg:flex dark:border-neutral-800`}
       >
         {/* Nav items — grow to fill space */}
-        <nav className="sidebar-nav mb-2 flex w-full flex-1 flex-col items-center gap-1 px-2">
+        <nav className="sidebar-nav mb-2 flex w-full flex-1 flex-col items-center gap-1 px-1.5">
           {/* Home */}
           <SidebarLink
             href="/dashboard"
@@ -201,7 +201,7 @@ type SidebarButtonProps = {
 const SidebarButton = ({ onClick, icon, label }: SidebarButtonProps) => (
   <button
     onClick={onClick}
-    className="flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] font-semibold text-neutral-600 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800"
+    className="flex w-full flex-col items-center gap-1 rounded-2xl py-2.5 text-[10px] font-semibold text-neutral-600 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800"
   >
     {icon}
     <span>{label}</span>
@@ -226,7 +226,7 @@ const SidebarLink = ({
   <Link
     href={href}
     onClick={onClick}
-    className={`flex w-full flex-col items-center gap-1 ${isActive ? "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200" : "text-neutral-600 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800"} rounded-xl px-1 py-2 text-[10px] font-semibold`}
+    className={`flex w-full flex-col items-center gap-1 ${isActive ? "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200" : "text-neutral-600 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800"} rounded-2xl py-2.5 text-[10px] font-semibold`}
   >
     {icon}
     <span>{label}</span>

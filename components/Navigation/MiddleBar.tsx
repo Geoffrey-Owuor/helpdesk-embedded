@@ -119,7 +119,7 @@ const MiddleBar = () => {
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-[0_16px_40px_-12px_rgba(0,0,0,0.15)] dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]"
+              className="w-full max-w-lg overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-[0_16px_40px_-12px_rgba(0,0,0,0.15)] dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]"
             >
               {/* Section 1: Quick Links (Rounded Pills) */}
               <div className="p-4">
