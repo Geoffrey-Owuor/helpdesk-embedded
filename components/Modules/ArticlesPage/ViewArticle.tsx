@@ -89,8 +89,15 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
             {article.article_title}
           </h1>
 
+          {/* Subtitle */}
+          {article.article_subtitle && (
+            <p className="mb-3 text-lg text-neutral-500 dark:text-neutral-400">
+              {article.article_subtitle}
+            </p>
+          )}
+
           {/* Article type pill */}
-          <div className="mb-3 inline-flex items-center gap-4">
+          <div className="mb-5 inline-flex items-center gap-4">
             <ArticleTypeFormatter type={article.article_type} />
             <button
               onClick={() => refetchArticle()}
@@ -99,13 +106,6 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
               Refresh
             </button>
           </div>
-
-          {/* Subtitle */}
-          {article.article_subtitle && (
-            <p className="mb-5 text-lg text-neutral-500 dark:text-neutral-400">
-              {article.article_subtitle}
-            </p>
-          )}
 
           {/* Meta row */}
           <div className="flex flex-wrap items-center gap-4 text-sm text-neutral-600 sm:gap-6 sm:text-base dark:text-neutral-400">

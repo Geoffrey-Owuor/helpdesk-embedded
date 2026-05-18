@@ -261,7 +261,7 @@ const ChangeLog = async () => {
               </Link>
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-white">
+                  <h1 className="text-2xl font-semibold tracking-tight text-neutral-950 dark:text-white">
                     Changelog
                   </h1>
                   <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">

@@ -3,7 +3,6 @@
 import { ReactNode, useState, Dispatch, SetStateAction } from "react";
 
 import {
-  BookOpen,
   ChevronRight,
   LayoutDashboard,
   Lightbulb,
@@ -13,6 +12,7 @@ import {
   UserRoundPlus,
   Zap,
   CheckCircle2,
+  FileText,
 } from "lucide-react";
 
 interface Steps {
@@ -292,7 +292,7 @@ const UserManual = () => {
       {/* Global Section Header */}
       <div className="mb-10">
         <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-medium text-neutral-500 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400">
-          <BookOpen className="h-3.5 w-3.5" />
+          <FileText className="h-3.5 w-3.5" />
           Getting Started
         </div>
         <h2 className="text-2xl font-semibold tracking-tight text-neutral-950 sm:text-3xl dark:text-white">
