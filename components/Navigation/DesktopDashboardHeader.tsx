@@ -61,7 +61,6 @@ const DesktopDashboardHeader = () => {
               onClick={() => setShowSidebar(!showSidebar)}
               className="group rounded-full p-2 transition-all hover:bg-neutral-200 dark:hover:bg-neutral-800"
               aria-label="Toggle Sidebar"
-              title={showSidebar ? "Close Sidebar" : "Open Sidebar"}
             >
               <SidebarIcon className="h-5 w-5 text-neutral-600 transition-colors group-hover:text-neutral-900 dark:text-neutral-400 dark:group-hover:text-neutral-100" />
             </button>

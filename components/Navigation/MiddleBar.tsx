@@ -66,9 +66,9 @@ const MiddleBar = () => {
 
   // --- Navigation Helper ---
   const handleNavigation = (path: string) => {
+    setIsOpen(false); // Close dropdown on navigate
     if (pathname === path) return;
     setLoadingLine(true);
-    setIsOpen(false); // Close dropdown on navigate
     router.push(path);
   };
 

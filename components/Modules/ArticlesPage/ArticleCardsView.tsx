@@ -127,7 +127,7 @@ const ArticleCardsView = ({
               <Link
                 href={`${baseLink}/${article.article_id}?title=${encodeURIComponent(article.article_title)}&subtitle=${encodeURIComponent(article.article_subtitle)}`}
                 onClick={() => setLoadingLine(true)}
-                className="w-fit text-sm text-blue-500 underline-offset-4 hover:underline dark:text-blue-400"
+                className="w-fit text-sm text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
               >
                 Read more...
               </Link>
