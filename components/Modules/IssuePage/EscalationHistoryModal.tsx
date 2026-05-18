@@ -108,6 +108,8 @@ const EscalationHistoryModal = ({
                   // Determine if this is the most recent escalation (top of the list)
                   const isLatest = index === 0;
 
+                  const isFirst = index === history.length - 1;
+
                   return (
                     <div
                       key={event.id}
@@ -127,8 +129,13 @@ const EscalationHistoryModal = ({
                         <Clock className="h-3.5 w-3.5" />
                         {dateFormatter(event.issue_escalation_date)}
                         {isLatest && (
-                          <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-bold text-red-700 dark:bg-red-900/40 dark:text-red-300">
+                          <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-bold text-red-700 dark:bg-red-900/30 dark:text-red-400">
                             LATEST
+                          </span>
+                        )}
+                        {isFirst && (
+                          <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-bold text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                            ORIGINAL AGENT
                           </span>
                         )}
                       </div>
@@ -157,7 +164,9 @@ const EscalationHistoryModal = ({
                         {/* Reason */}
                         <div className="flex flex-col gap-1">
                           <span className="text-[11px] font-bold tracking-wider text-neutral-500 uppercase dark:text-neutral-500">
-                            Reason for Escalation
+                            {isFirst
+                              ? "Issue Description"
+                              : "Reason for Escalation"}
                           </span>
                           <p className="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
                             {event.issue_escalation_reason}

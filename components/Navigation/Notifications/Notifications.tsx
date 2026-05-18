@@ -49,11 +49,12 @@ const Notifications = () => {
   }: RouteChangeProps) => {
     setIsModalOpen(false);
 
+    const basePath = `/dashboard/${uuid}`;
     // Return if we already on the issue's page
-    if (`/dashboard/${uuid}` === pathname) return;
+    if (basePath === pathname) return;
 
     // our dashboard path
-    const dashboardPath = `/dashboard/${uuid}?type=${type}&title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}`;
+    const dashboardPath = `${basePath}?type=${type}&title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}`;
 
     setLoadingLine(true);
 
