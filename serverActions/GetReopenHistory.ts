@@ -17,6 +17,7 @@ export async function getReopenHistory(
     id, issue_reopen_reason,
     issue_reopener_name, issue_reopen_date
     FROM issue_reopening WHERE issue_id = $1
+    ORDER BY issue_reopen_date DESC
     `;
 
   try {

@@ -156,7 +156,7 @@ const IssuesCards = ({ type }: { type: string }) => {
         {statItems.map((item, index) => (
           <div
             key={index}
-            className="group relative flex flex-col justify-between rounded-2xl border border-neutral-200 bg-white px-6 py-4 shadow-sm transition-all duration-200 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-950"
+            className="group relative flex flex-col justify-between rounded-2xl border border-neutral-200 bg-white px-6 py-4 shadow-xs transition-all duration-200 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-950"
           >
             <span className="mb-1 text-sm font-semibold text-neutral-500 dark:text-neutral-400">
               {item.label}

@@ -5,7 +5,7 @@ import Link from "next/link";
 import UserManual from "./UserManual";
 import IssuesDocs from "./IssuesDocs";
 import BugReport from "./BugReport";
-import { ArrowLeft, BookOpen, Bug, Files, FileText } from "lucide-react";
+import { ArrowLeft, Bug, Files, FileText } from "lucide-react";
 import HomeNavBar from "../Navigation/HomeNavBar";
 import Footer from "./Footer";
 
@@ -16,7 +16,7 @@ const navItems = [
     id: "user-manual",
     link: "#user-manual",
     label: "User Manual",
-    icon: <BookOpen className="h-4 w-4" />,
+    icon: <FileText className="h-4 w-4" />,
   },
   {
     id: "issues-docs",
