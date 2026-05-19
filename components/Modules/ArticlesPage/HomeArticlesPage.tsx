@@ -7,6 +7,7 @@ import ArticlesCardData from "./ArticlesCardData";
 import ArticleSearchFilter, { FilterPill } from "./ArticleSearchFilter";
 
 import { useState, useMemo } from "react";
+import { BookOpen } from "lucide-react";
 
 export interface ArticlesCardValues {
   article_id: string;
@@ -65,9 +66,10 @@ const HomeArticlesPage = () => {
         <HomeNavBar />
         <div className="custom:px-8 px-4 py-6 md:py-3.5">
           <div className="mb-6">
-            <h1 className="text-2xl font-semibold text-neutral-900 dark:text-white">
+            <span className="inline-flex items-center gap-1.5 text-2xl font-semibold text-neutral-900 dark:text-white">
+              <BookOpen className="mt-1 h-6 w-6" />
               Knowledge Base
-            </h1>
+            </span>
             <p className="text-sm text-neutral-500 dark:text-neutral-400">
               Browse and search through published content.
             </p>

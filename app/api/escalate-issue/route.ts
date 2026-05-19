@@ -27,7 +27,7 @@ export const PUT = withAuth(async ({ request, user }) => {
     // Check if the issue is marked as closed
     const { rows } = await client.query(
       `SELECT issue_status, issue_reference_id, issue_agent_id, 
-       issue_updated_at, issue_agent_name, issue_agent_email 
+       issue_updated_at, issue_description, issue_agent_name, issue_agent_email 
        FROM issues_table 
        WHERE issue_uuid = $1 FOR UPDATE`,
       [uuid],
@@ -47,7 +47,7 @@ export const PUT = withAuth(async ({ request, user }) => {
     const currentAgentName = rows[0].issue_agent_name;
     const currentAgentId = rows[0].issue_agent_id;
     const currentAgentDate = rows[0].issue_updated_at;
-    const currentAgentReason = "First assigned agent";
+    const currentAgentReason = rows[0].issue_description;
 
     // Issue is already closed
     if (currentStatus === "closed") {

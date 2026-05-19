@@ -34,6 +34,7 @@ const SearchFilterLogic = ({ recordType }: { recordType: string }) => {
     return filterOptions.filter((option) => {
       // Hide agent filter if user is an agent and the agentAdminFilter is not enabled
       if (
+        recordType !== "automations" &&
         role === "agent" &&
         agentAdminFilter !== "agentAdminFilter" &&
         option.value === "agent"
@@ -41,13 +42,15 @@ const SearchFilterLogic = ({ recordType }: { recordType: string }) => {
         return false;
 
       // Hide the submitter filter if user is a standard user
-      if (role === "user" && option.value === "submitter") return false;
+      if (
+        recordType !== "automations" &&
+        role === "user" &&
+        option.value === "submitter"
+      )
+        return false;
 
       // Hide department and Issue Type when recordType is automations
-      if (
-        recordType === "automations" &&
-        (option.value === "department" || option.value === "type")
-      )
+      if (recordType === "automations" && option.value === "department")
         return false;
 
       // Otherwise return true for the remaining ones
