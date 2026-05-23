@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef, ChangeEvent } from "react";
-import { fetchUserRecords, UserRecord } from "@/serverActions/FetchUserRecords";
-import { Mail, UserRound } from "lucide-react";
+import { useState, useEffect, useRef, ChangeEvent, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { UserRecord } from "@/serverActions/GetCachedUsers";
+import { getCachedUsers } from "@/serverActions/GetCachedUsers";
+import { Mail, UserRound, UserRoundSearch } from "lucide-react";
 
 type UserEmailAutocompleteProps = {
   value: string;
@@ -23,14 +25,22 @@ export default function UserEmailAutocomplete({
   id = "user_email",
   name = "user_email",
 }: UserEmailAutocompleteProps) {
-  const [results, setResults] = useState<UserRecord[] | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [debouncedSearch, setDebouncedSearch] = useState(value);
+
+  const { data: fetchedUsers = [], isLoading: loading } = useQuery({
+    queryKey: ["CompanyUserRecordsData"],
+    queryFn: getCachedUsers,
+  });
 
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // A ref to track if the current value change came from a selection click
-  const skipSearchRef = useRef(false);
+  const filteredUsers = useMemo(() => {
+    if (!value) return [];
+
+    return fetchedUsers.filter((user) =>
+      user.email.toLowerCase().includes(value.toLowerCase()),
+    );
+  }, [value, fetchedUsers]);
 
   // Handle clicking outside of the dropdown to close it
   useEffect(() => {
@@ -46,45 +56,9 @@ export default function UserEmailAutocomplete({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Debounce logic (waits 300ms after user stops typing)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(value);
-    }, 300); //Between 300 and 500
-
-    return () => clearTimeout(timer);
-  }, [value]);
-
-  // Fetch results when debounced search changes
-  useEffect(() => {
-    async function getResults() {
-      // If the value change was from a selection, reset the flag and abort the search
-      if (skipSearchRef.current) {
-        skipSearchRef.current = false;
-        return;
-      }
-
-      // Only search if the user has typed at least 3 characters
-      if (debouncedSearch.length < 3) {
-        return;
-      }
-
-      const data = await fetchUserRecords(debouncedSearch);
-      setResults(data);
-
-      setShowDropdown(true);
-    }
-
-    getResults();
-  }, [debouncedSearch]);
-
   const handleSelection = (user: UserRecord) => {
-    // Set the flag to true right before we pass the new value up to the parent
-    skipSearchRef.current = true;
-
     onSelectUser(user);
     setShowDropdown(false);
-    setResults(null); // Clear results after selection
   };
 
   return (
@@ -99,10 +73,8 @@ export default function UserEmailAutocomplete({
           name={name}
           value={value}
           onChange={(e) => {
-            // If they start typing manually again, ensure we don't skip the search
-            skipSearchRef.current = false;
             onChange(e);
-            setShowDropdown(true); // Re-open dropdown when typing
+            setShowDropdown(true);
           }}
           onBlur={onBlur}
           required
@@ -113,21 +85,23 @@ export default function UserEmailAutocomplete({
       </div>
 
       {/* Dropdown Results */}
-      {showDropdown && value.length >= 3 && (
+      {!loading && value && showDropdown && (
         <div className="default-scrollbar custom-blur absolute top-[calc(100%+8px)] z-50 max-h-64 w-full overflow-y-auto rounded-xl border border-neutral-200 bg-white/95 p-1 shadow-xl dark:border-neutral-800 dark:bg-neutral-950/95">
-          {results && results.length === 0 && (
-            <div className="px-4 py-3 text-center text-xs text-neutral-500 dark:text-neutral-400">
-              No matching users found.
+          {filteredUsers.length === 0 && (
+            <div className="flex flex-col items-center justify-center gap-2 px-4 py-3 text-neutral-500 dark:text-neutral-400">
+              <UserRoundSearch className="h-7 w-7" />
+              <span>No matching user found</span>
+              <span className="text-xs">Type a valid hotpoint email</span>
             </div>
           )}
-          {results && results.length > 0 && (
+          {filteredUsers.length > 0 && (
             <div className="flex flex-col gap-1">
               <span className="px-2 py-1 text-[10px] font-bold tracking-wider text-neutral-400 uppercase dark:text-neutral-500">
                 Suggested Users
               </span>
-              {results.map((user, idx) => (
+              {filteredUsers.map((user) => (
                 <button
-                  key={idx}
+                  key={`${user.email}-${user.name}`}
                   type="button"
                   onClick={() => handleSelection(user)}
                   className="group flex flex-col items-start gap-1 rounded-lg px-3 py-2 text-left transition-colors hover:bg-blue-50 dark:hover:bg-blue-900/20"

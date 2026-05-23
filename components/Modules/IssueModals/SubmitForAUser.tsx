@@ -9,7 +9,7 @@ import OptionsDropDown from "./OptionsDropDown";
 import FormAsterisk from "../FormAsterisk";
 import { CheckCircle2, UserRound, UserRoundPlus } from "lucide-react";
 import UserEmailAutocomplete from "./UserEmailAutocomplete";
-import { UserRecord } from "@/serverActions/FetchUserRecords";
+import { UserRecord } from "@/serverActions/GetCachedUsers";
 
 export type SubmitForUserData = {
   user_name: string;
