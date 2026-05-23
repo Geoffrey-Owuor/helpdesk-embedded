@@ -9,6 +9,7 @@ import {
   fetchedChangelogData,
   refetchChangelogData,
 } from "@/serverActions/GetChangeLogData";
+import MobileTOC from "./MobileTOC";
 
 // ─────────────────────────────────────────────
 // Types
@@ -34,7 +35,7 @@ const ChangelogTypes: Record<string, string> = {
 // ─────────────────────────────────────────────
 
 /** Converts a changelog title into a URL-safe anchor id */
-const toId = (title: string) =>
+export const toId = (title: string) =>
   title
     .toLowerCase()
     .replace(/[^a-z0-9\s-]/g, "")
@@ -251,7 +252,7 @@ const ChangeLog = async () => {
           {/* Main content */}
           <div className="min-w-0 flex-1">
             {/* Mobile-only page header (TOC card is hidden on mobile) */}
-            <div className="mb-8 lg:hidden">
+            <div className="lg:hidden">
               <Link
                 href="/"
                 className="mb-4 inline-flex items-center gap-1.5 text-sm text-neutral-500 transition-colors hover:text-neutral-900 dark:hover:text-white"
@@ -278,6 +279,9 @@ const ChangeLog = async () => {
                 </button>
               </div>
             </div>
+
+            {/* Mobile TOC */}
+            <MobileTOC items={changelogs} />
 
             {/* States */}
             {changelogs.length === 0 ? (
