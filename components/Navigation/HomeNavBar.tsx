@@ -66,7 +66,7 @@ const HomeNavBar = () => {
 
         {/* Navbar links */}
 
-        <div className="hidden items-center gap-1 md:flex">
+        <div className="hidden items-center gap-1 lg:flex">
           {navLinks.map((link) => (
             <Link
               onClick={() => handleNavLinkClick(link.href)}
