@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { Keyboard } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import { abbreviateUserName } from "@/public/assets";
 import { DashBoardLogo } from "../Modules/DashBoardLogo";
@@ -17,7 +18,7 @@ const SidebarIcon = () => (
     xmlns="http://www.w3.org/2000/svg"
     width="1.7em"
     height="1.7em"
-    viewBox="0 0 17 17"
+    viewBox="0 0 16 16"
   >
     <path
       fill="currentColor"
@@ -37,6 +38,28 @@ const DesktopDashboardHeader = () => {
 
   const userDivRef = useRef<HTMLDivElement>(null);
 
+  // --- Keyboard Shortcut Listener ---
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if the user is typing in an input or textarea
+      const target = e.target as HTMLElement;
+      if (
+        ["INPUT", "TEXTAREA"].includes(target.tagName) ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+
+      if (e.shiftKey && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        setShowSidebar(!showSidebar);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showSidebar, setShowSidebar]);
+
   return (
     <>
       <UserSettings
@@ -54,10 +77,24 @@ const DesktopDashboardHeader = () => {
             {/* Dashboard sidebar toggle icon */}
             <button
               onClick={() => setShowSidebar(!showSidebar)}
-              className="group rounded-full p-1 transition-all hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              className="group relative rounded-full p-1 transition-all hover:bg-neutral-200 dark:hover:bg-neutral-800"
               aria-label="Toggle Sidebar"
             >
               <SidebarIcon />
+
+              {/* ── TOOLTIP ── */}
+              <div className="pointer-events-none absolute top-1/2 left-full z-50 ml-3 translate-x-2 -translate-y-1/2 opacity-0 transition-all duration-200 ease-out group-hover:translate-x-0 group-hover:opacity-100">
+                <div className="relative flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-semibold whitespace-nowrap text-white shadow-lg dark:bg-white dark:text-neutral-900">
+                  <Keyboard
+                    size={14}
+                    className="shrink-0 text-neutral-400 dark:text-neutral-500"
+                  />
+                  <span>Shift + S</span>
+
+                  {/* Tooltip Tail/Arrow pointing left */}
+                  <div className="absolute top-1/2 -left-1 h-2.5 w-2.5 -translate-y-1/2 rotate-45 rounded-sm bg-neutral-900 dark:bg-white" />
+                </div>
+              </div>
             </button>
           </div>
 

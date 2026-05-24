@@ -178,7 +178,7 @@ const SubmitForAUser = ({
         <div className="pt-5">
           <button
             onClick={handleConfirm}
-            disabled={!isValid || !nameValidation.isValid || isValidEmail}
+            disabled={!isValid || !nameValidation.isValid || !isValidEmail}
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-neutral-950 px-4 py-2.25 text-sm text-white hover:bg-neutral-800 focus:outline-none disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
           >
             <UserRoundPlus className="h-4 w-4" />

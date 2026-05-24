@@ -37,6 +37,14 @@ const DashboardSidebar = () => {
   // New Issue Keyboard Shortcut Listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if the user is typing in an input or textarea
+      const target = e.target as HTMLElement;
+      if (
+        ["INPUT", "TEXTAREA"].includes(target.tagName) ||
+        target.isContentEditable
+      ) {
+        return;
+      }
       // Listen for Ctrl + Q
       if (e.ctrlKey && e.key.toLowerCase() === "q") {
         e.preventDefault(); // Prevent any default browser behavior
@@ -204,7 +212,7 @@ const DashboardSidebar = () => {
             isActive={highlightLink("/dashboard/articles")}
             onClick={() => handleRouteChange("/dashboard/articles")}
             showToolTip={true}
-            ToolTipMessage="Articles Page"
+            ToolTipMessage="Articles Hub"
           />
 
           {/* Back */}
