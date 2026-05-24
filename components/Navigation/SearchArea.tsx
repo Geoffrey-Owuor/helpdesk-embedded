@@ -243,7 +243,7 @@ const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
                 <button
                   key={record.issue_uuid}
                   onClick={() => handleIssueRoute(record)}
-                  className="group flex flex-col items-start gap-1 rounded-xl border border-transparent p-3 text-left transition-all hover:border-neutral-200 hover:bg-neutral-50 dark:hover:border-neutral-800 dark:hover:bg-neutral-900/50"
+                  className="group flex cursor-pointer flex-col items-start gap-1 rounded-xl border border-transparent p-3 text-left transition-all hover:border-neutral-200 hover:bg-neutral-50 dark:hover:border-neutral-800 dark:hover:bg-neutral-900/50"
                 >
                   <div className="flex w-full items-start justify-between gap-4">
                     <div className="flex items-center gap-2">

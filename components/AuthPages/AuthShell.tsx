@@ -11,14 +11,14 @@ const AuthShell = ({ children }: { children: React.ReactNode }) => {
     <div className="layout-scrollbar home-container h-screen overflow-y-auto bg-white dark:bg-neutral-950">
       <div className="mx-auto flex h-full w-full max-w-6xl flex-col items-center 2xl:max-w-7xl">
         {/* Logo and Theme Toggle*/}
-        <div className="fixed top-0 right-0 left-0 z-50">
+        <div className="fixed top-0 right-0 left-0 z-50 bg-white dark:bg-neutral-950">
           <nav className="custom:px-8 mx-auto flex h-16 max-w-6xl items-center justify-between px-4 2xl:max-w-7xl">
             {/* App logo */}
             <HomePagesLogo />
             {/* Right side controls */}
             <div className="flex items-center gap-3">
-              <DbStatusPill />
               <ThemeToggle />
+              <DbStatusPill />
             </div>
           </nav>
         </div>
@@ -29,7 +29,7 @@ const AuthShell = ({ children }: { children: React.ReactNode }) => {
         </div>
 
         {/* Bottom Footer */}
-        <div className="flex w-full flex-col items-center justify-between gap-4 p-6 text-sm text-neutral-500 md:flex-row">
+        <div className="mb-12 flex w-full flex-col items-center justify-between gap-4 p-6 text-sm text-neutral-500 md:mb-0 md:flex-row">
           {/* Left Area: Copyright & Attribution */}
           <span className="inline-flex items-center gap-2 leading-5">
             <span>&copy; {currentYear} IssueDesk. Hotpoint Appliances Ltd</span>

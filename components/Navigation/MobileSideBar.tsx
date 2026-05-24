@@ -78,7 +78,7 @@ const MobileSideBar = ({
       >
         {/* Sidebar backdrop */}
         <div
-          className={`fixed inset-0 bg-black/30 dark:bg-black/60 ${
+          className={`fixed inset-0 bg-black/30 transition-opacity duration-200 dark:bg-black/60 ${
             sideBarOpen ? "opacity-100" : "opacity-0"
           }`}
           onClick={() => setSideBarOpen(false)}
@@ -87,7 +87,7 @@ const MobileSideBar = ({
         {/* Sidebar panel */}
         <aside
           ref={menuRef}
-          className={`relative z-10 flex w-64 flex-col gap-6 border-r border-neutral-300 bg-white px-6 py-4 shadow-sm dark:border-neutral-900 dark:bg-neutral-950 ${
+          className={`relative z-10 flex w-64 flex-col gap-6 border-r border-neutral-300 bg-white px-6 py-4 shadow-sm transition-transform duration-200 dark:border-neutral-900 dark:bg-neutral-950 ${
             sideBarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
@@ -130,7 +130,7 @@ const MobileSideBar = ({
               className="flex w-full items-center gap-2 rounded-xl p-2 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
             >
               <Bot className="h-5 w-5" />
-              <span>Automation</span>
+              <span>Automations</span>
             </Link>
 
             {/* Super Admin  */}

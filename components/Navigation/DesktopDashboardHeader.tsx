@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { Keyboard } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import { abbreviateUserName } from "@/public/assets";
 import { DashBoardLogo } from "../Modules/DashBoardLogo";
@@ -12,22 +13,17 @@ import MiddleBar from "./MiddleBar";
 import { useSidebarToggleStore } from "@/store/useSidebarToggleStore";
 
 // --- SVG ICON ---
-const SidebarIcon = ({ className }: { className?: string }) => (
+const SidebarIcon = () => (
   <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
+    xmlns="http://www.w3.org/2000/svg"
+    width="1.7em"
+    height="1.7em"
+    viewBox="0 0 16 16"
   >
-    {/* Top line - Full width */}
-    <path d="M3 5h18" />
-    {/* Middle line - Shortened to suggest a "back" or "indent" action */}
-    <path d="M3 12h12" />
-    {/* Bottom line - Medium width */}
-    <path d="M3 19h15" />
+    <path
+      fill="currentColor"
+      d="M4.5 3A2.5 2.5 0 0 0 2 5.5v5A2.5 2.5 0 0 0 4.5 13h7a2.5 2.5 0 0 0 2.5-2.5v-5A2.5 2.5 0 0 0 11.5 3zM7 4h4.5A1.5 1.5 0 0 1 13 5.5v5a1.5 1.5 0 0 1-1.5 1.5H7z"
+    ></path>
   </svg>
 );
 
@@ -41,6 +37,28 @@ const DesktopDashboardHeader = () => {
   const [showUserSettings, setShowUserSettings] = useState(false);
 
   const userDivRef = useRef<HTMLDivElement>(null);
+
+  // --- Keyboard Shortcut Listener ---
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if the user is typing in an input or textarea
+      const target = e.target as HTMLElement;
+      if (
+        ["INPUT", "TEXTAREA"].includes(target.tagName) ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+
+      if (e.shiftKey && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        setShowSidebar(!showSidebar);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showSidebar, setShowSidebar]);
 
   return (
     <>
@@ -59,10 +77,24 @@ const DesktopDashboardHeader = () => {
             {/* Dashboard sidebar toggle icon */}
             <button
               onClick={() => setShowSidebar(!showSidebar)}
-              className="group rounded-full p-2 transition-all hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              className="group relative rounded-full p-1 transition-all hover:bg-neutral-200 dark:hover:bg-neutral-800"
               aria-label="Toggle Sidebar"
             >
-              <SidebarIcon className="h-5 w-5 text-neutral-600 transition-colors group-hover:text-neutral-900 dark:text-neutral-400 dark:group-hover:text-neutral-100" />
+              <SidebarIcon />
+
+              {/* ── TOOLTIP ── */}
+              <div className="pointer-events-none absolute top-1/2 left-full z-50 ml-3 translate-x-2 -translate-y-1/2 opacity-0 transition-all duration-200 ease-out group-hover:translate-x-0 group-hover:opacity-100">
+                <div className="relative flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-semibold whitespace-nowrap text-white shadow-lg dark:bg-white dark:text-neutral-900">
+                  <Keyboard
+                    size={14}
+                    className="shrink-0 text-neutral-400 dark:text-neutral-500"
+                  />
+                  <span>Shift + S</span>
+
+                  {/* Tooltip Tail/Arrow pointing left */}
+                  <div className="absolute top-1/2 -left-1 h-2.5 w-2.5 -translate-y-1/2 rotate-45 rounded-sm bg-neutral-900 dark:bg-white" />
+                </div>
+              </div>
             </button>
           </div>
 
