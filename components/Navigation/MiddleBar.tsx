@@ -98,7 +98,7 @@ const MiddleBar = () => {
             <Search className="h-4.5 w-4.5 text-neutral-400 dark:text-neutral-500" />
           </div>
           <span className="inline-flex flex-1 items-center text-left">
-            Type{" "}
+            Press{" "}
             <kbd className="mx-2 rounded-md border border-neutral-300 bg-neutral-100 px-2 py-0.5 text-xs font-semibold text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400">
               /
             </kbd>{" "}

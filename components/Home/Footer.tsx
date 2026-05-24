@@ -1,8 +1,12 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { assets } from "@/public/assets";
 import { currentYear } from "@/public/assets";
 import { Sparkles } from "lucide-react";
+import { useLoadingStore } from "@/store/useLoadingStore";
+import { usePathname } from "next/navigation";
 import { DbStatusPill } from "../Modules/DbStatus/DbStatusPill";
 
 const footerLinks = [
@@ -13,6 +17,16 @@ const footerLinks = [
 ];
 
 const Footer = () => {
+  const pathname = usePathname();
+  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
+
+  const handleLoadingClick = (href: string) => {
+    const originalHref = href.split("#")[0];
+
+    if (originalHref === pathname) return;
+
+    setLoadingLine(true);
+  };
   return (
     <footer>
       <div className="custom:px-8 mx-auto max-w-6xl border-t border-neutral-100 px-6 py-12 dark:border-neutral-900">
@@ -21,7 +35,7 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="flex max-w-sm flex-col gap-3">
             <div className="flex items-center gap-1">
-              <div className="relative -ml-1.5 h-6.5 w-6.5">
+              <div className="-ml-1.5 h-6.5 w-6.5">
                 <Image
                   src={assets.hotpoint_black_logo}
                   alt="IssueDesk Logo"
@@ -51,6 +65,7 @@ const Footer = () => {
                 {footerLinks.map((item) => (
                   <li key={item.name}>
                     <Link
+                      onClick={() => handleLoadingClick(item.href)}
                       href={item.href}
                       className="text-base text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
                     >
@@ -84,7 +99,7 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar - Centered */}
-        <div className="mt-10 flex flex-col items-center gap-8 pt-8">
+        <div className="mt-10 flex flex-col items-center gap-8 pb-8 md:pb-0">
           <div className="flex w-full flex-col items-center justify-between gap-4 text-sm text-neutral-500 md:flex-row">
             {/* Left Area: Copyright & Attribution */}
             <span className="inline-flex items-center gap-2 leading-5">

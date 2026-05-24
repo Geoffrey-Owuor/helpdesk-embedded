@@ -61,7 +61,7 @@ const HomeArticlesPage = () => {
   };
 
   return (
-    <div className="layout-scrollbar home-container h-screen overflow-y-auto scroll-smooth bg-white dark:bg-neutral-950">
+    <div className="layout-scrollbar home-container h-screen overflow-y-auto bg-white dark:bg-neutral-950">
       <div className="mx-auto max-w-6xl 2xl:max-w-7xl">
         <HomeNavBar />
         <div className="custom:px-8 px-4 py-6 md:py-3.5">

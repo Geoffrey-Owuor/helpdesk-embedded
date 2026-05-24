@@ -1,6 +1,8 @@
 "use client";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
+import { useLoadingStore } from "@/store/useLoadingStore";
+import { usePathname } from "next/navigation";
 import ThemeToggle from "../Themes/ThemeToggle";
 import HomePagesLogo from "../Modules/HomePagesLogo";
 import { BookOpen, FileText, GitCommitHorizontal } from "lucide-react";
@@ -15,7 +17,9 @@ const navLinks = [
 ];
 
 const HomeNavBar = () => {
-  const [scrolledUp, setScrolledUp] = useState(true); // Track if user scrolled up
+  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
+  const pathname = usePathname();
+
   const [isScrolled, setIsScrolled] = useState(false);
   const lastScrollY = useRef(0);
 
@@ -30,13 +34,6 @@ const HomeNavBar = () => {
       const currentScrollY = target.scrollTop;
       setIsScrolled(currentScrollY > 0);
 
-      if (currentScrollY <= 0) {
-        setScrolledUp(true);
-      } else if (currentScrollY > lastScrollY.current) {
-        setScrolledUp(false);
-      } else if (currentScrollY < lastScrollY.current) {
-        setScrolledUp(true);
-      }
       lastScrollY.current = currentScrollY;
     };
 
@@ -53,9 +50,15 @@ const HomeNavBar = () => {
     };
   }, []);
 
+  const handleNavLinkClick = (href: string) => {
+    if (pathname === href) return;
+
+    setLoadingLine(true);
+  };
+
   return (
     <div
-      className={`sticky top-0 right-0 left-0 z-50 transition-all duration-200 ${scrolledUp ? "translate-y-0" : "-translate-y-full"} ${isScrolled ? "custom-blur bg-white/70 dark:bg-neutral-950/70" : "bg-transparent"}`}
+      className={`sticky top-0 right-0 left-0 z-50 ${isScrolled ? "custom-blur bg-white/70 dark:bg-neutral-950/70" : "bg-transparent"}`}
     >
       <nav className="custom:px-8 mx-auto flex h-16 max-w-6xl items-center justify-between px-4 2xl:max-w-7xl">
         {/* App Logo */}
@@ -63,9 +66,10 @@ const HomeNavBar = () => {
 
         {/* Navbar links */}
 
-        <div className="hidden items-center gap-1 md:flex">
+        <div className="hidden items-center gap-1 lg:flex">
           {navLinks.map((link) => (
             <Link
+              onClick={() => handleNavLinkClick(link.href)}
               key={link.href}
               href={link.href}
               className="inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm text-black hover:bg-gray-200 dark:text-white dark:hover:bg-neutral-800"

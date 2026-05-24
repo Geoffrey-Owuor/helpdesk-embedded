@@ -8,10 +8,11 @@ import {
   ShieldPlus,
   LayoutDashboard,
   NotebookPen,
+  Keyboard,
 } from "lucide-react";
 import Link from "next/link";
 import ThemeToggle from "../Themes/ThemeToggle";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { abbreviateUserName } from "@/public/assets";
 import { useUser } from "@/contexts/UserContext";
 import UserInfoCard from "../Modules/UserInfoCard";
@@ -22,6 +23,7 @@ import { useLoadingStore } from "@/store/useLoadingStore";
 import AdminPanel from "./AdminFunctions/AdminPanel";
 import UserSettings from "./UserSettings/UserSettings";
 import Notifications from "./Notifications/Notifications";
+import ClientPortal from "../Modules/ClientPortal";
 import { useSidebarToggleStore } from "@/store/useSidebarToggleStore";
 
 const DashboardSidebar = () => {
@@ -31,6 +33,28 @@ const DashboardSidebar = () => {
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [showUserSettings, setShowUserSettings] = useState(false);
   const showSidebar = useSidebarToggleStore((state) => state.showSidebar);
+
+  // New Issue Keyboard Shortcut Listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if the user is typing in an input or textarea
+      const target = e.target as HTMLElement;
+      if (
+        ["INPUT", "TEXTAREA"].includes(target.tagName) ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+      // Listen for Ctrl + Q
+      if (e.ctrlKey && e.key.toLowerCase() === "q") {
+        e.preventDefault(); // Prevent any default browser behavior
+        setIsIssueModalOpen((prev) => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // splitting states and refs for mobile and desktop user icons to prevent race conditions
   const [isMobileUserCardOpen, setIsMobileUserCardOpen] = useState(false);
@@ -131,6 +155,8 @@ const DashboardSidebar = () => {
             label="Home"
             isActive={highlightLink("/dashboard")}
             onClick={() => handleRouteChange("/dashboard")}
+            showToolTip={true}
+            ToolTipMessage="Dashboard"
           />
 
           {/* New Issue */}
@@ -138,6 +164,9 @@ const DashboardSidebar = () => {
             onClick={() => setIsIssueModalOpen(true)}
             icon={<CirclePlus className="h-5 w-5" />}
             label="New Issue"
+            showToolTip={true}
+            isNewIssue={true}
+            ToolTipMessage="Ctrl + Q"
           />
 
           {/* Automations */}
@@ -147,6 +176,8 @@ const DashboardSidebar = () => {
             label="Automate"
             isActive={highlightLink("/dashboard/automations")}
             onClick={() => handleRouteChange("/dashboard/automations")}
+            showToolTip={true}
+            ToolTipMessage="Automations Page"
           />
 
           {/* Super Admin */}
@@ -157,6 +188,8 @@ const DashboardSidebar = () => {
               label="Super"
               isActive={highlightLink("/dashboard/superadmin")}
               onClick={() => handleRouteChange("/dashboard/superadmin")}
+              showToolTip={true}
+              ToolTipMessage="Super Admin"
             />
           )}
 
@@ -166,6 +199,8 @@ const DashboardSidebar = () => {
               onClick={() => setShowAdminPanel(true)}
               icon={<ShieldUser className="h-5 w-5" />}
               label="Admin"
+              showToolTip={true}
+              ToolTipMessage="Admin Panel"
             />
           )}
 
@@ -176,6 +211,8 @@ const DashboardSidebar = () => {
             label="Articles"
             isActive={highlightLink("/dashboard/articles")}
             onClick={() => handleRouteChange("/dashboard/articles")}
+            showToolTip={true}
+            ToolTipMessage="Articles Hub"
           />
 
           {/* Back */}
@@ -183,6 +220,8 @@ const DashboardSidebar = () => {
             onClick={() => router.back()}
             icon={<ChevronLeft className="h-5 w-5" />}
             label="Back"
+            showToolTip={true}
+            ToolTipMessage="Go Back"
           />
         </nav>
       </aside>
@@ -196,17 +235,77 @@ type SidebarButtonProps = {
   onClick: () => void;
   icon: React.ReactNode;
   label: string;
+  isNewIssue?: boolean;
+  showToolTip?: boolean;
+  ToolTipMessage?: string;
 };
 
-const SidebarButton = ({ onClick, icon, label }: SidebarButtonProps) => (
-  <button
-    onClick={onClick}
-    className="flex w-full flex-col items-center gap-1 rounded-2xl py-2.5 text-[10px] font-semibold text-neutral-600 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800"
-  >
-    {icon}
-    <span>{label}</span>
-  </button>
-);
+const SidebarButton = ({
+  onClick,
+  icon,
+  label,
+  isNewIssue = false,
+  showToolTip = false,
+  ToolTipMessage,
+}: SidebarButtonProps) => {
+  // 1. State to track hover and exact coordinates of the button
+  const [isHovered, setIsHovered] = useState(false);
+  const [coords, setCoords] = useState({ top: 0, left: 0 });
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const handleMouseEnter = () => {
+    if (!showToolTip) return;
+
+    // 2. Calculate exactly where the button is on the screen right now
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setCoords({
+        top: rect.top + rect.height / 2, // Find the vertical center of the button
+        left: rect.right, // Find the exact right edge of the button
+      });
+    }
+    setIsHovered(true);
+  };
+
+  return (
+    <>
+      <button
+        ref={buttonRef}
+        onClick={onClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={() => setIsHovered(false)}
+        className="flex w-full flex-col items-center gap-1 rounded-2xl py-2.5 text-[10px] font-semibold text-neutral-600 transition-colors hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800"
+      >
+        {icon}
+        <span>{label}</span>
+      </button>
+
+      {/* ── TOOLTIP (Rendered via Portal to escape the overflow trap) ── */}
+      {showToolTip && ToolTipMessage && isHovered && (
+        <ClientPortal>
+          <div
+            // Position it exactly where we calculated, using fixed so scrolling doesn't break it
+            style={{ top: coords.top, left: coords.left }}
+            className="pointer-events-none fixed z-9999 ml-3 -translate-y-1/2"
+          >
+            <div className="relative flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-semibold whitespace-nowrap text-white shadow-lg dark:bg-white dark:text-neutral-900">
+              {isNewIssue && (
+                <Keyboard
+                  size={14}
+                  className="shrink-0 text-neutral-400 dark:text-neutral-500"
+                />
+              )}
+              {ToolTipMessage}
+
+              {/* Tooltip Tail/Arrow pointing left */}
+              <div className="absolute top-1/2 -left-1 h-2.5 w-2.5 -translate-y-1/2 rotate-45 rounded-sm bg-neutral-900 dark:bg-white" />
+            </div>
+          </div>
+        </ClientPortal>
+      )}
+    </>
+  );
+};
 
 type SidebarLinkProps = {
   href: string;
@@ -214,6 +313,8 @@ type SidebarLinkProps = {
   label: string;
   isActive: boolean;
   onClick?: () => void;
+  showToolTip?: boolean;
+  ToolTipMessage?: string;
 };
 
 const SidebarLink = ({
@@ -222,15 +323,61 @@ const SidebarLink = ({
   label,
   isActive,
   onClick,
-}: SidebarLinkProps) => (
-  <Link
-    href={href}
-    onClick={onClick}
-    className={`flex w-full flex-col items-center gap-1 ${isActive ? "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200" : "text-neutral-600 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800"} rounded-2xl py-2.5 text-[10px] font-semibold`}
-  >
-    {icon}
-    <span>{label}</span>
-  </Link>
-);
+  showToolTip = false,
+  ToolTipMessage,
+}: SidebarLinkProps) => {
+  // 1. State to track hover and exact coordinates of the button
+  const [isHovered, setIsHovered] = useState(false);
+  const [coords, setCoords] = useState({ top: 0, left: 0 });
+  const linkRef = useRef<HTMLAnchorElement>(null);
+
+  const handleMouseEnter = () => {
+    if (!showToolTip) return;
+
+    // 2. Calculate exactly where the button is on the screen right now
+    if (linkRef.current) {
+      const rect = linkRef.current.getBoundingClientRect();
+      setCoords({
+        top: rect.top + rect.height / 2, // Find the vertical center of the button
+        left: rect.right, // Find the exact right edge of the button
+      });
+    }
+    setIsHovered(true);
+  };
+
+  return (
+    <>
+      <Link
+        ref={linkRef}
+        href={href}
+        onClick={onClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`flex w-full flex-col items-center gap-1 ${isActive ? "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200" : "text-neutral-600 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800"} rounded-2xl py-2.5 text-[10px] font-semibold`}
+      >
+        {icon}
+        <span>{label}</span>
+      </Link>
+
+      {/* ── TOOLTIP (Rendered via Portal to escape the overflow trap) ── */}
+      {showToolTip && ToolTipMessage && isHovered && (
+        <ClientPortal>
+          <div
+            // Position it exactly where we calculated, using fixed so scrolling doesn't break it
+            style={{ top: coords.top, left: coords.left }}
+            className="pointer-events-none fixed z-9999 ml-3 -translate-y-1/2"
+          >
+            <div className="relative rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-semibold whitespace-nowrap text-white shadow-lg dark:bg-white dark:text-neutral-900">
+              {ToolTipMessage}
+
+              {/* Tooltip Tail/Arrow pointing left */}
+              <div className="absolute top-1/2 -left-1 h-2.5 w-2.5 -translate-y-1/2 rotate-45 rounded-sm bg-neutral-900 dark:bg-white" />
+            </div>
+          </div>
+        </ClientPortal>
+      )}
+    </>
+  );
+};
 
 export default DashboardSidebar;

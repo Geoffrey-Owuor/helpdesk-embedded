@@ -35,7 +35,7 @@ import {
   IssueAgentMapping,
 } from "@/serverActions/GetIssueTypes";
 import { fetchedBaseDepartments } from "@/serverActions/GetBaseDepartments";
-import { UserRecord } from "@/serverActions/FetchUserRecords";
+import { UserRecord } from "@/serverActions/GetCachedUsers";
 import { NameValidationResult, NameValidator } from "@/utils/Validators";
 import { baseDepartments } from "@/public/assets";
 
