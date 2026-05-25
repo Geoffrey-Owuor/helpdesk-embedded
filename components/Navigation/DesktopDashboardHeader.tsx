@@ -12,17 +12,31 @@ import Notifications from "./Notifications/Notifications";
 import MiddleBar from "./MiddleBar";
 import { useSidebarToggleStore } from "@/store/useSidebarToggleStore";
 
-// --- SVG ICON ---
-const SidebarIcon = () => (
+// --- SVG ICONS ---
+const SidebarOpenIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="1.7em"
     height="1.7em"
-    viewBox="0 0 16 16"
+    viewBox="0 0 17 17"
   >
     <path
       fill="currentColor"
       d="M4.5 3A2.5 2.5 0 0 0 2 5.5v5A2.5 2.5 0 0 0 4.5 13h7a2.5 2.5 0 0 0 2.5-2.5v-5A2.5 2.5 0 0 0 11.5 3zM7 4h4.5A1.5 1.5 0 0 1 13 5.5v5a1.5 1.5 0 0 1-1.5 1.5H7z"
+    ></path>
+  </svg>
+);
+
+const SidebarClosedIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="1.7em"
+    height="1.7em"
+    viewBox="0 0 17 17"
+  >
+    <path
+      fill="currentColor"
+      d="M2 5.5A2.5 2.5 0 0 1 4.5 3h7A2.5 2.5 0 0 1 14 5.5v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 10.5zM7 4v8h4.5a1.5 1.5 0 0 0 1.5-1.5v-5A1.5 1.5 0 0 0 11.5 4zM6 4H4.5A1.5 1.5 0 0 0 3 5.5v5A1.5 1.5 0 0 0 4.5 12H6z"
     ></path>
   </svg>
 );
@@ -80,7 +94,7 @@ const DesktopDashboardHeader = () => {
               className="group relative rounded-full p-1 transition-all hover:bg-neutral-200 dark:hover:bg-neutral-800"
               aria-label="Toggle Sidebar"
             >
-              <SidebarIcon />
+              {showSidebar ? <SidebarOpenIcon /> : <SidebarClosedIcon />}
 
               {/* ── TOOLTIP ── */}
               <div className="pointer-events-none absolute top-1/2 left-full z-50 ml-3 translate-x-2 -translate-y-1/2 opacity-0 transition-all duration-200 ease-out group-hover:translate-x-0 group-hover:opacity-100">
