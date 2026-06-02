@@ -21,7 +21,7 @@ export const PromiseOverlay = () => {
 
   const content = (
     <div
-      className={`fixed inset-0 z-9999 flex h-screen items-center justify-center ${overlaytext === "Logging out" ? "bg-white dark:bg-black" : "bg-black/30 dark:bg-black/60"}`}
+      className={`fixed inset-0 z-9999 flex h-screen items-center justify-center ${overlaytext === "Logging out" ? "bg-white dark:bg-neutral-950" : "bg-black/30 dark:bg-black/60"}`}
     >
       {/* Container to align the spinner and text horizontally */}
       <div className="flex items-center space-x-2">
