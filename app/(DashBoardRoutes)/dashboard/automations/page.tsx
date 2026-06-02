@@ -2,7 +2,7 @@ import AutomationsPage from "@/components/Modules/AutomationsPage/AutomationsPag
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Department Automations Overview",
+  title: "Automations",
   description: "Automations page showing submitted automation requets",
 };
 
