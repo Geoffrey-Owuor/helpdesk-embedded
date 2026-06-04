@@ -59,7 +59,7 @@ export default function IssueAttachmentsViewer({ uuid }: Props) {
           return (
             <Link
               key={attachment.id}
-              href={attachment.file_url}
+              href={`/api/files/${attachment.file_url}`}
               target="_blank"
               rel="noopener noreferrer"
               className="group flex items-center justify-between rounded-xl border border-neutral-200 bg-neutral-50 p-3 transition-colors hover:border-blue-300 hover:bg-blue-50/50 dark:border-neutral-800 dark:bg-neutral-900/50 dark:hover:border-blue-900/50 dark:hover:bg-blue-900/20"
