@@ -144,11 +144,13 @@ const MiddleBar = () => {
                     accent
                   />
 
-                  <PillButton
-                    icon={<Bot size={14} />}
-                    label="Automate"
-                    onClick={() => handleNavigation("/dashboard/automations")}
-                  />
+                  {role !== "user" && (
+                    <PillButton
+                      icon={<Bot size={14} />}
+                      label="Automations"
+                      onClick={() => handleNavigation("/dashboard/automations")}
+                    />
+                  )}
 
                   <PillButton
                     icon={<NotebookPen size={14} />}
@@ -178,7 +180,7 @@ const MiddleBar = () => {
 
                   <PillButton
                     icon={<ChevronLeft size={14} />}
-                    label="Go Back"
+                    label="Back"
                     onClick={() => {
                       router.back();
                       setIsOpen(false);

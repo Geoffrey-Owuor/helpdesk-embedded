@@ -17,7 +17,7 @@ export default function UnauthorizedModal() {
               <ShieldOff
                 size={28}
                 strokeWidth={1.75}
-                className="text-neutral-500 dark:text-neutral-400"
+                className="text-red-500"
               />
             </div>
           </div>
@@ -37,7 +37,7 @@ export default function UnauthorizedModal() {
           {/* Action */}
           <button
             onClick={() => router.back()}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-700 focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:outline-none dark:bg-neutral-50 dark:text-neutral-900 dark:hover:bg-neutral-200"
+            className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-700 focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:outline-none dark:bg-neutral-50 dark:text-neutral-900 dark:hover:bg-neutral-200"
           >
             <ArrowLeft size={15} strokeWidth={2} />
             Go Back

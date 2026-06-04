@@ -163,7 +163,6 @@ html {
 
 /* Sidebar navigation styles */
 .sidebar-nav {
-  scrollbar-gutter: stable both-edges;
   overflow-y: auto;
 }
 
