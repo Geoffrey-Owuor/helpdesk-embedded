@@ -24,9 +24,9 @@ const priorityColorFormatting: Record<
   }
 > = {
   Low: {
-    text: "text-violet-700 dark:text-violet-400",
-    bg: "bg-violet-50 dark:bg-violet-900/30",
-    border: "border-violet-100 dark:border-violet-950",
+    text: "text-slate-700 dark:text-slate-400",
+    bg: "bg-slate-50 dark:bg-slate-900/30",
+    border: "border-slate-100 dark:border-slate-950",
     icon: ArrowDown,
   },
   Medium: {
@@ -36,9 +36,9 @@ const priorityColorFormatting: Record<
     icon: MoveHorizontal,
   },
   High: {
-    text: "text-yellow-700 dark:text-yellow-400",
-    bg: "bg-yellow-50 dark:bg-yellow-900/30",
-    border: "border-yellow-100 dark:border-yellow-950",
+    text: "text-violet-700 dark:text-violet-400",
+    bg: "bg-violet-50 dark:bg-violet-900/30",
+    border: "border-violet-100 dark:border-violet-950",
     icon: ArrowUp,
   },
   Critical: {
