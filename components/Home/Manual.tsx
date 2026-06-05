@@ -5,7 +5,8 @@ import Link from "next/link";
 import UserManual from "./UserManual";
 import IssuesDocs from "./IssuesDocs";
 import BugReport from "./BugReport";
-import { ArrowLeft, Bug, Files, FileText } from "lucide-react";
+import { ArrowLeft, Bug, Files, FileText, Palette } from "lucide-react";
+import ColorCodes from "./ColorCodes";
 import HomeNavBar from "../Navigation/HomeNavBar";
 import Footer from "./Footer";
 
@@ -15,14 +16,20 @@ const navItems = [
   {
     id: "user-manual",
     link: "#user-manual",
-    label: "User Manual",
+    label: "Getting Started",
     icon: <FileText className="h-4 w-4" />,
   },
   {
     id: "issues-docs",
     link: "#issues-docs",
-    label: "Issues Docs",
+    label: "Issue Types",
     icon: <Files className="h-4 w-4" />,
+  },
+  {
+    id: "color-codes",
+    link: "#color-codes",
+    label: "Color Codes",
+    icon: <Palette className="h-4 w-4" />,
   },
   {
     id: "bug-report",
@@ -59,7 +66,7 @@ const Manual = () => {
                   <div className="flex items-center gap-2">
                     <FileText className="h-4 w-4 shrink-0 text-blue-400 dark:text-blue-500" />
                     <span className="font-mono font-semibold tracking-tight text-neutral-900 dark:text-white">
-                      Docs
+                      Manual
                     </span>
                   </div>
 
@@ -99,6 +106,7 @@ const Manual = () => {
           <div className="min-w-0 flex-1 space-y-20">
             <UserManual />
             <IssuesDocs />
+            <ColorCodes />
             <BugReport />
           </div>
         </div>
