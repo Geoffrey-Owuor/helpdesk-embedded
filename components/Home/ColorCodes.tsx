@@ -91,7 +91,7 @@ const DASHBOARD_CARD_ICONS = [
   {
     priority: "High",
     icon: ArrowUp,
-    colorClass: "text-yellow-700 dark:text-yellow-400",
+    colorClass: "text-violet-700 dark:text-violet-400",
   },
   {
     priority: "Medium",
@@ -101,7 +101,7 @@ const DASHBOARD_CARD_ICONS = [
   {
     priority: "Low",
     icon: ArrowDown,
-    colorClass: "text-violet-700 dark:text-violet-400",
+    colorClass: "text-slate-700 dark:text-slate-400",
   },
   {
     priority: "Unknown",
