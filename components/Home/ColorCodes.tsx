@@ -271,42 +271,88 @@ const ColorCodes = () => {
             <p className="text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
               Time badges track how long an issue has been pending. They
               automatically shift their color palette to highlight aging issues
-              that need immediate attention.
+              that need immediate attention, unless the issue is already
+              resolved.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {/* Expanded to 3 columns on large screens to fit the new state */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {/* Standard Time (Under 7 Days) */}
             <div className="rounded-xl border border-neutral-200 bg-white p-5 transition-all hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700">
-              <div className="mb-5 flex flex-wrap gap-3">
-                {/* Dynamically subtracting 2 hours and 3 days from the current time */}
-                <RelativeTimeBadge createdAt={mockTimes?.recent1} />
-                <RelativeTimeBadge createdAt={mockTimes?.recent2} />
+              <div className="mb-5 flex min-h-6.5 flex-wrap gap-3">
+                {mockTimes && (
+                  <>
+                    <RelativeTimeBadge
+                      createdAt={mockTimes.recent1}
+                      status="open"
+                    />
+                    <RelativeTimeBadge
+                      createdAt={mockTimes.recent2}
+                      status="open"
+                    />
+                  </>
+                )}
               </div>
               <h4 className="mb-1 text-sm font-semibold text-neutral-900 dark:text-white">
-                Recent Issues (Under 7 Days)
+                Recent Open Issues
               </h4>
               <p className="text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
-                Issues submitted recently use a cool violet theme, indicating
-                they are still within the standard, default 7-day service level
-                agreement (SLA) window.
+                Open issues submitted under 7 days ago use a cool violet theme,
+                indicating they are still within the 7 day window.
               </p>
             </div>
 
-            {/* Urgent Time (7+ Days) */}
+            {/* Urgent Time (7+ Days, Open) */}
             <div className="rounded-xl border border-neutral-200 bg-white p-5 transition-all hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700">
-              <div className="mb-5 flex flex-wrap gap-3">
-                {/* Dynamically subtracting 8 days and 2 months from the current time */}
-                <RelativeTimeBadge createdAt={mockTimes?.aging1} />
-                <RelativeTimeBadge createdAt={mockTimes?.aging2} />
+              <div className="mb-5 flex min-h-6.5 flex-wrap gap-3">
+                {mockTimes && (
+                  <>
+                    <RelativeTimeBadge
+                      createdAt={mockTimes.aging1}
+                      status="open"
+                    />
+                    <RelativeTimeBadge
+                      createdAt={mockTimes.aging2}
+                      status="open"
+                    />
+                  </>
+                )}
               </div>
               <h4 className="mb-1 text-sm font-semibold text-neutral-900 dark:text-white">
-                Aging Issues (7+ Days)
+                Aging Open Issues
               </h4>
               <p className="text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
-                Once an issue has been open for 7 days or more, the badge
-                automatically shifts to a warm red/amber theme to highlight
-                urgency and prevent it from slipping through the cracks.
+                Once an open issue hits 7 days, the badge shifts to a warm
+                red/amber theme to highlight urgency and prevent it from
+                slipping through the cracks.
+              </p>
+            </div>
+
+            {/* Resolved/Closed Issues (Any Age) */}
+            <div className="rounded-xl border border-neutral-200 bg-white p-5 transition-all hover:border-neutral-300 hover:shadow-sm sm:col-span-2 lg:col-span-1 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700">
+              <div className="mb-5 flex min-h-6.5 flex-wrap gap-3">
+                {mockTimes && (
+                  <>
+                    {/* Using the same aging timestamps, but changing the status */}
+                    <RelativeTimeBadge
+                      createdAt={mockTimes.aging1}
+                      status="resolved"
+                    />
+                    <RelativeTimeBadge
+                      createdAt={mockTimes.aging2}
+                      status="closed"
+                    />
+                  </>
+                )}
+              </div>
+              <h4 className="mb-1 text-sm font-semibold text-neutral-900 dark:text-white">
+                Processed Issues
+              </h4>
+              <p className="text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
+                If an issue is no longer open (e.g., resolved or closed), it
+                adopts a calm teal/emerald theme, suppressing the urgency
+                warning regardless of how old the submission is.
               </p>
             </div>
           </div>
@@ -322,7 +368,7 @@ const ColorCodes = () => {
           </p>
           <p className="mt-0.5 text-sm text-blue-700 dark:text-blue-400">
             If an issue requires higher urgency than its default assigned
-            priority allows, contact your IT Administrator to request an
+            priority allows, contact your IT Administrator to request a priority
             adjustment.
           </p>
         </div>
