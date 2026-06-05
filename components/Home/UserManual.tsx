@@ -296,7 +296,7 @@ const UserManual = () => {
           Getting Started
         </div>
         <h2 className="text-2xl font-semibold tracking-tight text-neutral-950 sm:text-3xl dark:text-white">
-          User Manual
+          Issue Submission
         </h2>
         <p className="mt-3 max-w-xl text-base text-neutral-500 dark:text-neutral-400">
           Everything you need to start submitting and tracking issues. Choose a

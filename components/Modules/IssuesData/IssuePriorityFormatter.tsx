@@ -5,8 +5,8 @@ import {
   ArrowDown,
   ArrowUp,
   Zap,
-  Ellipsis,
   MoveHorizontal,
+  CircleQuestionMark,
 } from "lucide-react";
 
 interface IssuePriorityProps {
@@ -53,7 +53,7 @@ const defaultPriorityStyle = {
   text: "text-gray-700 dark:text-gray-300",
   bg: "bg-gray-100 dark:bg-gray-800",
   border: "border-gray-100 dark:border-gray-950",
-  icon: Ellipsis,
+  icon: CircleQuestionMark,
 };
 
 const IssuePriorityFormatter = ({
