@@ -14,6 +14,7 @@ import {
   Heading4,
   PenLine,
   Glasses,
+  Keyboard,
 } from "lucide-react";
 
 // --- Types ---
@@ -150,10 +151,21 @@ const MdEditor = ({ value, onChange }: MdEditorProps) => {
         <button
           type="button"
           onClick={handleClick}
-          className={`mr-2 flex items-center gap-2 rounded-xl ${showPreview ? "bg-neutral-950 text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200" : "bg-neutral-200 text-neutral-700 hover:bg-neutral-300 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"} px-3 py-2 text-xs font-semibold transition-colors`}
+          className={`group relative mr-2 flex items-center gap-2 rounded-xl ${showPreview ? "bg-neutral-950 text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200" : "bg-neutral-200 text-neutral-700 hover:bg-neutral-300 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"} px-3 py-2 text-xs font-semibold transition-colors`}
         >
           <Glasses size={14} />
           Preview
+          {/* ── TOOLTIP ── */}
+          <div className="pointer-events-none absolute -top-9 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-semibold whitespace-nowrap text-white opacity-0 shadow-lg transition-all duration-200 group-hover:-translate-y-1 group-hover:opacity-100 dark:bg-white dark:text-neutral-900">
+            <Keyboard
+              size={14}
+              className="shrink-0 text-neutral-400 dark:text-neutral-500"
+            />
+            <span>Alt + P</span>
+
+            {/* Tooltip Tail/Arrow (Centered) */}
+            <div className="absolute -bottom-1 left-1/2 h-2.5 w-2.5 -translate-x-1/2 rotate-45 rounded-sm bg-neutral-900 dark:bg-white" />
+          </div>
         </button>
       </div>
 

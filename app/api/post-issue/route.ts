@@ -57,7 +57,7 @@ export const POST = withAuth(async ({ request, user }) => {
     const dbAttachments = [];
 
     // Create the uploads directory path safely
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    const uploadDir = process.env.UPLOAD_BASE_DIR!;
 
     // Ensure the uploads directory exists on your VPS, if not, create it silently
     await mkdir(uploadDir, { recursive: true });
@@ -89,7 +89,7 @@ export const POST = withAuth(async ({ request, user }) => {
         filename: file.name,
         contentType: file.type,
         size: file.size,
-        localUrl: `/uploads/${uniqueFilename}`,
+        localUrl: `${uniqueFilename}`,
       });
     }
 

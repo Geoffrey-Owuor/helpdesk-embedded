@@ -1,3 +1,4 @@
+// components/RelativeTimeBadge.tsx
 "use client";
 import { Clock } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -32,21 +33,25 @@ const getRelativeTimeInfo = (dateString: string | number) => {
   return { label, isUrgent };
 };
 
-// --- NEOMORPHIC TIME BADGE COMPONENT ---
-const RelativeTimeBadge = ({ createdAt }: { createdAt: string | number }) => {
+type RelativeTimeBadgeProps = {
+  createdAt: string | number;
+  status?: string | number; // NEW: Accept the issue status
+};
+
+const RelativeTimeBadge = ({
+  createdAt,
+  status = "open",
+}: RelativeTimeBadgeProps) => {
   const [timeInfo, setTimeInfo] = useState({ label: "", isUrgent: false });
   const [mounted, setMounted] = useState(false);
 
-  // useEffect guarantees we calculate Date.now() on the client, preventing Next.js hydration mismatch errors
   useEffect(() => {
     Promise.resolve().then(() => setMounted(true));
-
     Promise.resolve().then(() => setTimeInfo(getRelativeTimeInfo(createdAt)));
 
-    // Optional: Keeps the "minutes ago" counter ticking in real-time
     const interval = setInterval(() => {
       setTimeInfo(getRelativeTimeInfo(createdAt));
-    }, 60000); // 1 minute
+    }, 60000);
 
     return () => clearInterval(interval);
   }, [createdAt]);
@@ -62,22 +67,32 @@ const RelativeTimeBadge = ({ createdAt }: { createdAt: string | number }) => {
 
   const { label, isUrgent } = timeInfo;
 
+  // NEW: Determine if the issue is past the open stage
+  const isCompleted = status.toString().toLowerCase() !== "open";
+
+  // NEW: Theme mapping based on hierarchy (Completed -> Urgent -> Standard)
+  let colorClasses = "";
+  let iconClasses = "";
+
+  if (isCompleted) {
+    colorClasses =
+      "bg-linear-to-br from-teal-100 via-emerald-50 to-green-200 text-teal-900 dark:from-teal-950/50 dark:via-emerald-900/20 dark:to-green-900/40 dark:text-teal-200";
+    iconClasses = "text-teal-900 dark:text-teal-200";
+  } else if (isUrgent) {
+    colorClasses =
+      "bg-linear-to-br from-amber-100 via-orange-50 to-red-200 text-red-900 dark:from-amber-900/40 dark:via-orange-900/20 dark:to-red-800/40 dark:text-red-300";
+    iconClasses = "text-red-900 dark:text-red-300";
+  } else {
+    colorClasses =
+      "bg-linear-to-br from-violet-100 via-purple-50 to-fuchsia-200 text-violet-900 dark:from-violet-950/50 dark:via-purple-900/20 dark:to-pink-900/40 dark:text-violet-200";
+    iconClasses = "text-violet-900 dark:text-violet-200";
+  }
+
   return (
     <div
-      className={`inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide transition-colors ${
-        isUrgent
-          ? "bg-linear-to-br from-amber-100 via-orange-50 to-red-200 text-red-900 dark:from-amber-900/40 dark:via-orange-900/20 dark:to-red-800/40 dark:text-red-300"
-          : "bg-linear-to-br from-violet-100 via-purple-50 to-fuchsia-200 text-violet-900 dark:from-violet-950/50 dark:via-purple-900/20 dark:to-pink-900/40 dark:text-violet-200"
-      } `}
+      className={`inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide transition-colors ${colorClasses}`}
     >
-      <Clock
-        size={12}
-        className={
-          isUrgent
-            ? "text-red-900 dark:text-red-300"
-            : "text-violet-900 dark:text-violet-200"
-        }
-      />
+      <Clock size={12} className={iconClasses} />
       Submitted {label}
     </div>
   );

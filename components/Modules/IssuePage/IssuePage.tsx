@@ -411,7 +411,10 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                   </button>
                 )}
               {/* Relative time badge */}
-              <RelativeTimeBadge createdAt={issueData.issue_created_at} />
+              <RelativeTimeBadge
+                createdAt={issueData.issue_created_at}
+                status={issueData.issue_status}
+              />
             </div>
 
             <div className="flex flex-wrap items-center gap-2">

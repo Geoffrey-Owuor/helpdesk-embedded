@@ -92,7 +92,10 @@ const CardViewData = ({
 
             {/* dynamic time badge */}
 
-            <RelativeTimeBadge createdAt={issueData.issue_created_at} />
+            <RelativeTimeBadge
+              createdAt={issueData.issue_created_at}
+              status={issueData.issue_status}
+            />
           </div>
 
           {/* Footer: Metadata & Agent */}

@@ -157,7 +157,7 @@ const VerifyCode = ({ email }: { email: string }) => {
 
   return (
     <AuthShell>
-      <div className="w-full max-w-90 space-y-6 px-2 py-20">
+      <div className="w-full max-w-90 space-y-6 px-2">
         {/* Title and Subtitle Section */}
         <div className="space-y-2 text-center">
           <h1 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-white">

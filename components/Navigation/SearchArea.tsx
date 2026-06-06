@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useRouter } from "next/navigation";
 import { useState, useMemo } from "react";
+import { useUser } from "@/contexts/UserContext";
 import { usePathname } from "next/navigation";
 import { dateFormatter } from "@/public/assets";
 import { dynamicCircleColor } from "./Notifications/NotificationModal";
@@ -22,6 +23,7 @@ import {
 } from "lucide-react";
 
 const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
+  const { role } = useUser();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -134,20 +136,22 @@ const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
             Issues
           </button>
 
-          <button
-            onClick={() => setIsAutomation(true)}
-            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
-              isAutomation
-                ? "bg-neutral-900 text-white shadow-sm dark:bg-white dark:text-neutral-900"
-                : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800/50 dark:text-neutral-400 dark:hover:bg-neutral-800"
-            }`}
-          >
-            <Bot
-              size={14}
-              className={isAutomation ? "opacity-100" : "opacity-70"}
-            />
-            Automations
-          </button>
+          {role !== "user" && (
+            <button
+              onClick={() => setIsAutomation(true)}
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
+                isAutomation
+                  ? "bg-neutral-900 text-white shadow-sm dark:bg-white dark:text-neutral-900"
+                  : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800/50 dark:text-neutral-400 dark:hover:bg-neutral-800"
+              }`}
+            >
+              <Bot
+                size={14}
+                className={isAutomation ? "opacity-100" : "opacity-70"}
+              />
+              Automations
+            </button>
+          )}
         </div>
 
         {/* Search Input Bar */}

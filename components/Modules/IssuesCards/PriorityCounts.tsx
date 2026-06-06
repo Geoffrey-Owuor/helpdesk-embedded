@@ -29,7 +29,7 @@ const PriorityCounts = ({
       label: "Low",
       count: priorityCounts.low,
       icon: ArrowDown,
-      text: "text-violet-700 dark:text-violet-400",
+      text: "text-slate-700 dark:text-slate-400",
     },
     {
       label: "Medium",
@@ -41,7 +41,7 @@ const PriorityCounts = ({
       label: "High",
       count: priorityCounts.high,
       icon: ArrowUp,
-      text: "text-yellow-700 dark:text-yellow-400",
+      text: "text-violet-700 dark:text-violet-400",
     },
     {
       label: "Critical",
