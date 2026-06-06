@@ -98,7 +98,7 @@ const ArticleSearchFilter = ({
   )?.label;
 
   return (
-    <div className="mb-8 flex flex-col gap-4 rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900/50">
+    <div className="mb-8 flex flex-col gap-4 rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900/20">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
         {/* 1. Category Selector */}
         <div

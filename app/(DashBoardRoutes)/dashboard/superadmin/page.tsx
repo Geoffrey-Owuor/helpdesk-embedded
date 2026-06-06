@@ -9,7 +9,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
 
   return {
     title: "Super Admin",
-    description: "Super Admin Page",
+    description: "The Super Admin Page",
   };
 };
 

@@ -176,7 +176,10 @@ const TableViewData = ({
 
                 {visibleColumns.relativeTime && (
                   <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
-                    <RelativeTimeBadge createdAt={issueData.issue_created_at} />
+                    <RelativeTimeBadge
+                      createdAt={issueData.issue_created_at}
+                      status={issueData.issue_status}
+                    />
                   </td>
                 )}
 

@@ -147,7 +147,7 @@ const DashboardSidebar = () => {
         className={`fixed top-16 bottom-0 transition-all duration-200 ease-in-out ${showSidebar ? "translate-x-0" : "-translate-x-full"} left-0 z-50 hidden w-20 flex-col items-center border-neutral-200 pb-2 lg:flex dark:border-neutral-800`}
       >
         {/* Nav items — grow to fill space */}
-        <nav className="sidebar-nav mb-2 flex w-full flex-1 flex-col items-center gap-1 px-1.5">
+        <nav className="sidebar-nav mb-2 flex w-full flex-1 flex-col items-center gap-1.5 px-2">
           {/* Home */}
           <SidebarLink
             href="/dashboard"
@@ -170,15 +170,17 @@ const DashboardSidebar = () => {
           />
 
           {/* Automations */}
-          <SidebarLink
-            href="/dashboard/automations"
-            icon={<Bot className="h-5 w-5" />}
-            label="Automate"
-            isActive={highlightLink("/dashboard/automations")}
-            onClick={() => handleRouteChange("/dashboard/automations")}
-            showToolTip={true}
-            ToolTipMessage="Automations Page"
-          />
+          {role !== "user" && (
+            <SidebarLink
+              href="/dashboard/automations"
+              icon={<Bot className="h-5 w-5" />}
+              label="Automate"
+              isActive={highlightLink("/dashboard/automations")}
+              onClick={() => handleRouteChange("/dashboard/automations")}
+              showToolTip={true}
+              ToolTipMessage="Automations Page"
+            />
+          )}
 
           {/* Super Admin */}
           {isSuper && (

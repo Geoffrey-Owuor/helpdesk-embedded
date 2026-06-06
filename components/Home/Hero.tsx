@@ -25,7 +25,7 @@ const Hero = () => {
       <div className="custom:px-8 w-full px-4">
         <div className="mx-auto max-w-3xl text-center">
           {/* Badge */}
-          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-sm text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400">
+          <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-neutral-50 px-3 py-1 font-mono text-sm tracking-tighter text-neutral-600 dark:bg-neutral-900/50 dark:text-neutral-400">
             <span
               className={`flex h-2 w-2 rounded-full ${colorsMapping[status]}`}
             ></span>

@@ -40,7 +40,7 @@ const IssueList = ({ issues, expanded, setExpanded }: IssueListProps) => (
             >
               <div className="flex items-start gap-4">
                 {/* Number / Icon Area */}
-                <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-neutral-200 bg-neutral-50 text-neutral-500 transition-colors group-hover:border-neutral-300 group-hover:text-neutral-900 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400 dark:group-hover:border-neutral-700 dark:group-hover:text-white">
+                <div className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-neutral-200 bg-neutral-50 text-neutral-500 transition-colors group-hover:border-neutral-300 group-hover:text-neutral-900 sm:flex dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400 dark:group-hover:border-neutral-700 dark:group-hover:text-white">
                   <TextAlignStart className="h-5 w-5" />
                 </div>
 
@@ -100,10 +100,10 @@ const IssuesDocs = () => {
         <div>
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-medium text-neutral-500 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400">
             <Files className="h-3.5 w-3.5" />
-            Documentation
+            Issues Documentation
           </div>
           <h2 className="text-2xl font-semibold tracking-tight text-neutral-950 sm:text-3xl dark:text-white">
-            Issues Documentation
+            Issue Types
           </h2>
           <p className="mt-3 max-w-xl text-base text-neutral-500 dark:text-neutral-400">
             Browse through department-specific issue types to understand what
