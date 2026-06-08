@@ -195,8 +195,6 @@ export const sendEmail = async ({
     throw new Error(
       "Max retries reached. Failed to send email due to persistent throttling.",
     );
-
-    return { success: true };
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
