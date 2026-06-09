@@ -52,7 +52,7 @@ export default function DynamicEmailInput({
       <button
         type="button"
         onClick={onAdd}
-        className="inline-flex w-fit items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20"
+        className="inline-flex w-fit items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-100 dark:text-blue-400 dark:hover:bg-blue-900/20"
       >
         <Plus size={14} />
         Add another {label.toLowerCase()}
