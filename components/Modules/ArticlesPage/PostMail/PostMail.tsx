@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useRef, FormEvent } from "react";
+import { useState, useRef, FormEvent, useEffect } from "react";
 import ClientPortal from "../../ClientPortal";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
-import { X, Send, Eye, Code } from "lucide-react";
+import { X, Send, Eye, Code, Keyboard, AlertCircle } from "lucide-react";
 import apiClient from "@/lib/AxiosClient";
 import DocumentUpload from "../../IssueModals/DocumentUpload";
 import FormAsterisk from "../../FormAsterisk";
@@ -65,6 +65,18 @@ const PostMail = ({ closeModal, isOpen }: PostMailProps) => {
   ) => {
     setter((prev) => prev.filter((_, i) => i !== index));
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.altKey && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        setIsPreview((prev) => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const handleFormSubmit = async () => {
     hideDialog();
@@ -163,6 +175,19 @@ const PostMail = ({ closeModal, isOpen }: PostMailProps) => {
 
           {/* Form Body */}
           <div className="layout-scrollbar flex-1 overflow-y-auto p-6">
+            {/* Email Accuracy Disclaimer */}
+            <div className="mb-4 flex items-start gap-2.5 rounded-xl border border-amber-200/60 bg-amber-50/50 p-3 dark:border-amber-900/30 dark:bg-amber-900/10">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+              <p className="text-xs leading-relaxed text-amber-800 dark:text-amber-300/90">
+                <strong className="font-semibold text-amber-900 dark:text-amber-200">
+                  Delivery Notice:{" "}
+                </strong>
+                Please double-check all typed email addresses. Invalid,
+                inactive, or incorrectly spelled emails will result in delivery
+                failures.
+              </p>
+            </div>
+
             <form
               onSubmit={handleConfirmSubmit}
               autoComplete="off"
@@ -239,7 +264,7 @@ const PostMail = ({ closeModal, isOpen }: PostMailProps) => {
                   <button
                     type="button"
                     onClick={() => setIsPreview(!isPreview)}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-300 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
+                    className="group relative inline-flex items-center gap-1.5 rounded-lg bg-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-300 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
                   >
                     {isPreview ? (
                       <>
@@ -250,6 +275,18 @@ const PostMail = ({ closeModal, isOpen }: PostMailProps) => {
                         <Eye size={14} /> Preview
                       </>
                     )}
+
+                    {/* ── TOOLTIP ── */}
+                    <div className="pointer-events-none absolute -top-8 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-semibold whitespace-nowrap text-white opacity-0 shadow-lg transition-all duration-200 group-hover:-translate-y-1 group-hover:opacity-100 dark:bg-white dark:text-neutral-900">
+                      <Keyboard
+                        size={14}
+                        className="shrink-0 text-neutral-400 dark:text-neutral-500"
+                      />
+                      <span>Alt + S</span>
+
+                      {/* Tooltip Tail/Arrow (Centered) */}
+                      <div className="absolute -bottom-1 left-1/2 h-2.5 w-2.5 -translate-x-1/2 rotate-45 rounded-sm bg-neutral-900 dark:bg-white" />
+                    </div>
                   </button>
                 </div>
 
@@ -258,10 +295,10 @@ const PostMail = ({ closeModal, isOpen }: PostMailProps) => {
                     <iframe
                       srcDoc={
                         htmlTemplate ||
-                        "<p style='color: gray; font-family: sans-serif; padding: 20px;'>Preview will appear here...</p>"
+                        "<p style='color: gray; font-family: sans-serif; padding-left: 6px;'>Preview will appear here...</p>"
                       }
                       title="Email Preview"
-                      className="h-full min-h-200 w-full border-none bg-white"
+                      className="h-full min-h-200 w-full border-none"
                       sandbox="allow-same-origin" // Restricts scripts from running automatically
                     />
                   </div>
@@ -281,7 +318,7 @@ const PostMail = ({ closeModal, isOpen }: PostMailProps) => {
               <DocumentUpload
                 files={files}
                 setFiles={setFiles}
-                maxTotalSizeMB={10}
+                maxTotalSizeMB={2}
               />
 
               {/* Action Buttons */}
@@ -289,7 +326,7 @@ const PostMail = ({ closeModal, isOpen }: PostMailProps) => {
                 <button
                   type="submit"
                   disabled={!from || !toEmails[0] || !htmlTemplate}
-                  className="flex items-center justify-center gap-2 rounded-xl bg-zinc-900 px-6 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+                  className="flex items-center justify-center gap-2 rounded-xl bg-zinc-900 px-6 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
                 >
                   Send Custom Email
                   <Send className="h-4 w-4" />
