@@ -12,11 +12,24 @@ import { useOverlayStore } from "@/store/useOverlayStore";
 import { useAlertStore } from "@/store/useAlertStore";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import DynamicEmailInput from "./DynamicEmailInput"; // TODO: Adjust import path
+import dynamic from "next/dynamic";
+import "@uiw/react-textarea-code-editor/dist.css";
 
 type PostMailProps = {
   closeModal: () => void;
   isOpen: boolean;
 };
+
+// Dynamically import the editor and disable Server-Side Rendering
+const CodeEditor = dynamic(
+  () => import("@uiw/react-textarea-code-editor").then((mod) => mod.default),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-48 w-full animate-pulse rounded-xl bg-slate-100 dark:bg-neutral-800" />
+    ),
+  },
+);
 
 const PostMail = ({ closeModal, isOpen }: PostMailProps) => {
   const modalRef = useRef<HTMLDivElement | null>(null);
@@ -303,14 +316,22 @@ const PostMail = ({ closeModal, isOpen }: PostMailProps) => {
                     />
                   </div>
                 ) : (
-                  <textarea
-                    value={htmlTemplate}
-                    onChange={(e) => setHtmlTemplate(e.target.value)}
-                    required
-                    rows={20}
-                    placeholder="<h1>Insert your raw HTML here...</h1>"
-                    className="resize-y rounded-xl border border-neutral-300 bg-slate-50 px-3 py-3 font-mono text-sm text-slate-800 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900/50 dark:text-neutral-100"
-                  />
+                  <div className="overflow-hidden rounded-xl border border-neutral-300 bg-white focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 dark:border-neutral-700 dark:bg-[#0d1117]">
+                    <CodeEditor
+                      value={htmlTemplate}
+                      language="html"
+                      placeholder="<h1>Insert your raw HTML here...</h1>"
+                      onChange={(e) => setHtmlTemplate(e.target.value)}
+                      padding={16}
+                      minHeight={250}
+                      style={{
+                        fontSize: 13,
+                        fontFamily:
+                          "ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
+                        backgroundColor: "transparent", // Let the wrapper div handle the background color
+                      }}
+                    />
+                  </div>
                 )}
               </div>
 
