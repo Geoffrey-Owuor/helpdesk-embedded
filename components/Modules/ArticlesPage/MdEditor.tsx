@@ -68,7 +68,7 @@ const MdEditor = ({ value, onChange }: MdEditorProps) => {
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [showPreview]);
+  }, []);
 
   const handleClick = (): void => {
     setShowPreview(true);

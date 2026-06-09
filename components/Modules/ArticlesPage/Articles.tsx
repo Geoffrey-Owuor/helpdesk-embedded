@@ -1,6 +1,6 @@
 "use client";
 
-import { AtSign, FileText, PenLine } from "lucide-react";
+import { FileText, MailPlus, PenLine } from "lucide-react";
 import PostArticle from "./PostArticle";
 import UserArticlesWrapper from "./UserArticlesWrapper";
 import { useUser } from "@/contexts/UserContext";
@@ -47,7 +47,7 @@ const Articles = () => {
                 onClick={() => setIsPostMailOpen(true)}
                 className="inline-flex items-center gap-1.5 rounded-xl bg-neutral-900 px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
               >
-                <AtSign className="h-4 w-4" />
+                <MailPlus className="h-4 w-4" />
                 Mail Dispatch
               </button>
             )}
