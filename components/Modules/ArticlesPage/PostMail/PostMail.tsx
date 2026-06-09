@@ -191,14 +191,62 @@ const PostMail = ({ closeModal, isOpen }: PostMailProps) => {
             {/* Email Accuracy Disclaimer */}
             <div className="mb-4 flex items-start gap-2.5 rounded-xl border border-amber-200/60 bg-amber-50/50 p-3 dark:border-amber-900/30 dark:bg-amber-900/10">
               <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
-              <p className="text-xs leading-relaxed text-amber-800 dark:text-amber-300/90">
-                <strong className="font-semibold text-amber-900 dark:text-amber-200">
-                  Delivery Notice:{" "}
-                </strong>
-                Please double-check all typed email addresses. Invalid,
-                inactive, or incorrectly spelled emails will result in delivery
-                failures.
-              </p>
+              <div className="flex flex-col gap-2 text-xs leading-relaxed text-amber-800 dark:text-amber-300/90">
+                <p>
+                  <strong className="font-semibold text-amber-900 dark:text-amber-200">
+                    Important Delivery &amp; Layout Notice:
+                  </strong>
+                </p>
+
+                <ul className="list-disc space-y-1.5 pl-4">
+                  <li>
+                    <strong className="font-medium text-amber-900 dark:text-amber-200">
+                      Address Verification:
+                    </strong>{" "}
+                    Please double-check all recipient email addresses. Invalid,
+                    inactive, or incorrectly spelled emails will result in
+                    delivery failures.
+                  </li>
+                  <li>
+                    <strong className="font-medium text-amber-900 dark:text-amber-200">
+                      No CSS Gradients or Mixins:
+                    </strong>{" "}
+                    Outlook utilizes the Microsoft Word rendering engine.
+                    Linear/radial gradients, background-blend-modes, and CSS
+                    filters are not supported and will drop back to a flat color
+                    or transparent background. Use solid hex color codes (e.g.,{" "}
+                    <code className="rounded bg-amber-100 px-1 dark:bg-amber-950/50">
+                      #242424
+                    </code>
+                    ) instead.
+                  </li>
+                  <li>
+                    <strong className="font-medium text-amber-900 dark:text-amber-200">
+                      Layout Best Practices:
+                    </strong>{" "}
+                    Avoid modern layouts like Flexbox (
+                    <code className="rounded bg-amber-100 px-1 dark:bg-amber-950/50">
+                      display: flex
+                    </code>
+                    ) or CSS Grid. For multi-column layouts, wrap elements in
+                    nested HTML{" "}
+                    <code className="rounded bg-amber-100 px-1 dark:bg-amber-950/50">
+                      &lt;table&gt;
+                    </code>{" "}
+                    structures with explicit widths to prevent elements from
+                    breaking vertically.
+                  </li>
+                  <li>
+                    <strong className="font-medium text-amber-900 dark:text-amber-200">
+                      Box Model Quirks:
+                    </strong>{" "}
+                    Advanced box-shadows, canvas border-radii, and web fonts
+                    (like Google Fonts) are frequently ignored by Outlook
+                    desktop clients. Stick to system fonts (Arial, Calibri,
+                    Times New Roman) for guaranteed uniformity.
+                  </li>
+                </ul>
+              </div>
             </div>
 
             <form
