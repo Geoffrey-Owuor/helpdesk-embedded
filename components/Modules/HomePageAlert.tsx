@@ -1,8 +1,10 @@
 "use client";
 
 import { X, BookOpen, ArrowRight } from "lucide-react";
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useState, useRef } from "react";
 import Link from "next/link";
+import { useLoadingStore } from "@/store/useLoadingStore";
+import { usePathname } from "next/navigation";
 
 interface HomePageAlertProps {
   isOpen: boolean;
@@ -10,7 +12,17 @@ interface HomePageAlertProps {
 }
 
 const HomePageAlert = ({ isOpen, onClose }: HomePageAlertProps) => {
+  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
+  const pathname = usePathname();
   const [isClosing, setIsClosing] = useState(false);
+
+  // Keep a mutable ref of the open state to access inside the cleanup function
+  const isOpenRef = useRef(isOpen);
+
+  // Sync the ref whenever isOpen changes
+  useEffect(() => {
+    isOpenRef.current = isOpen;
+  }, [isOpen]);
 
   const handleClose = useCallback(() => {
     setIsClosing(true);
@@ -26,8 +38,15 @@ const HomePageAlert = ({ isOpen, onClose }: HomePageAlertProps) => {
     if (isOpen) {
       timer = setTimeout(handleClose, 15000);
     }
-    return () => clearTimeout(timer);
-  }, [isOpen, handleClose]);
+    return () => {
+      clearTimeout(timer);
+      // If the component unmounts while it is still supposed to be open,
+      // force the parent state to close so it doesn't linger on return.
+      if (isOpenRef.current) {
+        onClose();
+      }
+    };
+  }, [isOpen, handleClose, onClose]);
 
   // Don't render anything if there's no alert and we aren't currently animating out
   if (!isOpen && !isClosing) return null;
@@ -68,7 +87,13 @@ const HomePageAlert = ({ isOpen, onClose }: HomePageAlertProps) => {
 
           <Link
             href="/manual"
-            onClick={handleClose} // Closes the alert when the user clicks the link
+            onClick={() => {
+              // Showing the loading line logic
+              if (pathname === "/manual") return;
+
+              setLoadingLine(true);
+              handleClose();
+            }} // Closes the alert when the user clicks the link
             className="group mt-3 inline-flex w-fit items-center gap-1.5 text-[13px] font-semibold text-blue-400 transition-colors hover:text-blue-300 dark:text-blue-600 dark:hover:text-blue-700"
           >
             Read the Manual
