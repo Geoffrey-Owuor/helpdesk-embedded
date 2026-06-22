@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import { Star } from "lucide-react";
 import Link from "next/link";
 import { currentYear } from "@/public/assets";
 import { footerQuickLinks } from "@/public/assets";
@@ -12,16 +12,23 @@ const DashboardFooter = () => {
       </span>
 
       <span className="inline-flex items-center gap-2">
-        Built by{" "}
         <a
           href="https://jeff-portfolio-web.vercel.app"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-0.5 font-semibold text-neutral-700 hover:underline dark:text-neutral-300"
+          className="font-semibold text-neutral-700 hover:underline dark:text-neutral-300"
         >
-          <Sparkles className="h-4 w-4" />
           Jeff
         </a>
+        And
+        <Link
+          href="/it-team"
+          target="_blank"
+          className="inline-flex items-center gap-0.5 font-semibold text-neutral-700 hover:underline dark:text-neutral-300"
+        >
+          <Star className="h-4 w-4" />
+          Team
+        </Link>
       </span>
 
       {/* Right Area: Quick Links */}
