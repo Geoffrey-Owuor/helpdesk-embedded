@@ -2,11 +2,11 @@
 
 import {
   DatabaseZap,
-  RefreshCcw,
   ShieldAlert,
   X,
   Loader2,
   CheckCircle2,
+  RotateCcw,
 } from "lucide-react";
 import { useDbStore } from "@/store/useDbStore";
 import ClientPortal from "../ClientPortal";
@@ -172,9 +172,9 @@ export function DbStatusOverlay({
                   onClick={() => window.location.reload()}
                   className="group flex w-full items-center justify-center gap-2 rounded-2xl bg-linear-to-br from-neutral-800 to-neutral-900 py-3.5 text-[14px] font-bold text-white shadow-md transition-all hover:shadow-xl hover:shadow-neutral-900/20 active:scale-[0.98] dark:from-neutral-100 dark:to-neutral-200 dark:text-neutral-900 dark:hover:shadow-white/10"
                 >
-                  <RefreshCcw
+                  <RotateCcw
                     size={16}
-                    className="transition-transform duration-500 group-hover:rotate-180"
+                    className="transition-transform duration-500 group-hover:rotate-360"
                   />
                   Reload Application
                 </button>
