@@ -116,7 +116,7 @@ export const PUT = withAuth(async ({ request, user }) => {
     const reasonReopened = reason;
 
     // Fire and forget - Calling the email sender service
-    // emailSender({ title, description, uuid, reasonReopened });
+    emailSender({ title, description, uuid, reasonReopened });
 
     // return a response to the user
     return NextResponse.json(
