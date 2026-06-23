@@ -137,7 +137,7 @@ const Notifications = () => {
         <Bell className="bell-icon h-5 w-5" />
 
         {count > 0 && (
-          <span className="absolute right-0.5 bottom-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] leading-none font-semibold text-white">
+          <span className="absolute right-0.5 bottom-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] leading-none font-semibold tracking-tighter text-white">
             {count > 9 ? "9+" : count}
           </span>
         )}
