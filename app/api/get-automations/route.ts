@@ -3,8 +3,8 @@ import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 
 export const GET = withAuth(async ({ request }) => {
-  //Our main filter
-  const IssueTypeFilter = "Automation";
+  //Our main automation filters
+  const issueTypeFilters = ["RPA", "Staff Purchase", "Requisition Hub"];
 
   // Our query limit
   const limit = 500;
@@ -37,15 +37,19 @@ export const GET = withAuth(async ({ request }) => {
     const whereClauses: string[] = [];
     const params: (string | number)[] = [];
 
-    // General filters for the Automations query
-    if (IssueTypeFilter) {
-      whereClauses.push(`a.issue_type = $${params.length + 1}`);
-      params.push(IssueTypeFilter);
-    }
-
     if (departmentFilter) {
       whereClauses.push(`a.issue_submitter_department = $${params.length + 1}`);
       params.push(departmentFilter);
+    }
+
+    // 2. NEW: Issue Type Array Filter
+    if (issueTypeFilters && issueTypeFilters.length > 0) {
+      // Option A: Dynamic IN clauses ($2, $3, $4...)
+      const placeholders = issueTypeFilters.map(
+        (_, index) => `$${params.length + index + 1}`,
+      );
+      whereClauses.push(`a.issue_type IN (${placeholders.join(", ")})`);
+      params.push(...issueTypeFilters);
     }
 
     if (whereClauses.length > 0) {

@@ -26,10 +26,32 @@ export const titleHelper = (value: IssueValueTypes) => {
   return value.toString();
 };
 
+// Issue type names object mapping
+const ISSUE_TYPE_MAPPING: Record<string, string> = {
+  Other: "Other Issue",
+  Orion: "Orion",
+  "Software Issue": "App or Software Help",
+  "Hardware Issue": "Computer & Device Repair",
+  "Delivery DMS": "Delivery Management System",
+  POS: "Retail POS",
+  "Network Issue": "Wi-Fi & Internet Connectivity",
+  WMS: "Warehouse Management System",
+  FSM: "Field Service Management",
+  "Email Access": "Email & Calendar Issues",
+  "Printer Access": "Printing & Scanning",
+  "Active Directory": "Password Reset / Account Login",
+  Qlik: "Qlik",
+  RPA: "Robotic Process Automation",
+  "Document DMS": "Document Management System",
+  "Staff Purchase": "Staff Product Purchase",
+  "Requisition Hub": "Requisition Hub",
+};
+
 // Handling cases where issue type is other and later other issue types that require formatting
 export const generateValueType = (value: string) => {
-  if (value.includes("Other")) return "Other Issue";
-  else return value;
+  const generatedValue = ISSUE_TYPE_MAPPING[value] || value;
+
+  return generatedValue;
 };
 
 // Date formatter to format date for the ui

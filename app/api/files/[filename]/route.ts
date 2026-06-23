@@ -20,9 +20,6 @@ export async function GET(
   const baseDir: string = process.env.UPLOAD_BASE_DIR!;
   const filePath: string = path.join(baseDir, filename);
 
-  //   Log directory path
-  console.log(baseDir);
-
   // Security check: Prevent directory traversal attacks
   if (!filePath.startsWith(baseDir)) {
     return new NextResponse("Access Denied", { status: 403 });
