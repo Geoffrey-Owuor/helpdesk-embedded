@@ -10,6 +10,7 @@ import UserSettings from "./UserSettings/UserSettings";
 import ThemeToggle from "../Themes/ThemeToggle";
 import Notifications from "./Notifications/Notifications";
 import MiddleBar from "./MiddleBar";
+import NewsButton from "../Modules/News/NewsButton";
 import { useSidebarToggleStore } from "@/store/useSidebarToggleStore";
 
 // --- SVG ICONS ---
@@ -117,6 +118,7 @@ const DesktopDashboardHeader = () => {
 
           {/* Far Right: User Initials & Dropdown */}
           <div className="flex shrink-0 items-center gap-4">
+            <NewsButton />
             <ThemeToggle />
             <Notifications />
 
