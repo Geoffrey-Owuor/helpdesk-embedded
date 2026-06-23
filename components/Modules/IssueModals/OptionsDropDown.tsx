@@ -114,7 +114,7 @@ const OptionsDropDown = ({
               >
                 <span
                   title={generateValueType(option.option)}
-                  className="max-w-35 truncate"
+                  className="line-clamp-1 text-left"
                 >
                   {generateValueType(option.option)}
                 </span>

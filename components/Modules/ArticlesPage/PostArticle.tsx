@@ -187,7 +187,7 @@ const PostArticle = () => {
         />
 
         {/* Footer / Submit */}
-        <div className="flex items-center justify-between py-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 py-2">
           <p className="text-xs text-red-500 dark:text-red-400">
             **All fields are required**
           </p>

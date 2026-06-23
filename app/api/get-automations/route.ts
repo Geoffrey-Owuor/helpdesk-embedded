@@ -1,11 +1,9 @@
 import { query } from "@/lib/Db";
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
+import { AUTOMATION_TYPE_FILTERS as issueTypeFilters } from "@/public/assets";
 
 export const GET = withAuth(async ({ request }) => {
-  //Our main automation filters
-  const issueTypeFilters = ["RPA", "Staff Purchase", "Requisition Hub"];
-
   // Our query limit
   const limit = 500;
 

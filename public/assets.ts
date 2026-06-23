@@ -66,6 +66,13 @@ export const dateFormatter = (dateString: IssueValueTypes) => {
   });
 };
 
+// Automation type filters
+export const AUTOMATION_TYPE_FILTERS = [
+  "RPA",
+  "Staff Purchase",
+  "Requisition Hub",
+];
+
 // export our departments
 export const baseDepartments = [
   { option: "IT & Projects", value: "IT & Projects" },

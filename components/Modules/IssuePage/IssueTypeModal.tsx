@@ -124,7 +124,7 @@ const IssueTypeModal = ({
       </button>
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="default-scrollbar absolute top-full right-0 z-20 mt-0.5 max-h-80 w-full min-w-50 origin-top-right overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-950 dark:shadow-none">
+        <div className="default-scrollbar absolute top-full right-0 z-20 mt-0.5 max-h-80 w-full min-w-60 origin-top-right overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-950 dark:shadow-none">
           <div className="px-2 py-2 text-xs font-semibold text-neutral-500 uppercase">
             Type Options
           </div>
@@ -145,7 +145,7 @@ const IssueTypeModal = ({
               >
                 <span
                   title={generateValueType(option.option)}
-                  className="max-w-35 truncate"
+                  className="line-clamp-1 text-left"
                 >
                   {generateValueType(option.option)}
                 </span>
