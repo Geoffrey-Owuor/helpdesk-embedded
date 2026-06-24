@@ -54,7 +54,7 @@ const HomePageAlert = ({ isOpen, onClose }: HomePageAlertProps) => {
   return (
     // Container: Floating bottom left with responsive widths
     <div
-      className={`fixed right-4 bottom-4 left-4 z-9999 transition-all duration-200 sm:right-auto sm:bottom-6 sm:left-6 sm:w-auto sm:max-w-md sm:min-w-85 ${
+      className={`fixed right-4 bottom-4 left-4 z-9999 transition-all duration-200 sm:right-auto sm:bottom-6 sm:left-6 sm:w-auto sm:max-w-sm sm:min-w-85 ${
         isClosing
           ? "animate-slideDown opacity-0"
           : "animate-slideUp opacity-100"

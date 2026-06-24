@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     const cookieStore = await cookies();
     cookieStore.set("verify_email", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: false,
       sameSite: "lax",
       path: "/register",
       maxAge: 600, // 10 Minutes
