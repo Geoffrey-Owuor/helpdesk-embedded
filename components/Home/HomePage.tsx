@@ -4,6 +4,7 @@ import Hero from "@/components/Home/Hero";
 import { useEffect, useState } from "react";
 import QuickCreateButton from "./QuickCreateButton";
 import HomePageAlert from "../Modules/HomePageAlert";
+import HomeNews from "./HomeNews";
 import Footer from "@/components/Home/Footer";
 
 const HomePage = () => {
@@ -32,6 +33,9 @@ const HomePage = () => {
       <div className="mx-auto max-w-6xl 2xl:max-w-7xl">
         <HomeNavBar />
         <Hero />
+
+        {/* The homepage news component here */}
+        <HomeNews />
 
         {/* The quick create button */}
         <QuickCreateButton />
