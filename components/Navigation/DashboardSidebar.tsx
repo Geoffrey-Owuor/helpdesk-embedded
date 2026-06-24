@@ -25,6 +25,7 @@ import UserSettings from "./UserSettings/UserSettings";
 import Notifications from "./Notifications/Notifications";
 import ClientPortal from "../Modules/ClientPortal";
 import { useSidebarToggleStore } from "@/store/useSidebarToggleStore";
+import NewsButton from "../Modules/News/NewsButton";
 
 const DashboardSidebar = () => {
   const { username, role, isSuper } = useUser();
@@ -114,6 +115,9 @@ const DashboardSidebar = () => {
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
+
+          {/* News Button */}
+          <NewsButton />
 
           {/* Theme toggle */}
           <ThemeToggle />
