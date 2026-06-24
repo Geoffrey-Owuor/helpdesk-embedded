@@ -6,13 +6,35 @@ import UserArticlesWrapper from "./UserArticlesWrapper";
 import { useUser } from "@/contexts/UserContext";
 import { useActiveTabStore } from "@/store/useActiveTabStore";
 import PostMail from "./PostMail/PostMail";
+import PostNews from "../News/PostNews";
 import { useState } from "react";
+
+const NewsPostIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="1.3em"
+    height="1.3em"
+    viewBox="0 0 24 24"
+  >
+    <g fill="none" fillRule="evenodd" clipRule="evenodd">
+      <path
+        fill="#2859c5"
+        d="M10.75 10.75V7.5h2.5v3.25h3.25v2.5h-3.25v3.25h-2.5v-3.25H7.5v-2.5z"
+      ></path>
+      <path
+        fill="#8fbffa"
+        d="M12 3a9 9 0 1 1-9 9H1c0 6.075 4.925 11 11 11s11-4.925 11-11S18.075 1 12 1zm-8.82 7.199a9 9 0 0 1 .72-2.126l-1.8-.874a11 11 0 0 0-.88 2.602zm3.42-5.4a9 9 0 0 0-1.8 1.8L3.2 5.4a11 11 0 0 1 2.2-2.2l1.2 1.6Zm1.473-.9a9 9 0 0 1 2.126-.719l-.398-1.96c-.914.185-1.786.484-2.602.88z"
+      ></path>
+    </g>
+  </svg>
+);
 
 const Articles = () => {
   const activeTab = useActiveTabStore((state) => state.activeTab);
   const setActiveTab = useActiveTabStore((state) => state.setActiveTab);
 
   const [isPostMailOpen, setIsPostMailOpen] = useState(false);
+  const [postNewsOpen, setPostNewsOpen] = useState(false);
 
   const { role } = useUser();
 
@@ -23,6 +45,14 @@ const Articles = () => {
         <PostMail
           isOpen={isPostMailOpen}
           closeModal={() => setIsPostMailOpen(false)}
+        />
+      )}
+
+      {/* Post News Modal */}
+      {postNewsOpen && (
+        <PostNews
+          isOpen={postNewsOpen}
+          closeModal={() => setPostNewsOpen(false)}
         />
       )}
       <div className="flex h-full w-full flex-col py-6 md:py-3.5">
@@ -41,7 +71,16 @@ const Articles = () => {
           </div>
 
           {/* Action Buttons - Post Email, Articles, & Post Article*/}
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
+            {role !== "user" && (
+              <button
+                onClick={() => setPostNewsOpen(true)}
+                className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm text-blue-400 ring-1 ring-blue-400 transition-colors duration-200 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+              >
+                <NewsPostIcon />
+                Post News
+              </button>
+            )}
             {role !== "user" && (
               <button
                 onClick={() => setIsPostMailOpen(true)}

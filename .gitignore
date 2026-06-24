@@ -34,6 +34,8 @@ yarn-error.log*
 .env*
 .prettierrc*
 issues_schema.txt
+CHANGELOG_GENERATED.md
+ecosystem.config.js*
 
 # User uploaded files
 /public/uploads
