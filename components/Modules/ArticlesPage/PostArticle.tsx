@@ -196,8 +196,8 @@ const PostArticle = () => {
             disabled={loading || keyIsInvalid || !formData.articleKey}
             className="flex items-center gap-2 rounded-xl bg-neutral-900 px-5 py-2.5 text-sm font-medium text-neutral-100 transition-all duration-150 hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900"
           >
+            Publish
             <Send className="h-4 w-4" />
-            Publish Article
           </button>
         </div>
       </form>

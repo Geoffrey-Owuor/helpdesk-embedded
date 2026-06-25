@@ -362,7 +362,7 @@ const SidebarLink = ({
         onClick={onClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={() => setIsHovered(false)}
-        className={`flex w-full flex-col items-center gap-1 ${isHomePage ? "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200" : isActive ? "bg-linear-to-br from-blue-800 via-blue-900 to-blue-950 text-white transition-opacity duration-200 hover:opacity-90 dark:hover:opacity-80" : "text-neutral-600 hover:bg-blue-100 hover:text-blue-600 dark:text-neutral-400 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"} rounded-2xl py-2.5 text-[10px] font-semibold`}
+        className={`flex w-full flex-col items-center gap-1 ${isHomePage ? "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200" : isActive ? "bg-blue-800 text-white hover:bg-blue-800/90" : "text-neutral-600 hover:bg-blue-100 hover:text-blue-600 dark:text-neutral-400 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"} rounded-2xl py-2.5 text-[10px] font-semibold`}
       >
         {icon}
         <span>{label}</span>
