@@ -17,13 +17,13 @@ import { useSidebarToggleStore } from "@/store/useSidebarToggleStore";
 const SidebarOpenIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="1.7em"
-    height="1.7em"
-    viewBox="0 0 17 17"
+    width={24}
+    height={24}
+    viewBox="0 0 16 16"
   >
     <path
       fill="currentColor"
-      d="M4.5 3A2.5 2.5 0 0 0 2 5.5v5A2.5 2.5 0 0 0 4.5 13h7a2.5 2.5 0 0 0 2.5-2.5v-5A2.5 2.5 0 0 0 11.5 3zM7 4h4.5A1.5 1.5 0 0 1 13 5.5v5a1.5 1.5 0 0 1-1.5 1.5H7z"
+      d="M2 5.5A2.5 2.5 0 0 1 4.5 3h7A2.5 2.5 0 0 1 14 5.5v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 10.5zm9.5 6.5a1.5 1.5 0 0 0 1.5-1.5v-5A1.5 1.5 0 0 0 11.5 4H8v8zm-7-7a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zM4 8a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 0-1h-1A.5.5 0 0 0 4 8m.5 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"
     ></path>
   </svg>
 );
@@ -31,13 +31,13 @@ const SidebarOpenIcon = () => (
 const SidebarClosedIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="1.7em"
-    height="1.7em"
-    viewBox="0 0 17 17"
+    width={24}
+    height={24}
+    viewBox="0 0 16 16"
   >
     <path
       fill="currentColor"
-      d="M2 5.5A2.5 2.5 0 0 1 4.5 3h7A2.5 2.5 0 0 1 14 5.5v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 10.5zM7 4v8h4.5a1.5 1.5 0 0 0 1.5-1.5v-5A1.5 1.5 0 0 0 11.5 4zM6 4H4.5A1.5 1.5 0 0 0 3 5.5v5A1.5 1.5 0 0 0 4.5 12H6z"
+      d="M4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5M4 8a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1A.5.5 0 0 1 4 8m.5 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0-7A2.5 2.5 0 0 0 2 5.5v5A2.5 2.5 0 0 0 4.5 13h7a2.5 2.5 0 0 0 2.5-2.5v-5A2.5 2.5 0 0 0 11.5 3zM3 5.5A1.5 1.5 0 0 1 4.5 4H7v8H4.5A1.5 1.5 0 0 1 3 10.5zM8 12V4h3.5A1.5 1.5 0 0 1 13 5.5v5a1.5 1.5 0 0 1-1.5 1.5z"
     ></path>
   </svg>
 );
@@ -82,17 +82,17 @@ const DesktopDashboardHeader = () => {
         setIsUserSettingsOpen={setShowUserSettings}
       />
       <header className="z-40 hidden w-full lg:block">
-        <div className="flex h-16 w-full items-center justify-between px-4">
+        <div className="flex w-full items-center justify-between px-4 py-2">
           <div className="flex items-center gap-2.5">
             {/* Far Left: Dashboard Logo */}
             <div className="flex items-center justify-center px-3">
               <DashBoardLogo />
             </div>
-
+            <span className="ml-1 h-5 border border-neutral-300 dark:border-neutral-700"></span>
             {/* Dashboard sidebar toggle icon */}
             <button
               onClick={() => setShowSidebar(!showSidebar)}
-              className="group relative rounded-full p-1 transition-all hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              className="group relative ml-1.5 rounded-full p-1 transition-all hover:bg-neutral-200 dark:hover:bg-neutral-800"
               aria-label="Toggle Sidebar"
             >
               {showSidebar ? <SidebarOpenIcon /> : <SidebarClosedIcon />}

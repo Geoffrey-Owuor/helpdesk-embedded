@@ -6,6 +6,7 @@ import ViewNews from "./ViewNews";
 
 const NewsButton = () => {
   const setShowNews = useNewsStore((state) => state.setShowNews);
+  const showNews = useNewsStore((state) => state.showNews);
 
   // Fetch news data seamlessly in the background
   const { data: newsList = [] } = useQuery({
@@ -17,121 +18,45 @@ const NewsButton = () => {
 
   return (
     <>
+      {/* Mount Modal */}
+      {showNews && <ViewNews newsList={newsList} />}
+
       <button
         onClick={() => setShowNews(true)}
         className="relative rounded-full p-2 hover:bg-blue-100 dark:hover:bg-blue-900/20"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="1.4em"
-          height="1.4em"
-          viewBox="0 0 16 16"
+          width={20}
+          height={20}
+          viewBox="0 0 48 48"
         >
           <g fill="none">
             <path
-              fill="url(#SVGrwuGtcVh)"
-              d="M13 4a2 2 0 0 1 2 2v4.5a2.5 2.5 0 0 1-2.5 2.5l-.023-9z"
+              fill="#8fbffa"
+              fillRule="evenodd"
+              d="M9.374 46.05c3.065.212 8.164.45 15.626.45s12.56-.238 15.626-.45c2.82-.195 5.1-2.306 5.38-5.174c.247-2.525.494-6.417.494-11.876s-.247-9.351-.494-11.876c-.28-2.868-2.56-4.98-5.38-5.174c-3.065-.212-8.164-.45-15.626-.45s-12.56.238-15.626.45c-2.82.195-5.1 2.306-5.38 5.174C3.747 19.649 3.5 23.541 3.5 29s.247 9.351.494 11.876c.28 2.868 2.56 4.98 5.38 5.174"
+              clipRule="evenodd"
             ></path>
             <path
-              fill="url(#SVGJdWhObSs)"
-              d="M1 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8.95q-.243.05-.5.05h-9A2.5 2.5 0 0 1 1 10.5z"
+              fill="#2859c5"
+              fillRule="evenodd"
+              d="M35.726 1.509c3.214-.162 6.038 1.928 6.706 5.1c.34 1.613.74 3.72 1.156 6.372a5.9 5.9 0 0 0-2.962-1.031c-3.065-.212-8.164-.45-15.626-.45s-12.56.238-15.626.45c-2.82.195-5.1 2.306-5.38 5.174C3.747 19.649 3.5 23.541 3.5 29q0 .803.007 1.56a188 188 0 0 1-.901-6.402c-.706-5.685-.993-9.82-1.1-12.572c-.128-3.24 2.105-5.949 5.266-6.562c3.008-.582 7.722-1.378 14.423-2.191c6.7-.814 11.47-1.17 14.53-1.324M11 36.5a1.5 1.5 0 0 0 0 3h28a1.5 1.5 0 0 0 0-3z"
+              clipRule="evenodd"
             ></path>
             <path
-              fill="url(#SVGeS4wFbmj)"
-              d="M1 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8.95q-.243.05-.5.05h-9A2.5 2.5 0 0 1 1 10.5z"
+              fill="#2859c5"
+              d="M9.5 32a1.5 1.5 0 0 1 1.5-1.5h8a1.5 1.5 0 0 1 0 3h-8A1.5 1.5 0 0 1 9.5 32m0-6a1.5 1.5 0 0 1 1.5-1.5h8a1.5 1.5 0 0 1 0 3h-8A1.5 1.5 0 0 1 9.5 26m0-6a1.5 1.5 0 0 1 1.5-1.5h8a1.5 1.5 0 0 1 0 3h-8A1.5 1.5 0 0 1 9.5 20m17.932 13.37c1.081.07 2.587.13 4.568.13s3.487-.06 4.568-.13a2.966 2.966 0 0 0 2.803-2.802c.07-1.081.129-2.587.129-4.568s-.06-3.487-.13-4.568a2.966 2.966 0 0 0-2.802-2.803A72 72 0 0 0 32 18.5c-1.98 0-3.487.06-4.568.13a2.966 2.966 0 0 0-2.803 2.802A72 72 0 0 0 24.5 26c0 1.98.06 3.487.13 4.568a2.966 2.966 0 0 0 2.802 2.803"
             ></path>
-            <path
-              fill="url(#SVGeDF8iboa)"
-              d="M1 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8.95q-.243.05-.5.05h-9A2.5 2.5 0 0 1 1 10.5z"
-            ></path>
-            <path
-              fill="url(#SVG68RIee3f)"
-              d="M3.5 7a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 0-.5-.5z"
-            ></path>
-            <path
-              fill="url(#SVGdCTsBbav)"
-              d="M3.5 5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1zm4 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1z"
-            ></path>
-            <defs>
-              <linearGradient
-                id="SVGJdWhObSs"
-                x1={4.429}
-                x2={13.346}
-                y1={0.308}
-                y2={12.311}
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop stopColor="#3bd5ff"></stop>
-                <stop offset={1} stopColor="#367af2"></stop>
-              </linearGradient>
-              <linearGradient
-                id="SVGeS4wFbmj"
-                x1={7.857}
-                x2={7.857}
-                y1={10.885}
-                y2={13}
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop offset={0.181} stopColor="#2764e7" stopOpacity={0}></stop>
-                <stop offset={1} stopColor="#2764e7"></stop>
-              </linearGradient>
-              <linearGradient
-                id="SVGeDF8iboa"
-                x1={7.429}
-                x2={11.535}
-                y1={5.385}
-                y2={16.126}
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop stopColor="#dcf8ff" stopOpacity={0}></stop>
-                <stop offset={1} stopColor="#ff6ce8" stopOpacity={0.7}></stop>
-              </linearGradient>
-              <linearGradient
-                id="SVG68RIee3f"
-                x1={3.286}
-                x2={4.787}
-                y1={6.853}
-                y2={9.857}
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop stopColor="#defcff"></stop>
-                <stop offset={1} stopColor="#9ff0f9"></stop>
-              </linearGradient>
-              <linearGradient
-                id="SVGdCTsBbav"
-                x1={3.7}
-                x2={4.227}
-                y1={5.088}
-                y2={10.525}
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop stopColor="#fdfdfd"></stop>
-                <stop offset={1} stopColor="#cceaff"></stop>
-              </linearGradient>
-              <radialGradient
-                id="SVGrwuGtcVh"
-                cx={0}
-                cy={0}
-                r={1}
-                gradientTransform="rotate(129.203 6.987 6.595)scale(6.38779 9.53604)"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop stopColor="#068beb"></stop>
-                <stop offset={0.617} stopColor="#0056cf"></stop>
-                <stop offset={0.974} stopColor="#0027a7"></stop>
-              </radialGradient>
-            </defs>
           </g>
         </svg>
         {/* ── UNREAD BADGE ── */}
         {count > 0 && (
-          <span className="absolute right-0.5 bottom-2.25 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] leading-none font-semibold tracking-tighter text-white">
+          <span className="absolute right-0.5 bottom-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] leading-none font-semibold tracking-tighter text-white">
             {count > 9 ? "9+" : count}
           </span>
         )}
       </button>
-      {/* Mount Modal */}
-      <ViewNews newsList={newsList} />
     </>
   );
 };
