@@ -108,7 +108,7 @@ const MobileSideBar = ({
             <Link
               href="/dashboard"
               onClick={() => handleMobileRouteChange("/dashboard")}
-              className="flex w-full items-center gap-2 rounded-xl bg-linear-to-br from-blue-800 via-blue-900 to-blue-950 p-3 text-sm font-medium text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+              className="flex w-full items-center gap-2 rounded-xl bg-neutral-900 p-3 text-sm font-medium text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
             >
               <LayoutDashboard className="h-5 w-5" />
               <span>Dashboard</span>

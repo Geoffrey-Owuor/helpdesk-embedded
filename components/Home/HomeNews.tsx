@@ -42,7 +42,7 @@ const HomeNews = () => {
         </p>
         <span className="mt-2 inline-flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-1 text-xs text-amber-600 dark:bg-amber-900/20 dark:text-amber-400">
           <Lightbulb className="h-3 w-3" />
-          Click on any announcement to view full details.
+          Click on any announcement to view it&apos;s full details.
         </span>
       </div>
 
