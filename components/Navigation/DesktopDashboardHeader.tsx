@@ -88,11 +88,11 @@ const DesktopDashboardHeader = () => {
             <div className="flex items-center justify-center px-3">
               <DashBoardLogo />
             </div>
-
+            <span className="ml-1 h-5 border border-neutral-300 dark:border-neutral-700"></span>
             {/* Dashboard sidebar toggle icon */}
             <button
               onClick={() => setShowSidebar(!showSidebar)}
-              className="group relative rounded-full p-1 transition-all hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              className="group relative ml-1.5 rounded-full p-1 transition-all hover:bg-neutral-200 dark:hover:bg-neutral-800"
               aria-label="Toggle Sidebar"
             >
               {showSidebar ? <SidebarOpenIcon /> : <SidebarClosedIcon />}
