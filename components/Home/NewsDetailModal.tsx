@@ -25,7 +25,7 @@ const NewsDetailModal = ({ news, onClose }: NewsDetailModalProps) => {
       {/* Backdrop */}
       <div
         onClick={onClose}
-        className="custom-blur fixed inset-0 z-100 flex items-center justify-center bg-black/60 p-4 dark:bg-black/80"
+        className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 p-4 dark:bg-black/80"
       >
         {/* Modal Container */}
         <div
