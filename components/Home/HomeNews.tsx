@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import SkeletonBox from "../Skeletons/SkeletonBox";
 import { GetNews, NewsItem } from "@/serverActions/NewsHandling/GetNews";
-import { Megaphone, Newspaper, Earth } from "lucide-react";
+import { Megaphone, Newspaper, Earth, Lightbulb } from "lucide-react";
 import { useState } from "react";
 import NewsDetailModal from "./NewsDetailModal";
 
@@ -28,7 +28,7 @@ const HomeNews = () => {
       />
 
       {/* Header Area */}
-      <div className="mb-10 flex flex-col items-center text-center">
+      <div className="mb-6 flex flex-col items-center text-center">
         <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold tracking-widest text-blue-600 uppercase dark:border-blue-900/50 dark:bg-blue-900/20 dark:text-blue-400">
           <Newspaper className="h-3.5 w-3.5" />
           The Latest
@@ -37,9 +37,13 @@ const HomeNews = () => {
           News & Announcements
         </h2>
         <p className="max-w-2xl text-base text-neutral-600 dark:text-neutral-400">
-          Stay in the loop. Read up on our newest releases, policy updates, and
-          team milestones straight from the source.
+          Stay in the loop. Read up on new releases, policy updates, and team
+          milestones straight from the source.
         </p>
+        <span className="mt-2 inline-flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-1 text-xs text-amber-600 dark:bg-amber-900/20 dark:text-amber-400">
+          <Lightbulb className="h-3 w-3" />
+          Click on any announcement to view full details.
+        </span>
       </div>
 
       {/* News Grid */}
@@ -50,7 +54,7 @@ const HomeNews = () => {
           ))}
         </div>
       ) : displayedNews.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-neutral-300 bg-neutral-50/50 py-20 text-center dark:border-neutral-800 dark:bg-neutral-900/20">
+        <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-neutral-300 bg-neutral-50/50 py-20 text-center dark:border-neutral-800 dark:bg-neutral-900/20">
           <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-neutral-200/50 text-neutral-400 dark:bg-neutral-800/50 dark:text-neutral-500">
             <Newspaper className="h-6 w-6" />
           </div>
@@ -68,13 +72,13 @@ const HomeNews = () => {
             <button
               key={news.id}
               onClick={() => setSelectedNews(news)}
-              className="group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border border-neutral-200 bg-white p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/10 dark:border-neutral-800 dark:bg-neutral-900/20 dark:hover:border-blue-800/50 dark:hover:bg-neutral-900/30"
+              className="group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border border-neutral-200 bg-white p-4 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/10 dark:border-neutral-800 dark:bg-neutral-900/20 dark:hover:border-blue-800/50 dark:hover:bg-neutral-900/30"
             >
               {/* Subtle top gradient line that appears on hover */}
               <div className="absolute inset-x-0 top-0 h-0.5 bg-linear-to-r from-blue-500 to-indigo-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
               <div>
-                <div className="mb-4 flex items-center justify-between">
+                <div className="mb-2 flex items-center justify-between">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
                     <Megaphone className="h-5 w-5" />
                   </div>
@@ -84,7 +88,7 @@ const HomeNews = () => {
                   </div>
                 </div>
 
-                <h3 className="mb-2 text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+                <h3 className="mb-2 line-clamp-1 text-lg font-semibold text-neutral-900 dark:text-neutral-100">
                   {news.title}
                 </h3>
 
