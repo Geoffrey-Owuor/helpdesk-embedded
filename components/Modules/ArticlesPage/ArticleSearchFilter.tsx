@@ -166,7 +166,9 @@ const ArticleSearchFilter = ({
                 onClick={() => setIsValueDropdownOpen(!isValueDropdownOpen)}
                 className="flex w-full items-center justify-between rounded-xl border border-neutral-300 bg-white px-3 py-2.5 text-sm text-neutral-900 shadow-sm transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-100 dark:hover:bg-neutral-800/40"
               >
-                <span className={inputValue ? "" : "text-neutral-400"}>
+                <span
+                  className={inputValue ? "capitalize" : "text-neutral-400"}
+                >
                   {inputValue || `Select ${activeCategoryLabel}`}
                 </span>
                 <ChevronDown
@@ -185,7 +187,7 @@ const ArticleSearchFilter = ({
                         setInputValue(opt);
                         setIsValueDropdownOpen(false);
                       }}
-                      className="cursor-pointer rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-700"
+                      className="cursor-pointer rounded-lg px-3 py-2 text-sm text-neutral-700 capitalize hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-700"
                     >
                       {opt}
                     </li>

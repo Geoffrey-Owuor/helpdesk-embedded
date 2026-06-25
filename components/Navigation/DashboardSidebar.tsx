@@ -25,6 +25,7 @@ import UserSettings from "./UserSettings/UserSettings";
 import Notifications from "./Notifications/Notifications";
 import ClientPortal from "../Modules/ClientPortal";
 import { useSidebarToggleStore } from "@/store/useSidebarToggleStore";
+import NewsButton from "../Modules/News/NewsButton";
 
 const DashboardSidebar = () => {
   const { username, role, isSuper } = useUser();
@@ -98,7 +99,7 @@ const DashboardSidebar = () => {
       />
 
       {/* Mobile top bar — only visible on small screens */}
-      <div className="fixed top-0 right-0 left-0 z-50 flex h-16 items-center justify-between px-4 lg:hidden">
+      <div className="fixed top-0 right-0 left-0 z-50 flex items-center justify-between px-4 py-2 lg:hidden">
         <button
           onClick={() => setSideBarOpen(true)}
           className="rounded-full p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800"
@@ -114,6 +115,9 @@ const DashboardSidebar = () => {
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
+
+          {/* News Button */}
+          <NewsButton />
 
           {/* Theme toggle */}
           <ThemeToggle />
@@ -144,7 +148,7 @@ const DashboardSidebar = () => {
 
       {/* Left sidebar — visible on lg+ screens */}
       <aside
-        className={`fixed top-16 bottom-0 transition-all duration-200 ease-in-out ${showSidebar ? "translate-x-0" : "-translate-x-full"} left-0 z-50 hidden w-20 flex-col items-center border-neutral-200 pb-2 lg:flex dark:border-neutral-800`}
+        className={`fixed top-14 bottom-0 transition-all duration-200 ease-in-out ${showSidebar ? "translate-x-0" : "-translate-x-full"} left-0 z-50 hidden w-20 flex-col items-center border-neutral-200 pb-2 lg:flex dark:border-neutral-800`}
       >
         {/* Nav items — grow to fill space */}
         <nav className="sidebar-nav mb-2 flex w-full flex-1 flex-col items-center gap-1.5 px-2">
@@ -156,6 +160,7 @@ const DashboardSidebar = () => {
             isActive={highlightLink("/dashboard")}
             onClick={() => handleRouteChange("/dashboard")}
             showToolTip={true}
+            isHomePage={true}
             ToolTipMessage="Dashboard"
           />
 
@@ -316,6 +321,7 @@ type SidebarLinkProps = {
   isActive: boolean;
   onClick?: () => void;
   showToolTip?: boolean;
+  isHomePage?: boolean;
   ToolTipMessage?: string;
 };
 
@@ -326,6 +332,7 @@ const SidebarLink = ({
   isActive,
   onClick,
   showToolTip = false,
+  isHomePage = false,
   ToolTipMessage,
 }: SidebarLinkProps) => {
   // 1. State to track hover and exact coordinates of the button
@@ -355,7 +362,7 @@ const SidebarLink = ({
         onClick={onClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={() => setIsHovered(false)}
-        className={`flex w-full flex-col items-center gap-1 ${isActive ? "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200" : "text-neutral-600 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800"} rounded-2xl py-2.5 text-[10px] font-semibold`}
+        className={`flex w-full flex-col items-center gap-1 ${isHomePage ? "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200" : isActive ? "bg-blue-800 text-white hover:bg-blue-800/90" : "text-neutral-600 hover:bg-blue-100 hover:text-blue-600 dark:text-neutral-400 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"} rounded-2xl py-2.5 text-[10px] font-semibold`}
       >
         {icon}
         <span>{label}</span>
