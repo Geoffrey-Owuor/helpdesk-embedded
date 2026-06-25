@@ -99,7 +99,7 @@ const DashboardSidebar = () => {
       />
 
       {/* Mobile top bar — only visible on small screens */}
-      <div className="fixed top-0 right-0 left-0 z-50 flex h-16 items-center justify-between px-4 lg:hidden">
+      <div className="fixed top-0 right-0 left-0 z-50 flex items-center justify-between px-4 py-2 lg:hidden">
         <button
           onClick={() => setSideBarOpen(true)}
           className="rounded-full p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800"
@@ -148,7 +148,7 @@ const DashboardSidebar = () => {
 
       {/* Left sidebar — visible on lg+ screens */}
       <aside
-        className={`fixed top-16 bottom-0 transition-all duration-200 ease-in-out ${showSidebar ? "translate-x-0" : "-translate-x-full"} left-0 z-50 hidden w-20 flex-col items-center border-neutral-200 pb-2 lg:flex dark:border-neutral-800`}
+        className={`fixed top-14 bottom-0 transition-all duration-200 ease-in-out ${showSidebar ? "translate-x-0" : "-translate-x-full"} left-0 z-50 hidden w-20 flex-col items-center border-neutral-200 pb-2 lg:flex dark:border-neutral-800`}
       >
         {/* Nav items — grow to fill space */}
         <nav className="sidebar-nav mb-2 flex w-full flex-1 flex-col items-center gap-1.5 px-2">

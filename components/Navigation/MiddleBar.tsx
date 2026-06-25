@@ -115,7 +115,7 @@ const MiddleBar = () => {
         <ClientPortal>
           <div
             onClick={() => setIsOpen(false)}
-            className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 pt-3 dark:bg-black/80"
+            className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 pt-2 dark:bg-black/80"
           >
             <div
               onClick={(e) => e.stopPropagation()}
