@@ -18,7 +18,7 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
       <DashboardSidebar />
       <div
         id="main-content"
-        className={`layout-scrollbar fixed top-16 right-1 bottom-0 left-1 overflow-y-auto rounded-3xl border border-[#eceef1] bg-white transition-all duration-200 ease-in-out [scrollbar-gutter:stable] sm:bottom-1 sm:rounded-2xl lg:top-16 ${showSidebar ? "lg:left-20" : "lg:left-1"} dark:border-neutral-900 dark:bg-black`}
+        className={`layout-scrollbar fixed top-14 right-1 bottom-0 left-1 overflow-y-auto rounded-3xl border border-[#eceef1] bg-white transition-all duration-200 ease-in-out [scrollbar-gutter:stable] sm:bottom-1 sm:rounded-2xl ${showSidebar ? "lg:left-20" : "lg:left-1"} dark:border-neutral-900 dark:bg-black`}
       >
         <div className="flex h-full flex-col">
           {/* Content */}

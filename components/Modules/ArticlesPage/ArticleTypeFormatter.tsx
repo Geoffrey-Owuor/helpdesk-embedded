@@ -2,11 +2,11 @@ const articleStyles: Record<
   string,
   { bg: string; text: string; dot: string; label: string }
 > = {
-  news: {
+  insight: {
     bg: "bg-purple-100 dark:bg-purple-900/40",
     text: "text-purple-800 dark:text-purple-200",
     dot: "bg-purple-500",
-    label: "News",
+    label: "Insight",
   },
   manual: {
     bg: "bg-teal-100 dark:bg-teal-900/40",

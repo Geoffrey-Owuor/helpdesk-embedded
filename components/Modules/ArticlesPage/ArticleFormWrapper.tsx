@@ -5,7 +5,7 @@ import {
   FileTypeCorner,
   Library,
   Lightbulb,
-  Newspaper,
+  LineChart,
   Subtitles,
   Type,
 } from "lucide-react";
@@ -14,7 +14,7 @@ import { useState, useRef, useEffect, ChangeEvent } from "react";
 import { FormData } from "./PostArticle";
 
 const ARTICLE_TYPES = [
-  { value: "news", label: "News", icon: Newspaper },
+  { value: "insight", label: "Insight", icon: LineChart },
   { value: "manual", label: "Manual", icon: BookOpen },
   { value: "blog", label: "Blog", icon: Lightbulb },
 ];
