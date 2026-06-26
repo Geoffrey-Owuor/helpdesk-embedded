@@ -77,7 +77,7 @@ const OptionsDropDown = ({
           )}
 
           <span
-            className={`${!value ? "text-neutral-500" : "max-w-35 truncate text-neutral-900 dark:text-neutral-100"}`}
+            className={`${!value ? "text-neutral-500" : "line-clamp-1 text-neutral-900 dark:text-neutral-100"}`}
           >
             {value
               ? generateValueType(value)

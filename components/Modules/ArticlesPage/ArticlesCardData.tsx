@@ -114,8 +114,8 @@ const ArticlesCardData = ({
         <div className="flex flex-col gap-3">
           {/* Search input */}
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            <span className="inline-flex items-center gap-1">
-              <Lightbulb className="h-4 w-4" />
+            <span className="inline-flex items-center gap-1 rounded-xl bg-amber-50 px-3 py-1 text-xs text-amber-600 dark:bg-amber-900/20 dark:text-amber-400">
+              <Lightbulb className="h-3 w-3" />
               Use the article title as your search query
             </span>
           </p>
