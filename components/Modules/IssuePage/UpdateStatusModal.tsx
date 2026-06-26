@@ -5,7 +5,7 @@ import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useRef, useState, useEffect } from "react";
-import { X, MessageSquareText, BookmarkCheck } from "lucide-react";
+import { X, MessageSquareText, BookmarkCheck, Lightbulb } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
@@ -133,6 +133,13 @@ const UpdateStatusModal = ({
           >
             {/* Selected status preview */}
             <div className="flex flex-col gap-1.5">
+              {selectedStatus === "closed" && (
+                <span className="mb-1.5 inline-flex items-center gap-2 rounded-xl bg-amber-50 p-2 text-xs text-amber-600 dark:bg-amber-900/20 dark:text-amber-400">
+                  <Lightbulb className="h-3.5 w-3.5 shrink-0" />
+                  Only close an issue if it&apos;s already been resolved or is
+                  no longer relevant.
+                </span>
+              )}
               <span className="flex items-center gap-1.5 text-sm font-medium text-neutral-700 dark:text-neutral-300">
                 <BookmarkCheck className="h-4 w-4 shrink-0 text-neutral-400" />
                 Selected Status
