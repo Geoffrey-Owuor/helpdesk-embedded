@@ -16,6 +16,7 @@ import {
   Trash2,
   Loader2,
   AlertCircle,
+  RotateCcw,
 } from "lucide-react";
 import { GetNews, NewsItem } from "@/serverActions/NewsHandling/GetNews";
 import { PostNewsAction } from "@/serverActions/NewsHandling/PostNewsAction";
@@ -49,7 +50,11 @@ const PostNews = ({ closeModal, isOpen }: PostNewsProps) => {
   const [description, setDescription] = useState("");
 
   // Fetch News using TanStack Query
-  const { data: newsList = [], isLoading: isFetchingNews } = useQuery({
+  const {
+    data: newsList = [],
+    isLoading: isFetchingNews,
+    refetch,
+  } = useQuery({
     queryKey: ["newsData"],
     queryFn: GetNews,
     enabled: isOpen && activeTab === "manage", // Only fetch if modal is open and on manage tab
@@ -144,6 +149,14 @@ const PostNews = ({ closeModal, isOpen }: PostNewsProps) => {
             </div>
 
             <div className="flex items-center gap-4">
+              {/* Refresh News */}
+              <button
+                onClick={() => refetch()}
+                title="refresh"
+                className="rounded-full bg-neutral-100 p-1.5 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+              </button>
               {/* Tabs Toggle */}
               <div className="inline-flex h-fit w-fit items-center gap-1 rounded-2xl border border-neutral-200 bg-neutral-100/50 p-1 shadow-inner dark:border-neutral-800 dark:bg-neutral-900/50">
                 <button

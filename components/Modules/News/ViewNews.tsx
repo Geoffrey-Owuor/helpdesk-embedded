@@ -3,14 +3,15 @@
 import { useRef } from "react";
 import { useNewsStore } from "@/store/useNewsStore";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
-import { X, Newspaper, Megaphone } from "lucide-react";
+import { X, Newspaper, Megaphone, RotateCcw } from "lucide-react";
 import { NewsItem } from "@/serverActions/NewsHandling/GetNews";
 
 type ViewNewsProps = {
   newsList: NewsItem[];
+  refetch: () => void;
 };
 
-const ViewNews = ({ newsList }: ViewNewsProps) => {
+const ViewNews = ({ newsList, refetch }: ViewNewsProps) => {
   const showNews = useNewsStore((state) => state.showNews);
   const setShowNews = useNewsStore((state) => state.setShowNews);
 
@@ -42,12 +43,21 @@ const ViewNews = ({ newsList }: ViewNewsProps) => {
               </p>
             </div>
           </div>
-          <button
-            onClick={() => setShowNews(false)}
-            className="rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-200 dark:hover:bg-neutral-800"
-          >
-            <X size={20} />
-          </button>
+          <div className="inline-flex items-center gap-4">
+            <button
+              onClick={refetch}
+              title="refresh"
+              className="rounded-full bg-neutral-100 p-1.5 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => setShowNews(false)}
+              className="rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-200 dark:hover:bg-neutral-800"
+            >
+              <X size={20} />
+            </button>
+          </div>
         </div>
 
         {/* Body Content */}
