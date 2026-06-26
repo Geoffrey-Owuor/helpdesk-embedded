@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, MailPlus, PenLine } from "lucide-react";
+import { ArrowUpRight, FileText, MailPlus, PenLine } from "lucide-react";
 import PostArticle from "./PostArticle";
 import UserArticlesWrapper from "./UserArticlesWrapper";
 import { useUser } from "@/contexts/UserContext";
@@ -8,6 +8,7 @@ import { useActiveTabStore } from "@/store/useActiveTabStore";
 import PostMail from "./PostMail/PostMail";
 import PostNews from "../News/PostNews";
 import { useState } from "react";
+import Link from "next/link";
 
 const NewsPostIcon = () => (
   <svg
@@ -57,7 +58,7 @@ const Articles = () => {
       )}
       <div className="flex h-full w-full flex-col py-6 md:py-3.5">
         {/* Title Header */}
-        <div className="mb-4 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           {/* Title & Subtitle */}
           <div className="flex flex-col">
             <h1 className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-white">
@@ -72,6 +73,14 @@ const Articles = () => {
 
           {/* Action Buttons - Post Email, Articles, & Post Article*/}
           <div className="flex flex-wrap items-center gap-4">
+            <Link
+              href="/articles"
+              target="_blank"
+              className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-2 text-xs text-amber-600 hover:text-amber-700 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:text-amber-500"
+            >
+              More Articles...
+              <ArrowUpRight className="h-3.5 w-3.5" />
+            </Link>
             {role !== "user" && (
               <button
                 onClick={() => setPostNewsOpen(true)}
