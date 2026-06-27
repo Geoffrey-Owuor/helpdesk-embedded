@@ -210,7 +210,7 @@ const TitleDescriptionModal = ({
                   (formData.issue_description === description &&
                     formData.issue_title === title)
                 }
-                className="w-full rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:focus:ring-offset-neutral-900"
+                className="w-full rounded-xl bg-neutral-950 px-4 py-2.5 text-sm font-semibold text-white hover:bg-neutral-800 focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2 focus:outline-none disabled:opacity-60 dark:bg-white dark:text-black dark:hover:bg-neutral-200 dark:focus:ring-offset-neutral-900"
               >
                 Update
               </button>

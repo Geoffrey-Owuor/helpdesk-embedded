@@ -3,7 +3,6 @@
 import { useState, useMemo, ChangeEvent } from "react";
 import { ArticlesCardValues } from "@/serverActions/GetUserArticles";
 import {
-  ArrowUpRight,
   FileSearchCorner,
   Lightbulb,
   PenLine,
@@ -14,9 +13,8 @@ import {
 import Pagination from "../IssuesData/Pagination";
 import ArticleCardsView from "./ArticleCardsView";
 import { useActiveTabStore } from "@/store/useActiveTabStore";
-import { usePathname } from "next/navigation";
+
 import ArticleCardsSkeleton from "@/components/Skeletons/ArticleCardsSkeleton";
-import Link from "next/link";
 
 type ArticlesCardDataProps = {
   articles: ArticlesCardValues[];
@@ -31,8 +29,6 @@ const ArticlesCardData = ({
   refetchData,
   userId,
 }: ArticlesCardDataProps) => {
-  const pathname = usePathname();
-
   // Search query states
   const [searchQuery, setSearchQuery] = useState("");
   const [articlesPerPage, setArticlesPerPage] = useState(6);
@@ -118,8 +114,8 @@ const ArticlesCardData = ({
         <div className="flex flex-col gap-3">
           {/* Search input */}
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            <span className="inline-flex items-center gap-1">
-              <Lightbulb className="h-4 w-4" />
+            <span className="inline-flex items-center gap-1 rounded-xl bg-amber-50 px-3 py-1 text-xs text-amber-600 dark:bg-amber-900/20 dark:text-amber-400">
+              <Lightbulb className="h-3 w-3" />
               Use the article title as your search query
             </span>
           </p>
@@ -141,23 +137,14 @@ const ArticlesCardData = ({
             </button>
           </div>
         </div>
-        <div className="inline-flex items-center gap-4">
-          <Link
-            href="/articles"
-            target="_blank"
-            className={`${pathname === "/articles" ? "hidden" : "inline-flex"} items-center gap-2 rounded-full bg-amber-50 px-3 py-2 text-xs text-amber-600 hover:text-amber-700 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:text-amber-500`}
-          >
-            More Articles...
-            <ArrowUpRight className="h-3.5 w-3.5" />
-          </Link>
-          <button
-            onClick={refetchData}
-            className="inline-flex h-fit w-fit items-center gap-1.5 rounded-xl bg-neutral-900 px-3.5 py-2 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
-          >
-            <RotateCcw className="h-4 w-4" />
-            Refresh
-          </button>
-        </div>
+
+        <button
+          onClick={refetchData}
+          className="inline-flex h-fit w-fit items-center gap-1.5 rounded-xl bg-neutral-900 px-3.5 py-2 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+        >
+          <RotateCcw className="h-4 w-4" />
+          Refresh
+        </button>
       </div>
 
       <ArticleCardsView

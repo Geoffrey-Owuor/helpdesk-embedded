@@ -1,6 +1,6 @@
 "use client";
 
-import { X, CircleDot, CheckCheck, BellOff } from "lucide-react";
+import { X, CircleDot, CheckCheck, BellOff, RotateCcw } from "lucide-react";
 import { dateFormatter } from "@/public/assets";
 import { IssueValueTypes } from "@/public/assets";
 import { ChangelogItem } from "./Notifications";
@@ -23,6 +23,7 @@ type NotificationModalProps = {
   changelogs: ChangelogItem[];
   count: number;
   issues: Record<string, IssueValueTypes>[];
+  refetch: () => void;
 };
 
 //circledot colors based on the issue status
@@ -41,6 +42,7 @@ const NotificationModal = ({
   changelogs,
   count,
   issues,
+  refetch,
 }: NotificationModalProps) => {
   const hasIssues = issues.length > 0;
   const hasChangelogs = changelogs.length > 0;
@@ -61,12 +63,21 @@ const NotificationModal = ({
           <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
             Notifications
           </h2>
-          <button
-            onClick={() => setIsModalOpen(false)}
-            className="rounded-full p-2 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          <div className="inline-flex items-center gap-4">
+            <button
+              onClick={refetch}
+              title="refresh"
+              className="rounded-full bg-neutral-100 p-1.5 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="rounded-full p-2 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
         {/* Body */}

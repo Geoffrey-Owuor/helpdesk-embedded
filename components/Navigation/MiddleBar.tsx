@@ -91,20 +91,20 @@ const MiddleBar = () => {
         {/* Changed from div to button to be semantically correct and focusable */}
         <button
           onClick={() => setIsOpen((prev) => !prev)}
-          className="relative flex h-10 w-full cursor-pointer items-center rounded-xl border border-neutral-200 bg-white pr-4 pl-10 text-sm text-neutral-400 transition-colors hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900/50 dark:hover:border-neutral-700"
+          className="group relative flex h-10 w-full cursor-pointer items-center rounded-xl border border-neutral-200 bg-white pr-4 pl-10 text-sm text-neutral-400 transition-colors group-hover:text-neutral-600 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900/50 dark:text-neutral-500 dark:group-hover:text-neutral-300 dark:hover:border-neutral-700"
         >
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-            <Search className="h-4.5 w-4.5 text-neutral-400 dark:text-neutral-500" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 group-hover:text-neutral-600 dark:group-hover:text-neutral-300">
+            <Search className="h-4.5 w-4.5" />
           </div>
-          <span className="inline-flex flex-1 items-center text-left">
+          <span className="inline-flex flex-1 items-center text-left group-hover:text-neutral-600 dark:group-hover:text-neutral-300">
             Press{" "}
-            <kbd className="mx-2 rounded-md border border-neutral-300 bg-neutral-100 px-2 py-0.5 text-xs font-semibold text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400">
+            <kbd className="mx-2 rounded-md border border-neutral-300 bg-neutral-100 px-2 py-0.5 text-xs font-semibold dark:border-neutral-700 dark:bg-neutral-800">
               /
             </kbd>{" "}
             to toggle...
           </span>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-            <SlidersHorizontal className="h-4.5 w-4.5 text-neutral-400 dark:text-neutral-500" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 group-hover:text-neutral-600 dark:group-hover:text-neutral-300">
+            <SlidersHorizontal className="h-4.5 w-4.5" />
           </div>
         </button>
       </div>

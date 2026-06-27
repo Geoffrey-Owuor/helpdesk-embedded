@@ -3,7 +3,13 @@
 import { useQuery } from "@tanstack/react-query";
 import SkeletonBox from "../Skeletons/SkeletonBox";
 import { GetNews, NewsItem } from "@/serverActions/NewsHandling/GetNews";
-import { Megaphone, Newspaper, Earth, Lightbulb } from "lucide-react";
+import {
+  Megaphone,
+  Newspaper,
+  Earth,
+  Lightbulb,
+  RotateCcw,
+} from "lucide-react";
 import { useState } from "react";
 import NewsDetailModal from "./NewsDetailModal";
 
@@ -12,7 +18,11 @@ const HomeNews = () => {
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
 
   // Fetch news data
-  const { data: newsList = [], isLoading } = useQuery({
+  const {
+    data: newsList = [],
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["newsData"],
     queryFn: GetNews,
   });
@@ -40,10 +50,19 @@ const HomeNews = () => {
           Stay in the loop. Read up on new releases, policy updates, and team
           milestones straight from the source.
         </p>
-        <span className="mt-2 inline-flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-1 text-xs text-amber-600 dark:bg-amber-900/20 dark:text-amber-400">
-          <Lightbulb className="h-3 w-3" />
-          Click on any announcement to view it&apos;s full details.
-        </span>
+        <div className="mt-2 inline-flex items-center gap-4">
+          <span className="inline-flex items-center gap-2 rounded-xl bg-amber-50 px-3 py-1 text-xs text-amber-600 dark:bg-amber-900/20 dark:text-amber-400">
+            <Lightbulb className="h-3 w-3" />
+            Click on any announcement to view it&apos;s full details.
+          </span>
+          <button
+            onClick={() => refetch()}
+            title="refresh"
+            className="rounded-full bg-neutral-100 p-1.5 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
 
       {/* News Grid */}

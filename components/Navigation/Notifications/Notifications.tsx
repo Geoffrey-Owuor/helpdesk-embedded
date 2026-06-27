@@ -63,7 +63,11 @@ const Notifications = () => {
 
   const queryClient = useQueryClient();
 
-  const { data: notificationData, isLoading: loading } = useQuery({
+  const {
+    data: notificationData,
+    isLoading: loading,
+    refetch: refetchNotificationData,
+  } = useQuery({
     queryKey: ["changelogs"],
     queryFn: async () => {
       const response = await apiClient.get("/notifications/user-changelogs");
@@ -71,7 +75,11 @@ const Notifications = () => {
     },
   });
 
-  const { data: defaultData = [], isLoading: defaultLoading } = useQuery({
+  const {
+    data: defaultData = [],
+    isLoading: defaultLoading,
+    refetch: refetchDefaultData,
+  } = useQuery({
     queryKey: ["issuesDashboardData", superAdminFilter, agentAdminFilter],
     queryFn: () => fetchIssues(DEFAULT_FETCH_OPTIONS),
   });
@@ -88,6 +96,12 @@ const Notifications = () => {
 
   const count =
     (notificationData?.changelogs?.length ?? 0) + filteredIssues.length;
+
+  // Refetch function
+  const refetchData = () => {
+    refetchDefaultData();
+    refetchNotificationData();
+  };
 
   // Mutation function
   const { mutate: handleCloseModal, isPending: closing } = useMutation({
@@ -127,6 +141,7 @@ const Notifications = () => {
           count={count}
           isClosing={closing}
           closeModal={() => handleCloseModal()}
+          refetch={refetchData}
         />
       )}
       <button

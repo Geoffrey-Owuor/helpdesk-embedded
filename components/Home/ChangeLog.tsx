@@ -178,7 +178,7 @@ const TableOfContents = ({ items }: { items: ChangelogData[] }) => (
           <p className="mb-2 px-1 text-xs font-semibold tracking-widest text-neutral-400 uppercase dark:text-neutral-600">
             On this page
           </p>
-          <nav className="flex flex-col gap-0.5">
+          <nav className="default-scrollbar flex max-h-[calc(100vh-285px)] flex-col gap-0.5 overflow-y-auto pr-0.5">
             {items.map((entry) => (
               <a
                 key={entry.changelog_id}
