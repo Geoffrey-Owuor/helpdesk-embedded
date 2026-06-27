@@ -9,17 +9,21 @@ const NewsButton = () => {
   const showNews = useNewsStore((state) => state.showNews);
 
   // Fetch news data seamlessly in the background
-  const { data: newsList = [] } = useQuery({
+  const { data: newsList = [], refetch } = useQuery({
     queryKey: ["newsData"],
     queryFn: GetNews,
   });
+
+  const refetchNews = () => {
+    refetch();
+  };
 
   const count = newsList.length;
 
   return (
     <>
       {/* Mount Modal */}
-      {showNews && <ViewNews newsList={newsList} />}
+      {showNews && <ViewNews newsList={newsList} refetch={refetchNews} />}
 
       <button
         onClick={() => setShowNews(true)}

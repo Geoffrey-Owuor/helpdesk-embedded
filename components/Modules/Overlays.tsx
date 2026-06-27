@@ -1,11 +1,26 @@
 "use client";
 
-import { ArrowRight, Loader, Loader2, X } from "lucide-react";
+import { ArrowRight, Loader2, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
+
+const CustomLoader = ({ className }: { className: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={48}
+    height={48}
+    viewBox="0 0 24 24"
+    className={className}
+  >
+    <path
+      fill="currentColor"
+      d="M12 18a2 2 0 1 0 0 4a2 2 0 1 0 0-4m0-16a2 2 0 1 0 0 4a2 2 0 1 0 0-4M7.76 19.07c-.78.78-2.05.78-2.83 0s-.78-2.05 0-2.83s2.05-.78 2.83 0s.78 2.05 0 2.83M19.07 7.76c-.78.78-2.05.78-2.83 0s-.78-2.05 0-2.83s2.05-.78 2.83 0s.78 2.05 0 2.83M4 14c-1.1 0-2-.9-2-2s.9-2 2-2s2 .9 2 2s-.9 2-2 2m16 0c-1.1 0-2-.9-2-2s.9-2 2-2s2 .9 2 2s-.9 2-2 2M4.93 7.76c-.78-.78-.78-2.05 0-2.83s2.05-.78 2.83 0s.78 2.05 0 2.83s-2.05.78-2.83 0m11.31 11.31c-.78-.78-.78-2.05 0-2.83s2.05-.78 2.83 0s.78 2.05 0 2.83s-2.05.78-2.83 0"
+    ></path>
+  </svg>
+);
 
 // Overlay displayed when performing crud operations or logging out
 export const PromiseOverlay = () => {
@@ -27,8 +42,8 @@ export const PromiseOverlay = () => {
       <div className="flex items-center space-x-2">
         {/* The Lucide Loader spinner */}
         {overlaytext === "Logging out" ? (
-          <Loader
-            className="h-9 w-9 animate-spin text-neutral-900 dark:text-white"
+          <CustomLoader
+            className="animate-spin text-neutral-900 dark:text-white"
             aria-label="overlay text"
           />
         ) : (
