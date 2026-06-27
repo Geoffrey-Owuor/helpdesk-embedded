@@ -33,16 +33,16 @@ export async function verifyPassword(password: string, hashedPassword: string) {
   return await bcrypt.compare(password, hashedPassword);
 }
 
-// Getting an access token
+// Getting an access token (1hr expiry)
 export async function signAccessToken(payload: AuthJWTPayload) {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("15m")
+    .setExpirationTime("1h")
     .sign(ACCESS_SECRET);
 }
 
-// Getting a refresh token
+// Getting a refresh token (7days expiry)
 export async function signRefreshToken(payload: AuthJWTPayload) {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
@@ -61,7 +61,7 @@ export async function createSession(accessToken: string, refreshToken: string) {
     httpOnly: true,
     secure: false,
     sameSite: "lax",
-    maxAge: 15 * 60, //15 minutes
+    maxAge: 60 * 60, //1 hr
   });
 
   // set refresh token
