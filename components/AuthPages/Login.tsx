@@ -7,6 +7,22 @@ import AuthShell from "./AuthShell";
 import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
 import { useAlertStore } from "@/store/useAlertStore";
 
+// Microsoft Icon Here
+const MicrosoftIcon = () => (
+  <svg
+    width="15"
+    height="15"
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect x="1" y="1" width="9" height="9" fill="#F25022" />
+    <rect x="11" y="1" width="9" height="9" fill="#7FBA00" />
+    <rect x="1" y="11" width="9" height="9" fill="#00A4EF" />
+    <rect x="11" y="11" width="9" height="9" fill="#FFB900" />
+  </svg>
+);
+
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -162,14 +178,29 @@ export default function LoginPage() {
               "Sign in"
             )}
           </button>
+        </form>
 
+        <div className="mt-6 flex flex-col items-center gap-4">
+          <form
+            action=""
+            className="w-full"
+            onSubmit={(e) => e.preventDefault()}
+          >
+            <button
+              type="submit"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-neutral-100 px-4 py-3 font-semibold text-neutral-950 ring-offset-2 hover:bg-neutral-200/60 focus:ring-1 focus:ring-neutral-500 focus:outline-none disabled:opacity-50 dark:bg-neutral-900 dark:text-white dark:ring-offset-neutral-950 dark:hover:bg-neutral-800/60 dark:focus:ring-neutral-400"
+            >
+              <MicrosoftIcon />
+              Sign in with Microsoft
+            </button>
+          </form>
           <div className="flex items-center justify-center gap-1 text-sm text-neutral-700 dark:text-neutral-300">
             <span>No Account?</span>
             <Link href="/register" className="hover:underline">
               Register
             </Link>
           </div>
-        </form>
+        </div>
       </div>
     </AuthShell>
   );
