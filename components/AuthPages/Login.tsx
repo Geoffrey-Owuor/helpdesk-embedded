@@ -30,6 +30,9 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Microsoft sso state
+  const [ssoLoading, setSsoLoading] = useState(false);
+
   const searchParams = useSearchParams();
 
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
@@ -182,12 +185,13 @@ export default function LoginPage() {
 
         <div className="mt-6 flex flex-col items-center gap-4">
           <form
-            action=""
+            action="/api/sso/microsoft/login"
             className="w-full"
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={() => setSsoLoading(true)}
           >
             <button
               type="submit"
+              disabled={ssoLoading}
               className="flex w-full items-center justify-center gap-2 rounded-full bg-neutral-100 px-4 py-3 font-semibold text-neutral-950 ring-offset-2 hover:bg-neutral-200/60 focus:ring-1 focus:ring-neutral-500 focus:outline-none disabled:opacity-50 dark:bg-neutral-900 dark:text-white dark:ring-offset-neutral-950 dark:hover:bg-neutral-800/60 dark:focus:ring-neutral-400"
             >
               <MicrosoftIcon />
