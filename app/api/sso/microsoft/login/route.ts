@@ -22,14 +22,16 @@ export async function GET(req: Request) {
 
   // Set temporary tracking cookies for validation step
   cookieStore.set("oauth_state", state, {
-    secure: false,
+    secure: process.env.NODE_ENV === "production",
     httpOnly: true,
+    sameSite: "lax",
     path: "/",
     maxAge: 60 * 10,
   });
   cookieStore.set("oauth_code_verifier", codeVerifier, {
-    secure: false,
+    secure: process.env.NODE_ENV === "production",
     httpOnly: true,
+    sameSite: "lax",
     path: "/",
     maxAge: 60 * 10,
   });

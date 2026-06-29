@@ -96,10 +96,29 @@ export async function GET(req: Request) {
 
       return Response.redirect(new URL("/dashboard", origin));
     } else {
-      // We redirect to a page where we will need the user to select a department
-      // And use the select value to now finish our session creation (INSERT USER, return the required payload and create a session)
-      // You'll advise on the approach of creating and protecting this page (The route and it's component)
-      // (We will redirect unauthorized access to the page to a login page)
+      // 1. Create a short-lived temporary payload
+      const tempPayload = {
+        userId: "some_random_id",
+        username: profile.name,
+        role: "user",
+        department: "no_department",
+        email: profile.email,
+        isSuper: false,
+      };
+
+      const pendingRegistrationToken = await signAccessToken(tempPayload);
+
+      // 3. Set a secure, temporary cookie
+      cookieStore.set("sso_pending_registration", pendingRegistrationToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60, // 1 hour
+        path: "/",
+      });
+
+      // 4. Redirect to the completion page
+      return Response.redirect(new URL("/sso", origin));
     }
   } catch (error) {
     console.error("Authentication handshake error:", error);

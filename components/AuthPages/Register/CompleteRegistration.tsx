@@ -21,7 +21,7 @@ import {
   UserRound,
 } from "lucide-react";
 import AuthShell from "../AuthShell";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useAlertStore } from "@/store/useAlertStore";
 import { ApiHandler } from "@/utils/ApiHandler";
 import NameRulesCard from "@/components/Modules/NameRulesCard";
@@ -29,7 +29,6 @@ import { NameValidator, NameValidationResult } from "@/utils/Validators";
 import { baseDepartments } from "@/public/assets";
 
 const CompleteRegistration = ({ email }: { email: string }) => {
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   // Drop down state
@@ -153,8 +152,7 @@ const CompleteRegistration = ({ email }: { email: string }) => {
       if (!response.ok) throw new Error(data.message || "Registration failed");
 
       // Push to protected dashboard
-      router.push("/dashboard");
-      router.refresh(); //Refresh server components
+      window.location.href = "/dashboard";
     } catch (error) {
       if (error instanceof Error) triggerAlert("error", error.message);
       setLoading(false);

@@ -59,17 +59,19 @@ export async function createSession(accessToken: string, refreshToken: string) {
   // set access token
   cookieStore.set("accessToken", accessToken, {
     httpOnly: true,
-    secure: false,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     maxAge: 60 * 60, //1 hr
+    path: "/",
   });
 
   // set refresh token
   cookieStore.set("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: false,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60, //7 days
+    path: "/",
   });
 }
 
@@ -118,6 +120,24 @@ const getSession = async (): Promise<AuthJWTPayload | null> => {
   }
 };
 
+// Verifying the temporary sso registration completion token
+const verifyTemporaryToken = async (): Promise<AuthJWTPayload | null> => {
+  const cookieStore = await cookies();
+  const temporaryToken = cookieStore.get("sso_pending_registration")?.value;
+
+  if (!temporaryToken) return null;
+
+  try {
+    const { payload } = await jwtVerify(temporaryToken, ACCESS_SECRET);
+    return payload as AuthJWTPayload;
+  } catch (error) {
+    console.error("Session verification failed:", error);
+    return null;
+  }
+};
+
 // A memoized version of the function that persists
 // for the lifetime of a single server request.
 export const requireSession = cache(getSession);
+
+export const requireTemporarySession = cache(verifyTemporaryToken);
