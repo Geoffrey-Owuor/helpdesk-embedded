@@ -387,7 +387,10 @@ const CompleteRegistration = ({ email }: { email: string }) => {
           {/* Footer */}
           <div className="flex items-center justify-center gap-1 text-sm text-neutral-700 dark:text-neutral-300">
             <span>Already have an account?</span>
-            <Link href="/login" className="hover:underline">
+            <Link
+              href="/login"
+              className="text-blue-500 hover:underline dark:text-blue-400"
+            >
               Sign in
             </Link>
           </div>
