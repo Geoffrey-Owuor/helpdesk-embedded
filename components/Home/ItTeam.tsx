@@ -81,7 +81,7 @@ const TEAM_MEMBERS = [
     name: "Team Member",
     title: "IT Support Engineer",
     description:
-      "This team member provides essential technical assistance and troubleshooting for hardware, software, and network issues, ensuring minimal downtime and high-quality support for all end-users.",
+      "This team member provides vital technical assistance and troubleshooting for hardware, software, and network issues, ensuring minimal downtime and high-quality support for all end-users.",
     linkedin: "#",
     email: "staff@example.com",
     extension: "0000",
@@ -99,7 +99,7 @@ const TEAM_MEMBERS = [
   {
     id: 7,
     name: "Team Member",
-    title: "Junior ERP Administrator",
+    title: "IT Support Engineer",
     description:
       "This team member performs designated high-level business process workflows within the ERP system to support essential daily operations, collaborating closely with the senior ERP team to ensure system efficiency.",
     linkedin: "#",

@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 
 const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
-  const { role } = useUser();
+  const { isSuper } = useUser();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -136,7 +136,7 @@ const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
             Issues
           </button>
 
-          {role !== "user" && (
+          {isSuper && (
             <button
               onClick={() => setIsAutomation(true)}
               className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all ${

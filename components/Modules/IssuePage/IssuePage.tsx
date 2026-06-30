@@ -652,7 +652,10 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
             </div>
             <div className="prose prose-neutral dark:prose-invert max-w-none">
               {issueData.issue_remarks ? (
-                <p className="line-clamp-1 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
+                <p
+                  title={titleHelper(issueData.issue_remarks)}
+                  className="line-clamp-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300"
+                >
                   {issueData.issue_remarks}
                 </p>
               ) : (
