@@ -32,7 +32,7 @@ const AuthShell = ({ children }: { children: React.ReactNode }) => {
         <div className="mt-12 mb-16 flex w-full flex-col items-center justify-between gap-4 p-6 text-sm text-neutral-500 md:mb-0 md:flex-row">
           {/* Left Area: Copyright & Attribution */}
           <span className="inline-flex items-center gap-2 leading-5">
-            <span>&copy; {currentYear} IssueDesk. Hotpoint Appliances Ltd</span>
+            <span>&copy; {currentYear} HelpDesk. Hotpoint Appliances Ltd</span>
           </span>
 
           <span className="inline-flex items-center gap-2">

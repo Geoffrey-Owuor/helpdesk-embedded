@@ -4,7 +4,7 @@ import { Metadata } from "next";
 // Page Metadata
 export const metadata: Metadata = {
   title: "Changelog",
-  description: "IssueDesk changelogs page",
+  description: "HelpDesk changelogs page",
 };
 
 const page = () => {

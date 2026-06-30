@@ -493,7 +493,7 @@ export function generateIssueNotificationEmail(
                       color: #404040;
                       margin: 0 0 12px;
                       letter-spacing: -0.2px;
-                    ">IssueDesk</p>
+                    ">HelpDesk</p>
                     <p style="
                       font-size: 11.5px;
                       color: #d1d5db;
@@ -510,7 +510,7 @@ export function generateIssueNotificationEmail(
           <tr>
             <td style="padding-top: 20px;" align="center">
               <p style="font-size: 11px; color: #9ca3af; margin: 0;">
-                © ${new Date().getFullYear()} IssueDesk. All rights reserved.
+                © ${new Date().getFullYear()} HelpDesk. All rights reserved.
               </p>
             </td>
           </tr>

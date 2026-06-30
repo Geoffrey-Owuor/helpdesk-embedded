@@ -104,7 +104,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
 
             <div className="mt-auto border-t border-neutral-200 pt-4 dark:border-neutral-800">
               <p className="px-2 text-[10px] tracking-widest text-neutral-400 uppercase">
-                IssueDesk {AppVersion}
+                HelpDesk {AppVersion}
               </p>
             </div>
           </aside>

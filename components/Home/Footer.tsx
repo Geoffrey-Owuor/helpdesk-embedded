@@ -38,14 +38,14 @@ const Footer = () => {
               <div className="-ml-1.5 h-6.5 w-6.5">
                 <Image
                   src={assets.hotpoint_black_logo}
-                  alt="IssueDesk Logo"
+                  alt="HelpDesk Logo"
                   className="object-contain dark:invert"
                   loading="eager"
                   sizes="32px"
                 />
               </div>
               <span className="text-xl font-semibold text-neutral-900 dark:text-white">
-                IssueDesk
+                HelpDesk
               </span>
             </div>
             <p className="text-base leading-7 text-neutral-600 dark:text-neutral-400">
@@ -104,7 +104,7 @@ const Footer = () => {
             {/* Left Area: Copyright & Attribution */}
             <span className="inline-flex items-center gap-2 leading-5">
               <span>
-                &copy; {currentYear} IssueDesk. Hotpoint Appliances Ltd
+                &copy; {currentYear} HelpDesk. Hotpoint Appliances Ltd
               </span>
             </span>
 
@@ -134,7 +134,7 @@ const Footer = () => {
           </div>
 
           <span className="text-center font-mono text-6xl leading-none font-black tracking-tighter text-neutral-300 select-none md:text-9xl dark:text-neutral-800">
-            ISSUEDESK
+            HelpDesk
           </span>
         </div>
       </div>

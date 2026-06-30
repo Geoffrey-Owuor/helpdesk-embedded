@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
     const referencePrefix =
       issuePrefixMapping[returnedUser.department] || "UNK";
     const formattedId = resultantId.toString().padStart(3, "0");
-    const issueReferenceNumber = `#${referencePrefix}-${formattedId}`;
+    const issueReferenceNumber = `${referencePrefix}-${formattedId}`;
 
     // The update query to insert a reference id
     await client.query(

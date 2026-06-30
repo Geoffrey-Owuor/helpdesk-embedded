@@ -34,7 +34,7 @@ const VerificationCodeTemplate = (verificationCode: string): string => {
         <table class="main" width="100%">
             <tr>
                 <td class="header">
-                   <h2 style="color: #2c3e50; margin:0;">IssueDesk</h2>
+                   <h2 style="color: #2c3e50; margin:0;">HelpDesk</h2>
                 </td>
             </tr>
 
@@ -42,20 +42,20 @@ const VerificationCodeTemplate = (verificationCode: string): string => {
                 <td class="content">
                     <h1>Verify your identity</h1>
                     <p>Hello,</p>
-                    <p>We received a request to register for an IssueDesk account. Please use the verification code below to complete the process.</p>
+                    <p>We received a request to register for an HelpDesk account. Please use the verification code below to complete the process.</p>
                     
                     <div class="code-box">
                         <p class="verification-code">${verificationCode}</p>
                     </div>
 
                     <p>This code will expire in 10 minutes. If you did not request this code, please ignore this email or contact support if you have concerns.</p>
-                    <p>Best regards,<br>The IssueDesk Team</p>
+                    <p>Best regards,<br>The HelpDesk Team</p>
                 </td>
             </tr>
         </table>
 
         <div class="footer">
-            <p>&copy; ${currentYear} IssueDesk. All rights reserved.</p>
+            <p>&copy; ${currentYear} HelpDesk. All rights reserved.</p>
         </div>
     </center>
 </body>

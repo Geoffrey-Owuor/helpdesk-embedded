@@ -8,14 +8,14 @@ const HomePagesLogo = () => {
       <div className="relative h-6.5 w-6.5">
         <Image
           src={assets.hotpoint_black_logo}
-          alt="IssueDesk Logo"
+          alt="HelpDesk Logo"
           sizes="32px"
           loading="eager"
           className="object-contain dark:invert"
         />
       </div>
       <span className="hidden text-xl font-semibold text-black sm:flex dark:text-white">
-        IssueDesk
+        HelpDesk
       </span>
     </Link>
   );
