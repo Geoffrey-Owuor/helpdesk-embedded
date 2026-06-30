@@ -91,6 +91,24 @@ export const baseDepartments = [
   { option: "Directorate", value: "Directorate" },
 ];
 
+// Issue reference prefix mapping
+export const issuePrefixMapping: Record<string, string> = {
+  "IT & Projects": "IT",
+  Finance: "FIN",
+  Marketing: "MAR",
+  Operations: "OPR",
+  Commercial: "COM",
+  "HR & Admin": "HR",
+  "Modern Trade": "MT",
+  Retail: "RET",
+  B2B: "B2B",
+  "Internal Audit": "IA",
+  "Engineering & HVAC": "HVC",
+  Security: "SEC",
+  "Service Center": "SVC",
+  Directorate: "DIR",
+};
+
 export const DEFAULT_FETCH_OPTIONS = { selectedFilter: "status", status: "" };
 
 export type IssueValueTypes = string | number;

@@ -132,8 +132,9 @@ const TableViewData = ({
                           e.stopPropagation();
                           setLoadingLine(true);
                         }}
+                        title={titleHelper(issueData.issue_reference_id)}
                         href={`/dashboard/${issueData.issue_uuid}?type=${dynamicUrlParam}&title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`}
-                        className="max-w-30 truncate text-sm font-semibold text-neutral-900 hover:text-blue-500 hover:underline dark:text-neutral-100"
+                        className="max-w-50 truncate text-sm font-semibold text-neutral-900 hover:text-blue-500 hover:underline dark:text-neutral-100"
                       >
                         {issueData.issue_reference_id}
                       </Link>
