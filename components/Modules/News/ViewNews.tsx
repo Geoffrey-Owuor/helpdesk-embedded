@@ -47,9 +47,9 @@ const ViewNews = ({ newsList, refetch }: ViewNewsProps) => {
             <button
               onClick={refetch}
               title="refresh"
-              className="rounded-full bg-neutral-100 p-1.5 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+              className="rounded-full bg-neutral-100 p-2 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
             >
-              <RotateCcw className="h-3.5 w-3.5" />
+              <RotateCcw size={18} />
             </button>
             <button
               onClick={() => setShowNews(false)}

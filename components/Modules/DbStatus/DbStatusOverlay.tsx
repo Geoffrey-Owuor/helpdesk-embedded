@@ -112,7 +112,7 @@ export function DbStatusOverlay({
   return (
     <ClientPortal>
       {/*  Backdrop blur to match the app's premium feel */}
-      <div className="fixed inset-0 z-9999 flex items-center justify-center bg-neutral-900/40 p-4 backdrop-blur-md transition-all">
+      <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/60 p-4 transition-all dark:bg-black/80">
         {/* Modal Container: Extra rounded, glassmorphism border, soft deep shadow */}
         <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/60 bg-white/80 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.15)] backdrop-blur-xl transition-all duration-500 dark:border-neutral-700/60 dark:bg-neutral-900/80 dark:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)]">
           {/* Header Section */}
@@ -123,9 +123,9 @@ export function DbStatusOverlay({
               <button
                 onClick={hideOverlay}
                 aria-label="Close overlay"
-                className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-400 transition-all hover:scale-105 hover:bg-neutral-200 hover:text-neutral-700 active:scale-95 dark:bg-neutral-800 dark:text-neutral-500 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
+                className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full text-neutral-600 transition-all hover:scale-105 hover:text-neutral-800 active:scale-95 dark:text-neutral-500 dark:hover:text-neutral-200"
               >
-                <X size={16} strokeWidth={2.5} />
+                <X size={18} strokeWidth={2.5} />
               </button>
             )}
 
@@ -174,6 +174,7 @@ export function DbStatusOverlay({
                 >
                   <RotateCcw
                     size={16}
+                    strokeWidth={2.5}
                     className="transition-transform duration-500 group-hover:rotate-360"
                   />
                   Reload Application

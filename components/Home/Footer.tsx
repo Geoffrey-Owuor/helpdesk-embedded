@@ -49,8 +49,8 @@ const Footer = () => {
               </span>
             </div>
             <p className="text-base leading-7 text-neutral-600 dark:text-neutral-400">
-              The centralized internal tool for managing user issues, assigning
-              ownership, and closing the loop on issues.
+              A centralized helpdesk for reporting issues, assigning ownership,
+              tracking progress, and ensuring every issue reaches resolution.
             </p>
           </div>
 
