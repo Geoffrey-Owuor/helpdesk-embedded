@@ -83,7 +83,7 @@ export default function LoginPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="mb-2 text-center text-3xl font-semibold text-neutral-900 dark:text-white">
-            Welcome back
+            Welcome Back
           </h1>
           <p className="text-center text-neutral-600 dark:text-neutral-400">
             Please enter your credentials to continue
@@ -115,7 +115,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full rounded-full border border-neutral-400 bg-white py-3 pr-3 pl-14 text-neutral-900 placeholder-neutral-400 focus:border-neutral-600 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900/50 dark:text-white dark:focus:border-neutral-500"
-                placeholder="you@example.com"
+                placeholder="you@hotpoint.co.ke"
                 required
               />
             </div>

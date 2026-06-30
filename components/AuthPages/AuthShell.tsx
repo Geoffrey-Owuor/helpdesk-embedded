@@ -3,7 +3,6 @@ import { currentYear } from "@/public/assets";
 import HomePagesLogo from "../Modules/HomePagesLogo";
 import { Star } from "lucide-react";
 import { footerQuickLinks } from "@/public/assets";
-import { DbStatusPill } from "../Modules/DbStatus/DbStatusPill";
 import Link from "next/link";
 
 const AuthShell = ({ children }: { children: React.ReactNode }) => {
@@ -18,7 +17,6 @@ const AuthShell = ({ children }: { children: React.ReactNode }) => {
             {/* Right side controls */}
             <div className="flex items-center gap-3">
               <ThemeToggle />
-              <DbStatusPill />
             </div>
           </nav>
         </div>

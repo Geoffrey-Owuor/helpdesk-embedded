@@ -153,9 +153,9 @@ const PostNews = ({ closeModal, isOpen }: PostNewsProps) => {
               <button
                 onClick={() => refetch()}
                 title="refresh"
-                className="rounded-full bg-neutral-100 p-1.5 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+                className="rounded-full bg-neutral-100 p-2 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
               >
-                <RotateCcw className="h-3.5 w-3.5" />
+                <RotateCcw size={18} />
               </button>
               {/* Tabs Toggle */}
               <div className="inline-flex h-fit w-fit items-center gap-1 rounded-2xl border border-neutral-200 bg-neutral-100/50 p-1 shadow-inner dark:border-neutral-800 dark:bg-neutral-900/50">
