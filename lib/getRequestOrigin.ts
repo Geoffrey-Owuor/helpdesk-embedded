@@ -7,7 +7,7 @@ export async function getRequestOrigin(req: Request): Promise<string> {
   const headersList = await headers();
 
   const host = headersList.get("x-forwarded-host") || headersList.get("host");
-  const protocol = headersList.get("x-forwarded-proto") || "https";
+  const protocol = headersList.get("x-forwarded-proto") || "http";
 
   return host ? `${protocol}://${host}` : new URL(req.url).origin;
 }

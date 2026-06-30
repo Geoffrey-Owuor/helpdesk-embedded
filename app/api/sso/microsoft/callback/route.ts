@@ -4,8 +4,9 @@ import { createSession } from "@/lib/Auth";
 import { signAccessToken, signRefreshToken } from "@/lib/Auth";
 import { query } from "@/lib/Db";
 import { getRequestOrigin } from "@/lib/getRequestOrigin";
+import { NextRequest } from "next/server";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   const origin = await getRequestOrigin(req);
   const dynamicRedirectURI = `${origin}/api/sso/microsoft/callback`;
 
