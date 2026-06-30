@@ -41,47 +41,47 @@ const TEAM_MEMBERS = [
     name: "Naheed Manjothi",
     title: "Head Of Department",
     description:
-      "Alex leads the global IT strategy, ensuring technology aligns with our core business objectives and drives innovation across all departments.",
+      "Naheed leads the IT department's strategic vision, overseeing technology infrastructure, security, and digital initiatives to align with and drive the company's core business objectives.",
     linkedin: "#",
     email: "naheed@hotpoint.co.ke",
-    extension: "1042",
+    extension: "1010",
   },
   {
     id: 2,
     name: "George Okoro",
     title: "System Administrator",
     description:
-      "Sarah oversees all cloud and on-premise server architectures. She is passionate about zero-downtime deployments and scalable network solutions.",
+      "George manages and maintains the company's IT infrastructure, ensuring network stability, system security, and reliable server performance to support daily operations.",
     linkedin: "#",
     email: "gokoro@hotpoint.co.ke",
-    extension: "2109",
+    extension: "1003",
   },
   {
     id: 3,
     name: "Philip Kamau",
     title: "IT Engineer",
     description:
-      "Marcus protects the organization from internal and external threats, conducting regular penetration testing and security audits.",
+      "Philip designs, deploys, and optimizes the company's hardware and software systems, delivering robust technical solutions and high-level support across the organization's network.",
     linkedin: "#",
     email: "phillip@hotpoint.co.ke",
-    extension: "3301",
+    extension: "1006",
   },
   {
     id: 4,
     name: "Sylvester Chettier",
     title: "ERP Administrator",
     description:
-      "Elena manages the internal helpdesk team, ensuring all employees have the hardware and software they need to succeed day-to-day.",
+      "Sylvester oversees the maintenance, optimization, and integration of the company's ERP systems, ensuring seamless business workflows and data integrity across all departments.",
     linkedin: "#",
     email: "sylvester@hotpoint.co.ke",
-    extension: "4011",
+    extension: "1012",
   },
   {
     id: 5,
     name: "Bilha Mmbone",
     title: "IT Support Engineer",
     description:
-      "David is responsible for data integrity, backups, and optimizing complex queries to keep our enterprise applications running smoothly.",
+      "Bilha provides essential technical assistance and troubleshooting for hardware, software, and network issues, ensuring minimal downtime and high-quality support for all end-users.",
     linkedin: "#",
     email: "bilha@hotpoint.co.ke",
     extension: "1013",
@@ -91,7 +91,7 @@ const TEAM_MEMBERS = [
     name: "Geoffrey Owuor",
     title: "Software Developer",
     description:
-      "Anita designs new enterprise solutions, bridging the gap between legacy systems and modern, microservice-based applications.",
+      "Geoffrey designs, builds, and maintains the company's internal tools and software applications, writing clean, efficient code to enhance digital processes and system capabilities.",
     linkedin: "#",
     email: "geoffrey@hotpoint.co.ke",
     extension: "1018",
@@ -99,12 +99,12 @@ const TEAM_MEMBERS = [
   {
     id: 7,
     name: "Fred Nyaboga",
-    title: "Network Engineer",
+    title: "Junior ERP Administrator",
     description:
-      "James maintains the physical and wireless networks across all office locations, ensuring high-speed and secure connectivity.",
+      "Fred performs designated high-level business process workflows within the ERP system to support essential daily operations, collaborating closely with the senior ERP team to ensure system efficiency.",
     linkedin: "#",
     email: "fnyaboga@hotpoint.co.ke",
-    extension: "7114",
+    extension: "TBD",
   },
 ];
 
@@ -163,7 +163,7 @@ const ItTeam = () => {
               </div>
 
               {/* Description */}
-              <p className="mb-6 line-clamp-3 text-sm text-neutral-600 dark:text-neutral-400">
+              <p className="mb-6 line-clamp-5 text-sm text-neutral-600 dark:text-neutral-400">
                 {member.description}
               </p>
 

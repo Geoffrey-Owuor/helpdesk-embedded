@@ -601,7 +601,11 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                 />
               )}
             </div>
-            <InfoBlock label="UUID" value={issueData.issue_uuid} />
+
+            <InfoBlock
+              label="Reference Number"
+              value={issueData.issue_reference_id}
+            />
           </DetailCard>
         </div>
 

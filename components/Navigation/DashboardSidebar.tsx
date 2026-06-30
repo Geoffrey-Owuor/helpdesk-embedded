@@ -175,7 +175,7 @@ const DashboardSidebar = () => {
           />
 
           {/* Automations */}
-          {role !== "user" && (
+          {isSuper && (
             <SidebarLink
               href="/dashboard/automations"
               icon={<Bot className="h-5 w-5" />}
