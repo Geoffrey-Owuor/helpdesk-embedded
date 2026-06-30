@@ -1,8 +1,9 @@
 import { MicrosoftEntraId, generateState, generateCodeVerifier } from "arctic";
 import { cookies } from "next/headers";
 import { getRequestOrigin } from "@/lib/getRequestOrigin";
+import { NextRequest } from "next/server";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   // 1. Get the true origin via our helper
   const origin = await getRequestOrigin(req);
   const dynamicRedirectURI = `${origin}/api/sso/microsoft/callback`;
