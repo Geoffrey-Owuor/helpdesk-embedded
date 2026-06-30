@@ -81,7 +81,7 @@ const TEAM_MEMBERS = [
     name: "Bilha Mmbone",
     title: "IT Support Engineer",
     description:
-      "Bilha provides essential technical assistance and troubleshooting for hardware, software, and network issues, ensuring minimal downtime and high-quality support for all end-users.",
+      "Bilha provides vital technical assistance and troubleshooting for hardware, software, and network issues, ensuring minimal downtime and high-quality support for all end-users.",
     linkedin: "#",
     email: "bilha@hotpoint.co.ke",
     extension: "1013",
@@ -99,7 +99,7 @@ const TEAM_MEMBERS = [
   {
     id: 7,
     name: "Fred Nyaboga",
-    title: "Junior ERP Administrator",
+    title: "IT Support Engineer",
     description:
       "Fred performs designated high-level business process workflows within the ERP system to support essential daily operations, collaborating closely with the senior ERP team to ensure system efficiency.",
     linkedin: "#",
