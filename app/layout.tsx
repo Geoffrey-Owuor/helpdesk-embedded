@@ -23,8 +23,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "IssueDesk",
-    template: `%s - IssueDesk`,
+    default: "HelpDesk",
+    template: `%s - HelpDesk`,
   },
   description:
     "A centralized internal issue tracking tool that enables teams to manage user-reported issues with clear ownership and status updates.",
@@ -38,7 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
-        <meta name="apple-mobile-web-app-title" content="IssueDesk" />
+        <meta name="apple-mobile-web-app-title" content="HelpDesk" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} bg-gray-50 antialiased dark:bg-neutral-950`}

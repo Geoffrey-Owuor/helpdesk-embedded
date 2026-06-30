@@ -169,16 +169,16 @@ export default function LoginPage() {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || ssoLoading}
             className="flex w-full items-center justify-center gap-2 rounded-full bg-neutral-900 px-4 py-3 font-semibold text-white ring-offset-2 hover:bg-neutral-800 focus:ring-1 focus:ring-neutral-600 focus:outline-none disabled:opacity-50 dark:bg-white dark:text-neutral-950 dark:ring-offset-neutral-950 dark:hover:bg-neutral-200 dark:focus:ring-neutral-300"
           >
             {loading ? (
               <>
                 <Loader2 className="h-5 w-5 animate-spin" />
-                Signing in...
+                Just a moment...
               </>
             ) : (
-              "Sign in"
+              "Continue with Email"
             )}
           </button>
         </form>
@@ -191,17 +191,20 @@ export default function LoginPage() {
           >
             <button
               type="submit"
-              disabled={ssoLoading}
+              disabled={ssoLoading || loading}
               className="flex w-full items-center justify-center gap-2 rounded-full bg-neutral-100 px-4 py-3 font-semibold text-neutral-950 ring-offset-2 hover:bg-neutral-200/60 focus:ring-1 focus:ring-neutral-500 focus:outline-none disabled:opacity-50 dark:bg-neutral-900 dark:text-white dark:ring-offset-neutral-950 dark:hover:bg-neutral-800/60 dark:focus:ring-neutral-400"
             >
               <MicrosoftIcon />
-              Sign in with Microsoft
+              Continue with Microsoft 365
             </button>
           </form>
           <div className="flex items-center justify-center gap-1 text-sm text-neutral-700 dark:text-neutral-300">
-            <span>No Account?</span>
-            <Link href="/register" className="hover:underline">
-              Register
+            <span>Don&apos;t have an account?</span>
+            <Link
+              href="/register"
+              className="text-blue-500 hover:underline dark:text-blue-400"
+            >
+              Sign Up
             </Link>
           </div>
         </div>

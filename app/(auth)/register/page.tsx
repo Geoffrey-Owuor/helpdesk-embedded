@@ -3,7 +3,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Register",
-  description: "IssueDesk registration page",
+  description: "HelpDesk registration page",
 };
 
 const page = () => {

@@ -234,7 +234,7 @@ function generateReminderEmail(
                 <tr>
                   <td align="center">
                     <p style="font-size: 12px; color: #9ca3af; margin: 0 0 4px;">This is an automated reminder from</p>
-                    <p style="font-size: 13px; font-weight: 700; color: #404040; margin: 0 0 12px; letter-spacing: -0.2px;">IssueDesk</p>
+                    <p style="font-size: 13px; font-weight: 700; color: #404040; margin: 0 0 12px; letter-spacing: -0.2px;">HelpDesk</p>
                     <p style="font-size: 11.5px; color: #d1d5db; margin: 0;">Please do not reply to this email directly.</p>
                   </td>
                 </tr>
@@ -246,7 +246,7 @@ function generateReminderEmail(
           <tr>
             <td style="padding-top: 24px;" align="center">
               <p style="font-size: 11px; color: #9ca3af; margin: 0;">
-                © ${new Date().getFullYear()} IssueDesk. All rights reserved.
+                © ${new Date().getFullYear()} HelpDesk. All rights reserved.
               </p>
             </td>
           </tr>
@@ -303,7 +303,7 @@ export async function GET(request: NextRequest) {
 
         await sendEmail({
           to: emails,
-          subject: `[IssueDesk] ${issuesResult.length} Unresolved Issue${issuesResult.length !== 1 ? "s" : ""} - ${department}`,
+          subject: `[HelpDesk] ${issuesResult.length} Unresolved Issue${issuesResult.length !== 1 ? "s" : ""} - ${department}`,
           html,
         });
 

@@ -80,7 +80,7 @@ const HomePageAlert = ({ isOpen, onClose }: HomePageAlertProps) => {
           {/* Message */}
           <p className="mt-1 text-[13px] leading-relaxed text-neutral-400 dark:text-neutral-600">
             Check out our comprehensive user manual to understand how to log
-            issues, track progress, and navigate IssueDesk.
+            issues, track progress, and navigate HelpDesk.
           </p>
 
           {/* CTA Link */}

@@ -156,7 +156,7 @@ export const POST = withAuth(async ({ request, user }) => {
     // Update the submitted issue to insert a generated issue reference
     const referencePrefix = issuePrefixMapping[selectedDepartment] || "UNK";
     const formattedId = resultantId.toString().padStart(3, "0");
-    const issueReferenceNumber = `#${referencePrefix}-${formattedId}`;
+    const issueReferenceNumber = `${referencePrefix}-${formattedId}`;
 
     // The update query to insert a reference id
     await client.query(

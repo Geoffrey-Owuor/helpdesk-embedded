@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", baseUrl));
   } catch (error) {
     console.error(
-      "Error while trying to create the user issueDesk sso session:",
+      "Error while trying to create the user HelpDesk sso session:",
       error,
     );
     return NextResponse.redirect(new URL("/login", baseUrl));
