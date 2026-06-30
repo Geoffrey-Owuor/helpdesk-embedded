@@ -41,7 +41,7 @@ const TEAM_MEMBERS = [
     name: "Team Member",
     title: "Head Of Department",
     description:
-      "Alex leads the global IT strategy, ensuring technology aligns with our core business objectives and drives innovation across all departments.",
+      "This team member leads the IT department's strategic vision, overseeing technology infrastructure, security, and digital initiatives to align with and drive the company's core business objectives.",
     linkedin: "#",
     email: "staff@example.com",
     extension: "0000",
@@ -51,7 +51,7 @@ const TEAM_MEMBERS = [
     name: "Team Member",
     title: "System Administrator",
     description:
-      "Sarah oversees all cloud and on-premise server architectures. She is passionate about zero-downtime deployments and scalable network solutions.",
+      "This team member manages and maintains the company's IT infrastructure, ensuring network stability, system security, and reliable server performance to support daily operations.",
     linkedin: "#",
     email: "staff@example.com",
     extension: "0000",
@@ -61,7 +61,7 @@ const TEAM_MEMBERS = [
     name: "Team Member",
     title: "IT Engineer",
     description:
-      "Marcus protects the organization from internal and external threats, conducting regular penetration testing and security audits.",
+      "This team member designs, deploys, and optimizes the company's hardware and software systems, delivering robust technical solutions and high-level support across the organization's network.",
     linkedin: "#",
     email: "staff@example.com",
     extension: "0000",
@@ -71,7 +71,7 @@ const TEAM_MEMBERS = [
     name: "Team Member",
     title: "ERP Administrator",
     description:
-      "Elena manages the internal helpdesk team, ensuring all employees have the hardware and software they need to succeed day-to-day.",
+      "This team member oversees the maintenance, optimization, and integration of the company's ERP systems, ensuring seamless business workflows and data integrity across all departments.",
     linkedin: "#",
     email: "staff@example.com",
     extension: "0000",
@@ -81,7 +81,7 @@ const TEAM_MEMBERS = [
     name: "Team Member",
     title: "IT Support Engineer",
     description:
-      "David is responsible for data integrity, backups, and optimizing complex queries to keep our enterprise applications running smoothly.",
+      "This team member provides essential technical assistance and troubleshooting for hardware, software, and network issues, ensuring minimal downtime and high-quality support for all end-users.",
     linkedin: "#",
     email: "staff@example.com",
     extension: "0000",
@@ -91,7 +91,7 @@ const TEAM_MEMBERS = [
     name: "Team Member",
     title: "Software Developer",
     description:
-      "Anita designs new enterprise solutions, bridging the gap between legacy systems and modern, microservice-based applications.",
+      "This team member designs, builds, and maintains the company's internal tools and software applications, writing clean, efficient code to enhance digital processes and system capabilities.",
     linkedin: "#",
     email: "staff@example.com",
     extension: "0000",
@@ -99,12 +99,12 @@ const TEAM_MEMBERS = [
   {
     id: 7,
     name: "Team Member",
-    title: "Network Engineer",
+    title: "Junior ERP Administrator",
     description:
-      "James maintains the physical and wireless networks across all office locations, ensuring high-speed and secure connectivity.",
+      "This team member performs designated high-level business process workflows within the ERP system to support essential daily operations, collaborating closely with the senior ERP team to ensure system efficiency.",
     linkedin: "#",
     email: "staff@example.com",
-    extension: "0000",
+    extension: "TBD",
   },
 ];
 
@@ -163,7 +163,7 @@ const ItTeam = () => {
               </div>
 
               {/* Description */}
-              <p className="mb-6 line-clamp-3 text-sm text-neutral-600 dark:text-neutral-400">
+              <p className="mb-6 line-clamp-5 text-sm text-neutral-600 dark:text-neutral-400">
                 {member.description}
               </p>
 

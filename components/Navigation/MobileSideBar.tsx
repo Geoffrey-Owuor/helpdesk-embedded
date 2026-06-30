@@ -124,14 +124,18 @@ const MobileSideBar = ({
             </button>
 
             {/* Link: Automations */}
-            <Link
-              href="/dashboard/automations"
-              onClick={() => handleMobileRouteChange("/dashboard/automations")}
-              className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
-            >
-              <Bot className="h-5 w-5" />
-              <span>Automations</span>
-            </Link>
+            {isSuper && (
+              <Link
+                href="/dashboard/automations"
+                onClick={() =>
+                  handleMobileRouteChange("/dashboard/automations")
+                }
+                className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              >
+                <Bot className="h-5 w-5" />
+                <span>Automations</span>
+              </Link>
+            )}
 
             {/* Super Admin  */}
             {isSuper && (
