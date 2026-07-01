@@ -74,9 +74,13 @@ export async function POST() {
     const isTokenValid = await verifyPassword(incomingSignature, hashedToken);
 
     if (!isTokenValid) {
-      await query(`UPDATE users SET refresh_token = NULL WHERE user_id = $1`, [
-        userId,
-      ]);
+      await query(
+        `
+        UPDATE users 
+        SET refresh_token = NULL, refresh_token_expiry = NULL 
+        WHERE user_id = $1`,
+        [userId],
+      );
 
       cookieStore.delete("accessToken");
       cookieStore.delete("refreshToken");
