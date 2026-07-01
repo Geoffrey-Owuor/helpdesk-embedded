@@ -100,9 +100,7 @@ const ArticlesCardData = ({
           </span>
 
           <p className="mb-4 text-neutral-600 dark:text-neutral-400">
-            {isInDashboard
-              ? "Seems like you haven't posted any article"
-              : "Seems like no articles have been posted yet"}
+            Seems like no articles have been posted yet
           </p>
           {isInDashboard && (
             <button

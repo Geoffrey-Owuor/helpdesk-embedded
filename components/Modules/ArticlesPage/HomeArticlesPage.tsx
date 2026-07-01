@@ -9,20 +9,6 @@ import ArticleSearchFilter, { FilterPill } from "./ArticleSearchFilter";
 import { useState, useMemo } from "react";
 import { BookOpen } from "lucide-react";
 
-export interface ArticlesCardValues {
-  article_id: string;
-  article_type: string;
-  article_title: string;
-  article_subtitle: string;
-  article_content: string;
-  article_read_time: string;
-  article_updated_at: string;
-  user_department: string;
-  user_id: string;
-  user_name: string;
-  can_edit: boolean;
-}
-
 const HomeArticlesPage = () => {
   const {
     data: homeArticles = [],
@@ -71,7 +57,7 @@ const HomeArticlesPage = () => {
               Knowledge Base
             </span>
             <p className="text-sm text-neutral-500 dark:text-neutral-400">
-              Browse and search through published content.
+              Browse, search and read through published content.
             </p>
           </div>
 
