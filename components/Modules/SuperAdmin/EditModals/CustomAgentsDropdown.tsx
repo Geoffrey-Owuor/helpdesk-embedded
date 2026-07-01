@@ -91,10 +91,11 @@ const CustomAgentsDropdown = ({
       {isOpen && (
         <ul className="default-scrollbar absolute top-full left-0 z-70 mt-1.5 max-h-60 w-full overflow-y-auto rounded-xl border border-neutral-200 bg-white py-1.5 shadow-xl dark:border-neutral-700 dark:bg-neutral-900">
           {options.map((item) => (
-            <li
+            <button
               key={item.value}
               onClick={() => handleSelect(item.value)}
-              className={`mx-1.5 cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors duration-100 hover:bg-neutral-100 dark:hover:bg-neutral-800 ${
+              disabled-={item.value === "unassigned"}
+              className={`mx-1.5 cursor-pointer rounded-lg px-3 py-2 text-left text-sm transition-colors duration-100 hover:bg-neutral-100 disabled:opacity-50 dark:hover:bg-neutral-800 ${
                 value === item.value
                   ? "bg-neutral-100 font-medium text-neutral-900 dark:bg-neutral-800 dark:text-white"
                   : "text-neutral-700 dark:text-neutral-300"
@@ -108,7 +109,7 @@ const CustomAgentsDropdown = ({
                   {item.value}
                 </span>
               </div>
-            </li>
+            </button>
           ))}
         </ul>
       )}

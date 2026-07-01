@@ -73,7 +73,7 @@ export const POST = withAuth(async ({ user, request }) => {
       { status: 200 },
     );
   } catch (error) {
-    console.error("Erro while trying to add an issue type:", error);
+    console.error("Error while trying to add an issue type:", error);
     return NextResponse.json(
       { message: "Error while trying to add the issue type" },
       { status: 500 },

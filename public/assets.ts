@@ -45,6 +45,7 @@ const ISSUE_TYPE_MAPPING: Record<string, string> = {
   "Document DMS": "Document Management System",
   "Staff Purchase": "Staff Product Purchase",
   "Requisition Hub": "Requisition Hub",
+  "ERP Code Creation": "ERP Product Code Creation",
 };
 
 // Handling cases where issue type is other and later other issue types that require formatting
