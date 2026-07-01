@@ -27,6 +27,8 @@ export async function POST() {
       cookieStore.delete("accessToken");
       cookieStore.delete("refreshToken");
 
+      console.log("Token is invalid");
+
       return NextResponse.json({ message: "Invalid token" }, { status: 401 });
     }
 
@@ -37,6 +39,7 @@ export async function POST() {
     if (rows.length === 0) {
       cookieStore.delete("accessToken");
       cookieStore.delete("refreshToken");
+      console.log("User is not found in the database");
       return NextResponse.json({ message: "User not found" }, { status: 401 });
     }
 
@@ -62,6 +65,7 @@ export async function POST() {
     if (!hashedToken) {
       cookieStore.delete("accessToken");
       cookieStore.delete("refreshToken");
+      console.log("Previous token not found for user:", email);
       return NextResponse.json({ message: "Token not found" }, { status: 401 });
     }
 
@@ -77,6 +81,7 @@ export async function POST() {
       cookieStore.delete("accessToken");
       cookieStore.delete("refreshToken");
 
+      console.log("Previous stored hashed token has been invalidated:", email);
       return NextResponse.json(
         { message: "Session invalidated" },
         { status: 401 },
