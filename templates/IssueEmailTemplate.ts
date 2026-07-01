@@ -322,7 +322,7 @@ export function generateIssueNotificationEmail(
                       font-weight: 600;
                       color: #ffffff;
                       letter-spacing: -0.3px;
-                    ">Issue<span style="color: #a3a3a3;">Desk</span></span>
+                    ">Help<span style="color: #a3a3a3;">Desk</span></span>
                   </td>
                   
                   <td align="right" style="padding-left: 10px;">
