@@ -219,13 +219,3 @@ export const footerQuickLinks = [
   { label: "Manual", href: "/manual" },
   { label: "Knowledge Base", href: "/articles" },
 ];
-
-export const heroMessages: Record<number, string> = {
-  0: "Get ready for the week ahead. Tell us what's wrong - we'll help you start fresh.", // Sunday
-  1: "A new week, a fresh start. Tell us what's wrong - we'll take it from there.", // Monday
-  2: "Need a hand? Tell us what's wrong - we'll help get things back on track.", // Tuesday
-  3: "Halfway through the week? Let us help keep things moving. Tell us what's wrong.", // Wednesday
-  4: "Don't let an issue slow you down. Tell us what's wrong - we're on it.", // Thursday
-  5: "Finish the week strong. Tell us what's wrong - we'll get it underway.", // Friday
-  6: "Working this weekend? We're here when you need us. Tell us what's wrong.", // Saturday
-};

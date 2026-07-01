@@ -3,7 +3,6 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2, ShieldCheck, Wand2 } from "lucide-react";
 import { DbStatus, useDbStore } from "@/store/useDbStore";
 import { useEffect } from "react";
-import { heroMessages } from "@/public/assets";
 import { AppVersion } from "@/public/assets";
 import DashboardSkeleton from "./DashboardSkeleton";
 
@@ -43,7 +42,8 @@ const Hero = () => {
 
           {/* Subheadline */}
           <p className="mx-auto mt-6 max-w-2xl text-lg text-neutral-600 dark:text-neutral-400">
-            {heroMessages[new Date().getDay()]}
+            Don&apos;t let an issue slow you down. Tell us what&apos;s wrong -
+            we&apos;ll take it from there.
           </p>
 
           {/* CTAs */}
