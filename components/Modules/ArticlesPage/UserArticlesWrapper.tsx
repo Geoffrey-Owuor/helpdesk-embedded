@@ -4,6 +4,7 @@ import { getUserArticles } from "@/serverActions/GetUserArticles";
 import ArticlesCardData from "./ArticlesCardData";
 import ArticleSearchFilter, { FilterPill } from "./ArticleSearchFilter";
 import { useState, useMemo } from "react";
+import { useUser } from "@/contexts/UserContext";
 
 const UserArticlesWrapper = () => {
   const {
@@ -17,6 +18,7 @@ const UserArticlesWrapper = () => {
 
   // State to hold ONLY the active filter rules, not the data itself
   const [committedFilters, setCommittedFilters] = useState<FilterPill[]>([]);
+  const { userId } = useUser();
 
   // Calculate filtered articles on the fly. No useEffect lag!
   const filteredArticles = useMemo(() => {
@@ -55,6 +57,7 @@ const UserArticlesWrapper = () => {
         articles={filteredArticles} // Derived seamlessly
         loading={loading}
         refetchData={refetchHomeArticles}
+        userId={userId}
       />
     </>
   );
