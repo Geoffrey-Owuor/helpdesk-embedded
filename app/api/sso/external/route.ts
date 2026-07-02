@@ -4,6 +4,7 @@ import {
   signAccessToken,
   signRefreshToken,
   requireSession,
+  hashRefreshToken,
 } from "@/lib/Auth";
 import { getRequestOrigin } from "@/lib/getRequestOrigin";
 import crypto from "crypto";
@@ -92,6 +93,17 @@ export async function GET(request: NextRequest) {
     // Tokens
     const accessToken = await signAccessToken(userPayload);
     const refreshToken = await signRefreshToken(userPayload);
+
+    // Hash refresh token and store it in the database
+    const hashedRefreshToken = await hashRefreshToken(refreshToken);
+
+    const query2 = `UPDATE users 
+                    SET refresh_token = $1, 
+                    refresh_token_expiry = NOW() + INTERVAL '7 days'
+                    WHERE email = $2`;
+    const params2 = [hashedRefreshToken, userObject.email];
+
+    await query(query2, params2);
 
     //Create the user session
     await createSession(accessToken, refreshToken);

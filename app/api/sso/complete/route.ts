@@ -58,9 +58,9 @@ export async function POST(req: NextRequest) {
     const hashedRefreshToken = await hashRefreshToken(userRefreshToken);
 
     const query2 = `UPDATE users 
-                              SET refresh_token = $1, 
-                              refresh_token_expiry = NOW() + INTERVAL '7 days'
-                              WHERE email = $2`;
+                    SET refresh_token = $1, 
+                    refresh_token_expiry = NOW() + INTERVAL '7 days'
+                    WHERE email = $2`;
     const params2 = [hashedRefreshToken, returnedUser.email];
 
     await query(query2, params2);
