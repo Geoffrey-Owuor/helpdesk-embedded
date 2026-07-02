@@ -160,7 +160,6 @@ const DashboardSidebar = () => {
             isActive={highlightLink("/dashboard")}
             onClick={() => handleRouteChange("/dashboard")}
             showToolTip={true}
-            isHomePage={true}
             ToolTipMessage="Dashboard"
           />
 
@@ -321,7 +320,6 @@ type SidebarLinkProps = {
   isActive: boolean;
   onClick?: () => void;
   showToolTip?: boolean;
-  isHomePage?: boolean;
   ToolTipMessage?: string;
 };
 
@@ -332,7 +330,6 @@ const SidebarLink = ({
   isActive,
   onClick,
   showToolTip = false,
-  isHomePage = false,
   ToolTipMessage,
 }: SidebarLinkProps) => {
   // 1. State to track hover and exact coordinates of the button
@@ -362,7 +359,7 @@ const SidebarLink = ({
         onClick={onClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={() => setIsHovered(false)}
-        className={`flex w-full flex-col items-center gap-1 ${isHomePage ? "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200" : isActive ? "bg-blue-800 text-white hover:bg-blue-800/90" : "text-neutral-600 hover:bg-blue-100 hover:text-blue-600 dark:text-neutral-400 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"} rounded-2xl py-2.5 text-[10px] font-semibold`}
+        className={`flex w-full flex-col items-center gap-1 ${isActive ? "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200" : "text-neutral-600 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800"} rounded-2xl py-2.5 text-[10px] font-semibold`}
       >
         {icon}
         <span>{label}</span>
