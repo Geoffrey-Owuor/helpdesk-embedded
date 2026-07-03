@@ -7,20 +7,23 @@ import {
   hashRefreshToken,
 } from "@/lib/Auth";
 import { getRequestOrigin } from "@/lib/getRequestOrigin";
+import { cookies } from "next/headers";
 import crypto from "crypto";
 import { query } from "@/lib/Db";
 
 export async function GET(request: NextRequest) {
   const baseUrl = await getRequestOrigin(request);
+  const cookieStore = await cookies();
 
   try {
     const { searchParams } = new URL(request.url);
 
     const email = searchParams.get("email");
+    const name = searchParams.get("name");
     const timestamp = searchParams.get("timestamp");
     const signature = searchParams.get("signature");
 
-    if (!email || !timestamp || !signature) {
+    if (!email || !name || !timestamp || !signature) {
       console.log("Some required fields are missing");
       return NextResponse.redirect(new URL("/login", baseUrl));
     }
@@ -61,9 +64,32 @@ export async function GET(request: NextRequest) {
       [email],
     );
 
-    // No user found
+    // No user found - trigger the helpdesk app to complete the sso as we already know
+    // the passed email is a valid ms365 email
     if (user.length === 0) {
-      return NextResponse.redirect(new URL("/login", baseUrl));
+      // 1. Create a short-lived temporary payload
+      const tempPayload = {
+        userId: "some_random_id",
+        username: name,
+        role: "user",
+        department: "no_department",
+        email: email,
+        isSuper: false,
+      };
+
+      const pendingRegistrationToken = await signAccessToken(tempPayload);
+
+      // 3. Set a secure, temporary cookie
+      cookieStore.set("sso_pending_registration", pendingRegistrationToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60, // 1 hour
+        path: "/",
+      });
+
+      // 4. Redirect to the completion page
+      return Response.redirect(new URL("/sso", baseUrl));
     }
 
     // User exists assign the user object

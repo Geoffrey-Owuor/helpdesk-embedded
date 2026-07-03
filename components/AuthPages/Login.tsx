@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ApiHandler } from "@/utils/ApiHandler";
 import AuthShell from "./AuthShell";
 import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
+import { useIsEmbedd } from "@/hooks/useIsEmbedd";
 import { useAlertStore } from "@/store/useAlertStore";
 
 // Microsoft Icon Here
@@ -29,6 +30,8 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const isEmbedded = useIsEmbedd();
 
   // Microsoft sso state
   const [ssoLoading, setSsoLoading] = useState(false);
@@ -76,6 +79,17 @@ export default function LoginPage() {
     // This leaves the alert visible until the user manually closes it
     // or the AlertContext handles the timeout.
   }, [searchParams, triggerAlert]);
+
+  // handling Login when button is clicked inside an iframe
+  const handleLogin = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (isEmbedded) {
+      // 1. Stop the form from submitting to the API endpoint
+      e.preventDefault();
+      // Escape the iframe and open the current page in a fresh new browser tab
+      window.open(window.location.href, "_blank", "noopener,noreferrer");
+      return;
+    }
+  };
 
   return (
     <AuthShell>
@@ -191,6 +205,7 @@ export default function LoginPage() {
           >
             <button
               type="submit"
+              onClick={handleLogin}
               disabled={ssoLoading || loading}
               className="flex w-full items-center justify-center gap-2 rounded-full bg-neutral-100 px-4 py-3 font-semibold text-neutral-950 ring-offset-2 hover:bg-neutral-200/60 focus:ring-1 focus:ring-neutral-500 focus:outline-none disabled:opacity-50 dark:bg-neutral-900 dark:text-white dark:ring-offset-neutral-950 dark:hover:bg-neutral-800/60 dark:focus:ring-neutral-400"
             >
@@ -198,6 +213,12 @@ export default function LoginPage() {
               Continue with Microsoft 365
             </button>
           </form>
+          {isEmbedded && (
+            <span className="rounded-full bg-amber-50 px-4 py-3 text-center text-xs tracking-tight text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+              Browser policies prevent Microsoft login inside embedded frames.
+              Clicking the above will open this page in a new browser window.
+            </span>
+          )}
           <div className="flex items-center justify-center gap-1 text-sm text-neutral-700 dark:text-neutral-300">
             <span>Don&apos;t have an account?</span>
             <Link

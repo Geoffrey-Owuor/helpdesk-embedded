@@ -3,6 +3,7 @@ import { currentYear } from "@/public/assets";
 import HomePagesLogo from "../Modules/HomePagesLogo";
 import { Star } from "lucide-react";
 import { footerQuickLinks } from "@/public/assets";
+import { DbStatusPill } from "../Modules/DbStatus/DbStatusPill";
 import Link from "next/link";
 
 const AuthShell = ({ children }: { children: React.ReactNode }) => {
@@ -11,12 +12,13 @@ const AuthShell = ({ children }: { children: React.ReactNode }) => {
       <div className="mx-auto flex h-full w-full max-w-6xl flex-col items-center 2xl:max-w-7xl">
         {/* Logo and Theme Toggle*/}
         <div className="sticky top-0 right-0 left-0 z-50 w-full bg-white/60 dark:bg-neutral-950/60">
-          <nav className="custom:px-8 mx-auto flex h-16 max-w-6xl items-center justify-between px-4 2xl:max-w-7xl">
+          <nav className="custom:px-8 mx-auto flex h-16 items-center justify-between px-4">
             {/* App logo */}
             <HomePagesLogo />
             {/* Right side controls */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <ThemeToggle />
+              <DbStatusPill />
             </div>
           </nav>
         </div>
