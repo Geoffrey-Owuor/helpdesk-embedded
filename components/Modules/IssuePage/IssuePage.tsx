@@ -56,6 +56,7 @@ import EscalateIssueModal from "./EscalateIssueModal";
 import EscalationHistoryModal from "./EscalationHistoryModal";
 import ReopenHistoryModal from "./ReopenHistoryModal";
 import RelativeTimeBadge from "../IssuesData/RelativeTimeBadge";
+import { ResolutionTimePill } from "../IssuesData/ResolutionTimePill";
 
 const statusOptions = baseOptions.filter((option) => option.value !== "open");
 
@@ -418,6 +419,16 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
+              {/* Resolution time */}
+              {(issueData.issue_status === "resolved" ||
+                issueData.issue_status === "closed") &&
+                issueData.issue_created_at &&
+                issueData.issue_date_resolved && (
+                  <ResolutionTimePill
+                    dateSubmitted={issueData.issue_created_at}
+                    dateResolved={issueData.issue_date_resolved}
+                  />
+                )}
               <button
                 onClick={refetchData}
                 className="rounded-xl bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"

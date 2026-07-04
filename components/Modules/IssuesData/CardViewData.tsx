@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import IssuePriorityFormatter from "./IssuePriorityFormatter";
 import RelativeTimeBadge from "./RelativeTimeBadge";
+import { ResolutionTimePill } from "./ResolutionTimePill";
 
 type CardViewDataProps = {
   currentIssues: Record<string, string | number>[];
@@ -104,10 +105,22 @@ const CardViewData = ({
           {/* Footer: Metadata & Agent */}
           <div className="space-y-4 border-t border-neutral-100 pt-4 dark:border-neutral-800">
             {/* Dept/Type Row */}
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 text-[11px] font-medium text-neutral-500">
-                <Tag size={12} className="opacity-70" />
-                <span className="truncate">{issueData.issue_type}</span>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-[11px] font-medium text-neutral-500">
+                  <Tag size={12} className="opacity-70" />
+                  <span className="truncate">{issueData.issue_type}</span>
+                </div>
+                {/* Resolution Time */}
+                {(issueData.issue_status === "resolved" ||
+                  issueData.issue_status === "closed") &&
+                  issueData.issue_created_at &&
+                  issueData.issue_date_resolved && (
+                    <ResolutionTimePill
+                      dateSubmitted={issueData.issue_created_at}
+                      dateResolved={issueData.issue_date_resolved}
+                    />
+                  )}
               </div>
               <div className="flex items-center gap-2 text-[11px] font-medium text-neutral-500">
                 <Calendar size={12} className="opacity-70" />
