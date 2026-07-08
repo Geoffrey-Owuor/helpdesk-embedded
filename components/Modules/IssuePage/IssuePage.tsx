@@ -437,7 +437,8 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
               </button>
 
               {/* Reopening an issue */}
-              {issueData.issue_status === "closed" && (
+              {(issueData.issue_status === "closed" ||
+                issueData.issue_status === "resolved") && (
                 <button
                   onClick={() => setReopenModalOpen(true)}
                   className="inline-flex items-center gap-1.5 rounded-xl bg-neutral-900 px-3.5 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
@@ -515,7 +516,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                 isSuper ||
                 (role === "admin" &&
                   issueData.issue_target_department === department)) &&
-                issueData.issue_status === "open" && (
+                issueData.issue_status !== "closed" && (
                   <div className="relative w-fit" ref={dropdownRef}>
                     <button
                       type="button" // Prevent form submission if inside a form
