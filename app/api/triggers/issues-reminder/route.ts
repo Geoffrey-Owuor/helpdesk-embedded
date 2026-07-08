@@ -174,7 +174,7 @@ function generateReminderEmail(
                       font-weight: 600;
                       color: #ffffff;
                       letter-spacing: -0.3px;
-                    ">Issue<span style="color: #a3a3a3;">Desk</span></span>
+                    ">Help<span style="color: #a3a3a3;">Desk</span></span>
                   </td>
                   <td align="right">
                     <span style="font-size: 11px; font-weight: 600; color: #737373; letter-spacing: 0.5px; text-transform: uppercase;">
