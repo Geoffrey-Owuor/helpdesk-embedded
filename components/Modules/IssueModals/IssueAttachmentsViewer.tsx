@@ -9,7 +9,6 @@ import {
   Image as ImageIcon,
   ExternalLink,
 } from "lucide-react";
-import Link from "next/link";
 
 type Props = {
   uuid: string;
@@ -21,6 +20,19 @@ const formatBytes = (bytes: number) => {
   const sizes = ["Bytes", "KB", "MB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+};
+
+const openInPopup = (url: string) => {
+  const width = 900;
+  const height = 700;
+  const left = window.screen.width / 2 - width / 2;
+  const top = window.screen.height / 2 - height / 2;
+
+  window.open(
+    url,
+    "AttachmentViewer",
+    `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes,status=no,location=no`,
+  );
 };
 
 export default function IssueAttachmentsViewer({ uuid }: Props) {
@@ -57,12 +69,11 @@ export default function IssueAttachmentsViewer({ uuid }: Props) {
           const isImage = attachment.file_type.startsWith("image/");
 
           return (
-            <Link
+            <button
               key={attachment.id}
-              href={`/api/files/${attachment.file_url}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center justify-between rounded-xl border border-neutral-200 bg-neutral-50 p-3 transition-colors hover:border-blue-300 hover:bg-blue-50/50 dark:border-neutral-800 dark:bg-neutral-900/50 dark:hover:border-blue-900/50 dark:hover:bg-blue-900/20"
+              type="button"
+              onClick={() => openInPopup(`/api/files/${attachment.file_url}`)}
+              className="group flex w-full cursor-pointer items-center justify-between rounded-xl border border-neutral-200 bg-neutral-50 p-3 text-left transition-colors hover:border-blue-300 hover:bg-blue-50/50 dark:border-neutral-800 dark:bg-neutral-900/50 dark:hover:border-blue-900/50 dark:hover:bg-blue-900/20"
             >
               <div className="flex items-center gap-3 overflow-hidden">
                 {/* Icon Thumbnail */}
@@ -90,7 +101,7 @@ export default function IssueAttachmentsViewer({ uuid }: Props) {
               <div className="ml-2 text-neutral-400 opacity-0 transition-opacity group-hover:opacity-100 dark:text-neutral-500">
                 <ExternalLink className="h-4 w-4" />
               </div>
-            </Link>
+            </button>
           );
         })}
       </div>
