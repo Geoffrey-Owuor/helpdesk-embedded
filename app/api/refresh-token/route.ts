@@ -4,7 +4,6 @@ import {
   signAccessToken,
   signRefreshToken,
   hashRefreshToken,
-  verifyPassword,
 } from "@/lib/Auth";
 import { createSession } from "@/lib/Auth";
 import { cookies } from "next/headers";
@@ -51,6 +50,13 @@ export async function POST() {
     const role = rows[0].role;
     const department = rows[0].department;
 
+    if (!hashedToken) {
+      cookieStore.delete("accessToken");
+      cookieStore.delete("refreshToken");
+      console.log("Previous token not found for user:", email);
+      return NextResponse.json({ message: "Token not found" }, { status: 401 });
+    }
+
     // Check if the user is a super admin
     const superAdmins = await query(
       `
@@ -62,35 +68,6 @@ export async function POST() {
 
     const isSuper = superAdmins.length > 0;
 
-    if (!hashedToken) {
-      cookieStore.delete("accessToken");
-      cookieStore.delete("refreshToken");
-      console.log("Previous token not found for user:", email);
-      return NextResponse.json({ message: "Token not found" }, { status: 401 });
-    }
-
-    // Compare cookie token with db hash using verifyPassword
-    const incomingSignature = refreshToken.split(".")[2];
-    const isTokenValid = await verifyPassword(incomingSignature, hashedToken);
-
-    if (!isTokenValid) {
-      await query(
-        `
-        UPDATE users 
-        SET refresh_token = NULL, refresh_token_expiry = NULL 
-        WHERE user_id = $1`,
-        [userId],
-      );
-
-      cookieStore.delete("accessToken");
-      cookieStore.delete("refreshToken");
-
-      console.log("Previous stored hashed token has been invalidated:", email);
-      return NextResponse.json(
-        { message: "Session invalidated" },
-        { status: 401 },
-      );
-    }
     // Generate new tokens
     const newPayload = {
       userId,

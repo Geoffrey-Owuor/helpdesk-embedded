@@ -50,6 +50,12 @@ const UserInfoCard = ({
     showOverlay("Logging out");
     try {
       await apiClient.post("/logout");
+
+      // Notify other tabs to redirect to login
+      const authChannel = new BroadcastChannel("auth_session_sync");
+      authChannel.postMessage({ action: "LOGOUT" });
+      authChannel.close();
+
       // Redirect to login and refresh the page state
       window.location.href = "/login";
     } catch (error) {
