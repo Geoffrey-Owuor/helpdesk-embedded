@@ -55,6 +55,11 @@ export default function LoginPage() {
       const data = await response.json();
       //   Successfull login
       if (response.ok) {
+        // Broadcast the new login to other tabs
+        const authChannel = new BroadcastChannel("auth_session_sync");
+        authChannel.postMessage({ action: "LOGIN", userId: data.id });
+        authChannel.close();
+
         window.location.href = "/dashboard";
       } else {
         setError(data.message || "Login Failed");
