@@ -72,7 +72,7 @@ const Manual = () => {
 
                   {/* Description */}
                   <p className="mt-2 text-xs leading-relaxed text-neutral-500 dark:text-neutral-400">
-                    Learn how to use <strong>IssueDesk</strong> and help us
+                    Learn how to use <strong>HelpDesk</strong> and help us
                     improve it by reporting any bugs you encounter.
                   </p>
                 </div>

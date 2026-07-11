@@ -4,6 +4,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { emailSender } from "@/services/EmailSender";
 import { CheckBehalfUser } from "@/serverActions/CheckBehalfUser";
 import { writeFile, mkdir } from "fs/promises";
+import { issuePrefixMapping } from "@/public/assets";
 import path from "path";
 
 export async function POST(request: NextRequest) {
@@ -124,9 +125,9 @@ export async function POST(request: NextRequest) {
     // construct a prepared statement
     const insertQuery = `
     INSERT INTO issues_table
-    (issue_submitter_id, issue_submitter_name, issue_submitter_email, issue_submitter_department, issue_target_department, issue_type, issue_title, issue_description, issue_agent_name, issue_reference_id)
-    VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, generate_issue_reference())
-    RETURNING issue_id, issue_uuid, issue_reference_id
+    (issue_submitter_id, issue_submitter_name, issue_submitter_email, issue_submitter_department, issue_target_department, issue_type, issue_title, issue_description, issue_agent_name)
+    VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    RETURNING issue_id, issue_uuid
     `;
 
     // construct the params
@@ -148,7 +149,20 @@ export async function POST(request: NextRequest) {
     // Get the returned id
     const resultantId = returnedId[0].issue_id;
     const resultantUuid = returnedId[0].issue_uuid;
-    const issueReferenceNumber = returnedId[0].issue_reference_id;
+
+    // Update the submitted issue to insert a generated issue reference
+    const referencePrefix =
+      issuePrefixMapping[returnedUser.department] || "UNK";
+    const formattedId = resultantId.toString().padStart(3, "0");
+    const issueReferenceNumber = `${referencePrefix}-${formattedId}`;
+
+    // The update query to insert a reference id
+    await client.query(
+      `
+      UPDATE issues_table
+      SET issue_reference_id = $1 WHERE issue_id = $2`,
+      [issueReferenceNumber, resultantId],
+    );
 
     // Insert Attachments
     if (dbAttachments.length > 0) {

@@ -35,7 +35,7 @@
 //   try {
 //     // 2. Use SendMailOptions for the config object
 //     const mailOptions: SendMailOptions = {
-//       from: `"IssueDesk" <${process.env.GMAIL_USER}>`,
+//       from: `"HelpDesk" <${process.env.GMAIL_USER}>`,
 //       to,
 //       cc,
 //       subject,

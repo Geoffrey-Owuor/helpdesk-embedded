@@ -144,7 +144,7 @@ const ColorCodes = () => {
           Color Codes & Visuals
         </h2>
         <p className="mt-3 max-w-xl text-base text-neutral-500 dark:text-neutral-400">
-          Understand the visual indicators used across IssueDesk to quickly
+          Understand the visual indicators used across HelpDesk to quickly
           identify the state, urgency, and category of your issues at a glance.
         </p>
       </div>

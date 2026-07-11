@@ -93,7 +93,7 @@ export const useSearchStore = create<SearchState & SearchActions>()(
         }),
     }),
     {
-      name: "issuedesk-search-store",
+      name: "HelpDesk-search-store",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         isTableView: state.isTableView,

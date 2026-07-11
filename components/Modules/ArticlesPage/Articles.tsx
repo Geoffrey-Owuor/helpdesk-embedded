@@ -62,11 +62,11 @@ const Articles = () => {
           {/* Title & Subtitle */}
           <div className="flex flex-col">
             <h1 className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-white">
-              {activeTab === "articles" ? "Your Articles" : "New Article"}
+              {activeTab === "articles" ? "Published Articles" : "New Article"}
             </h1>
             <p className="mt-1 text-sm text-neutral-500 sm:mt-0 dark:text-neutral-400">
               {activeTab === "articles"
-                ? "Browse, manage, and read your published articles."
+                ? "Browse, search and read through published content."
                 : "Draft, format, and publish your ideas."}
             </p>
           </div>
@@ -78,7 +78,7 @@ const Articles = () => {
               target="_blank"
               className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-2 text-xs text-amber-600 hover:text-amber-700 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:text-amber-500"
             >
-              More Articles...
+              Knowledge Base...
               <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
             {role !== "user" && (

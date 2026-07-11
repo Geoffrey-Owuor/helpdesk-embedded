@@ -13,12 +13,41 @@ import {
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { commentsQuery } from "@/app/api/get-comments/route";
-import { dateFormatter } from "@/public/assets";
 import { abbreviateUserName } from "@/public/assets";
 import CommentsSkeleton from "@/components/Skeletons/CommentsSkeleton";
 import { useUser } from "@/contexts/UserContext";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
+function formatCommentDateTime(inputString: string | number): string {
+  // Parse the input string into a Date object
+  // Replacing the space with 'T' ensures reliable parsing across different environments
+  const date = new Date(inputString.toString().replace(" ", "T"));
+
+  // Check for invalid date inputs
+  if (isNaN(date.getTime())) {
+    return "--";
+  }
+
+  // Extract date components and pad with leading zeros if necessary
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+  const year = date.getFullYear();
+
+  // Extract time components
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  // Determine am/pm and convert to 12-hour format
+  const ampm = hours >= 12 ? "pm" : "am";
+  hours = hours % 12;
+  hours = hours ? hours : 12; // The hour '0' should be '12'
+
+  const formattedHours = String(hours).padStart(2, "0");
+
+  // Combine into the final format: dd/mm/yyyy, hh.mmam/pm
+  return `${day}/${month}/${year}, ${formattedHours}.${minutes}${ampm}`;
+}
 
 const CommentsSection = ({ uuid }: { uuid: string }) => {
   const [comment, setComment] = useState("");
@@ -183,7 +212,7 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
                       </div>
                       <span className="flex items-center gap-2 text-xs whitespace-nowrap text-neutral-500 dark:text-neutral-400">
                         <CalendarCheck className="h-3.5 w-3.5" />
-                        {dateFormatter(comment.comment_created_at)}
+                        {formatCommentDateTime(comment.comment_created_at)}
                       </span>
                     </div>
 

@@ -142,7 +142,7 @@ const MiddleBar = () => {
                   accent
                 />
 
-                {role !== "user" && (
+                {isSuper && (
                   <PillButton
                     icon={<Bot size={14} />}
                     label="Automations"

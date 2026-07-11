@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, RefreshCw, Wand2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, ShieldCheck, Wand2 } from "lucide-react";
 import { DbStatus, useDbStore } from "@/store/useDbStore";
 import { useEffect } from "react";
 import { AppVersion } from "@/public/assets";
@@ -25,31 +25,31 @@ const Hero = () => {
       <div className="custom:px-8 w-full px-4">
         <div className="mx-auto max-w-3xl text-center">
           {/* Badge */}
-          <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-neutral-50 px-3 py-1 font-mono text-sm tracking-tighter text-neutral-600 dark:bg-neutral-900/50 dark:text-neutral-400">
+          <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-neutral-50 px-3 py-1 text-sm text-neutral-600 dark:bg-neutral-900/50 dark:text-neutral-400">
             <span
               className={`flex h-2 w-2 rounded-full ${colorsMapping[status]}`}
             ></span>
-            Internal Issue Tracking {AppVersion}
+            HelpDesk {AppVersion}
           </div>
 
           {/* Headline */}
           <h1 className="text-4xl font-bold tracking-tight text-neutral-950 sm:text-6xl dark:text-white">
-            Centralized issues. <br />
+            Every issue, one place. <br />
             <span className="text-neutral-500 dark:text-neutral-400">
-              Clear ownership.
+              Every update, within reach.
             </span>
           </h1>
 
           {/* Subheadline */}
           <p className="mx-auto mt-6 max-w-2xl text-lg text-neutral-600 dark:text-neutral-400">
-            Easily submit the issue you are facing, track its progress, and get
-            timely updates until it&apos;s resolved.
+            Don&apos;t let an issue slow you down. Tell us what&apos;s wrong -
+            we&apos;ll take it from there.
           </p>
 
           {/* CTAs */}
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
-              href="/register"
+              href="/login"
               className="w-full rounded-full bg-neutral-950 px-8 py-3.5 text-sm font-semibold text-white shadow-sm hover:bg-neutral-800 sm:w-auto dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200"
             >
               Get Started
@@ -71,7 +71,7 @@ const Hero = () => {
               <Wand2 className="h-4 w-4" /> Intuitive Interface
             </div>
             <div className="flex items-center gap-2">
-              <RefreshCw className="h-4 w-4" /> Real-time Updates
+              <ShieldCheck className="h-4 w-4" /> SSO Ready
             </div>
           </div>
         </div>

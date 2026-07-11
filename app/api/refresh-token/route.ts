@@ -4,7 +4,6 @@ import {
   signAccessToken,
   signRefreshToken,
   hashRefreshToken,
-  verifyPassword,
 } from "@/lib/Auth";
 import { createSession } from "@/lib/Auth";
 import { cookies } from "next/headers";
@@ -27,17 +26,30 @@ export async function POST() {
       cookieStore.delete("accessToken");
       cookieStore.delete("refreshToken");
 
+      console.log("Token is invalid");
+
       return NextResponse.json({ message: "Invalid token" }, { status: 401 });
     }
 
     //Checked against the database stored token to ensure it has not been revoked/replaced
-    const dbQuery = `SELECT user_id, username, email, role, department, refresh_token FROM users WHERE user_id = $1`;
+    const dbQuery = `SELECT user_id, username, email, role, department, refresh_token, is_user_active FROM users WHERE user_id = $1`;
     const rows = await query(dbQuery, [payload.userId]);
 
     if (rows.length === 0) {
       cookieStore.delete("accessToken");
       cookieStore.delete("refreshToken");
+      console.log("User is not found in the database");
       return NextResponse.json({ message: "User not found" }, { status: 401 });
+    }
+
+    // Check if user is an active user
+    const isUserActive = rows[0].is_user_active;
+
+    if (!isUserActive) {
+      return NextResponse.json(
+        { message: "User account is disabled" },
+        { status: 401 },
+      );
     }
 
     // Get the required cookie information
@@ -47,6 +59,13 @@ export async function POST() {
     const username = rows[0].username;
     const role = rows[0].role;
     const department = rows[0].department;
+
+    if (!hashedToken) {
+      cookieStore.delete("accessToken");
+      cookieStore.delete("refreshToken");
+      console.log("Previous token not found for user:", email);
+      return NextResponse.json({ message: "Token not found" }, { status: 401 });
+    }
 
     // Check if the user is a super admin
     const superAdmins = await query(
@@ -59,29 +78,6 @@ export async function POST() {
 
     const isSuper = superAdmins.length > 0;
 
-    if (!hashedToken) {
-      cookieStore.delete("accessToken");
-      cookieStore.delete("refreshToken");
-      return NextResponse.json({ message: "Token not found" }, { status: 401 });
-    }
-
-    // Compare cookie token with db hash using verifyPassword
-    const incomingSignature = refreshToken.split(".")[2];
-    const isTokenValid = await verifyPassword(incomingSignature, hashedToken);
-
-    if (!isTokenValid) {
-      await query(`UPDATE users SET refresh_token = NULL WHERE user_id = $1`, [
-        userId,
-      ]);
-
-      cookieStore.delete("accessToken");
-      cookieStore.delete("refreshToken");
-
-      return NextResponse.json(
-        { message: "Session invalidated" },
-        { status: 401 },
-      );
-    }
     // Generate new tokens
     const newPayload = {
       userId,

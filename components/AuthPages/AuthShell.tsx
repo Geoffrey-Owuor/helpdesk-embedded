@@ -12,11 +12,11 @@ const AuthShell = ({ children }: { children: React.ReactNode }) => {
       <div className="mx-auto flex h-full w-full max-w-6xl flex-col items-center 2xl:max-w-7xl">
         {/* Logo and Theme Toggle*/}
         <div className="sticky top-0 right-0 left-0 z-50 w-full bg-white/60 dark:bg-neutral-950/60">
-          <nav className="custom:px-8 mx-auto flex h-16 max-w-6xl items-center justify-between px-4 2xl:max-w-7xl">
+          <nav className="custom:px-8 mx-auto flex h-16 items-center justify-between px-4">
             {/* App logo */}
             <HomePagesLogo />
             {/* Right side controls */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <ThemeToggle />
               <DbStatusPill />
             </div>
@@ -32,7 +32,7 @@ const AuthShell = ({ children }: { children: React.ReactNode }) => {
         <div className="mt-12 mb-16 flex w-full flex-col items-center justify-between gap-4 p-6 text-sm text-neutral-500 md:mb-0 md:flex-row">
           {/* Left Area: Copyright & Attribution */}
           <span className="inline-flex items-center gap-2 leading-5">
-            <span>&copy; {currentYear} IssueDesk. Hotpoint Appliances Ltd</span>
+            <span>&copy; {currentYear} HelpDesk. Hotpoint Appliances Ltd</span>
           </span>
 
           <span className="inline-flex items-center gap-2">

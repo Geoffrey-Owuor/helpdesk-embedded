@@ -58,8 +58,8 @@ const RelativeTimeBadge = ({
 
   if (!mounted) {
     return (
-      <div className="inline-flex w-fit items-center gap-1.5 rounded-full bg-linear-to-br from-violet-100 via-purple-50 to-fuchsia-200 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-violet-900 transition-colors dark:from-violet-950/50 dark:via-purple-900/20 dark:to-pink-900/40 dark:text-violet-200">
-        <Clock size={12} className="text-violet-900 dark:text-violet-200" />
+      <div className="inline-flex w-fit items-center gap-1.5 rounded-full bg-linear-to-br from-neutral-100 via-zinc-50 to-gray-200 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-neutral-900 transition-colors dark:from-neutral-950/50 dark:via-zinc-900/20 dark:to-gray-900/40 dark:text-neutral-200">
+        <Clock size={12} className="text-neutral-900 dark:text-neutral-200" />
         <span>Loading some time...</span>
       </div>
     );

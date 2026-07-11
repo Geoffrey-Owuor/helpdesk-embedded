@@ -5,7 +5,24 @@ import Link from "next/link";
 import { ApiHandler } from "@/utils/ApiHandler";
 import AuthShell from "./AuthShell";
 import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
+import { useIsEmbedd } from "@/hooks/useIsEmbedd";
 import { useAlertStore } from "@/store/useAlertStore";
+
+// Microsoft Icon Here
+const MicrosoftIcon = () => (
+  <svg
+    width="15"
+    height="15"
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect x="1" y="1" width="9" height="9" fill="#F25022" />
+    <rect x="11" y="1" width="9" height="9" fill="#7FBA00" />
+    <rect x="1" y="11" width="9" height="9" fill="#00A4EF" />
+    <rect x="11" y="11" width="9" height="9" fill="#FFB900" />
+  </svg>
+);
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -13,6 +30,11 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const isEmbedded = useIsEmbedd();
+
+  // Microsoft sso state
+  const [ssoLoading, setSsoLoading] = useState(false);
 
   const searchParams = useSearchParams();
 
@@ -33,6 +55,11 @@ export default function LoginPage() {
       const data = await response.json();
       //   Successfull login
       if (response.ok) {
+        // Broadcast the new login to other tabs
+        const authChannel = new BroadcastChannel("auth_session_sync");
+        authChannel.postMessage({ action: "LOGIN", userId: data.id });
+        authChannel.close();
+
         window.location.href = "/dashboard";
       } else {
         setError(data.message || "Login Failed");
@@ -58,13 +85,24 @@ export default function LoginPage() {
     // or the AlertContext handles the timeout.
   }, [searchParams, triggerAlert]);
 
+  // handling Login when button is clicked inside an iframe
+  const handleLogin = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (isEmbedded) {
+      // 1. Stop the form from submitting to the API endpoint
+      e.preventDefault();
+      // Escape the iframe and open the current page in a fresh new browser tab
+      window.open(window.location.href, "_blank", "noopener,noreferrer");
+      return;
+    }
+  };
+
   return (
     <AuthShell>
       <div className="w-full max-w-90 px-2">
         {/* Header */}
         <div className="mb-8">
           <h1 className="mb-2 text-center text-3xl font-semibold text-neutral-900 dark:text-white">
-            Welcome back
+            Welcome Back
           </h1>
           <p className="text-center text-neutral-600 dark:text-neutral-400">
             Please enter your credentials to continue
@@ -96,7 +134,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full rounded-full border border-neutral-400 bg-white py-3 pr-3 pl-14 text-neutral-900 placeholder-neutral-400 focus:border-neutral-600 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900/50 dark:text-white dark:focus:border-neutral-500"
-                placeholder="you@example.com"
+                placeholder="you@hotpoint.co.ke"
                 required
               />
             </div>
@@ -150,26 +188,52 @@ export default function LoginPage() {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || ssoLoading}
             className="flex w-full items-center justify-center gap-2 rounded-full bg-neutral-900 px-4 py-3 font-semibold text-white ring-offset-2 hover:bg-neutral-800 focus:ring-1 focus:ring-neutral-600 focus:outline-none disabled:opacity-50 dark:bg-white dark:text-neutral-950 dark:ring-offset-neutral-950 dark:hover:bg-neutral-200 dark:focus:ring-neutral-300"
           >
             {loading ? (
               <>
                 <Loader2 className="h-5 w-5 animate-spin" />
-                Signing in...
+                Just a moment...
               </>
             ) : (
-              "Sign in"
+              "Continue with Email"
             )}
           </button>
+        </form>
 
+        <div className="mt-6 flex flex-col items-center gap-4">
+          <form
+            action="/api/sso/microsoft/login"
+            className="w-full"
+            onSubmit={() => setSsoLoading(true)}
+          >
+            <button
+              type="submit"
+              onClick={handleLogin}
+              disabled={ssoLoading || loading}
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-neutral-100 px-4 py-3 font-semibold text-neutral-950 ring-offset-2 hover:bg-neutral-200/60 focus:ring-1 focus:ring-neutral-500 focus:outline-none disabled:opacity-50 dark:bg-neutral-900 dark:text-white dark:ring-offset-neutral-950 dark:hover:bg-neutral-800/60 dark:focus:ring-neutral-400"
+            >
+              <MicrosoftIcon />
+              Continue with Microsoft 365
+            </button>
+          </form>
+          {isEmbedded && (
+            <span className="rounded-full bg-amber-50 px-4 py-3 text-center text-xs tracking-tight text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+              Browser policies prevent Microsoft login inside embedded frames.
+              Clicking the above will open this page in a new browser window.
+            </span>
+          )}
           <div className="flex items-center justify-center gap-1 text-sm text-neutral-700 dark:text-neutral-300">
-            <span>No Account?</span>
-            <Link href="/register" className="hover:underline">
-              Register
+            <span>Don&apos;t have an account?</span>
+            <Link
+              href="/register"
+              className="text-blue-500 hover:underline dark:text-blue-400"
+            >
+              Sign Up
             </Link>
           </div>
-        </form>
+        </div>
       </div>
     </AuthShell>
   );

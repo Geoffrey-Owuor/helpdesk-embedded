@@ -5,6 +5,7 @@ import apiClient from "@/lib/AxiosClient";
 import { useUser } from "@/contexts/UserContext";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useEffect, RefObject } from "react";
+import { useIsEmbedd } from "@/hooks/useIsEmbedd";
 
 type UserCardProps = {
   isUserCardOpen: boolean;
@@ -22,6 +23,8 @@ const UserInfoCard = ({
   triggerRef,
 }: UserCardProps) => {
   const { role, username, email } = useUser();
+
+  const isEmbedded = useIsEmbedd();
 
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
@@ -47,6 +50,12 @@ const UserInfoCard = ({
     showOverlay("Logging out");
     try {
       await apiClient.post("/logout");
+
+      // Notify other tabs to redirect to login
+      const authChannel = new BroadcastChannel("auth_session_sync");
+      authChannel.postMessage({ action: "LOGOUT" });
+      authChannel.close();
+
       // Redirect to login and refresh the page state
       window.location.href = "/login";
     } catch (error) {
@@ -90,13 +99,15 @@ const UserInfoCard = ({
           Settings
         </button>
 
-        <button
-          onClick={handleLogout}
-          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
-        >
-          <LogOut size={16} />
-          Log out
-        </button>
+        {!isEmbedded && (
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+          >
+            <LogOut size={16} />
+            Log out
+          </button>
+        )}
       </div>
     </div>
   );

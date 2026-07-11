@@ -166,7 +166,7 @@ const PostArticle = () => {
               className="inline-flex items-center gap-2 rounded-xl bg-neutral-900 px-3.5 py-2.5 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
             >
               <RotateCcw className="h-4 w-4" />
-              <span>Refetch Key</span>
+              <span>Sync Key</span>
             </button>
           </div>
           {keyIsInvalid && (

@@ -10,7 +10,7 @@ export const DashBoardLogo = ({
     <div className="relative h-6.5 w-6.5">
       <Image
         src={assets.hotpoint_black_logo}
-        alt="IssueDesk Logo"
+        alt="HelpDesk Logo"
         sizes="32px"
         loading="eager"
         className="object-contain dark:invert"
@@ -19,7 +19,7 @@ export const DashBoardLogo = ({
     <span
       className={`${isSideBarOpen ? "block" : "hidden"} text-xl font-semibold text-black dark:text-white`}
     >
-      IssueDesk
+      HelpDesk
     </span>
   </div>
 );

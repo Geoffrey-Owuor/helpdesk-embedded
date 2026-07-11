@@ -8,7 +8,7 @@ const DashboardFooter = () => {
     <footer className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-4 p-6 text-sm text-neutral-500 md:flex-row">
       {/* Left Area: Copyright & Attribution */}
       <span className="inline-flex items-center gap-2 leading-5">
-        <span>&copy; {currentYear} IssueDesk. Hotpoint Appliances Ltd</span>
+        <span>&copy; {currentYear} HelpDesk. Hotpoint Appliances Ltd</span>
       </span>
 
       <span className="inline-flex items-center gap-2">
