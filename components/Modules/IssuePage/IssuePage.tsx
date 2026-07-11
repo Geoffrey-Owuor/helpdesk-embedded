@@ -56,6 +56,7 @@ import EscalateIssueModal from "./EscalateIssueModal";
 import EscalationHistoryModal from "./EscalationHistoryModal";
 import ReopenHistoryModal from "./ReopenHistoryModal";
 import RelativeTimeBadge from "../IssuesData/RelativeTimeBadge";
+import { ResolutionTimePill } from "../IssuesData/ResolutionTimePill";
 
 const statusOptions = baseOptions.filter((option) => option.value !== "open");
 
@@ -418,6 +419,16 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
+              {/* Resolution time */}
+              {(issueData.issue_status === "resolved" ||
+                issueData.issue_status === "closed") &&
+                issueData.issue_created_at &&
+                issueData.issue_date_resolved && (
+                  <ResolutionTimePill
+                    dateSubmitted={issueData.issue_created_at}
+                    dateResolved={issueData.issue_date_resolved}
+                  />
+                )}
               <button
                 onClick={refetchData}
                 className="rounded-xl bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
@@ -426,7 +437,8 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
               </button>
 
               {/* Reopening an issue */}
-              {issueData.issue_status === "closed" && (
+              {(issueData.issue_status === "closed" ||
+                issueData.issue_status === "resolved") && (
                 <button
                   onClick={() => setReopenModalOpen(true)}
                   className="inline-flex items-center gap-1.5 rounded-xl bg-neutral-900 px-3.5 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
@@ -504,7 +516,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                 isSuper ||
                 (role === "admin" &&
                   issueData.issue_target_department === department)) &&
-                issueData.issue_status === "open" && (
+                issueData.issue_status !== "closed" && (
                   <div className="relative w-fit" ref={dropdownRef}>
                     <button
                       type="button" // Prevent form submission if inside a form
@@ -601,7 +613,11 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                 />
               )}
             </div>
-            <InfoBlock label="UUID" value={issueData.issue_uuid} />
+
+            <InfoBlock
+              label="Reference Number"
+              value={issueData.issue_reference_id}
+            />
           </DetailCard>
         </div>
 
@@ -648,7 +664,10 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
             </div>
             <div className="prose prose-neutral dark:prose-invert max-w-none">
               {issueData.issue_remarks ? (
-                <p className="line-clamp-1 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
+                <p
+                  title={titleHelper(issueData.issue_remarks)}
+                  className="line-clamp-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300"
+                >
                   {issueData.issue_remarks}
                 </p>
               ) : (

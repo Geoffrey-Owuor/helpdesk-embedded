@@ -158,7 +158,7 @@ const TableOfContents = ({ items }: { items: ChangelogData[] }) => (
             </span>
           </div>
           <p className="mt-2 text-xs leading-relaxed text-neutral-500 dark:text-neutral-400">
-            A running log of updates, fixes, and improvements to IssueDesk.
+            A running log of updates, fixes, and improvements to HelpDesk.
           </p>
         </div>
       </div>

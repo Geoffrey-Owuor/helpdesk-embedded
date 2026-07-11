@@ -11,7 +11,7 @@ const FirstLoginLinkTemplate = (
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to IssueDesk - Setup Your Account</title>
+    <title>Welcome to HelpDesk - Setup Your Account</title>
     <style>
         /* Resets to ensure consistent rendering across clients */
         body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #ffffff; color: #51545E; }
@@ -46,15 +46,15 @@ const FirstLoginLinkTemplate = (
         <table class="main" width="100%">
             <tr>
                 <td class="header">
-                   <h2 style="color: #2c3e50; margin:0;">IssueDesk</h2>
+                   <h2 style="color: #2c3e50; margin:0;">HelpDesk</h2>
                 </td>
             </tr>
 
             <tr>
                 <td class="content">
-                    <h1>Welcome to IssueDesk!</h1>
+                    <h1>Welcome to HelpDesk!</h1>
                     <p>Hello,</p>
-                    <p>An account has been created for you on IssueDesk. To get started, you will need to log in and set up your own new password.</p>
+                    <p>An account has been created for you on HelpDesk. To get started, you will need to log in and set up your own new password.</p>
                     
                     <p>Your temporary login password is:</p>
                     
@@ -78,7 +78,7 @@ const FirstLoginLinkTemplate = (
         </table>
 
         <div class="footer">
-            <p>&copy; ${currentYear} IssueDesk. All rights reserved.</p>
+            <p>&copy; ${currentYear} HelpDesk. All rights reserved.</p>
         </div>
     </center>
 </body>

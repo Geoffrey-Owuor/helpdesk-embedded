@@ -13,6 +13,7 @@ import {
 import Pagination from "../IssuesData/Pagination";
 import ArticleCardsView from "./ArticleCardsView";
 import { useActiveTabStore } from "@/store/useActiveTabStore";
+import { usePathname } from "next/navigation";
 
 import ArticleCardsSkeleton from "@/components/Skeletons/ArticleCardsSkeleton";
 
@@ -29,6 +30,11 @@ const ArticlesCardData = ({
   refetchData,
   userId,
 }: ArticlesCardDataProps) => {
+  // Pathname
+  const pathname = usePathname();
+
+  const isInDashboard = pathname.includes("dashboard");
+
   // Search query states
   const [searchQuery, setSearchQuery] = useState("");
   const [articlesPerPage, setArticlesPerPage] = useState(6);
@@ -94,15 +100,17 @@ const ArticlesCardData = ({
           </span>
 
           <p className="mb-4 text-neutral-600 dark:text-neutral-400">
-            Seems like you haven&apos;t posted any article
+            Seems like no articles have been posted yet
           </p>
-          <button
-            className="inline-flex items-center gap-1.5 rounded-xl bg-zinc-900 px-3 py-2 text-sm text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
-            onClick={() => setActiveTab("post")}
-          >
-            <PenLine className="h-4 w-4" />
-            New Article
-          </button>
+          {isInDashboard && (
+            <button
+              className="inline-flex items-center gap-1.5 rounded-xl bg-zinc-900 px-3 py-2 text-sm text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+              onClick={() => setActiveTab("post")}
+            >
+              <PenLine className="h-4 w-4" />
+              New Article
+            </button>
+          )}
         </div>
       </div>
     );

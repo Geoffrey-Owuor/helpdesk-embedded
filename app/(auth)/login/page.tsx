@@ -5,7 +5,7 @@ import SuspenseSkeleton from "@/components/Skeletons/SuspenseSkeleton";
 
 export const metadata: Metadata = {
   title: "Login",
-  description: "IssueDesk login page",
+  description: "HelpDesk login page",
 };
 
 const page = () => {

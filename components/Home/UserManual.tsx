@@ -100,7 +100,7 @@ const dashboardSteps = [
     icon: <UserRoundPlus className="h-5 w-5" />,
     title: "Create an Account or Log In",
     description:
-      "If you're new to IssueDesk, head to the registration page to create your account. Existing users can log in directly with their credentials.",
+      "If you're new to HelpDesk, head to the registration page to create your account. Existing users can log in directly with their credentials.",
     detail: (
       <ul className="mt-3 space-y-2 text-sm text-neutral-500 dark:text-neutral-400">
         <li className="flex items-start gap-2">

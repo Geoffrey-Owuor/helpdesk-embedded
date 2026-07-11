@@ -45,6 +45,7 @@ const ISSUE_TYPE_MAPPING: Record<string, string> = {
   "Document DMS": "Document Management System",
   "Staff Purchase": "Staff Product Purchase",
   "Requisition Hub": "Requisition Hub",
+  "ERP Code Creation": "ERP Product Code Creation",
 };
 
 // Handling cases where issue type is other and later other issue types that require formatting
@@ -90,6 +91,24 @@ export const baseDepartments = [
   { option: "Service Center", value: "Service Center" },
   { option: "Directorate", value: "Directorate" },
 ];
+
+// Issue reference prefix mapping
+export const issuePrefixMapping: Record<string, string> = {
+  "IT & Projects": "IT",
+  Finance: "FIN",
+  Marketing: "MKT",
+  Operations: "OPR",
+  Commercial: "CMR",
+  "HR & Admin": "HR",
+  "Modern Trade": "MT",
+  Retail: "RTL",
+  B2B: "B2B",
+  "Internal Audit": "IA",
+  "Engineering & HVAC": "ENG",
+  Security: "SEC",
+  "Service Center": "SVC",
+  Directorate: "DIR",
+};
 
 export const DEFAULT_FETCH_OPTIONS = { selectedFilter: "status", status: "" };
 

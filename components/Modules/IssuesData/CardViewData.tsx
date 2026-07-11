@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import IssuePriorityFormatter from "./IssuePriorityFormatter";
 import RelativeTimeBadge from "./RelativeTimeBadge";
+import { ResolutionTimePill } from "./ResolutionTimePill";
 
 type CardViewDataProps = {
   currentIssues: Record<string, string | number>[];
@@ -51,17 +52,20 @@ const CardViewData = ({
           className="group flex cursor-pointer flex-col justify-between rounded-xl border border-neutral-200 bg-white p-5 shadow-xs transition-all duration-200 hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700"
         >
           {/* Header: Ref ID & Status */}
-          <div className="mb-4 flex items-center justify-between gap-2">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <div className="inline-flex items-center gap-3">
               <Link
                 onClick={(e) => {
                   e.stopPropagation();
                   setLoadingLine(true);
                 }}
+                title={titleHelper(issueData.issue_reference_id)}
                 href={`/dashboard/${issueData.issue_uuid}?type=${dynamicUrlParam}&title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`}
                 className="flex items-center gap-1.5 text-sm font-semibold text-neutral-500 transition-colors hover:text-blue-500 hover:underline dark:text-neutral-400"
               >
-                {issueData.issue_reference_id}
+                <span className="max-w-50 truncate">
+                  {issueData.issue_reference_id}
+                </span>
               </Link>
               <IssuePriorityFormatter
                 priority={issueData.issue_priority}
@@ -101,10 +105,22 @@ const CardViewData = ({
           {/* Footer: Metadata & Agent */}
           <div className="space-y-4 border-t border-neutral-100 pt-4 dark:border-neutral-800">
             {/* Dept/Type Row */}
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 text-[11px] font-medium text-neutral-500">
-                <Tag size={12} className="opacity-70" />
-                <span className="truncate">{issueData.issue_type}</span>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-[11px] font-medium text-neutral-500">
+                  <Tag size={12} className="opacity-70" />
+                  <span className="truncate">{issueData.issue_type}</span>
+                </div>
+                {/* Resolution Time */}
+                {(issueData.issue_status === "resolved" ||
+                  issueData.issue_status === "closed") &&
+                  issueData.issue_created_at &&
+                  issueData.issue_date_resolved && (
+                    <ResolutionTimePill
+                      dateSubmitted={issueData.issue_created_at}
+                      dateResolved={issueData.issue_date_resolved}
+                    />
+                  )}
               </div>
               <div className="flex items-center gap-2 text-[11px] font-medium text-neutral-500">
                 <Calendar size={12} className="opacity-70" />

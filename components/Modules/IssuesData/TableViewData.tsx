@@ -11,6 +11,7 @@ import { useLoadingStore } from "@/store/useLoadingStore";
 import IssuePriorityFormatter from "./IssuePriorityFormatter";
 import RelativeTimeBadge from "./RelativeTimeBadge";
 import { Paperclip } from "lucide-react";
+import { ResolutionTimePill } from "./ResolutionTimePill";
 
 type TableViewDataProps = {
   currentIssues: Record<string, string | number>[];
@@ -132,8 +133,9 @@ const TableViewData = ({
                           e.stopPropagation();
                           setLoadingLine(true);
                         }}
+                        title={titleHelper(issueData.issue_reference_id)}
                         href={`/dashboard/${issueData.issue_uuid}?type=${dynamicUrlParam}&title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`}
-                        className="max-w-30 truncate text-sm font-semibold text-neutral-900 hover:text-blue-500 hover:underline dark:text-neutral-100"
+                        className="max-w-50 truncate text-sm font-semibold text-neutral-900 hover:text-blue-500 hover:underline dark:text-neutral-100"
                       >
                         {issueData.issue_reference_id}
                       </Link>
@@ -152,9 +154,21 @@ const TableViewData = ({
 
                 {visibleColumns.type && (
                   <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
-                    <p className="max-w-30 truncate text-sm text-gray-900 dark:text-white">
-                      {issueData.issue_type}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="max-w-30 truncate text-sm text-gray-900 dark:text-white">
+                        {issueData.issue_type}
+                      </p>
+                      {/* Resolution Time */}
+                      {(issueData.issue_status === "resolved" ||
+                        issueData.issue_status === "closed") &&
+                        issueData.issue_created_at &&
+                        issueData.issue_date_resolved && (
+                          <ResolutionTimePill
+                            dateSubmitted={issueData.issue_created_at}
+                            dateResolved={issueData.issue_date_resolved}
+                          />
+                        )}
+                    </div>
                   </td>
                 )}
 
