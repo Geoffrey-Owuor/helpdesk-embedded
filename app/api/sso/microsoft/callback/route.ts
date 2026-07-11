@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
 
     // Query the user from our database
     const baseQuery = `
-      SELECT user_id, username, email, department, role 
+      SELECT user_id, username, email, department, role, is_user_active 
       FROM users WHERE email = $1 LIMIT 1
     `;
 
@@ -73,6 +73,11 @@ export async function GET(req: NextRequest) {
 
     if (user.length > 0) {
       const returnedUser = user[0];
+
+      // Check if the user is active
+      if (!returnedUser.is_user_active) {
+        return Response.redirect(new URL("/login", origin));
+      }
 
       const superAdmin = await query(superAdminQuery, [returnedUser.user_id]);
 
