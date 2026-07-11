@@ -12,8 +12,8 @@ export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json();
 
-    // Find user by email
-    const query1 = `SELECT user_id, email, password, username, department, role, is_user_active
+    // 1. Find user by email (added password_attempts to SELECT)
+    const query1 = `SELECT user_id, email, password, username, department, role, is_user_active, password_attempts
                     FROM users
                     WHERE email = $1 LIMIT 1`;
     const params1 = [email];
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
 
     if (!result1.length) {
       return NextResponse.json(
-        { message: "wrong email or password" },
+        { message: "Wrong email or password" },
         { status: 401 },
       );
     }
@@ -29,26 +29,48 @@ export async function POST(request: NextRequest) {
     // Assign result to user
     const user = result1[0];
 
-    // User account is inactive/disabled
+    // 2. User account is inactive/disabled check
     const isActive = user.is_user_active;
 
     if (!isActive) {
       return NextResponse.json(
-        { message: "Account is disabled, contact administrator" },
+        { message: "Account is disabled, contact the administrator" },
         { status: 403 },
       );
     }
 
-    // Verify password
+    // 3. Verify password
     const isValid = await verifyPassword(password, user.password);
+
     if (!isValid) {
-      return NextResponse.json(
-        { message: "Wrong email or password" },
-        { status: 401 },
-      );
+      const newAttempts = (user.password_attempts || 0) + 1;
+
+      if (newAttempts >= 3) {
+        // Lock the account and update total attempts
+        const lockQuery = `UPDATE users 
+                           SET password_attempts = $1, is_user_active = false 
+                           WHERE user_id = $2`;
+        await query(lockQuery, [newAttempts, user.user_id]);
+
+        return NextResponse.json(
+          { message: "Too many failed attempts, contact the administrator" },
+          { status: 403 },
+        );
+      } else {
+        // Increment the counter only
+        const incrementQuery = `UPDATE users 
+                                SET password_attempts = $1 
+                                WHERE user_id = $2`;
+        await query(incrementQuery, [newAttempts, user.user_id]);
+
+        return NextResponse.json(
+          { message: "Wrong email or password" },
+          { status: 401 },
+        );
+      }
     }
 
-    // Check if the user is a super admin
+    // 4. Check if the user is a super admin
     const superAdmins = await query(
       `
       SELECT super_admin_id FROM super_admins 
@@ -68,16 +90,19 @@ export async function POST(request: NextRequest) {
       email: user.email,
       isSuper: isSuperAdmin,
     };
-    //Generate access tokens
+
+    // Generate access tokens
     const accessToken = await signAccessToken(payload);
     const refreshToken = await signRefreshToken(payload);
 
     // Hash refresh token and store it in the database
     const hashedRefreshToken = await hashRefreshToken(refreshToken);
 
+    // 5. SUCCESS: Update tokens AND reset password_attempts back to 0
     const query2 = `UPDATE users 
                     SET refresh_token = $1, 
-                    refresh_token_expiry = NOW() + INTERVAL '7 days'
+                        refresh_token_expiry = NOW() + INTERVAL '7 days',
+                        password_attempts = 0
                     WHERE email = $2`;
     const params2 = [hashedRefreshToken, email];
 
