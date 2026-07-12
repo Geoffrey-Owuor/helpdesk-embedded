@@ -33,6 +33,28 @@ export default function LoginPage() {
 
   const isEmbedded = useIsEmbedd();
 
+  // useEffect that listens for window popups broadcast messages
+  useEffect(() => {
+    const handleAuthMessage = (event: MessageEvent) => {
+      // Security check (Defense in depth)
+      if (event.origin !== window.location.origin) return;
+
+      // Listen for the signal from the popup
+      if (event.data?.type === "AUTH_SUCCESS" && event.data?.url) {
+        // Sync tabs if needed (cross-tab checking)
+        const authChannel = new BroadcastChannel("auth_session_sync");
+        authChannel.postMessage({ action: "LOGIN" });
+        authChannel.close();
+
+        // Redirect the parent iframe to the URL dictated by the backend
+        window.location.href = event.data.url;
+      }
+    };
+
+    window.addEventListener("message", handleAuthMessage);
+    return () => window.removeEventListener("message", handleAuthMessage);
+  }, []);
+
   // Microsoft sso state
   const [ssoLoading, setSsoLoading] = useState(false);
 
@@ -85,14 +107,30 @@ export default function LoginPage() {
     // or the AlertContext handles the timeout.
   }, [searchParams, triggerAlert]);
 
-  // handling Login when button is clicked inside an iframe
+  // 2. Modify your handleLogin function
   const handleLogin = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (isEmbedded) {
-      // 1. Stop the form from submitting to the API endpoint
       e.preventDefault();
-      // Escape the iframe and open the current page in a fresh new browser tab
-      window.open(window.location.href, "_blank", "noopener,noreferrer");
-      return;
+      setSsoLoading(true);
+
+      const width = 600;
+      const height = 650;
+      const left = window.screen.width / 2 - width / 2;
+      const top = window.screen.height / 2 - height / 2;
+
+      // Notice the ?popup=true flag
+      const popup = window.open(
+        "/api/sso/microsoft/login?popup=true",
+        "MicrosoftAuthPopup",
+        `width=${width},height=${height},top=${top},left=${left}`,
+      );
+
+      const checkPopupClosed = setInterval(() => {
+        if (!popup || popup.closed) {
+          clearInterval(checkPopupClosed);
+          setSsoLoading(false);
+        }
+      }, 1000);
     }
   };
 
@@ -218,12 +256,7 @@ export default function LoginPage() {
               Continue with Microsoft 365
             </button>
           </form>
-          {isEmbedded && (
-            <span className="rounded-full bg-amber-50 px-4 py-3 text-center text-xs tracking-tight text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
-              Browser policies prevent Microsoft login inside embedded frames.
-              Clicking the above will open this page in a new browser window.
-            </span>
-          )}
+
           <div className="flex items-center justify-center gap-1 text-sm text-neutral-700 dark:text-neutral-300">
             <span>Don&apos;t have an account?</span>
             <Link
