@@ -141,7 +141,8 @@ function generateReminderEmail(
   ).length;
   const highCount = issues.filter((i) => i.issue_priority === "High").length;
 
-  return `<!DOCTYPE html>
+  return `
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -150,12 +151,12 @@ function generateReminderEmail(
 </head>
 <body style="
   margin: 0; padding: 0;
-  background-color: #f3f4f6;
+  background-color: transparent;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 ">
 
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f3f4f6; padding: 40px 16px;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
     <tr>
       <td align="center">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 680px;">
@@ -163,8 +164,8 @@ function generateReminderEmail(
           <tr>
             <td style="
               background: #171717;
-              padding: 22px 32px;
-              border-radius: 12px 12px 0 0;
+              padding: 20px;
+              border-radius: 20px 20px 0 0;
             ">
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
@@ -190,10 +191,7 @@ function generateReminderEmail(
           <tr>
             <td style="
               background: #ffffff;
-              padding: 32px 32px 28px;
-              border-radius: 0 0 12px 12px;
-              border: 1px solid #e5e7eb;
-              border-top: none;
+              padding: 24px 0px;
             ">
 
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="

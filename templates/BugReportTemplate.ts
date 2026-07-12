@@ -16,17 +16,16 @@ export const BugReportTemplate = (bugReportData: BugReportProps): string => {
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: transparent;
             margin: 0;
             padding: 0;
         }
         .container {
+            margin: 0 auto;
             max-width: 600px;
-            margin: 40px auto;
             background-color: #ffffff;
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         .header {
             background-color: #c0392b;
