@@ -28,6 +28,33 @@ export async function GET(req: NextRequest) {
   const cookieStore = await cookies();
   const storedState = cookieStore.get("oauth_state")?.value;
   const storedCodeVerifier = cookieStore.get("oauth_code_verifier")?.value;
+  const isPopup = cookieStore.get("oauth_is_popup")?.value === "true";
+
+  const handleRedirect = (targetPath: string) => {
+    if (isPopup) {
+      return new Response(
+        `<!DOCTYPE html>
+      <html>
+        <head><title>Authenticating...</title></head>
+        <body>
+          <script>
+            if (window.opener) {
+              window.opener.postMessage(
+                { type: "AUTH_SUCCESS", url: "${targetPath}" }, 
+                window.location.origin
+              );
+              window.close();
+            } else {
+              window.location.href = "${targetPath}";
+            }
+          </script>
+        </body>
+      </html>`,
+        { headers: { "Content-Type": "text/html" } },
+      );
+    }
+    return Response.redirect(new URL(targetPath, origin));
+  };
 
   if (
     !code ||
@@ -76,7 +103,8 @@ export async function GET(req: NextRequest) {
 
       // Check if the user is active
       if (!returnedUser.is_user_active) {
-        return Response.redirect(new URL("/login", origin));
+        cookieStore.delete("oauth_is_popup");
+        return handleRedirect("/login");
       }
 
       const superAdmin = await query(superAdminQuery, [returnedUser.user_id]);
@@ -114,8 +142,8 @@ export async function GET(req: NextRequest) {
       // Cleanup state tracking cookies
       cookieStore.delete("oauth_state");
       cookieStore.delete("oauth_code_verifier");
-
-      return Response.redirect(new URL("/dashboard", origin));
+      cookieStore.delete("oauth_is_popup"); // Clean up new cookie
+      return handleRedirect("/dashboard");
     } else {
       // 1. Create a short-lived temporary payload
       const tempPayload = {
@@ -139,7 +167,8 @@ export async function GET(req: NextRequest) {
       });
 
       // 4. Redirect to the completion page
-      return Response.redirect(new URL("/sso", origin));
+      cookieStore.delete("oauth_is_popup");
+      return handleRedirect("/sso");
     }
   } catch (error) {
     console.error("Authentication handshake error:", error);

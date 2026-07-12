@@ -8,6 +8,9 @@ export async function GET(req: NextRequest) {
   const origin = await getRequestOrigin(req);
   const dynamicRedirectURI = `${origin}/api/sso/microsoft/callback`;
 
+  const requestUrl = new URL(req.url);
+  const isPopup = requestUrl.searchParams.get("popup") === "true";
+
   // Instantiate Arctic uniquely for the current domain
   const entraId = new MicrosoftEntraId(
     process.env.AUTH_MICROSOFT_ENTRA_ID_TENANT_ID!,
@@ -30,6 +33,14 @@ export async function GET(req: NextRequest) {
     maxAge: 60 * 10,
   });
   cookieStore.set("oauth_code_verifier", codeVerifier, {
+    secure: process.env.NODE_ENV === "production",
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 10,
+  });
+
+  cookieStore.set("oauth_is_popup", isPopup ? "true" : "false", {
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
     sameSite: "lax",

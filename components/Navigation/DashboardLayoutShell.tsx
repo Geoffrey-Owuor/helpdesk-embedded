@@ -7,10 +7,21 @@ import { DbStatusOverlay } from "../Modules/DbStatus/DbStatusOverlay";
 import { useDbStore } from "@/store/useDbStore";
 import { useSidebarToggleStore } from "@/store/useSidebarToggleStore";
 import DesktopDashboardHeader from "./DesktopDashboardHeader";
+import { useEffect } from "react";
+import { useUser } from "@/contexts/UserContext";
 
 const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
   const status = useDbStore((state) => state.status);
   const showSidebar = useSidebarToggleStore((state) => state.showSidebar);
+  const { userId } = useUser();
+
+  // Cross tab checking
+  useEffect(() => {
+    // Broadcast the new login to other tabs
+    const authChannel = new BroadcastChannel("auth_session_sync");
+    authChannel.postMessage({ action: "LOGIN", userId: userId });
+    authChannel.close();
+  }, [userId]);
 
   const defaultContent = (
     <HydrationGuard>

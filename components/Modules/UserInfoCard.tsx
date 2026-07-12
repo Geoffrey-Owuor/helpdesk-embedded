@@ -5,7 +5,6 @@ import apiClient from "@/lib/AxiosClient";
 import { useUser } from "@/contexts/UserContext";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useEffect, RefObject } from "react";
-import { useIsEmbedd } from "@/hooks/useIsEmbedd";
 
 type UserCardProps = {
   isUserCardOpen: boolean;
@@ -23,8 +22,6 @@ const UserInfoCard = ({
   triggerRef,
 }: UserCardProps) => {
   const { role, username, email } = useUser();
-
-  const isEmbedded = useIsEmbedd();
 
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
@@ -99,15 +96,13 @@ const UserInfoCard = ({
           Settings
         </button>
 
-        {!isEmbedded && (
-          <button
-            onClick={handleLogout}
-            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
-          >
-            <LogOut size={16} />
-            Log out
-          </button>
-        )}
+        <button
+          onClick={handleLogout}
+          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+        >
+          <LogOut size={16} />
+          Log out
+        </button>
       </div>
     </div>
   );
