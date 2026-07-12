@@ -278,7 +278,8 @@ export function generateIssueNotificationEmail(
     ? renderMessageSection("Reason Escalated", reasonEscalated)
     : "";
 
-  return `<!DOCTYPE html>
+  return `
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -294,13 +295,13 @@ export function generateIssueNotificationEmail(
 <body style="
   margin: 0;
   padding: 0;
-  background-color: #f3f4f6;
+  background-color: transparent;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 ">
 
   <!-- Outer wrapper -->
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f3f4f6; padding: 40px 16px;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
     <tr>
       <td align="center">
 
@@ -311,8 +312,8 @@ export function generateIssueNotificationEmail(
           <tr>
             <td style="
               background: #171717;
-              padding: 22px 32px;
-              border-radius: 10px 10px 0 0;
+              padding: 20px;
+              border-radius: 20px 20px 0 0;
             ">
               <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
                 <tr>
@@ -343,10 +344,7 @@ export function generateIssueNotificationEmail(
           <tr>
             <td style="
               background: #ffffff;
-              padding: 32px 32px 28px;
-              border-radius: 0 0 10px 10px;
-              border: 1px solid #e5e7eb;
-              border-top: none;
+              padding: 24px 0px;
             ">
 
               <!-- Title & Description -->
@@ -521,5 +519,6 @@ export function generateIssueNotificationEmail(
   </table>
 
 </body>
-</html>`;
+</html>
+  `;
 }
