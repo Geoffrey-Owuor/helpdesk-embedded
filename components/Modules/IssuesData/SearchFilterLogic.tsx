@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Check, ChevronDown, Filter } from "lucide-react";
-import { useSearchLogic } from "@/contexts/SearchLogicContext";
+import { useSearchStore } from "@/store/useSearchStore";
 import { useUser } from "@/contexts/UserContext";
 
 // Define options outside component to keep it clean
@@ -12,14 +12,19 @@ const filterOptions = [
   { label: "Department", value: "department" },
   { label: "Agent", value: "agent" },
   { label: "Issue Type", value: "type" },
+  { label: "Issue Priority", value: "priority" },
   { label: "Submitter", value: "submitter" },
 ];
 
-const SearchFilterLogic = () => {
+const SearchFilterLogic = ({ recordType }: { recordType: string }) => {
   // State for the filter dropdown
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const { selectedFilter, agentAdminFilter, setSelectedFilter } =
-    useSearchLogic();
+
+  // Store state
+  const selectedFilter = useSearchStore((state) => state.selectedFilter);
+  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
+  const setSelectedFilter = useSearchStore((state) => state.setSelectedFilter);
+
   const filterRef = useRef<HTMLDivElement>(null);
 
   // Get the user's role
@@ -29,6 +34,7 @@ const SearchFilterLogic = () => {
     return filterOptions.filter((option) => {
       // Hide agent filter if user is an agent and the agentAdminFilter is not enabled
       if (
+        recordType !== "automations" &&
         role === "agent" &&
         agentAdminFilter !== "agentAdminFilter" &&
         option.value === "agent"
@@ -36,12 +42,21 @@ const SearchFilterLogic = () => {
         return false;
 
       // Hide the submitter filter if user is a standard user
-      if (role === "user" && option.value === "submitter") return false;
+      if (
+        recordType !== "automations" &&
+        role === "user" &&
+        option.value === "submitter"
+      )
+        return false;
+
+      // Hide department and Issue Type when recordType is automations
+      if (recordType === "automations" && option.value === "department")
+        return false;
 
       // Otherwise return true for the remaining ones
       return true;
     });
-  }, [role, agentAdminFilter]);
+  }, [role, agentAdminFilter, recordType]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -87,7 +102,7 @@ const SearchFilterLogic = () => {
 
       {/* Dropdown Menu */}
       {isFilterOpen && (
-        <div className="absolute top-full left-0 z-20 mt-2 w-full origin-top-left rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-none">
+        <div className="default-scrollbar absolute top-full left-0 z-20 mt-2 max-h-80 w-full origin-top-left overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-950 dark:shadow-none">
           <div className="px-2 py-2 text-xs font-semibold text-neutral-500 uppercase">
             Filter Options
           </div>

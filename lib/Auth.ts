@@ -1,6 +1,7 @@
 import { SignJWT, jwtVerify, JWTPayload } from "jose";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
+import { cache } from "react";
 
 export interface AuthJWTPayload extends JWTPayload {
   userId: string;
@@ -8,6 +9,7 @@ export interface AuthJWTPayload extends JWTPayload {
   username: string;
   role: string;
   department: string;
+  isSuper: boolean;
 }
 
 const ACCESS_SECRET = new TextEncoder().encode(process.env.ACCESS_TOKEN_SECRET);
@@ -31,16 +33,16 @@ export async function verifyPassword(password: string, hashedPassword: string) {
   return await bcrypt.compare(password, hashedPassword);
 }
 
-// Getting an access token
+// Getting an access token (1hr expiry)
 export async function signAccessToken(payload: AuthJWTPayload) {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("15m")
+    .setExpirationTime("1h")
     .sign(ACCESS_SECRET);
 }
 
-// Getting a refresh token
+// Getting a refresh token (7days expiry)
 export async function signRefreshToken(payload: AuthJWTPayload) {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
@@ -59,7 +61,8 @@ export async function createSession(accessToken: string, refreshToken: string) {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
-    maxAge: 15 * 60, //15 minutes
+    maxAge: 60 * 60, //1 hr
+    path: "/",
   });
 
   // set refresh token
@@ -68,6 +71,7 @@ export async function createSession(accessToken: string, refreshToken: string) {
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60, //7 days
+    path: "/",
   });
 }
 
@@ -101,7 +105,7 @@ export async function verifyRefreshTokenJWT(
 }
 
 // Require session to get a valid session - A simpler version which is quicker
-export async function requireSession(): Promise<AuthJWTPayload | null> {
+const getSession = async (): Promise<AuthJWTPayload | null> => {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get("refreshToken")?.value;
 
@@ -114,4 +118,26 @@ export async function requireSession(): Promise<AuthJWTPayload | null> {
     console.error("Session verification failed:", error);
     return null;
   }
-}
+};
+
+// Verifying the temporary sso registration completion token
+const verifyTemporaryToken = async (): Promise<AuthJWTPayload | null> => {
+  const cookieStore = await cookies();
+  const temporaryToken = cookieStore.get("sso_pending_registration")?.value;
+
+  if (!temporaryToken) return null;
+
+  try {
+    const { payload } = await jwtVerify(temporaryToken, ACCESS_SECRET);
+    return payload as AuthJWTPayload;
+  } catch (error) {
+    console.error("Session verification failed:", error);
+    return null;
+  }
+};
+
+// A memoized version of the function that persists
+// for the lifetime of a single server request.
+export const requireSession = cache(getSession);
+
+export const requireTemporarySession = cache(verifyTemporaryToken);

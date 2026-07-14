@@ -14,8 +14,6 @@ const ClientPortal = ({ children, selector = "body" }: ClientPortalProps) => {
 
   useEffect(() => {
     Promise.resolve().then(() => setMounted(true));
-
-    return () => setMounted(false);
   }, []);
 
   //   Check if mounted
@@ -23,8 +21,9 @@ const ClientPortal = ({ children, selector = "body" }: ClientPortalProps) => {
     return null;
   }
 
-  // container uses "body" by default but a specific id can be passed if needed
-  const container = document.querySelector(selector);
+  // Ensure document is available (extra safety for some edge case environments)
+  const container =
+    typeof document !== "undefined" ? document.querySelector(selector) : null;
 
   return container ? createPortal(children, container) : null;
 };

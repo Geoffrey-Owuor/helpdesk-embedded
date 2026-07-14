@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, FormEvent } from "react";
 import Link from "next/link";
-import { useAlert } from "@/contexts/AlertContext";
+import { useAlertStore } from "@/store/useAlertStore";
 import { Loader2, ArrowRight, Mail } from "lucide-react";
 import AuthShell from "../AuthShell";
 import { ApiHandler } from "@/utils/ApiHandler";
@@ -12,25 +12,17 @@ const ForgotPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   //   Control which parts of the ui to show based on the step
   const [step, setStep] = useState(1);
-  const { setAlertInfo } = useAlert();
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
+  const hideAlert = useAlertStore((state) => state.hideAlert);
   const [coolDown, setCoolDown] = useState(0);
 
   //   Submit Email
   const submitRequest = async () => {
     // clear alerts
-    setAlertInfo({
-      alertType: "",
-      showAlert: false,
-      alertMessage: "",
-    });
+    hideAlert();
 
     if (!validateHotpointEmail(email)) {
-      setAlertInfo({
-        alertType: "error",
-        showAlert: true,
-        alertMessage: "Email provided is not a valid Hotpoint email",
-      });
-
+      triggerAlert("error", "Email provided is not a valid Hotpoint email");
       return;
     }
     setIsLoading(true);
@@ -45,21 +37,14 @@ const ForgotPassword = () => {
       if (!response.ok)
         throw new Error(data.message || "Error while sending a reset link");
 
-      setAlertInfo({
-        alertType: "success",
-        showAlert: true,
-        alertMessage: data.message,
-      });
+      // Trigger alert on success
+      triggerAlert("success", data.message);
 
       // Set step to 2
       setStep(2);
     } catch (error) {
       if (error instanceof Error) {
-        setAlertInfo({
-          alertType: "error",
-          showAlert: true,
-          alertMessage: error.message,
-        });
+        triggerAlert("error", error.message);
       }
       console.error("Error while sending the reset link", error);
     } finally {
@@ -80,12 +65,8 @@ const ForgotPassword = () => {
 
     await submitRequest();
 
-    // Show pop up alert
-    setAlertInfo({
-      alertType: "success",
-      showAlert: true,
-      alertMessage: "Reset Link Resent!",
-    });
+    // Trigger pop up alert
+    triggerAlert("success", "Reset Link Resent!");
   };
 
   // Cooldown timer
@@ -138,7 +119,7 @@ const ForgotPassword = () => {
                     id="email"
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value.trim())}
                     className="w-full rounded-full border border-neutral-400 bg-white py-3 pr-3 pl-14 text-neutral-900 placeholder-neutral-400 focus:border-neutral-600 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900/50 dark:text-white dark:focus:border-neutral-500"
                     placeholder="you@example.com"
                     required

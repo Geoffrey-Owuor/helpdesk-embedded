@@ -6,18 +6,20 @@ export const DashBoardLogo = ({
 }: {
   isSideBarOpen?: boolean;
 }) => (
-  <div className="flex items-center gap-0.5">
-    <div className="h-8 w-8">
+  <div className="relative flex items-center gap-0.5">
+    <div className="relative h-6.5 w-6.5">
       <Image
-        src={assets.issue_desk_image}
-        alt="Issue Desk Logo"
-        className="dark:invert"
+        src={assets.hotpoint_black_logo}
+        alt="HelpDesk Logo"
+        sizes="32px"
+        loading="eager"
+        className="object-contain dark:invert"
       />
     </div>
     <span
-      className={`${isSideBarOpen ? "block" : "hidden sm:block"} text-xl font-semibold text-black dark:text-white`}
+      className={`${isSideBarOpen ? "block" : "hidden"} text-xl font-semibold text-black dark:text-white`}
     >
-      Issue Desk
+      HelpDesk
     </span>
   </div>
 );

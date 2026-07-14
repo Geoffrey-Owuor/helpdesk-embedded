@@ -6,7 +6,7 @@ const poolConfig = {
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
   port: parseInt(process.env.DATABASE_PORT || "5432"), // Default standard Postgres port
-  max: 20,
+  max: 100, //maximum of 100 open connection threads
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 15000,
 };

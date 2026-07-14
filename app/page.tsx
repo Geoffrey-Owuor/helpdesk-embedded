@@ -1,15 +1,6 @@
-import HomeNavBar from "@/components/Navigation/HomeNavBar";
-import Hero from "@/components/Home/Hero";
-import Footer from "@/components/Home/Footer";
-
+import HomePage from "@/components/Home/HomePage";
 const page = () => {
-  return (
-    <div className="mx-auto max-w-7xl">
-      <HomeNavBar />
-      <Hero />
-      <Footer />
-    </div>
-  );
+  return <HomePage />;
 };
 
 export default page;

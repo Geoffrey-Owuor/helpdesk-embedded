@@ -2,7 +2,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { ApiHandler } from "@/utils/ApiHandler";
 import AuthShell from "../AuthShell";
-import { useAlert } from "@/contexts/AlertContext";
+import { useAlertStore } from "@/store/useAlertStore";
 import { useState, useEffect, useRef, useCallback, ChangeEvent } from "react";
 
 const VerifyCode = ({ email }: { email: string }) => {
@@ -14,7 +14,8 @@ const VerifyCode = ({ email }: { email: string }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [coolDown, setCoolDown] = useState(0);
-  const { setAlertInfo } = useAlert();
+
+  const triggerAlert = useAlertStore((state) => state.triggerAlert);
 
   // Refs to control focus
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -25,11 +26,7 @@ const VerifyCode = ({ email }: { email: string }) => {
   useEffect(() => {
     // Only trigger logic if the specific param exists
     if (searchParams.get("sent") === "true") {
-      setAlertInfo({
-        showAlert: true, // Hardcode true, don't rely on the param comparison anymore
-        alertType: "success",
-        alertMessage: "Your password has been reset successfully",
-      });
+      triggerAlert("success", "Verification code sent successfully");
 
       // Now clean the URL
       const newUrl = window.location.pathname;
@@ -38,7 +35,7 @@ const VerifyCode = ({ email }: { email: string }) => {
     // If the param is NOT 'success', we do nothing.
     // This leaves the alert visible until the user manually closes it
     // or the AlertContext handles the timeout.
-  }, [searchParams, setAlertInfo]);
+  }, [searchParams, triggerAlert]);
 
   // Memoize the submitcode function so that it does not run every time
   const submitCode = useCallback(
@@ -72,7 +69,7 @@ const VerifyCode = ({ email }: { email: string }) => {
   // UseEffect for auto-submission
   useEffect(() => {
     if (isCodeFull) {
-      submitCode(otp.join(""));
+      Promise.resolve().then(() => submitCode(otp.join("")));
     }
   }, [isCodeFull, submitCode, otp]);
 
@@ -130,12 +127,8 @@ const VerifyCode = ({ email }: { email: string }) => {
     try {
       await ApiHandler("/api/register", "POST", { email });
 
-      //  Show alert
-      setAlertInfo({
-        showAlert: true,
-        alertType: "success",
-        alertMessage: "Verification Code Resent",
-      });
+      // Trigger alert
+      triggerAlert("success", "Verification Code Resent");
     } catch (error) {
       console.error("Resend failed", error);
     }
