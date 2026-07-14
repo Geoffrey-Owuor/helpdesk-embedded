@@ -7,6 +7,7 @@ import AuthShell from "./AuthShell";
 import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
 import { useIsEmbedd } from "@/hooks/useIsEmbedd";
 import { useAlertStore } from "@/store/useAlertStore";
+import { basePath } from "@/public/assets";
 
 // Microsoft Icon Here
 const MicrosoftIcon = () => (
@@ -82,7 +83,7 @@ export default function LoginPage() {
         authChannel.postMessage({ action: "LOGIN", userId: data.id });
         authChannel.close();
 
-        window.location.href = "/dashboard";
+        window.location.href = `${basePath}/dashboard`;
       } else {
         setError(data.message || "Login Failed");
         setLoading(false);
@@ -120,7 +121,7 @@ export default function LoginPage() {
 
       // Notice the ?popup=true flag
       const popup = window.open(
-        "/api/sso/microsoft/login?popup=true",
+        `${basePath}/api/sso/microsoft/login?popup=true`,
         "MicrosoftAuthPopup",
         `width=${width},height=${height},top=${top},left=${left}`,
       );
@@ -242,7 +243,7 @@ export default function LoginPage() {
 
         <div className="mt-6 flex flex-col items-center gap-4">
           <form
-            action="/api/sso/microsoft/login"
+            action={`${basePath}/api/sso/microsoft/login`}
             className="w-full"
             onSubmit={() => setSsoLoading(true)}
           >

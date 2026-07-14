@@ -2,11 +2,12 @@ import { MicrosoftEntraId, generateState, generateCodeVerifier } from "arctic";
 import { cookies } from "next/headers";
 import { getRequestOrigin } from "@/lib/getRequestOrigin";
 import { NextRequest } from "next/server";
+import { basePath } from "@/public/assets";
 
 export async function GET(req: NextRequest) {
   // 1. Get the true origin via our helper
   const origin = await getRequestOrigin(req);
-  const dynamicRedirectURI = `${origin}/api/sso/microsoft/callback`;
+  const dynamicRedirectURI = `${origin}${basePath}/api/sso/microsoft/callback`;
 
   const requestUrl = new URL(req.url);
   const isPopup = requestUrl.searchParams.get("popup") === "true";

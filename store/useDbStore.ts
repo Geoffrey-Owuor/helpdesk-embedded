@@ -1,3 +1,4 @@
+import { basePath } from "@/public/assets";
 import { create } from "zustand";
 
 export type DbStatus = "ok" | "degraded" | "checking";
@@ -17,7 +18,9 @@ export const useDbStore = create<DbStore>((set) => ({
     set({ status: "checking" });
 
     try {
-      const res = await fetch("/api/healthcheck", { cache: "no-store" });
+      const res = await fetch(`${basePath}/api/healthcheck`, {
+        cache: "no-store",
+      });
       if (res.ok) {
         set({ status: "ok" });
       } else {

@@ -26,7 +26,7 @@ import { useAlertStore } from "@/store/useAlertStore";
 import { ApiHandler } from "@/utils/ApiHandler";
 import NameRulesCard from "@/components/Modules/NameRulesCard";
 import { NameValidator, NameValidationResult } from "@/utils/Validators";
-import { baseDepartments } from "@/public/assets";
+import { baseDepartments, basePath } from "@/public/assets";
 
 const CompleteRegistration = ({ email }: { email: string }) => {
   const searchParams = useSearchParams();
@@ -152,7 +152,7 @@ const CompleteRegistration = ({ email }: { email: string }) => {
       if (!response.ok) throw new Error(data.message || "Registration failed");
 
       // Push to protected dashboard
-      window.location.href = "/dashboard";
+      window.location.href = `${basePath}/dashboard`;
     } catch (error) {
       if (error instanceof Error) triggerAlert("error", error.message);
       setLoading(false);

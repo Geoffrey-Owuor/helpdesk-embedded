@@ -9,6 +9,7 @@ import {
   Image as ImageIcon,
   ExternalLink,
 } from "lucide-react";
+import { basePath } from "@/public/assets";
 
 type Props = {
   uuid: string;
@@ -72,7 +73,9 @@ export default function IssueAttachmentsViewer({ uuid }: Props) {
             <button
               key={attachment.id}
               type="button"
-              onClick={() => openInPopup(`/api/files/${attachment.file_url}`)}
+              onClick={() =>
+                openInPopup(`${basePath}/api/files/${attachment.file_url}`)
+              }
               className="group flex w-full cursor-pointer items-center justify-between rounded-xl border border-neutral-200 bg-neutral-50 p-3 text-left transition-colors hover:border-blue-300 hover:bg-blue-50/50 dark:border-neutral-800 dark:bg-neutral-900/50 dark:hover:border-blue-900/50 dark:hover:bg-blue-900/20"
             >
               <div className="flex items-center gap-3 overflow-hidden">

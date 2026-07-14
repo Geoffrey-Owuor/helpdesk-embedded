@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Building2, ChevronDown, Loader2 } from "lucide-react";
-import { baseDepartments } from "@/public/assets";
+import { baseDepartments, basePath } from "@/public/assets";
 import { ApiHandler } from "@/utils/ApiHandler";
 import AuthShell from "./AuthShell";
 
@@ -55,7 +55,7 @@ const SSOCompletionForm = ({
       }
 
       // Success! Redirect to the dashboard
-      window.location.href = "/dashboard";
+      window.location.href = `${basePath}/dashboard`;
     } catch (error) {
       console.error("Sso completion error:", error);
       setError("Something went wrong. Please try again.");

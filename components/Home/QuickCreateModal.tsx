@@ -37,7 +37,7 @@ import {
 import { fetchedBaseDepartments } from "@/serverActions/GetBaseDepartments";
 import { UserRecord } from "@/serverActions/GetCachedUsers";
 import { NameValidationResult, NameValidator } from "@/utils/Validators";
-import { baseDepartments } from "@/public/assets";
+import { baseDepartments, basePath } from "@/public/assets";
 
 // Stores
 import { useAlertStore } from "@/store/useAlertStore";
@@ -215,7 +215,7 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
 
       // TODO: Verify if you use a separate endpoint for Quick Create or the standard "/post-issue"
       const response = await fetch(
-        `/api/quick-create?secret=${process.env.NEXT_PUBLIC_APIS_KEY}`,
+        `${basePath}/api/quick-create?secret=${process.env.NEXT_PUBLIC_APIS_KEY}`,
         {
           method: "POST",
           body: submitData,

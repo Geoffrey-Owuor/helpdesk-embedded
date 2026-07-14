@@ -10,6 +10,7 @@ import { getRequestOrigin } from "@/lib/getRequestOrigin";
 import { cookies } from "next/headers";
 import crypto from "crypto";
 import { query } from "@/lib/Db";
+import { basePath } from "@/public/assets";
 
 export async function GET(request: NextRequest) {
   const baseUrl = await getRequestOrigin(request);
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest) {
 
     if (!email || !name || !timestamp || !signature) {
       console.log("Some required fields are missing");
-      return NextResponse.redirect(new URL("/login", baseUrl));
+      return NextResponse.redirect(new URL(`${basePath}/login`, baseUrl));
     }
 
     // 1. Prevent Replay Attacks (link expires in 2 minutes - 120000 milliseconds)
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest) {
     const timeDiff = now - parseInt(timestamp, 10);
     if (timeDiff > 120000 || timeDiff < 0) {
       console.log("There is a timestamp difference");
-      return NextResponse.redirect(new URL("/login", baseUrl));
+      return NextResponse.redirect(new URL(`${basePath}/login`, baseUrl));
     }
 
     // 2. Recreate the signature using the shared secret
@@ -48,14 +49,14 @@ export async function GET(request: NextRequest) {
     // 3. Compare signatures
     if (signature !== expectedSignature) {
       console.log("Signatures are not matching");
-      return NextResponse.redirect(new URL("/login", baseUrl));
+      return NextResponse.redirect(new URL(`${basePath}/login`, baseUrl));
     }
 
     // If there is already a valid session of the user available,
     // redirect directly to their dashboard
     const existingUser = await requireSession();
     if (existingUser?.email)
-      return NextResponse.redirect(new URL("/dashboard", baseUrl));
+      return NextResponse.redirect(new URL(`${basePath}/dashboard`, baseUrl));
 
     const user = await query(
       `
@@ -89,7 +90,7 @@ export async function GET(request: NextRequest) {
       });
 
       // 4. Redirect to the completion page
-      return Response.redirect(new URL("/sso", baseUrl));
+      return Response.redirect(new URL(`${basePath}/sso`, baseUrl));
     }
 
     // User exists assign the user object
@@ -97,7 +98,7 @@ export async function GET(request: NextRequest) {
 
     // Check if the user is an active user
     if (!userObject.is_user_active) {
-      return Response.redirect(new URL("/login", baseUrl));
+      return Response.redirect(new URL(`${basePath}/login`, baseUrl));
     }
 
     // Check if user is a super admin
@@ -140,12 +141,12 @@ export async function GET(request: NextRequest) {
     await createSession(accessToken, refreshToken);
 
     // Success: redirect the user to their dashboard
-    return NextResponse.redirect(new URL("/dashboard", baseUrl));
+    return NextResponse.redirect(new URL(`${basePath}/dashboard`, baseUrl));
   } catch (error) {
     console.error(
       "Error while trying to create the user HelpDesk sso session:",
       error,
     );
-    return NextResponse.redirect(new URL("/login", baseUrl));
+    return NextResponse.redirect(new URL(`${basePath}/login`, baseUrl));
   }
 }
