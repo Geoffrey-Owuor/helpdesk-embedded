@@ -353,7 +353,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           <div className="flex flex-col gap-3">
             <h1
               title={titleHelper(issueData.issue_title)}
-              className="max-w-100 truncate text-xl font-semibold text-neutral-900 dark:text-white"
+              className="max-w-100 text-xl font-semibold wrap-break-word text-neutral-900 dark:text-white"
             >
               {issueData.issue_title}
             </h1>
@@ -645,7 +645,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
             <div className="prose prose-neutral dark:prose-invert max-w-none">
               <p
                 title={issueData.issue_description.toString()}
-                className="line-clamp-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300"
+                className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-300"
               >
                 {issueData.issue_description}
               </p>
@@ -666,7 +666,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
               {issueData.issue_remarks ? (
                 <p
                   title={titleHelper(issueData.issue_remarks)}
-                  className="line-clamp-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300"
+                  className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-300"
                 >
                   {issueData.issue_remarks}
                 </p>

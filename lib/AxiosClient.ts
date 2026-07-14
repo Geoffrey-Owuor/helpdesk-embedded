@@ -1,11 +1,12 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { useDbStore } from "@/store/useDbStore";
+import { basePath } from "@/public/assets";
 
 // 1. The Type Definition
 let refreshPromise: Promise<unknown> | null = null;
 
 const apiClient = axios.create({
-  baseURL: "/api",
+  baseURL: `${basePath}/api`,
   headers: {
     "Content-Type": "application/json",
   },
@@ -68,7 +69,7 @@ apiClient.interceptors.response.use(
           }
         }
         // A 401 error - token probably expired redirect to login
-        window.location.href = "/login";
+        window.location.href = `${basePath}/login`;
         return Promise.reject(refreshError);
       }
     }

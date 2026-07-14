@@ -11,6 +11,8 @@ const currentYear = new Date().getFullYear();
 
 export { currentYear };
 
+export const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 // Function that receives username
 // And generates a capitalized abbreviation from it
 // Using a simple regex version

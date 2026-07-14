@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { AuthJWTPayload } from "@/lib/Auth";
+import { basePath } from "@/public/assets";
 
 // Only check the server on focus if X minutes have passed since the last check
 const THROTTLE_INTERVAL = 1000 * 60 * 30; // 30 minutes
@@ -43,7 +44,7 @@ export function useAuthSync(user: AuthJWTPayload) {
         router.refresh();
       } else if (action === "LOGIN" && userId !== localUserId) {
         // Another tab logged in as a different user (Imposter caught)
-        await fetch("/api/logout", { method: "POST" });
+        await fetch(`${basePath}/api/logout`, { method: "POST" });
         router.push("/login");
       }
     };
@@ -61,14 +62,14 @@ export function useAuthSync(user: AuthJWTPayload) {
       lastCheckedRef.current = now;
 
       try {
-        const response = await fetch("/api/check-session");
+        const response = await fetch(`${basePath}/api/check-session`);
         const data = await response.json();
 
         if (data.loggedIn === false) {
           router.push("/login");
           router.refresh();
         } else if (data.loggedIn === true && data.userId !== localUserId) {
-          await fetch("/api/logout", { method: "POST" });
+          await fetch(`${basePath}/api/logout`, { method: "POST" });
           router.push("/login");
         }
       } catch (error) {

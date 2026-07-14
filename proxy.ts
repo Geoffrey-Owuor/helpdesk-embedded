@@ -1,7 +1,8 @@
 import { NextResponse, NextRequest } from "next/server";
 import { requireSession } from "./lib/Auth";
 
-// A simple proxy to redirect from auth pages when a valid cookie session is found
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 const authPaths = [
   "/login",
   "/register",
@@ -10,28 +11,25 @@ const authPaths = [
 ];
 
 export async function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname } = request.nextUrl; // stripped of basePath — fine as-is
 
-  // Fetch session status once per request
   const user = await requireSession();
 
-  // 1. HANDLE PROTECTED ROUTE (/dashboard)
   if (pathname.startsWith("/dashboard")) {
     if (!user) {
-      // Cookie is missing or expired -> Force redirect to login
-      const response = NextResponse.redirect(new URL("/login", request.url));
-
-      // Optional: Explicitly wipe the dead cookie if requireSession doesn't
+      const response = NextResponse.redirect(
+        new URL(`${BASE_PATH}/login`, request.url),
+      );
       response.cookies.delete("refreshToken");
-
       return response;
     }
   }
 
-  // 2. HANDLE AUTH PAGES (Redirect logged-in users away)
   if (authPaths.includes(pathname)) {
     if (user) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+      return NextResponse.redirect(
+        new URL(`${BASE_PATH}/dashboard`, request.url),
+      );
     }
   }
 
@@ -39,7 +37,6 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Combined matcher to watch both auth flows and the main dashboard
   matcher: [
     "/login",
     "/register",

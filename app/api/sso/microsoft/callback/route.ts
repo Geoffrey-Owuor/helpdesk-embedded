@@ -9,10 +9,11 @@ import {
 import { query } from "@/lib/Db";
 import { getRequestOrigin } from "@/lib/getRequestOrigin";
 import { NextRequest } from "next/server";
+import { basePath } from "@/public/assets";
 
 export async function GET(req: NextRequest) {
   const origin = await getRequestOrigin(req);
-  const dynamicRedirectURI = `${origin}/api/sso/microsoft/callback`;
+  const dynamicRedirectURI = `${origin}${basePath}/api/sso/microsoft/callback`;
 
   const entraId = new MicrosoftEntraId(
     process.env.AUTH_MICROSOFT_ENTRA_ID_TENANT_ID!,
@@ -104,7 +105,7 @@ export async function GET(req: NextRequest) {
       // Check if the user is active
       if (!returnedUser.is_user_active) {
         cookieStore.delete("oauth_is_popup");
-        return handleRedirect("/login");
+        return handleRedirect(`${basePath}/login`);
       }
 
       const superAdmin = await query(superAdminQuery, [returnedUser.user_id]);
@@ -143,7 +144,7 @@ export async function GET(req: NextRequest) {
       cookieStore.delete("oauth_state");
       cookieStore.delete("oauth_code_verifier");
       cookieStore.delete("oauth_is_popup"); // Clean up new cookie
-      return handleRedirect("/dashboard");
+      return handleRedirect(`${basePath}/dashboard`);
     } else {
       // 1. Create a short-lived temporary payload
       const tempPayload = {
@@ -168,7 +169,7 @@ export async function GET(req: NextRequest) {
 
       // 4. Redirect to the completion page
       cookieStore.delete("oauth_is_popup");
-      return handleRedirect("/sso");
+      return handleRedirect(`${basePath}/sso`);
     }
   } catch (error) {
     console.error("Authentication handshake error:", error);

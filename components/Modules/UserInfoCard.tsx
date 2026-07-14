@@ -5,6 +5,7 @@ import apiClient from "@/lib/AxiosClient";
 import { useUser } from "@/contexts/UserContext";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useEffect, RefObject } from "react";
+import { basePath } from "@/public/assets";
 
 type UserCardProps = {
   isUserCardOpen: boolean;
@@ -54,7 +55,7 @@ const UserInfoCard = ({
       authChannel.close();
 
       // Redirect to login and refresh the page state
-      window.location.href = "/login";
+      window.location.href = `${basePath}/login`;
     } catch (error) {
       console.error("Logout failed", error);
       hideOverlay();
