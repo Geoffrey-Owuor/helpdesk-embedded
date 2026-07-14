@@ -1,46 +1,83 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
+import { useLoadingStore } from "@/store/useLoadingStore";
+import { usePathname } from "next/navigation";
 import ThemeToggle from "../Themes/ThemeToggle";
-import { assets } from "@/public/assets";
+import HomePagesLogo from "../Modules/HomePagesLogo";
+
+{
+  /* Desktop Nav Links */
+}
+const navLinks = [
+  { href: "/manual", label: "Manual" },
+  { href: "/changelog", label: "Changelog" },
+  { href: "/articles", label: "Knowledge Base" },
+];
 
 const HomeNavBar = () => {
-  const [scrolledUp, setScrolledUp] = useState(true); // Track if user scrolled up
+  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
+  const pathname = usePathname();
+
   const [isScrolled, setIsScrolled] = useState(false);
   const lastScrollY = useRef(0);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
+    // Select all elements with the class "home-container"
+    const containers = document.querySelectorAll(".home-container");
+
+    if (containers.length === 0) return;
+
+    const handleScroll = (event: Event) => {
+      const target = event.target as HTMLElement; // cast to HTMLElement
+      const currentScrollY = target.scrollTop;
       setIsScrolled(currentScrollY > 0);
-      setScrolledUp(currentScrollY < lastScrollY.current);
+
       lastScrollY.current = currentScrollY;
     };
 
-    window.addEventListener("scroll", handleScroll);
+    // Attach listener to each container
+    containers.forEach((container) =>
+      container.addEventListener("scroll", handleScroll),
+    );
+
+    // Cleanup: remove listeners
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      containers.forEach((container) =>
+        container.removeEventListener("scroll", handleScroll),
+      );
     };
   }, []);
 
+  const handleNavLinkClick = (href: string) => {
+    if (pathname === href) return;
+
+    setLoadingLine(true);
+  };
+
   return (
     <div
-      className={`fixed top-0 right-0 left-0 z-50 transition-all duration-200 ${scrolledUp ? "translate-y-0" : "-translate-y-full"} ${isScrolled ? "custom-blur bg-white/70 dark:bg-neutral-950/70" : "bg-transparent"}`}
+      className={`sticky top-0 right-0 left-0 z-50 ${isScrolled ? "custom-blur bg-white/70 dark:bg-neutral-950/70" : "bg-transparent"}`}
     >
-      <nav className="custom:px-8 mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-0.5">
-          <div className="h-8 w-8">
-            <Image
-              src={assets.issue_desk_image}
-              alt="Issue Desk Logo"
-              className="dark:invert"
-            />
-          </div>
-          <span className="hidden text-xl font-semibold text-black sm:flex dark:text-white">
-            Issue Desk
-          </span>
-        </Link>
+      <nav className="custom:px-8 mx-auto flex h-16 max-w-6xl items-center justify-between px-4 2xl:max-w-7xl">
+        {/* App Logo */}
+        <HomePagesLogo />
+
+        {/* Navbar links */}
+
+        <div className="hidden items-center gap-1 lg:flex">
+          {navLinks.map((link) => (
+            <Link
+              onClick={() => handleNavLinkClick(link.href)}
+              key={link.href}
+              href={link.href}
+              className="rounded-full px-4 py-1.5 text-sm text-black hover:bg-gray-200 dark:text-white dark:hover:bg-neutral-800"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+
         <div className="flex items-center gap-4">
           <ThemeToggle />
           <div className="flex items-center gap-2">

@@ -4,7 +4,6 @@ import {
   signAccessToken,
   signRefreshToken,
   hashRefreshToken,
-  verifyPassword,
 } from "@/lib/Auth";
 import { createSession } from "@/lib/Auth";
 import { cookies } from "next/headers";
@@ -27,17 +26,30 @@ export async function POST() {
       cookieStore.delete("accessToken");
       cookieStore.delete("refreshToken");
 
+      console.log("Token is invalid");
+
       return NextResponse.json({ message: "Invalid token" }, { status: 401 });
     }
 
     //Checked against the database stored token to ensure it has not been revoked/replaced
-    const dbQuery = `SELECT user_id, username, email, role, department, refresh_token FROM users WHERE user_id = $1`;
+    const dbQuery = `SELECT user_id, username, email, role, department, refresh_token, is_user_active FROM users WHERE user_id = $1`;
     const rows = await query(dbQuery, [payload.userId]);
 
     if (rows.length === 0) {
       cookieStore.delete("accessToken");
       cookieStore.delete("refreshToken");
+      console.log("User is not found in the database");
       return NextResponse.json({ message: "User not found" }, { status: 401 });
+    }
+
+    // Check if user is an active user
+    const isUserActive = rows[0].is_user_active;
+
+    if (!isUserActive) {
+      return NextResponse.json(
+        { message: "User account is disabled" },
+        { status: 401 },
+      );
     }
 
     // Get the required cookie information
@@ -51,26 +63,21 @@ export async function POST() {
     if (!hashedToken) {
       cookieStore.delete("accessToken");
       cookieStore.delete("refreshToken");
+      console.log("Previous token not found for user:", email);
       return NextResponse.json({ message: "Token not found" }, { status: 401 });
     }
 
-    // Compare cookie token with db hash using verifyPassword
-    const incomingSignature = refreshToken.split(".")[2];
-    const isTokenValid = await verifyPassword(incomingSignature, hashedToken);
+    // Check if the user is a super admin
+    const superAdmins = await query(
+      `
+      SELECT super_admin_id FROM super_admins 
+      WHERE super_admin_id = $1 LIMIT 1
+      `,
+      [userId],
+    );
 
-    if (!isTokenValid) {
-      await query(`UPDATE users SET refresh_token = NULL WHERE user_id = $1`, [
-        userId,
-      ]);
+    const isSuper = superAdmins.length > 0;
 
-      cookieStore.delete("accessToken");
-      cookieStore.delete("refreshToken");
-
-      return NextResponse.json(
-        { message: "Session invalidated" },
-        { status: 401 },
-      );
-    }
     // Generate new tokens
     const newPayload = {
       userId,
@@ -78,6 +85,7 @@ export async function POST() {
       username,
       role,
       department,
+      isSuper,
     };
 
     const newAccessToken = await signAccessToken(newPayload);
@@ -98,9 +106,10 @@ export async function POST() {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Token refresh error:", error);
+    // Failure when trying to run the refresh token
     return NextResponse.json(
-      { message: "Server error occured" },
-      { status: 401 },
+      { message: "Refresh token verification failed" },
+      { status: 503 },
     );
   }
 }

@@ -1,30 +1,21 @@
 "use client";
-import { useSearchLogic } from "@/contexts/SearchLogicContext";
-import { useIssuesData } from "@/contexts/IssuesDataContext";
+import { useSearchStore } from "@/store/useSearchStore";
 import { Search } from "lucide-react";
-import { Dispatch, SetStateAction } from "react";
+import { Options } from "@/public/assets";
 
-export type FilterProps = {
-  setCurrentPage: Dispatch<SetStateAction<number>>;
+type FilterProps = {
+  onSearch: (filters: Options) => void;
 };
-const SearchFilters = ({ setCurrentPage }: FilterProps) => {
-  // The the fetch issues function
-  const { fetchIssues } = useIssuesData();
-
-  // Get the filter data
-  const {
-    agentAdminFilter,
-    selectedFilter,
-    // Getters
-    status,
-    reference,
-    fromDate,
-    toDate,
-    department,
-    agent,
-    issueType,
-    submitter,
-  } = useSearchLogic();
+const SearchFilters = ({ onSearch }: FilterProps) => {
+  const status = useSearchStore((state) => state.status);
+  const reference = useSearchStore((state) => state.reference);
+  const fromDate = useSearchStore((state) => state.fromDate);
+  const toDate = useSearchStore((state) => state.toDate);
+  const department = useSearchStore((state) => state.department);
+  const agent = useSearchStore((state) => state.agent);
+  const issueType = useSearchStore((state) => state.issueType);
+  const issuePriority = useSearchStore((state) => state.issuePriority);
+  const submitter = useSearchStore((state) => state.submitter);
 
   // An array of our active filters
   const activeFilters = [
@@ -35,6 +26,7 @@ const SearchFilters = ({ setCurrentPage }: FilterProps) => {
     department,
     agent,
     issueType,
+    issuePriority,
     submitter,
   ];
   // Check if any of them has a value
@@ -45,8 +37,6 @@ const SearchFilters = ({ setCurrentPage }: FilterProps) => {
 
   // Compile options into one object
   const filterOptions = {
-    selectedFilter,
-    agentAdminFilter,
     status,
     reference,
     fromDate,
@@ -54,6 +44,7 @@ const SearchFilters = ({ setCurrentPage }: FilterProps) => {
     department,
     agent,
     issueType,
+    issuePriority,
     submitter,
   };
 
@@ -61,8 +52,7 @@ const SearchFilters = ({ setCurrentPage }: FilterProps) => {
   const handleFilterSearch = () => {
     // Do not run if button is disabled
     if (buttonDisabled) return;
-    fetchIssues(filterOptions);
-    setCurrentPage(1);
+    onSearch(filterOptions);
   };
   return (
     <button

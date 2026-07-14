@@ -1,0 +1,29 @@
+import { IssuePage } from "@/components/Modules/IssuePage/IssuePage";
+import { Metadata } from "next";
+
+type issuePageProps = {
+  params: Promise<{ uuid: string }>;
+  searchParams: Promise<{ type: string; title: string; description: string }>;
+};
+
+// Generating page metadata
+export const generateMetadata = async ({
+  searchParams,
+}: issuePageProps): Promise<Metadata> => {
+  // get the searchParams values
+  const { title, description } = await searchParams;
+
+  // return the constructed metadata
+  return {
+    title: title || "Issue Title",
+    description: description || "Issue Description",
+  };
+};
+
+const page = async ({ params, searchParams }: issuePageProps) => {
+  const { uuid } = await params;
+  const { type } = await searchParams;
+  return <IssuePage uuid={uuid} type={type} />;
+};
+
+export default page;

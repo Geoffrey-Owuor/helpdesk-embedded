@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@plugin "@tailwindcss/typography";
+
 /* Variant that works with next-themes */
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
@@ -21,15 +23,15 @@
 }
 
 [data-theme="dark"] {
-  /* Matches Tailwind neutral-800 for dark mode base */
-  --shimmer-background: #262626;
+  /* Matches Tailwind neutral-900 for dark mode base */
+  --shimmer-background: #171717;
 
-  /* Soft lighter gray shine for dark mode (instead of harsh white) */
+  /* Subtle lighter shine derived from neutral-900 */
   --shimmer-gradient: linear-gradient(
     90deg,
-    rgba(38, 38, 38, 0) 0%,
-    rgba(255, 255, 255, 0.05) 50%,
-    rgba(38, 38, 38, 0) 100%
+    rgba(23, 23, 23, 0) 0%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(23, 23, 23, 0) 100%
   );
 }
 
@@ -43,23 +45,23 @@
 
 @keyframes slideDown {
   from {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  to {
     transform: translateY(0);
     opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
   }
 }
 
 @keyframes slideUp {
   from {
-    transform: translateY(0);
-    opacity: 1;
+    transform: translateY(100%);
+    opacity: 0;
   }
   to {
-    transform: translateY(-100%);
-    opacity: 0;
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 
@@ -104,11 +106,84 @@
   animation: shimmer 1.5s infinite;
 }
 
+/* Notification shake keyframes */
+@keyframes bell-shake {
+  0% {
+    transform: rotate(0deg);
+  }
+  15% {
+    transform: rotate(15deg);
+  }
+  30% {
+    transform: rotate(-10deg);
+  }
+  45% {
+    transform: rotate(12deg);
+  }
+  60% {
+    transform: rotate(-8deg);
+  }
+  75% {
+    transform: rotate(6deg);
+  }
+  90% {
+    transform: rotate(-3deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.bell-btn:hover .bell-icon {
+  animation: bell-shake 0.6s ease-in-out 2;
+}
+
 html {
   scroll-behavior: smooth;
+  overflow: hidden;
+}
+
+/* Default scrollbar styles */
+.default-scrollbar {
+  scrollbar-color: #a3a3a3 transparent;
+  scrollbar-width: thin;
+}
+
+[data-theme="dark"] .default-scrollbar {
+  scrollbar-color: #484848 transparent;
+}
+
+.layout-scrollbar {
   scrollbar-color: #a3a3a3 transparent;
 }
 
-html[data-theme="dark"] {
+[data-theme="dark"] .layout-scrollbar {
   scrollbar-color: #484848 transparent;
+}
+
+/* Sidebar navigation styles */
+.sidebar-nav {
+  overflow-y: auto;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+  width: 3px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background-color: rgb(163 163 163 / 0.4); /* neutral-400 at 40% */
+  border-radius: 999px;
+}
+
+[data-theme="dark"] .sidebar-nav::-webkit-scrollbar-thumb {
+  background-color: rgb(115 115 115 / 0.4); /* neutral-500 at 40% */
+}
+
+/* Hide scrollbar */
+.scrollbar-hide {
+  scrollbar-width: none;
 }

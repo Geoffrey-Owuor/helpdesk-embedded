@@ -1,23 +1,47 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { requireSession } from "./lib/Auth";
-import { generateUserRoute } from "./utils/Validators";
+
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+const authPaths = [
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
+];
 
 export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl; // stripped of basePath — fine as-is
+
   const user = await requireSession();
 
-  if (user) {
-    const generatedUserRoute = generateUserRoute(user.username);
+  if (pathname.startsWith("/dashboard")) {
+    if (!user) {
+      const response = NextResponse.redirect(
+        new URL(`${BASE_PATH}/login`, request.url),
+      );
+      response.cookies.delete("refreshToken");
+      return response;
+    }
+  }
 
-    return NextResponse.redirect(
-      new URL(`/${generatedUserRoute}`, request.url),
-    );
+  if (authPaths.includes(pathname)) {
+    if (user) {
+      return NextResponse.redirect(
+        new URL(`${BASE_PATH}/dashboard`, request.url),
+      );
+    }
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  //middleware will only run in this paths
-  matcher: ["/login", "/register", "/forgot-password", "/reset-password"],
+  matcher: [
+    "/login",
+    "/register",
+    "/forgot-password",
+    "/reset-password",
+    "/dashboard/:path*",
+  ],
 };

@@ -1,74 +1,101 @@
 "use client";
 
-import { XIcon, AlertCircle, CheckCircle } from "lucide-react";
+import { X, BadgeCheck, AlertOctagon } from "lucide-react";
 import { useEffect, useCallback, useState } from "react";
-import ClientPortal from "./ClientPortal";
-import { useAlert } from "@/contexts/AlertContext";
+import { useAlertStore } from "@/store/useAlertStore";
 
 const Alert = () => {
-  const { alertInfo, setAlertInfo } = useAlert();
+  // Alert store states
+  const hideAlert = useAlertStore((state) => state.hideAlert);
+  const showAlert = useAlertStore((state) => state.showAlert);
+  const alertType = useAlertStore((state) => state.alertType);
+  const alertMessage = useAlertStore((state) => state.alertMessage);
+
   const [isClosing, setIsClosing] = useState(false);
 
   const handleClose = useCallback(() => {
     setIsClosing(true);
-    setTimeout(
-      () => setAlertInfo({ showAlert: false, alertType: "", alertMessage: "" }),
-      200,
-    ); // Match this with animation duration
-  }, [setAlertInfo]);
+    setTimeout(() => {
+      hideAlert();
+      setIsClosing(false); // reset isClosing after it animates out
+    }, 200); // Match this with your CSS animation duration
+  }, [hideAlert]);
 
+  // Auto close after 6 seconds
   useEffect(() => {
-    // FIX 1: Reset 'isClosing' whenever the alert becomes active again
-    if (alertInfo.showAlert) {
-      Promise.resolve().then(() => setIsClosing(false));
-    }
-
-    // FIX 2: Reset timer whenever alertInfo changes (e.g., new message comes in)
     let timer: NodeJS.Timeout;
-    if (alertInfo.showAlert) {
+    if (showAlert) {
       timer = setTimeout(handleClose, 6000);
     }
-
     return () => clearTimeout(timer);
-  }, [alertInfo.showAlert, handleClose]);
+  }, [showAlert, handleClose]);
 
-  // Determine which icon to display based on type
-  const IconComponent =
-    alertInfo.alertType === "success" ? CheckCircle : AlertCircle;
+  // Don't render anything if there's no alert and we aren't currently animating out
+  if (!showAlert && !isClosing) return null;
 
-  // Determine icon color
-  const iconColorClass =
-    alertInfo.alertType === "success"
-      ? "text-green-500 dark:text-green-700"
-      : "text-red-500 dark:text-red-700";
+  const isSuccess = alertType === "success";
+  const IconComponent = isSuccess ? BadgeCheck : AlertOctagon;
+
+  // Theming configurations specifically tailored for black (light) and white (dark) backgrounds
+  const theme = {
+    accentBar: isSuccess ? "bg-emerald-500" : "bg-rose-500",
+    iconColor: isSuccess
+      ? "text-emerald-400 dark:text-emerald-600"
+      : "text-rose-400 dark:text-rose-600",
+    iconBg: isSuccess
+      ? "bg-emerald-500/20 dark:bg-emerald-100"
+      : "bg-rose-500/20 dark:bg-rose-100",
+    title: isSuccess ? "Success" : "Error",
+  };
 
   return (
-    <ClientPortal>
-      {alertInfo.showAlert && (
+    // Container: Floating bottom right with responsive widths
+    <div
+      className={`fixed right-4 bottom-4 left-4 z-9999 transition-all duration-200 sm:right-6 sm:bottom-6 sm:left-auto sm:w-auto sm:max-w-md sm:min-w-[320px] ${
+        isClosing
+          ? "animate-slideDown opacity-0"
+          : "animate-slideUp opacity-100"
+      }`}
+    >
+      {/* Solid High-Contrast Card */}
+      <div className="relative flex items-start gap-3 overflow-hidden rounded-2xl bg-black p-4 dark:bg-white">
+        {/* Left Accent Line */}
         <div
-          className={`fixed top-0 left-1/2 z-9999 -translate-x-1/2 ${
-            isClosing ? "animate-slideUp" : "animate-slideDown"
-          }`}
+          className={`absolute top-0 bottom-0 left-0 w-1.5 ${theme.accentBar}`}
+        />
+
+        {/* Icon Avatar */}
+        <div
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${theme.iconBg}`}
         >
-          <div
-            className={`mt-4 flex w-auto items-center justify-between rounded-full bg-black px-4 py-4.5 text-white shadow-md dark:bg-white dark:text-black`}
-          >
-            <div className="flex items-center gap-2">
-              {/* Render the appropriate icon */}
-              <IconComponent className={`h-5 w-5 shrink-0 ${iconColorClass}`} />
-              <p className="text-sm">{alertInfo.alertMessage}</p>
-            </div>
-            <button
-              onClick={handleClose}
-              className="ml-4 cursor-pointer text-gray-200 hover:text-gray-300 dark:text-gray-600 dark:hover:text-gray-700"
-              aria-label="Close alert"
-            >
-              <XIcon className="h-5 w-5 shrink-0" />
-            </button>
-          </div>
+          <IconComponent className={`h-5 w-5 ${theme.iconColor}`} />
         </div>
-      )}
-    </ClientPortal>
+
+        {/* Content Area */}
+        <div className="flex flex-1 flex-col pt-0.5">
+          {/* Title: White in light mode (on black), Black in dark mode (on white) */}
+          <h3 className="text-sm font-bold tracking-tight text-white dark:text-neutral-900">
+            {theme.title}
+          </h3>
+          {/* Message: Dimmed for contrast hierarchy */}
+          <p
+            className="mt-0.5 line-clamp-2 text-[13px] wrap-break-word text-neutral-200 dark:text-neutral-700"
+            title={alertMessage}
+          >
+            {alertMessage}
+          </p>
+        </div>
+
+        {/* Close Button */}
+        <button
+          onClick={handleClose}
+          className="shrink-0 rounded-full p-1.5 text-neutral-500 transition-colors hover:bg-neutral-800 hover:text-white active:scale-95 dark:text-neutral-400 dark:hover:bg-neutral-200 dark:hover:text-neutral-900"
+          aria-label="Close alert"
+        >
+          <X className="h-4 w-4" strokeWidth={2.5} />
+        </button>
+      </div>
+    </div>
   );
 };
 

@@ -2,10 +2,11 @@ import ResetPassword from "@/components/AuthPages/ForgotPassword/ResetPassword";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { query } from "@/lib/Db";
+import SuspenseSkeleton from "@/components/Skeletons/SuspenseSkeleton";
 
 // Props for the searchParams
 type Props = {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams: Promise<{ [key: string]: string | undefined }>;
 };
 const page = async ({ searchParams }: Props) => {
   // get the token
@@ -35,8 +36,8 @@ const page = async ({ searchParams }: Props) => {
     console.error("Error validating reset token", error);
   }
   return (
-    <Suspense>
-      <ResetPassword isValid={isValid} />
+    <Suspense fallback={<SuspenseSkeleton />}>
+      <ResetPassword isValid={isValid} token={token} />
     </Suspense>
   );
 };

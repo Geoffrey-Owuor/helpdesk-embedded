@@ -1,20 +1,21 @@
-# Centralized Issue Tracker
+﻿# HelpDesk
 
-A centralized issue tracking tool that enables teams to manage user-reported issues with clear ownership and status updates.
+A lightweight, centralized issue tracker built with Next.js and Tailwind CSS that enables teams to manage user-reported issues with clear ownership and status updates.
 
-## Features
+Quick start
 
-- **Centralized Management:** Consolidate user-reported issues in one unified dashboard.
-- **Clear Ownership:** Assign specific issues to team members to ensure accountability.
-- **Status Tracking:** Monitor the progress of issues (Open, In Progress, Resolved) with real-time updates.
-- **Modern UI:** Built with Next.js and Tailwind CSS.
-- **Postgres Database:** For centralized data storage and manipulation
+- Install dependencies: `npm install`
+- Create `.env.local` (set `DATABASE_URL`, optionally SMTP and `APP_SECRET`)
+- Run locally: `npm run dev` and open `http://localhost:3000`
 
-## Tech Stack
+Tech
 
-- [Next.js](https://nextjs.org) - App Router
-- [Tailwind CSS](https://tailwindcss.com) - Styling
-- [Lucide React](https://lucide.dev) - Icons
-- [Postgres](https://www.postgresql.org) - Database
+- Next.js 16 (App Router), React, Tailwind CSS, PostgreSQL, Nodemailer, Microsoft Graph, Zustand
 
----
+Scripts
+
+- `npm run dev`, `npm run build`, `npm run start`, `npm run lint`
+
+See the `app/`, `components/`, `utils`, and `lib/` folders for more implementation details.
+
+The extended `README.md` file can be found in the `docs/` folder

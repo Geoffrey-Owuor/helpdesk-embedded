@@ -1,40 +1,75 @@
-import axios from "axios";
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { useDbStore } from "@/store/useDbStore";
+import { basePath } from "@/public/assets";
 
-// Create a custom instance
+// 1. The Type Definition
+let refreshPromise: Promise<unknown> | null = null;
+
 const apiClient = axios.create({
-  baseURL: "/api", // base url for the api
+  baseURL: `${basePath}/api`,
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true, // Important for cookies
+  withCredentials: true,
 });
 
-// Response Interceptor
 apiClient.interceptors.response.use(
   (response) => {
     return response;
   },
-  async (error) => {
-    const originalRequest = error.config;
+  async (error: AxiosError) => {
+    // 2. Type Assertion for the config
+    // We cast to InternalAxiosRequestConfig and add the custom _retry flag
+    const originalRequest = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
 
-    // Check if error is 401 (Unauthorized) and we haven't tried refreshing yet
+    // 1. If the error is a 500, DON'T refresh. Just fail.
+    if (error.response?.status === 503) {
+      // Trigger Healthcheck
+      useDbStore.getState().triggerCheck();
+
+      return Promise.reject(error);
+    }
+
     if (
       error.response?.status === 401 &&
+      originalRequest &&
       !originalRequest._retry &&
+      originalRequest.url &&
       !originalRequest.url.includes("refresh-token")
     ) {
       originalRequest._retry = true;
 
-      try {
-        // Attempt to refresh the token
-        await axios.post("/api/refresh-token");
+      // 3. Logic using the type
+      if (!refreshPromise) {
+        refreshPromise = axios
+          .post("/api/refresh-token", {}, { withCredentials: true })
+          .then((res) => res.data) // This returns Promise<any>
+          .finally(() => {
+            refreshPromise = null;
+          });
+      }
 
-        // If refresh successful, retry the original request
+      try {
+        // We await the generic promise
+        await refreshPromise;
+
+        // Retry the original request
         return apiClient(originalRequest);
       } catch (refreshError) {
-        // If refresh fails (token expired/invalid), redirect to login
-        console.error("Session expired, redirecting to login");
-        window.location.replace("/login");
+        // Use Axios's built-in type guard
+        if (axios.isAxiosError(refreshError)) {
+          // Now 'err' is typed as AxiosError
+          if (refreshError.response?.status === 503) {
+            // Trigger Healthcheck
+            useDbStore.getState().triggerCheck();
+
+            return Promise.reject(refreshError);
+          }
+        }
+        // A 401 error - token probably expired redirect to login
+        window.location.href = `${basePath}/login`;
         return Promise.reject(refreshError);
       }
     }

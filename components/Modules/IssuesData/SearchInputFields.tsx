@@ -1,27 +1,11 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { Search, ChevronDown, Check, X } from "lucide-react";
-import { useSearchLogic } from "@/contexts/SearchLogicContext";
+import { useSearchStore } from "@/store/useSearchStore";
 import { baseDepartments } from "@/public/assets";
-
-// --- Mock Data Options ---
-const statusOptions = [
-  { label: "Pending", value: "pending" },
-  { label: "In Progress", value: "in progress" },
-  { label: "Resolved", value: "resolved" },
-];
-
-const departmentOptions = baseDepartments.map((department) => ({
-  label: department.option,
-  value: department.value,
-}));
-
-const issueTypeOptions = [
-  { label: "Automation", value: "Automation" },
-  { label: "Petty Cash", value: "Petty Cash" },
-  { label: "Wi-Fi", value: "Wi-Fi" },
-  { label: "Reports", value: "Reports" },
-];
+import { priorityOptions } from "@/public/assets";
+import { DatePicker } from "../DatePicker";
+import { statusOptions } from "@/public/assets";
 
 // --- Reusable Custom Dropdown Component ---
 interface DropdownOption {
@@ -60,7 +44,7 @@ const CustomDropdown = ({
   const selectedLabel = options.find((opt) => opt.value === value)?.label;
 
   return (
-    <div className="relative w-full sm:w-64" ref={dropdownRef}>
+    <div className="relative w-55" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`flex h-10 w-full items-center justify-between rounded-xl border bg-white px-3 text-sm transition-all dark:bg-neutral-950 ${
@@ -99,7 +83,7 @@ const CustomDropdown = ({
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 z-20 mt-2 max-h-60 w-full overflow-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-none">
+        <div className="default-scrollbar absolute top-full left-0 z-20 mt-2 max-h-60 w-full overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-950 dark:shadow-none">
           {options.map((option) => (
             <button
               key={option.value}
@@ -131,7 +115,7 @@ const SearchInput = ({
   onChange: (val: string) => void;
   placeholder: string;
 }) => (
-  <div className="relative w-full sm:w-64">
+  <div className="relative w-55">
     <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-neutral-400" />
     <input
       type="text"
@@ -143,7 +127,7 @@ const SearchInput = ({
     {value && (
       <button
         onClick={() => onChange("")}
-        className="absolute top-1/2 right-3 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200"
+        className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1 text-neutral-400 hover:bg-neutral-200 hover:text-neutral-600 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
       >
         <X className="h-3 w-3" />
       </button>
@@ -153,27 +137,33 @@ const SearchInput = ({
 
 // --- Main Component ---
 const SearchInputFields = () => {
-  const {
-    selectedFilter,
-    // Getters
-    status,
-    reference,
-    fromDate,
-    toDate,
-    department,
-    agent,
-    issueType,
-    submitter,
-    // Setters
-    setStatus,
-    setReference,
-    setFromDate,
-    setToDate,
-    setDepartment,
-    setAgent,
-    setIssueType,
-    setSubmitter,
-  } = useSearchLogic();
+  //The getters
+  const selectedFilter = useSearchStore((state) => state.selectedFilter);
+  const status = useSearchStore((state) => state.status);
+  const reference = useSearchStore((state) => state.reference);
+  const fromDate = useSearchStore((state) => state.fromDate);
+  const toDate = useSearchStore((state) => state.toDate);
+  const department = useSearchStore((state) => state.department);
+  const agent = useSearchStore((state) => state.agent);
+  const issueType = useSearchStore((state) => state.issueType);
+  const issuePriority = useSearchStore((state) => state.issuePriority);
+  const submitter = useSearchStore((state) => state.submitter);
+
+  //The setters
+  const setStatus = useSearchStore((state) => state.setStatus);
+  const setReference = useSearchStore((state) => state.setReference);
+  const setFromDate = useSearchStore((state) => state.setFromDate);
+  const setToDate = useSearchStore((state) => state.setToDate);
+  const setDepartment = useSearchStore((state) => state.setDepartment);
+  const setAgent = useSearchStore((state) => state.setAgent);
+  const setIssueType = useSearchStore((state) => state.setIssueType);
+  const setIssuePriority = useSearchStore((state) => state.setIssuePriority);
+  const setSubmitter = useSearchStore((state) => state.setSubmitter);
+
+  const departmentOptions = baseDepartments.map((department) => ({
+    label: department.option,
+    value: department.value,
+  }));
 
   // Render logic based on selectedFilter
   const renderInput = () => {
@@ -200,20 +190,16 @@ const SearchInputFields = () => {
       case "date":
         return (
           <div className="flex items-center gap-2">
-            <input
-              type="date"
+            <DatePicker
               value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
-              className="dark:color-scheme-dark h-10 w-full rounded-xl border border-neutral-300 bg-white px-3 text-sm text-neutral-600 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300"
+              onChange={setFromDate}
+              placeholder="Enter From Date"
             />
-
             <span className="self-center text-sm text-neutral-400">to</span>
-
-            <input
-              type="date"
+            <DatePicker
               value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
-              className="dark:color-scheme-dark h-10 w-full rounded-xl border border-neutral-300 bg-white px-3 text-sm text-neutral-600 transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300"
+              onChange={setToDate}
+              placeholder="Enter To Date"
             />
           </div>
         );
@@ -243,6 +229,16 @@ const SearchInputFields = () => {
             value={issueType}
             onChange={setIssueType}
             placeholder="Search Issue Type..."
+          />
+        );
+
+      case "priority":
+        return (
+          <CustomDropdown
+            options={priorityOptions}
+            value={issuePriority}
+            onChange={setIssuePriority}
+            placeholder="Select Issue Priority..."
           />
         );
 

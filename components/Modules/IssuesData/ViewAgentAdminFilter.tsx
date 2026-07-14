@@ -1,114 +1,77 @@
 "use client";
-import { Dispatch, SetStateAction, useState } from "react";
-import { useSearchLogic } from "@/contexts/SearchLogicContext";
-import { useIssuesData } from "@/contexts/IssuesDataContext";
+import { useSearchStore } from "@/store/useSearchStore";
 import { Building2, Send } from "lucide-react";
 
-type AgentAdminFilterProps = {
-  setCurrentPage: Dispatch<SetStateAction<number>>;
-};
+const ViewAgentAdminFilter = () => {
+  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
+  const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
+  const setAgentAdminFilter = useSearchStore(
+    (state) => state.setAgentAdminFilter,
+  );
+  const resetFilters = useSearchStore((state) => state.resetFilters);
 
-const ViewAgentAdminFilter = ({ setCurrentPage }: AgentAdminFilterProps) => {
-  const [isFilterActive, setIsFilterActive] = useState(false);
-  const { fetchIssues, refetchIssues } = useIssuesData();
+  // Check is filter has been applied
+  const filterApplied = agentAdminFilter === "agentAdminFilter";
 
-  const {
-    setSelectedFilter,
-    setAgentAdminFilter,
-    setStatus,
-    setReference,
-    setFromDate,
-    setToDate,
-    setDepartment,
-    setAgent,
-    setIssueType,
-    setSubmitter,
-  } = useSearchLogic();
-
-  // --- 1. Handle "Default" View (Incoming/Assigned Issues) ---
+  // Incoming Issues
   const handleDefaultIssues = () => {
-    if (!isFilterActive) return; // Don't reload if already active
+    if (!filterApplied) return; // Don't reload if agent admin filter is already blank
 
-    setIsFilterActive(false);
-
-    // Reset the agentAdmin filter and the default selected filter
+    // Reset agentAdminFilter
     setAgentAdminFilter("");
-    setSelectedFilter("status");
 
-    // Refetch using the context's default behavior
-    // Refetches using the default selected filter
-    refetchIssues();
-    setCurrentPage(1);
+    // reset Filters
+    resetFilters();
   };
 
-  // --- 2. Handle "My Submissions" View (Agent/Admin Created) ---
+  // Personal submissions
   const fetchAgentAdminIssues = () => {
-    if (isFilterActive) return; // Don't reload if already active
+    if (filterApplied) return; // Don't reload if agent admin filter is already set
 
-    setIsFilterActive(true);
-
-    // 1. Update the UI Context state (so search bars clear visually)
+    // Set agentAdminFilter
     setAgentAdminFilter("agentAdminFilter");
-    setSelectedFilter("status");
-    setStatus("");
-    setReference("");
-    setFromDate("");
-    setToDate("");
-    setDepartment("");
-    setAgent("");
-    setIssueType("");
-    setSubmitter("");
 
-    // 2. Prepare explicit options for the API call
-    // We cannot use the state variables here because setX() is async.
-    // We must pass the intended values directly.
-    const cleanOptions = {
-      agentAdminFilter: "agentAdminFilter",
-      selectedFilter: "status",
-      status: "",
-      reference: "",
-      fromDate: "",
-      toDate: "",
-      department: "",
-      agent: "",
-      issueType: "",
-      submitter: "",
-    };
-
-    // 3. Fetch immediately with clean data
-    fetchIssues(cleanOptions);
-    setCurrentPage(1);
+    // reset filters
+    resetFilters();
   };
 
   return (
     <div className="flex items-center justify-center">
-      <div className="flex rounded-xl border border-neutral-300 bg-neutral-100 p-1 dark:border-neutral-800 dark:bg-neutral-950">
-        {/* Button 1: Default View */}
+      <div
+        className={`relative flex rounded-2xl transition-opacity duration-200 ${
+          superAdminFilter ? "pointer-events-none opacity-40" : ""
+        } border border-neutral-200 bg-neutral-50 p-1 shadow-inner dark:border-neutral-800 dark:bg-neutral-950`}
+      >
+        {/* Button 1: Incoming */}
         <button
           onClick={handleDefaultIssues}
-          disabled={!isFilterActive}
-          className={`flex items-center justify-center gap-2 rounded-lg px-4 py-1.5 text-sm font-semibold transition-all ${
-            !isFilterActive
-              ? "bg-white text-neutral-900 shadow-sm dark:bg-neutral-900 dark:text-white"
-              : "text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
+          disabled={!filterApplied || superAdminFilter}
+          className={`relative z-10 flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-1.5 text-sm font-medium tracking-tight transition-all duration-200 ${
+            !filterApplied
+              ? "bg-white text-neutral-900 shadow-sm ring-1 ring-black/5 dark:bg-neutral-800 dark:text-white dark:ring-white/10"
+              : "text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300"
           }`}
         >
-          <Building2 className="h-4 w-4" />
+          <Building2
+            className={`h-4 w-4 transition-transform duration-200 ${!filterApplied ? "scale-110" : "scale-100"}`}
+          />
           <span className="custom:inline-flex hidden">Incoming</span>
         </button>
 
-        {/* Button 2: Agent/Admin Submitted View */}
+        {/* Button 2: Submissions */}
         <button
           onClick={fetchAgentAdminIssues}
-          disabled={isFilterActive}
-          className={`flex items-center justify-center gap-2 rounded-lg px-4 py-1.5 text-sm font-semibold transition-all ${
-            isFilterActive
-              ? "bg-neutral-900 text-white shadow-sm dark:bg-white dark:text-neutral-900"
-              : "text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
+          disabled={filterApplied || superAdminFilter}
+          className={`relative z-10 flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-1.5 text-sm font-medium tracking-tight transition-all duration-200 ${
+            filterApplied
+              ? "bg-white text-neutral-900 shadow-sm ring-1 ring-black/5 dark:bg-neutral-800 dark:text-white dark:ring-white/10"
+              : "text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300"
           }`}
         >
-          <Send className="h-4 w-4" />
-          <span className="custom:inline-flex hidden">My Submissions</span>
+          <Send
+            className={`h-4 w-4 transition-transform duration-200 ${filterApplied ? "scale-110" : "scale-100"}`}
+          />
+          <span className="custom:inline-flex hidden">Submissions</span>
         </button>
       </div>
     </div>

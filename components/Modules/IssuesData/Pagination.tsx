@@ -12,9 +12,10 @@ import { Dispatch, SetStateAction, useEffect, useState, useRef } from "react";
 type PaginationProps = {
   currentPage: number;
   setCurrentPage: Dispatch<SetStateAction<number>>;
+  totalPages: number;
   issuesPerPage: number;
   setIssuesPerPage: Dispatch<SetStateAction<number>>;
-  totalPages: number;
+  perPageOptions: number[];
   indexOfFirstIssue: number;
   indexOfLastIssue: number;
   issuesLength: number;
@@ -22,9 +23,10 @@ type PaginationProps = {
 const Pagination = ({
   currentPage,
   setCurrentPage,
+  totalPages,
   issuesPerPage,
   setIssuesPerPage,
-  totalPages,
+  perPageOptions,
   indexOfFirstIssue,
   indexOfLastIssue,
   issuesLength,
@@ -32,9 +34,6 @@ const Pagination = ({
   // State for the rows per page dropdown
   const [isPerPageOpen, setIsPerPageOpen] = useState(false);
   const perPageRef = useRef<HTMLDivElement>(null);
-
-  // Options for rows per page
-  const perPageOptions = [5, 10, 25, 50, 100];
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -56,7 +55,7 @@ const Pagination = ({
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="relative inline-flex items-center gap-1 rounded-full border border-neutral-300 bg-neutral-50 px-4 py-2 text-sm font-semibold text-neutral-700 hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
+            className="relative inline-flex items-center gap-1 rounded-xl border border-neutral-300 bg-neutral-50 px-4 py-2 text-sm font-semibold text-neutral-700 hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
           >
             <ArrowLeft className="h-4 w-4" />
             Previous
@@ -66,7 +65,7 @@ const Pagination = ({
               setCurrentPage((prev) => Math.min(prev + 1, totalPages))
             }
             disabled={currentPage === totalPages}
-            className="relative ml-3 inline-flex items-center gap-1 rounded-full border border-neutral-300 bg-neutral-50 px-6 py-2 text-sm font-semibold text-neutral-700 hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
+            className="relative ml-3 inline-flex items-center gap-1 rounded-xl border border-neutral-300 bg-neutral-50 px-6 py-2 text-sm font-semibold text-neutral-700 hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800"
           >
             Next
             <ArrowRight className="h-4 w-4" />
@@ -74,8 +73,8 @@ const Pagination = ({
         </div>
       )}
       <div className="hidden md:flex md:flex-1 md:items-center md:justify-center lg:justify-between">
-        {totalPages >= 1 && (
-          <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4">
+          {issuesLength > 0 && (
             <div className="hidden pr-3 lg:flex">
               <p className="text-sm text-neutral-700 dark:text-neutral-400">
                 Showing{" "}
@@ -88,11 +87,13 @@ const Pagination = ({
                 {`result${issuesLength > 1 ? "s" : ""}`}
               </p>
             </div>
+          )}
 
-            {/* The button to set issues per page */}
+          {/* The button to set issues per page */}
+          {issuesLength > 6 && (
             <div className="flex items-center gap-2" ref={perPageRef}>
               <span className="text-sm text-neutral-600 dark:text-neutral-400">
-                Rows per page:
+                Records:
               </span>
               <div className="relative">
                 <button
@@ -141,8 +142,8 @@ const Pagination = ({
                 )}
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {totalPages > 1 && (
           <nav className="flex items-center justify-center gap-1">
@@ -169,7 +170,7 @@ const Pagination = ({
                     <button
                       key={pageNumber}
                       onClick={() => setCurrentPage(pageNumber)}
-                      className={`inline-flex h-8 min-w-8 items-center justify-center rounded-lg text-sm font-semibold ${
+                      className={`inline-flex h-7 min-w-7 items-center justify-center rounded-lg text-sm font-semibold ${
                         currentPage === pageNumber
                           ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900"
                           : "text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
