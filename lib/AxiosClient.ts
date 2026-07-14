@@ -44,7 +44,7 @@ apiClient.interceptors.response.use(
       // 3. Logic using the type
       if (!refreshPromise) {
         refreshPromise = axios
-          .post("/api/refresh-token", {}, { withCredentials: true })
+          .post(`${basePath}/api/refresh-token`, {}, { withCredentials: true })
           .then((res) => res.data) // This returns Promise<any>
           .finally(() => {
             refreshPromise = null;
