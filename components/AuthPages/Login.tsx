@@ -43,8 +43,8 @@ export default function LoginPage() {
       // Listen for the signal from the popup
       if (event.data?.type === "AUTH_SUCCESS" && event.data?.url) {
         // Sync tabs if needed (cross-tab checking)
-        const authChannel = new BroadcastChannel("auth_session_sync");
-        authChannel.postMessage({ action: "LOGIN" });
+        const authChannel = new BroadcastChannel("embed_auth_session_sync");
+        authChannel.postMessage({ action: "EMBEDLOGIN" });
         authChannel.close();
 
         // Redirect the parent iframe to the URL dictated by the backend
@@ -79,8 +79,8 @@ export default function LoginPage() {
       //   Successfull login
       if (response.ok) {
         // Broadcast the new login to other tabs
-        const authChannel = new BroadcastChannel("auth_session_sync");
-        authChannel.postMessage({ action: "LOGIN", userId: data.id });
+        const authChannel = new BroadcastChannel("embed_auth_session_sync");
+        authChannel.postMessage({ action: "EMBEDLOGIN", userId: data.id });
         authChannel.close();
 
         window.location.href = `${basePath}/dashboard`;

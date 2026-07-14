@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useMemo } from "react";
 import { AuthJWTPayload } from "@/lib/Auth";
+import { useAuthSync } from "@/hooks/useAuthSync";
 
 // Shape of the context value
 type UserContextValue = AuthJWTPayload | null;
@@ -14,6 +15,8 @@ type UserProviderProps = {
 const UserContext = createContext<UserContextValue>(null);
 
 export const UserProvider = ({ children, user }: UserProviderProps) => {
+  useAuthSync(user);
+
   const value = useMemo(
     () => ({
       userId: user.userId,

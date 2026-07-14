@@ -7,7 +7,7 @@ import { basePath } from "@/public/assets";
 
 // Type definition for the BroadcastChannel message payload
 interface AuthChannelMessage {
-  action: "LOGIN" | "LOGOUT";
+  action: "EMBEDLOGIN" | "EMBEDLOGOUT";
   userId?: string;
 }
 
@@ -27,7 +27,7 @@ export function useAuthSync(user: AuthJWTPayload) {
     }
 
     // 1. Initialize Modern Cross-Tab communication channel
-    const authChannel = new BroadcastChannel("auth_session_sync");
+    const authChannel = new BroadcastChannel("embed_auth_session_sync");
 
     // FIX 2: Explicitly typed the event parameter using MessageEvent
     const handleCrossTabMessage = async (
@@ -35,11 +35,11 @@ export function useAuthSync(user: AuthJWTPayload) {
     ) => {
       const { action, userId } = event.data;
 
-      if (action === "LOGOUT") {
+      if (action === "EMBEDLOGOUT") {
         // Another tab logged out, immediately clean up and redirect
         router.push("/login");
         router.refresh();
-      } else if (action === "LOGIN" && userId !== localUserId) {
+      } else if (action === "EMBEDLOGIN" && userId !== localUserId) {
         // Another tab logged in as a different user (Imposter caught)
         await fetch(`${basePath}/api/logout`, { method: "POST" });
         router.push("/login");
