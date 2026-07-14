@@ -50,8 +50,8 @@ const UserInfoCard = ({
       await apiClient.post("/logout");
 
       // Notify other tabs to redirect to login
-      const authChannel = new BroadcastChannel("auth_session_sync");
-      authChannel.postMessage({ action: "LOGOUT" });
+      const authChannel = new BroadcastChannel("embed_auth_session_sync");
+      authChannel.postMessage({ action: "EMBEDLOGOUT" });
       authChannel.close();
 
       // Redirect to login and refresh the page state
