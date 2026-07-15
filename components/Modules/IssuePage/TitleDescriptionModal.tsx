@@ -193,9 +193,9 @@ const TitleDescriptionModal = ({
                 onChange={handleChange}
                 onBlur={handleBlur}
                 required
-                rows={4}
+                rows={6}
                 placeholder="Please describe the issue in detail..."
-                className="resize-none rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+                className="default-scrollbar rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
               />
             </div>
 
