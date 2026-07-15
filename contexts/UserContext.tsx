@@ -2,6 +2,7 @@
 import { createContext, useContext, useMemo } from "react";
 import { AuthJWTPayload } from "@/lib/Auth";
 import { useAuthSync } from "@/hooks/useAuthSync";
+import { useEffect } from "react";
 
 // Shape of the context value
 type UserContextValue = AuthJWTPayload | null;
@@ -15,6 +16,13 @@ type UserProviderProps = {
 const UserContext = createContext<UserContextValue>(null);
 
 export const UserProvider = ({ children, user }: UserProviderProps) => {
+  // Broadcast login
+  useEffect(() => {
+    const authChannel = new BroadcastChannel("embed_auth_session_sync");
+    authChannel.postMessage({ action: "EMBEDLOGIN", userId: user.userId });
+    authChannel.close();
+  }, [user.userId]);
+
   useAuthSync(user);
 
   const value = useMemo(
