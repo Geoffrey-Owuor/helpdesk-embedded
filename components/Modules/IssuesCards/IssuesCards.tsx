@@ -7,7 +7,7 @@ import {
   TrendingUp,
   RotateCw,
   BookmarkCheck,
-  Tally5,
+  Activity,
 } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
@@ -60,18 +60,16 @@ const IssuesCards = ({ type }: { type: string }) => {
     : refetchIssueCounts;
   const cardLoading = isAutomations ? automationLoading : loading;
 
+  // Derive total count returned totals
+  const totalCounts =
+    cardCounts.open.total +
+    cardCounts.inProgress.total +
+    cardCounts.resolved.total +
+    cardCounts.closed.total;
+
   // Configuration for the cards to keep the JSX clean
   // We map specific colors to each status to make them distinct but cohesive
   const statItems = [
-    {
-      label: "Totals",
-      count: cardCounts.totals.total,
-      breakdown: cardCounts.totals,
-      icon: Tally5,
-      color: "text-indigo-600 dark:text-indigo-500",
-      bgColor: "bg-indigo-100 dark:bg-indigo-900/30",
-      borderColor: "border-indigo-200 dark:border-indigo-800/50",
-    },
     {
       label: "Open",
       count: cardCounts.open.total,
@@ -80,6 +78,15 @@ const IssuesCards = ({ type }: { type: string }) => {
       color: "text-amber-600 dark:text-amber-500",
       bgColor: "bg-amber-100 dark:bg-amber-900/30",
       borderColor: "border-amber-200 dark:border-amber-800/50",
+    },
+    {
+      label: "In Progress",
+      count: cardCounts.inProgress.total,
+      breakdown: cardCounts.inProgress,
+      icon: Activity,
+      color: "text-indigo-600 dark:text-indigo-500",
+      bgColor: "bg-indigo-100 dark:bg-indigo-900/30",
+      borderColor: "border-indigo-200 dark:border-indigo-800/50",
     },
     {
       label: "Resolved",
@@ -145,7 +152,7 @@ const IssuesCards = ({ type }: { type: string }) => {
             <div className="hidden items-center gap-2 rounded-xl bg-neutral-100 px-3 py-2 shadow-inner md:flex dark:bg-neutral-900">
               <TrendingUp className="h-4.5 w-4.5 text-neutral-700 dark:text-neutral-300" />
               <span className="text-sm font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
-                {cardCounts.totals.total}
+                {totalCounts}
               </span>
             </div>
           )}
