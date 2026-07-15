@@ -68,7 +68,9 @@ const RelativeTimeBadge = ({
   const { label, isUrgent } = timeInfo;
 
   // NEW: Determine if the issue is past the open stage
-  const isCompleted = status.toString().toLowerCase() !== "open";
+  const statusToString = status.toString().toLowerCase();
+  const isCompleted =
+    statusToString !== "open" && statusToString !== "in progress";
 
   // NEW: Theme mapping based on hierarchy (Completed -> Urgent -> Standard)
   let colorClasses = "";
