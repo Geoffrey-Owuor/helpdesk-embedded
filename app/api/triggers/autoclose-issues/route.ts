@@ -2,6 +2,7 @@ import { pool } from "@/lib/Db";
 import { NextRequest, NextResponse } from "next/server";
 import { PoolClient } from "pg";
 
+// Auto close issues submitted three days ago
 export async function GET(request: NextRequest) {
   let client: PoolClient | undefined;
 
@@ -20,6 +21,7 @@ export async function GET(request: NextRequest) {
     SET issue_status = $1,
     issue_date_closed = CURRENT_TIMESTAMP
     WHERE issue_status = $2
+    AND issue_created_at <= NOW() - INTERVAL '3 days'
     RETURNING issue_uuid, issue_reference_id, issue_date_closed
     `;
 

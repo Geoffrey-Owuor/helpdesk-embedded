@@ -13,6 +13,7 @@ interface UnresolvedIssue {
   issue_uuid: string;
   issue_reference_id: string;
   issue_submitter_name: string;
+  issue_target_department: string;
   issue_submitter_department: string;
   issue_priority: string;
   issue_type: string;
@@ -259,71 +260,6 @@ function generateReminderEmail(
 </html>`;
 }
 
-// ─── Route Handler ────────────────────────────────────────────────────────────
-
-// First reminder trigger iteration - sends an email reminder to the various departments
-// export async function GET(request: NextRequest) {
-//   const searchParams = request.nextUrl.searchParams;
-//   const token = searchParams.get("token");
-
-//   // 1. Security Check: Ensure only your script can trigger this
-//   if (token !== process.env.CRON_SECRET) {
-//     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-//   }
-
-//   try {
-//     const groupEmailsResult = await query<{
-//       emails: string;
-//       department: string;
-//     }>(`SELECT department, emails FROM group_emails`);
-
-//     const unresolvedQuery = `
-//       SELECT
-//         issue_uuid, issue_reference_id, issue_submitter_name, issue_submitter_department,
-//         issue_priority, issue_type, issue_title, issue_description, issue_status,
-//         issue_agent_name, issue_created_at, issue_updated_at
-//       FROM issues_table
-//       WHERE issue_status != $1
-//         AND issue_status != $2
-//         AND issue_target_department = $3
-//         AND issue_created_at <= NOW() - INTERVAL '7 days'
-//     `;
-
-//     const results = await Promise.allSettled(
-//       groupEmailsResult.map(async ({ department, emails }) => {
-//         const issuesResult = await query<UnresolvedIssue>(unresolvedQuery, [
-//           "resolved",
-//           "closed",
-//           department,
-//         ]);
-
-//         if (issuesResult.length === 0) return { department, sent: false };
-
-//         const html = generateReminderEmail(department, issuesResult);
-
-//         await sendEmail({
-//           to: emails,
-//           subject: `[HelpDesk] ${issuesResult.length} Unresolved Issue${issuesResult.length !== 1 ? "s" : ""} - ${department}`,
-//           html,
-//         });
-
-//         return { department, sent: true, count: issuesResult.length };
-//       }),
-//     );
-
-//     const summary = results.map((r) =>
-//       r.status === "fulfilled" ? r.value : { error: r.reason?.message },
-//     );
-
-//     return NextResponse.json({ success: true, summary }, { status: 200 });
-//   } catch (error) {
-//     console.error("[reminder-cron] Fatal error:", error);
-//     return NextResponse.json({ success: false, error: error }, { status: 500 });
-//   }
-// }
-
-// Second reminder trigger iteration - sends an email reminder to each of the specific agents
-
 // 1. Helper function to create a delay
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -331,22 +267,38 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const token = searchParams.get("token");
 
-  // Security Check: Ensure only your script can trigger this
   if (token !== process.env.CRON_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    // 2. Fetch all unresolved issues older than 7 days that are assigned to an agent
+    // 1. Fetch group emails so we know where to send the department summaries
+    const groupEmailsResult = await query<{
+      department: string;
+      emails: string;
+    }>(`SELECT department, emails FROM group_emails`);
+
+    // Convert to an easily searchable object: { "IT": "it@domain.com", "HR": "hr@domain.com" }
+    const groupEmailsMap = groupEmailsResult.reduce(
+      (acc, curr) => {
+        acc[curr.department] = curr.emails;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+
+    // 2. Fetch ALL unresolved issues older than 7 days
+    // Notice we removed the "issue_agent_email IS NOT NULL" filter
+    // so we can catch unassigned issues for the department summary
+    // We also added issue_target_department to the SELECT clause
     const unresolvedQuery = `
       SELECT 
         issue_uuid, issue_reference_id, issue_submitter_name, issue_submitter_department,
-        issue_priority, issue_type, issue_title, issue_description, issue_status,
-        issue_agent_name, issue_agent_email, issue_created_at, issue_updated_at
+        issue_target_department, issue_priority, issue_type, issue_title, issue_description, 
+        issue_status, issue_agent_name, issue_agent_email, issue_created_at, issue_updated_at
       FROM issues_table
       WHERE issue_status != $1
         AND issue_status != $2
-        AND issue_agent_email IS NOT NULL
         AND issue_created_at <= NOW() - INTERVAL '7 days'
     `;
 
@@ -362,52 +314,88 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 3. Group issues by agent email
-    const issuesByAgent = allIssues.reduce(
-      (acc, issue) => {
-        const email = issue.issue_agent_email;
-        if (!acc[email]) {
-          acc[email] = [];
-        }
-        acc[email].push(issue);
-        return acc;
-      },
-      {} as Record<string, typeof allIssues>,
-    );
+    // 3. Group the issues two ways: by Agent and by Department
+    const issuesByAgent: Record<string, typeof allIssues> = {};
+    const issuesByDepartment: Record<string, typeof allIssues> = {};
 
-    const agentEmails = Object.keys(issuesByAgent);
+    allIssues.forEach((issue) => {
+      // Group for specific agents (only if the issue is actually assigned)
+      if (issue.issue_agent_email) {
+        if (!issuesByAgent[issue.issue_agent_email])
+          issuesByAgent[issue.issue_agent_email] = [];
+        issuesByAgent[issue.issue_agent_email].push(issue);
+      }
+
+      // Group for department summary
+      const dept = issue.issue_target_department;
+      if (dept) {
+        if (!issuesByDepartment[dept]) issuesByDepartment[dept] = [];
+        issuesByDepartment[dept].push(issue);
+      }
+    });
+
+    // 4. Build a unified "Queue" of emails to send
+    // This allows us to loop through both agents and departments cleanly
+    const emailTasks = [];
+
+    // Add Agent tasks
+    for (const [agentEmail, issues] of Object.entries(issuesByAgent)) {
+      emailTasks.push({
+        to: agentEmail,
+        subject: `[HelpDesk] ${issues.length} Unresolved Issue${issues.length !== 1 ? "s" : ""} - Action Required`,
+        nameOrDept: issues[0].issue_agent_name || "Agent",
+        issues,
+        type: "Agent",
+      });
+    }
+
+    // Add Department tasks
+    for (const [dept, issues] of Object.entries(issuesByDepartment)) {
+      const groupEmail = groupEmailsMap[dept];
+      if (groupEmail) {
+        emailTasks.push({
+          to: groupEmail,
+          subject: `[HelpDesk] ${issues.length} Unresolved Issue${issues.length !== 1 ? "s" : ""} - ${dept} Summary`,
+          nameOrDept: dept,
+          issues,
+          type: "Department",
+        });
+      }
+    }
+
+    // 5. Send everything sequentially with our 3-second delay
     const summary = [];
 
-    // 4. Sequential loop to allow for the 3-second delay
-    for (let i = 0; i < agentEmails.length; i++) {
-      const agentEmail = agentEmails[i];
-      const agentIssues = issuesByAgent[agentEmail];
-      const agentName = agentIssues[0].issue_agent_name || "Agent";
+    for (let i = 0; i < emailTasks.length; i++) {
+      const task = emailTasks[i];
 
       try {
-        const html = generateReminderEmail(agentName, agentIssues);
+        const html = generateReminderEmail(task.nameOrDept, task.issues);
 
         await sendEmail({
-          to: agentEmail,
-          subject: `[HelpDesk] ${agentIssues.length} Unresolved Issue${agentIssues.length !== 1 ? "s" : ""} - Action Required`,
+          to: task.to,
+          subject: task.subject,
           html,
         });
 
-        summary.push({ agentEmail, sent: true, count: agentIssues.length });
-      } catch (error) {
-        console.error(
-          `[reminder-cron] Failed to send to ${agentEmail}:`,
-          error,
-        );
         summary.push({
-          agentEmail,
+          recipient: task.to,
+          type: task.type,
+          sent: true,
+          count: task.issues.length,
+        });
+      } catch (error) {
+        console.error(`[reminder-cron] Failed to send to ${task.to}:`, error);
+        summary.push({
+          recipient: task.to,
+          type: task.type,
           sent: false,
           error: error instanceof Error ? error.message : "Unknown error",
         });
       }
 
-      // 5. Apply the 3-second delay, but skip it on the very last iteration
-      if (i < agentEmails.length - 1) {
+      // Apply delay, skipping it on the final iteration
+      if (i < emailTasks.length - 1) {
         await delay(3000);
       }
     }
