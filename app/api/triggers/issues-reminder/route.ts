@@ -20,6 +20,7 @@ interface UnresolvedIssue {
   issue_description: string;
   issue_status: string;
   issue_agent_name: string;
+  issue_agent_email: string;
   issue_created_at: string;
   issue_updated_at: string;
 }
@@ -132,7 +133,7 @@ function renderIssueRow(issue: UnresolvedIssue): string {
 // ─── Email Template ───────────────────────────────────────────────────────────
 
 function generateReminderEmail(
-  department: string,
+  agent: string,
   issues: UnresolvedIssue[],
 ): string {
   const issueCards = issues.map((issue) => renderIssueRow(issue)).join("");
@@ -207,7 +208,7 @@ function generateReminderEmail(
                       Issues Unresolved after 7 days
                     </div>
                     <p style="font-size: 13.5px; color: #b91c1c; margin: 0; line-height: 1.5;">
-                      The <strong>${department}</strong> department has <strong>${issues.length} unresolved issue${issues.length !== 1 ? "s" : ""}</strong>
+                      <strong>${agent}</strong> has <strong>${issues.length} unresolved issue${issues.length !== 1 ? "s" : ""}</strong>
                       that ${issues.length !== 1 ? "have" : "has"} not been resolved after 7 days.
                       ${criticalCount > 0 ? `<br><span style="margin-top: 6px; display: inline-block;">${criticalCount} Critical and ${highCount} High priority issue${criticalCount + highCount !== 1 ? "s" : ""} need immediate action.</span>` : ""}
                     </p>
@@ -222,7 +223,7 @@ function generateReminderEmail(
                     text-transform: uppercase; letter-spacing: 1px;
                     color: #9ca3af; padding-bottom: 12px;
                     border-bottom: 2px solid #f3f4f6;
-                  ">Open Issues - ${department}</td>
+                  ">Open Issues - ${agent}</td>
                 </tr>
               </table>
 
@@ -260,62 +261,166 @@ function generateReminderEmail(
 
 // ─── Route Handler ────────────────────────────────────────────────────────────
 
+// First reminder trigger iteration - sends an email reminder to the various departments
+// export async function GET(request: NextRequest) {
+//   const searchParams = request.nextUrl.searchParams;
+//   const token = searchParams.get("token");
+
+//   // 1. Security Check: Ensure only your script can trigger this
+//   if (token !== process.env.CRON_SECRET) {
+//     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+//   }
+
+//   try {
+//     const groupEmailsResult = await query<{
+//       emails: string;
+//       department: string;
+//     }>(`SELECT department, emails FROM group_emails`);
+
+//     const unresolvedQuery = `
+//       SELECT
+//         issue_uuid, issue_reference_id, issue_submitter_name, issue_submitter_department,
+//         issue_priority, issue_type, issue_title, issue_description, issue_status,
+//         issue_agent_name, issue_created_at, issue_updated_at
+//       FROM issues_table
+//       WHERE issue_status != $1
+//         AND issue_status != $2
+//         AND issue_target_department = $3
+//         AND issue_created_at <= NOW() - INTERVAL '7 days'
+//     `;
+
+//     const results = await Promise.allSettled(
+//       groupEmailsResult.map(async ({ department, emails }) => {
+//         const issuesResult = await query<UnresolvedIssue>(unresolvedQuery, [
+//           "resolved",
+//           "closed",
+//           department,
+//         ]);
+
+//         if (issuesResult.length === 0) return { department, sent: false };
+
+//         const html = generateReminderEmail(department, issuesResult);
+
+//         await sendEmail({
+//           to: emails,
+//           subject: `[HelpDesk] ${issuesResult.length} Unresolved Issue${issuesResult.length !== 1 ? "s" : ""} - ${department}`,
+//           html,
+//         });
+
+//         return { department, sent: true, count: issuesResult.length };
+//       }),
+//     );
+
+//     const summary = results.map((r) =>
+//       r.status === "fulfilled" ? r.value : { error: r.reason?.message },
+//     );
+
+//     return NextResponse.json({ success: true, summary }, { status: 200 });
+//   } catch (error) {
+//     console.error("[reminder-cron] Fatal error:", error);
+//     return NextResponse.json({ success: false, error: error }, { status: 500 });
+//   }
+// }
+
+// Second reminder trigger iteration - sends an email reminder to each of the specific agents
+
+// 1. Helper function to create a delay
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const token = searchParams.get("token");
 
-  // 1. Security Check: Ensure only your script can trigger this
+  // Security Check: Ensure only your script can trigger this
   if (token !== process.env.CRON_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const groupEmailsResult = await query<{
-      emails: string;
-      department: string;
-    }>(`SELECT department, emails FROM group_emails`);
-
+    // 2. Fetch all unresolved issues older than 7 days that are assigned to an agent
     const unresolvedQuery = `
       SELECT 
         issue_uuid, issue_reference_id, issue_submitter_name, issue_submitter_department,
         issue_priority, issue_type, issue_title, issue_description, issue_status,
-        issue_agent_name, issue_created_at, issue_updated_at
+        issue_agent_name, issue_agent_email, issue_created_at, issue_updated_at
       FROM issues_table
       WHERE issue_status != $1
         AND issue_status != $2
-        AND issue_target_department = $3
+        AND issue_agent_email IS NOT NULL
         AND issue_created_at <= NOW() - INTERVAL '7 days'
     `;
 
-    const results = await Promise.allSettled(
-      groupEmailsResult.map(async ({ department, emails }) => {
-        const issuesResult = await query<UnresolvedIssue>(unresolvedQuery, [
-          "resolved",
-          "closed",
-          department,
-        ]);
+    const allIssues = await query<UnresolvedIssue>(unresolvedQuery, [
+      "resolved",
+      "closed",
+    ]);
 
-        if (issuesResult.length === 0) return { department, sent: false };
+    if (allIssues.length === 0) {
+      return NextResponse.json(
+        { success: true, message: "No unresolved issues found." },
+        { status: 200 },
+      );
+    }
 
-        const html = generateReminderEmail(department, issuesResult);
+    // 3. Group issues by agent email
+    const issuesByAgent = allIssues.reduce(
+      (acc, issue) => {
+        const email = issue.issue_agent_email;
+        if (!acc[email]) {
+          acc[email] = [];
+        }
+        acc[email].push(issue);
+        return acc;
+      },
+      {} as Record<string, typeof allIssues>,
+    );
+
+    const agentEmails = Object.keys(issuesByAgent);
+    const summary = [];
+
+    // 4. Sequential loop to allow for the 3-second delay
+    for (let i = 0; i < agentEmails.length; i++) {
+      const agentEmail = agentEmails[i];
+      const agentIssues = issuesByAgent[agentEmail];
+      const agentName = agentIssues[0].issue_agent_name || "Agent";
+
+      try {
+        const html = generateReminderEmail(agentName, agentIssues);
 
         await sendEmail({
-          to: emails,
-          subject: `[HelpDesk] ${issuesResult.length} Unresolved Issue${issuesResult.length !== 1 ? "s" : ""} - ${department}`,
+          to: agentEmail,
+          subject: `[HelpDesk] ${agentIssues.length} Unresolved Issue${agentIssues.length !== 1 ? "s" : ""} - Action Required`,
           html,
         });
 
-        return { department, sent: true, count: issuesResult.length };
-      }),
-    );
+        summary.push({ agentEmail, sent: true, count: agentIssues.length });
+      } catch (error) {
+        console.error(
+          `[reminder-cron] Failed to send to ${agentEmail}:`,
+          error,
+        );
+        summary.push({
+          agentEmail,
+          sent: false,
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
 
-    const summary = results.map((r) =>
-      r.status === "fulfilled" ? r.value : { error: r.reason?.message },
-    );
+      // 5. Apply the 3-second delay, but skip it on the very last iteration
+      if (i < agentEmails.length - 1) {
+        await delay(3000);
+      }
+    }
 
     return NextResponse.json({ success: true, summary }, { status: 200 });
   } catch (error) {
     console.error("[reminder-cron] Fatal error:", error);
-    return NextResponse.json({ success: false, error: error }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 },
+    );
   }
 }
