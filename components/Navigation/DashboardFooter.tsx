@@ -12,22 +12,13 @@ const DashboardFooter = () => {
       </span>
 
       <span className="inline-flex items-center gap-2">
-        <a
-          href="https://jeff-portfolio-web.vercel.app"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-semibold text-neutral-700 hover:underline dark:text-neutral-300"
-        >
-          Jeff
-        </a>
-        And
         <Link
           href="/it-team"
           target="_blank"
           className="inline-flex items-center gap-0.5 font-semibold text-neutral-700 hover:underline dark:text-neutral-300"
         >
           <Star className="h-4 w-4" />
-          Team
+          IT Team
         </Link>
       </span>
 

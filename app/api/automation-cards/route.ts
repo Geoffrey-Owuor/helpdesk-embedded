@@ -13,13 +13,6 @@ export const GET = withAuth(async ({ request }) => {
   // We will append the department filter only if it exists.
   let sql = `
     SELECT 
-
-    -- Totals Counts
-      COUNT(*) AS totals_total,
-      COUNT(*) FILTER (WHERE issue_priority = 'Low') AS totals_low,
-      COUNT(*) FILTER (WHERE issue_priority = 'Medium') AS totals_medium,
-      COUNT(*) FILTER (WHERE issue_priority = 'High') AS totals_high,
-      COUNT(*) FILTER (WHERE issue_priority = 'Critical') AS totals_critical,
       
       -- Open Counts
       COUNT(*) FILTER (WHERE issue_status = 'open') AS open_total,
@@ -27,6 +20,13 @@ export const GET = withAuth(async ({ request }) => {
       COUNT(*) FILTER (WHERE issue_status = 'open' AND issue_priority = 'Medium') AS open_medium,
       COUNT(*) FILTER (WHERE issue_status = 'open' AND issue_priority = 'High') AS open_high,
       COUNT(*) FILTER (WHERE issue_status = 'open' AND issue_priority = 'Critical') AS open_critical,
+
+      -- In Progress Counts
+      COUNT(*) FILTER (WHERE issue_status = 'in progress') AS in_progress_total,
+      COUNT(*) FILTER (WHERE issue_status = 'in progress' AND issue_priority = 'Low') AS in_progress_low,
+      COUNT(*) FILTER (WHERE issue_status = 'in progress' AND issue_priority = 'Medium') AS in_progress_medium,
+      COUNT(*) FILTER (WHERE issue_status = 'in progress' AND issue_priority = 'High') AS in_progress_high,
+      COUNT(*) FILTER (WHERE issue_status = 'in progress' AND issue_priority = 'Critical') AS in_progress_critical,
 
       -- Resolved Counts
       COUNT(*) FILTER (WHERE issue_status = 'resolved') AS resolved_total,
@@ -78,19 +78,19 @@ export const GET = withAuth(async ({ request }) => {
     // 4. Return Data
     return NextResponse.json(
       {
-        totals: {
-          total: getCount(row.totals_total),
-          low: getCount(row.totals_low),
-          medium: getCount(row.totals_medium),
-          high: getCount(row.totals_high),
-          critical: getCount(row.totals_critical),
-        },
         open: {
           total: getCount(row.open_total),
           low: getCount(row.open_low),
           medium: getCount(row.open_medium),
           high: getCount(row.open_high),
           critical: getCount(row.open_critical),
+        },
+        inProgress: {
+          total: getCount(row.in_progress_total),
+          low: getCount(row.in_progress_low),
+          medium: getCount(row.in_progress_medium),
+          high: getCount(row.in_progress_high),
+          critical: getCount(row.in_progress_critical),
         },
         resolved: {
           total: getCount(row.resolved_total),

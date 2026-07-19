@@ -99,8 +99,8 @@ export const issuePrefixMapping: Record<string, string> = {
   "IT & Projects": "IT",
   Finance: "FIN",
   Marketing: "MKT",
-  Operations: "OPR",
-  Commercial: "CMR",
+  Operations: "OPS",
+  Commercial: "COM",
   "HR & Admin": "HR",
   "Modern Trade": "MT",
   Retail: "RTL",
@@ -139,7 +139,7 @@ export interface PriorityBreakdown {
 }
 
 export interface DataCounts {
-  totals: PriorityBreakdown;
+  inProgress: PriorityBreakdown;
   open: PriorityBreakdown;
   resolved: PriorityBreakdown;
   closed: PriorityBreakdown;
@@ -154,7 +154,7 @@ const defaultBreakdown: PriorityBreakdown = {
 };
 
 export const defaultCounts: DataCounts = {
-  totals: { ...defaultBreakdown },
+  inProgress: { ...defaultBreakdown },
   open: { ...defaultBreakdown },
   resolved: { ...defaultBreakdown },
   closed: { ...defaultBreakdown },
@@ -205,6 +205,7 @@ export const AppVersion = "v1.0";
 // Status Options
 export const statusOptions = [
   { label: "Open", value: "open" },
+  { label: "In Progress", value: "in progress" },
   { label: "Resolved", value: "resolved" },
   { label: "Closed", value: "closed" },
 ];

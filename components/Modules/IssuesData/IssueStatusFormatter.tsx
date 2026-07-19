@@ -4,6 +4,7 @@ import {
   HelpCircle,
   LucideIcon,
   BookmarkCheck,
+  Activity,
 } from "lucide-react";
 import { IssueValueTypes } from "@/public/assets";
 
@@ -26,6 +27,12 @@ const issueColorFormatting: Record<
     bg: "bg-amber-50 dark:bg-amber-900/30",
     border: "border-amber-200 dark:border-amber-800",
     icon: Clock,
+  },
+  "in progress": {
+    text: "text-indigo-700 dark:text-indigo-400",
+    bg: "bg-indigo-50 dark:bg-indigo-900/30",
+    border: "border-indigo-200 dark:border-indigo-800",
+    icon: Activity,
   },
   resolved: {
     text: "text-emerald-700 dark:text-emerald-400",
