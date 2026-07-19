@@ -401,7 +401,8 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                 isSuper ||
                 (role === "admin" &&
                   issueData.issue_target_department === department)) &&
-                issueData.issue_status === "open" && (
+                issueData.issue_status !== "resolved" &&
+                issueData.issue_status !== "closed" && (
                   <button
                     type="button"
                     onClick={() => setEscalateModalOpen(true)}
@@ -452,7 +453,8 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
               {((role === "admin" &&
                 issueData.issue_target_department === department) ||
                 isSuper) &&
-                issueData.issue_status === "open" && (
+                issueData.issue_status !== "resolved" &&
+                issueData.issue_status !== "closed" && (
                   <div className="inline-flex items-center gap-2">
                     <button
                       onClick={() => setIsReassignModalOpen(true)}
@@ -602,7 +604,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
 
           {/* Card 3: System Info */}
           <DetailCard title="Issue Data" icon={Hash}>
-            <div className="flex justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-4">
               <InfoBlock label="Issue Type" value={issueData.issue_type} />
               {isSuper && issueData.issue_status === "open" && (
                 <IssueTypeModal

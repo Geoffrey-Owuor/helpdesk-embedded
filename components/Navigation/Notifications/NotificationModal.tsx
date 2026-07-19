@@ -29,6 +29,7 @@ type NotificationModalProps = {
 //circledot colors based on the issue status
 export const dynamicCircleColor: Record<string | number, string> = {
   open: "text-amber-700 dark:text-amber-400",
+  "in progress": "text-indigo-700 dark:text-indigo-400",
   resolved: "text-emerald-700 dark:text-emerald-400",
   closed: "text-blue-700 dark:text-blue-400",
 };

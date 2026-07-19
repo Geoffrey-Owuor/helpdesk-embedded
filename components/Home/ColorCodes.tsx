@@ -35,6 +35,11 @@ const ISSUE_STATUSES = [
       "The issue has been logged but has not yet been addressed or assigned to an agent.",
   },
   {
+    status: "in progress",
+    title: "In Progress",
+    description: "An agent is actively working to resolve this issue.",
+  },
+  {
     status: "resolved",
     title: "Resolved",
     description:
@@ -269,10 +274,10 @@ const ColorCodes = () => {
               Submission Time Badges
             </h3>
             <p className="text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
-              Time badges track how long an issue has been pending. They
-              automatically shift their color palette to highlight aging issues
-              that need immediate attention, unless the issue is already
-              resolved.
+              Time badges track how long an issue has been pending (not
+              resolved). They automatically shift their color palette to
+              highlight aging issues that need immediate attention, unless the
+              issue is already resolved.
             </p>
           </div>
 
@@ -295,11 +300,11 @@ const ColorCodes = () => {
                 )}
               </div>
               <h4 className="mb-1 text-sm font-semibold text-neutral-900 dark:text-white">
-                Recent Open Issues
+                Recent Unresolved Issues
               </h4>
               <p className="text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
-                Open issues submitted under 7 days ago use a cool violet theme,
-                indicating they are still within the 7 day window.
+                Unresolved issues submitted under 7 days ago use a cool violet
+                theme, indicating they are still within the 7 day window.
               </p>
             </div>
 
@@ -320,10 +325,10 @@ const ColorCodes = () => {
                 )}
               </div>
               <h4 className="mb-1 text-sm font-semibold text-neutral-900 dark:text-white">
-                Aging Open Issues
+                Aging Unresolved Issues
               </h4>
               <p className="text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
-                Once an open issue hits 7 days, the badge shifts to a warm
+                Once an unresolved issue hits 7 days, the badge shifts to a warm
                 red/amber theme to highlight urgency and prevent it from
                 slipping through the cracks.
               </p>
@@ -350,9 +355,9 @@ const ColorCodes = () => {
                 Processed Issues
               </h4>
               <p className="text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
-                If an issue is no longer open (e.g., resolved or closed), it
-                adopts a calm teal/emerald theme, suppressing the urgency
-                warning regardless of how old the submission is.
+                If an issue is resolved or closed, it adopts a calm teal/emerald
+                theme, suppressing the urgency warning regardless of how old the
+                submission is.
               </p>
             </div>
           </div>

@@ -44,6 +44,11 @@ const STATUS_STYLES: Record<
     color: "#92680a",
     label: "Open",
   },
+  "in progress": {
+    bg: "#EEF2FF",
+    color: "#4338CA",
+    label: "In Progress",
+  },
   resolved: {
     bg: "#f0fdf4",
     color: "#166534",
