@@ -1,5 +1,6 @@
 "use server";
 import { query } from "@/lib/Db";
+import { requireSession } from "@/lib/Auth";
 
 export interface AlertMessage {
   alertType: "error" | "success";
@@ -15,6 +16,14 @@ type PostNewsPayload = {
 export async function PostNewsAction(
   data: PostNewsPayload,
 ): Promise<AlertMessage> {
+  const session = await requireSession();
+
+  if (!session) {
+    return {
+      alertType: "error",
+      alertMessage: "Invalid user session",
+    };
+  }
   try {
     await query(
       `INSERT INTO news(title, description, author) VALUES ($1, $2, $3)`,

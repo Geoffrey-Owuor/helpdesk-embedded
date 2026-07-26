@@ -1,6 +1,7 @@
 "use server";
 
 import { query } from "@/lib/Db";
+import { requireSession } from "@/lib/Auth";
 
 export interface ReopenRow {
   id: number;
@@ -12,6 +13,11 @@ export interface ReopenRow {
 export async function getReopenHistory(
   uuid: string,
 ): Promise<ReopenRow[] | []> {
+  const session = await requireSession();
+
+  if (!session) {
+    return [];
+  }
   const baseQuery = `
     SELECT
     id, issue_reopen_reason,

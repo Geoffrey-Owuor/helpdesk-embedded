@@ -1,6 +1,7 @@
 "use server";
 
 import { query } from "@/lib/Db";
+import { requireSession } from "@/lib/Auth";
 
 export interface EscalationRow {
   id: number;
@@ -13,6 +14,11 @@ export interface EscalationRow {
 export async function getEscalationHistory(
   uuid: string,
 ): Promise<EscalationRow[] | []> {
+  const session = await requireSession();
+
+  if (!session) {
+    return [];
+  }
   const baseQuery = `
     SELECT 
     id, issue_escalation_reason,
