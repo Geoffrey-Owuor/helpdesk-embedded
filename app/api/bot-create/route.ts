@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
 
   const secret = searchParams.get("secret");
 
-  if (secret !== process.env.NEXT_PUBLIC_APIS_KEY) {
+  if (secret !== process.env.CRON_SECRET) {
     return NextResponse.json(
       {
         message:

@@ -37,7 +37,7 @@ import {
 import { fetchedBaseDepartments } from "@/serverActions/GetBaseDepartments";
 import { UserRecord } from "@/serverActions/GetCachedUsers";
 import { NameValidationResult, NameValidator } from "@/utils/Validators";
-import { baseDepartments, basePath } from "@/public/assets";
+import { baseDepartments } from "@/public/assets";
 
 // Stores
 import { useAlertStore } from "@/store/useAlertStore";
@@ -54,6 +54,7 @@ import Link from "next/link";
 
 // Document Upload
 import DocumentUpload from "../Modules/IssueModals/DocumentUpload";
+import { QuickCreate } from "@/serverActions/QuickCreate";
 
 // Priority icon types & helper (Kept inline for reliability)
 const priorityIcons: Record<string, LucideIcon> = {
@@ -214,23 +215,11 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
       });
 
       // TODO: Verify if you use a separate endpoint for Quick Create or the standard "/post-issue"
-      const response = await fetch(
-        `${basePath}/api/quick-create?secret=${process.env.NEXT_PUBLIC_APIS_KEY}`,
-        {
-          method: "POST",
-          body: submitData,
-          // Notice: We specifically leave out the 'Content-Type' header.
-          // The browser automatically sets it to multipart/form-data and calculates the boundary!
-        },
-      );
-
-      const responseData = await response.json();
+      const response = await QuickCreate(submitData);
 
       // Native fetch doesn't throw errors automatically on 4xx/5xx status codes like Axios does
-      if (!response.ok) {
-        throw new Error(
-          responseData.message || "An error occurred while submitting.",
-        );
+      if (response.type === "error") {
+        throw new Error(response.message);
       }
 
       hideOverlay();
@@ -247,10 +236,7 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
       setFiles([]); //Reset files
       setAssignmentInfo(null);
       setIsOpen(false);
-      triggerAlert(
-        "success",
-        responseData.message || "Issue created successfully",
-      );
+      triggerAlert("success", response.message);
     } catch (error) {
       hideOverlay();
       triggerAlert("error", getApiErrorMessage(error));
