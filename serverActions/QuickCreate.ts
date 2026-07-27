@@ -2,6 +2,7 @@
 
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
+import { query } from "@/lib/Db";
 import { emailSender } from "@/services/EmailSender";
 import { CheckBehalfUser } from "@/serverActions/CheckBehalfUser";
 import { writeFile, mkdir } from "fs/promises";
@@ -43,6 +44,20 @@ export async function QuickCreate(formData: FormData): Promise<AlertMessage> {
       return {
         type: "error",
         message: "Some required fields are missing, please try again",
+      };
+    }
+
+    // Confirm if we have the staff info in our database
+    const existingStaff = await query(
+      `SELECT id FROM company_user_records WHERE email = $1`,
+      [user_email],
+    );
+
+    if (existingStaff.length === 0) {
+      return {
+        type: "error",
+        message:
+          "Could not verify/create the user trying to submit, please contact your admin",
       };
     }
 
