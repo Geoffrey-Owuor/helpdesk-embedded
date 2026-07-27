@@ -1,30 +1,41 @@
 # HelpDesk
 
-HelpDesk is a lightweight, centralized issue-tracking application for teams to collect, assign, and track user-reported issues. It uses the Next.js App Router, Tailwind CSS for styling, and Postgres for persistence.
+HelpDesk is a centralized issue-tracking and internal knowledge-base application. Users submit issues, which are routed to the right team by department and issue type, assigned to agents, tracked through a status/escalation workflow, and resolved with a full audit trail (comments, attachments, escalation history, reopen history). It also ships a searchable article/FAQ library, in-app notifications, a changelog feed, and email notifications — and is designed to be embeddable inside another portal via signed-link SSO, in addition to local login and Microsoft Entra ID (Azure AD) SSO.
 
 ## Key Features
 
-- Centralized dashboard for user-reported issues
-- Assign issues to team members and track ownership
-- Issue status workflow (Open,Resolved, Closed)
-- Modern React UI with Tailwind CSS and `lucide-react` icons
-- Server routes (API) for issues, comments, authentication, and automations
+- **Issue lifecycle** — submit, assign/reassign, escalate, resolve, close, and reopen issues, each with an audit trail (`issue_escalation`, `issue_reopening` tables) and threaded comments
+- **Department & issue-type routing** — issues are mapped to the correct department and agent via an issue-type → agent/admin mapping, configurable from the Super Admin panel (`IssuesMapping`)
+- **Role-based access** — three roles (`user`, `agent`, `admin`) plus a separate super-admin flag (`isSuper`) for full system administration; a dedicated IT Team page and an Automations page are gated to non-`user` roles
+- **Knowledge base / Articles** — markdown-based articles with a code/markdown editor, table of contents, search/filter, and preview
+- **Notifications & changelog** — in-app notification feed and a changelog/news page
+- **Bug reporting** — in-app bug report form that emails the dev/admin team
+- **Custom email composer (PostMail)** — send ad-hoc HTML emails from within the app, with syntax-highlighted template editing and retry logic
+- **Excel export** — export issues and user lists to `.xlsx` via ExcelJS
+- **File attachments** — upload and view files attached to issues, stored under a configurable upload directory
+- **Authentication** — local email/password (bcrypt + JWT access/refresh tokens), Microsoft Entra ID SSO (`@azure/msal-node`), and a signed, time-limited SSO link for embedding the app in another site/portal
+- **Scheduled automation** — cron-triggered routes for issue reminders and auto-closing stale issues, protected by a shared secret
+- **DB health monitoring** — a status pill/recovery manager in the UI that reflects live database connectivity
 
 ## Tech Stack
 
-- Next.js (App Router)
-- React
-- Tailwind CSS
-- PostgreSQL
-- Axios for client HTTP
-- nodemailer/microsoft graph api for email notifications
+- Next.js 16 (App Router), React 19
+- Tailwind CSS 4 (`lucide-react` icons, `next-themes` for dark mode)
+- PostgreSQL via `pg` (raw SQL, no ORM)
+- TanStack Query (client data fetching/caching) and Zustand (client UI state)
+- Axios (client HTTP)
+- `jose` (JWT signing/verification) + `bcryptjs` (password hashing)
+- Nodemailer & Microsoft Graph (SMTP/Gmail) for transactional email; templates in `templates/`
+- `@azure/msal-node` and `arctic` for Microsoft Entra ID / OAuth SSO
+- `exceljs` for spreadsheet export
+- `react-markdown` + `remark-gfm` and `@uiw/react-textarea-code-editor` for the article editor
 
 ## Quick Start (local development)
 
 Prerequisites:
 
 - Node.js 18+ installed
-- A running PostgreSQL instance and a database available for the app
+- A running PostgreSQL instance and a database available for the app.
 
 Setup:
 
@@ -34,7 +45,7 @@ Setup:
 npm install
 ```
 
-2. Create a `.env.local` in the project root and set required environment variables (example below).
+2. Create a `.env.local` in the project root and set the required environment variables
 
 3. Start the development server
 
@@ -43,27 +54,6 @@ npm run dev
 ```
 
 Open http://localhost:3000 in your browser.
-
-### Example environment variables
-
-```env
-# Postgres connection
-DATABASE_URL=postgres://user:password@localhost:5432/issue_desk_db
-
-# App configuration
-NEXT_PUBLIC_BASE_URL=http://localhost:3000
-
-# Optional: email for notifications
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587
-SMTP_USER=your_user
-SMTP_PASS=your_password
-
-# Optional: application secret for signing tokens
-APP_SECRET=replace_with_secure_random_value
-```
-
-Note: The repository does not include a migration tool by default—create the database and tables required by your environment. Check `lib/Db.ts` for the connection logic used by the app.
 
 ## Available NPM scripts
 
@@ -74,33 +64,37 @@ Note: The repository does not include a migration tool by default—create the d
 
 ## Project structure (high level)
 
-- `app/` — Next.js App Router pages and route handlers; contains the UI and API route folders
-- `components/` — Reusable React components used by pages
-- `api/` — Server route handlers (API endpoints) under `app/api` and `app/api/*/route.ts`
-- `lib/` — Utilities and shared helpers (DB connection, auth, API client)
-- `services/` — Background services such as email templates and helpers
-- `contexts/` and `hooks/` — React contexts and custom hooks used in the app
-- `styles/` or `css/` — Global styles and Tailwind configuration
+- `app/` — Next.js App Router pages and route handlers
+  - `app/(auth)/` — login, register, forgot/reset password, SSO completion
+  - `app/(DashBoardRoutes)/dashboard/` — the authenticated dashboard: issues, articles, automations, superadmin panel
+  - `app/api/` — REST-style route handlers for issues, comments, users, articles, automations, notifications, SSO, cron triggers, etc.
+  - `app/articles/`, `app/it-team/`, `app/manual/`, `app/changelog/` — public/semi-public informational pages
+- `components/` — React components, grouped by area (`Modules/IssuePage`, `Modules/ArticlesPage`, `Modules/SuperAdmin`, `Navigation`, `Home`, `AuthPages`, `Skeletons`, `Themes`)
+- `serverActions/` — Next.js server actions used for data fetching/mutations from server components
+- `lib/` — core server-side utilities: `Db.ts` (Postgres pool), `Auth.ts` (JWT/session/password helpers), `api-middleware/` (route protection), `AxiosClient.ts`
+- `services/` — email sending and templating helpers (`EmailSender`, `CustomEmailSender`, `SendBugReport`)
+- `templates/` — HTML email templates (verification code, password reset, first-login, bug report, issue notifications)
+- `queries/` — client-side data-fetching functions used with TanStack Query
+- `store/` — Zustand stores for client UI state (alerts, overlays, sidebar, active tab, search, DB status, etc.)
+- `contexts/` — `UserContext` for the current authenticated user
+- `hooks/` — shared React hooks (auth sync, focus trapping, iframe/embed detection, scroll, row count)
+- `utils/` — small shared helpers (validators, slug generation, API error handling)
+- `css/` — global styles and Tailwind configuration
+- `proxy.ts` — auth-aware routing (redirects unauthenticated users away from `/dashboard`, redirects authenticated users away from auth pages)
 
-Notable server routes are implemented under `app/api` and include endpoints for issues, comments, authentication, automations, and status updates (for example: `get-issues`, `post-issue`, `post-comment`, `login`, `register`, `update-status`).
+Notable API routes under `app/api` include: `get-issues`, `post-issue`, `update-status`, `reassign-issue`, `escalate-issue`, `reopen-issue`, `post-comment`, `get-comments`, `login`, `register`, `first-login`, `reset-password`, `sso/microsoft/*`, `sso/external`, `superadmin/*` (user, issue-type, and group-email management), `excel-export`, `export-users`, `attachments/[uuid]`, `triggers/issues-reminder`, `triggers/autoclose-issues`, and `healthcheck`.
+
+## Roles & permissions
+
+- **user** — submits and views their own issues, reads articles
+- **agent** — works issues assigned to them within their department/issue type
+- **admin** — manages issues, agents, and issue-type mappings for their department; can access the Automations and IT Team pages
+- **super admin** (`isSuper`, backed by the `super_admins` table) — full access via the Super Admin panel: manage users, issue types, department-to-agent mappings, and group emails
 
 ## Development notes
 
-- This project uses the Next.js App Router and server actions for API logic. Review files under `app/` and `api/` to locate route handlers.
-- The frontend uses `axios` via a shared client in `lib/AxiosClient.ts` — adjust base URLs or middleware as needed.
-- Email notifications use `nodemailer` and templates located in `templates/`.
-
-## Contributing
-
-1. Fork the repository and create a feature branch
-2. Open a pull request describing your changes
-3. Keep changes focused and add documentation where helpful
-
-## Troubleshooting
-
-- If the app cannot connect to the database, confirm `DATABASE_URL` and that Postgres is running and reachable.
-- Check server console output for route-specific errors. Look at `app/api/*/route.ts` handlers for server-side logic.
-
-## License
-
-No license is specified in this repository. Add a `LICENSE` file if you intend to make the project public under a specific license.
+- This project uses the Next.js App Router with a mix of server actions (`serverActions/`) and REST route handlers (`app/api/*/route.ts`) for server logic.
+- The frontend uses `axios` via a shared client in `lib/AxiosClient.ts` for API calls, and TanStack Query for caching/invalidation.
+- Email notifications use `nodemailer` with templates in `templates/`; see `services/EmailSender.ts` and `services/CustomEmailSender.ts`.
+- Authentication issues short-lived access tokens and longer-lived refresh tokens (`lib/Auth.ts`), both stored as httpOnly cookies; `proxy.ts` enforces route-level auth.
+- Scheduled/automated routes (`app/api/triggers/*`) are protected by `CRON_SECRET` and intended to be called by an external scheduler (e.g. a cron job or task scheduler hitting the endpoint with the secret).
