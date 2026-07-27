@@ -43,6 +43,15 @@ export const CheckBehalfUser = async ({
         department: userDetails.department,
       };
     } else {
+      // Confirm if we have the staff info in our database
+      const existingStaff = await query(
+        `SELECT id FROM company_user_records WHERE email = $1`,
+        [email],
+      );
+
+      if (existingStaff.length === 0) {
+        return null;
+      }
       // User does not exist, try creating a new user, return the data, and notify the user
       const resetToken = crypto.randomUUID();
       const tempPassword = crypto.randomBytes(4).toString("hex");
