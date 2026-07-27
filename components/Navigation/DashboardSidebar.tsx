@@ -232,7 +232,7 @@ const DashboardSidebar = () => {
 
         {/* The back button */}
         <div className="mt-auto w-full px-2">
-          <div className="flex w-full flex-col items-center justify-center gap-4">
+          <div className="flex w-full flex-col items-center justify-center gap-1.5">
             {/* The main hub link - uses a tag to avoid basePath issues */}
             {!isEmbedded && (
               <a
