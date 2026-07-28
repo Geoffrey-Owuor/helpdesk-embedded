@@ -39,6 +39,7 @@ ecosystem.config.js*
 
 # User uploaded files
 /public/uploads
+/migrations
 
 # vercel
 .vercel

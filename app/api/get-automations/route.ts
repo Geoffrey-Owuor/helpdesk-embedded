@@ -21,15 +21,13 @@ export const GET = withAuth(async ({ request }) => {
         a.issue_target_department, a.issue_type, a.issue_priority, 
         a.issue_title, a.issue_description, a.issue_remarks, 
         a.issue_created_at, a.issue_updated_at, a.issue_status,
-        a.issue_agent_name, a.issue_agent_email, a.issue_date_resolved, 
+        a.issue_agent_name, a.issue_agent_email, a.issue_date_resolved,
         a.issue_date_closed,
-        COUNT(b.issue_id) AS attachments_count,
-        COUNT(c.issue_id) AS reopened_count,
-        COUNT(d.issue_id) AS escalated_count
+        (SELECT COUNT(*) FROM issue_attachments b WHERE b.issue_id = a.issue_uuid) AS attachments_count,
+        (SELECT COUNT(*) FROM issue_reopening c WHERE c.issue_id = a.issue_uuid) AS reopened_count,
+        (SELECT COUNT(*) FROM issue_escalation d WHERE d.issue_id = a.issue_uuid) AS escalated_count,
+        (SELECT COUNT(*) FROM issue_collaborators e WHERE e.issue_id = a.issue_uuid) AS collaborators_count
       FROM issues_table a
-      LEFT JOIN issue_attachments b ON a.issue_uuid = b.issue_id
-      LEFT JOIN issue_reopening c ON a.issue_uuid = c.issue_id
-      LEFT JOIN issue_escalation d ON a.issue_uuid = d.issue_id
     `;
 
     const whereClauses: string[] = [];
@@ -55,14 +53,7 @@ export const GET = withAuth(async ({ request }) => {
     }
 
     // Our final query
-    baseQuery += ` GROUP BY a.issue_uuid, a.issue_submitter_id, a.issue_reference_id,
-      a.issue_submitter_name, a.issue_submitter_department,
-        a.issue_target_department, a.issue_type, 
-        a.issue_priority, a.issue_title, a.issue_description, 
-        a.issue_remarks, a.issue_created_at, a.issue_updated_at, a.issue_status,
-        a.issue_agent_name, a.issue_agent_email, a.issue_date_resolved, 
-        a.issue_date_closed
-        ORDER BY issue_created_at DESC LIMIT $${params.length + 1}`;
+    baseQuery += ` ORDER BY a.issue_created_at DESC LIMIT $${params.length + 1}`;
     params.push(limit);
 
     const automationsData = await query(baseQuery, params);
