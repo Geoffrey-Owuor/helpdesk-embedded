@@ -31,6 +31,13 @@ export const getEmailData = async (uuid: string): Promise<EmailData> => {
 
   const ccEmails = ccEmailsQuery[0].emails ?? undefined;
 
+  // The agents invited to collaborate on this issue are notified alongside
+  // the submitter, the assigned agent and the assigner
+  const collaboratorsQuery = await query(
+    `SELECT collaborator_email FROM issue_collaborators WHERE issue_id = $1`,
+    [uuid],
+  );
+
   const issueData: IssueEmailBody = {
     referenceNo: emailData.issue_reference_id,
     type: emailData.issue_type,
@@ -50,6 +57,7 @@ export const getEmailData = async (uuid: string): Promise<EmailData> => {
       emailData.issue_submitter_email,
       emailData.issue_agent_email,
       emailData.issue_assigner_email,
+      ...collaboratorsQuery.map((row) => row.collaborator_email),
     ]),
   ].filter(Boolean);
 

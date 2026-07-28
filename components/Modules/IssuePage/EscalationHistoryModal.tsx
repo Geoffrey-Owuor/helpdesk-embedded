@@ -168,7 +168,7 @@ const EscalationHistoryModal = ({
                               ? "Issue Description"
                               : "Reason for Escalation"}
                           </span>
-                          <p className="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
+                          <p className="text-sm leading-relaxed wrap-break-word whitespace-pre-wrap text-neutral-700 dark:text-neutral-300">
                             {event.issue_escalation_reason}
                           </p>
                         </div>

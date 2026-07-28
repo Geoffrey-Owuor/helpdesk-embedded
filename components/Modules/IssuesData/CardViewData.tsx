@@ -13,6 +13,7 @@ import {
   ArrowRight,
   UserRound,
   Paperclip,
+  UsersRound,
 } from "lucide-react";
 import IssuePriorityFormatter from "./IssuePriorityFormatter";
 import RelativeTimeBadge from "./RelativeTimeBadge";
@@ -147,17 +148,26 @@ const CardViewData = ({
                 <AssignedAgentFormatter
                   agentName={issueData.issue_agent_name}
                 />
-                {Number(issueData.attachments_count) > 0 ? (
-                  <Paperclip
-                    size={14}
-                    className="text-neutral-400 transition-colors group-hover:text-neutral-600 dark:text-neutral-500 dark:group-hover:text-neutral-300"
-                  />
-                ) : (
-                  <ArrowRight
-                    size={14}
-                    className="text-neutral-400 transition-colors group-hover:text-neutral-600 dark:text-neutral-500 dark:group-hover:text-neutral-300"
-                  />
-                )}
+                <div className="flex items-center gap-1.5">
+                  {Number(issueData.collaborators_count) > 0 && (
+                    <UsersRound
+                      size={14}
+                      aria-label="Collaborated issue"
+                      className="text-blue-500 transition-colors group-hover:text-blue-600 dark:text-blue-400 dark:group-hover:text-blue-300"
+                    />
+                  )}
+                  {Number(issueData.attachments_count) > 0 ? (
+                    <Paperclip
+                      size={14}
+                      className="text-neutral-400 transition-colors group-hover:text-neutral-600 dark:text-neutral-500 dark:group-hover:text-neutral-300"
+                    />
+                  ) : (
+                    <ArrowRight
+                      size={14}
+                      className="text-neutral-400 transition-colors group-hover:text-neutral-600 dark:text-neutral-500 dark:group-hover:text-neutral-300"
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>
