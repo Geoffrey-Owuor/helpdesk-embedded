@@ -47,7 +47,7 @@ const ISSUE_TYPE_MAPPING: Record<string, string> = {
   RPA: "Robotic Process Automation",
   "Document DMS": "Document Management System",
   "Staff Purchase": "Staff Product Purchase",
-  "Requisition Hub": "Requisition Hub",
+  "Apps Hub": "Hotpoint Apps Hub",
   "ERP Code Creation": "ERP Product Code Creation",
 };
 
