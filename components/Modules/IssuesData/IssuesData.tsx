@@ -14,7 +14,6 @@ import ToggleTableView from "./ToggleTableView";
 import TableViewData from "./TableViewData";
 import CardViewData from "./CardViewData";
 import ExportData from "./ExportData";
-import { useRowCount } from "@/hooks/userRowCount";
 import { useQuery } from "@tanstack/react-query";
 import { fetchIssues } from "@/queries/fetchIssues";
 import { fetchAutomations } from "@/queries/fetchAutomations";
@@ -150,11 +149,10 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
 
   // Pagination states and logic
   const [currentPage, setCurrentPage] = useState(1);
-  const {
-    rowsPerPage: issuesPerPage,
-    setRowsPerPage: setIssuesPerPage,
-    rowsArray: perPageOptions,
-  } = useRowCount();
+
+  const [issuesPerPage, setIssuesPerPage] = useState(6);
+  const perPageOptions = [6, 12, 24, 48, 96, 192];
+
   const totalPages = Math.ceil(filteredData.length / issuesPerPage);
   const indexOfLastIssue = currentPage * issuesPerPage;
   const indexOfFirstIssue = indexOfLastIssue - issuesPerPage;
