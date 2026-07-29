@@ -173,6 +173,8 @@ function renderMessageSection(label: string, text: string): string {
                   color: #374151;
                   margin: 0;
                   padding: 0;
+                  overflow-wrap: break-word;
+                  white-space: pre-wrap;
                 ">${text}</p>
               </td>
             </tr>
@@ -244,6 +246,8 @@ function renderCommentSection(comment: IssueEmailComment): string {
                   color: #374151;
                   margin: 0;
                   padding: 0;
+                  overflow-wrap: break-word;
+                  white-space: pre-wrap;
                 ">${comment.content}</p>
               </td>
             </tr>
@@ -451,6 +455,8 @@ export function generateIssueNotificationEmail(
                       font-size: 14px;
                       font-weight: 600;
                       color: #111827;
+                      overflow-wrap: break-word;
+                      white-space: pre-wrap;
                       border-bottom: 1px solid #f3f4f6;
                     ">${body.issueTitle}</td>
                   </tr>
@@ -470,6 +476,8 @@ export function generateIssueNotificationEmail(
                       font-size: 13.5px;
                       line-height: 1.65;
                       color: #374151;
+                      overflow-wrap: break-word;
+                      white-space: pre-wrap;
                     ">${body.issueDescription}</td>
                   </tr>
                 </table>
