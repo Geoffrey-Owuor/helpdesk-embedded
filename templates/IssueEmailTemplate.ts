@@ -284,246 +284,239 @@ export function generateIssueNotificationEmail(
     : "";
 
   return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>${title}</title>
-  <!--[if mso]>
-  <noscript>
-    <xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml>
-  </noscript>
-  <![endif]-->
-</head>
-<body style="
-  margin: 0;
-  padding: 0;
-  background-color: transparent;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-">
+ <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>${title}</title>
+    <!--[if mso]>
+    <noscript>
+      <xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml>
+    </noscript>
+    <![endif]-->
+  </head>
+  <body style="
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  ">
 
-  <!-- Outer wrapper -->
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-    <tr>
-      <td align="center">
+    <!-- Outer wrapper -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td align="center">
 
-        <!-- Email card (max 620px) -->
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 620px;">
+          <!-- Email card (max 620px) -->
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 620px;">
 
-          <!-- ── HEADER ── -->
-          <tr>
-            <td style="
-              background: #171717;
-              padding: 20px;
-              border-radius: 20px 20px 0 0;
-            ">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
-                <tr>
-                  <td align="left" style="padding-right: 10px;">
-                    <span style="
-                      font-size: 20px;
-                      font-weight: 600;
-                      color: #ffffff;
-                      letter-spacing: -0.3px;
-                    ">Help<span style="color: #a3a3a3;">Desk</span></span>
-                  </td>
-                  
-                  <td align="right" style="padding-left: 10px;">
-                    <span style="
-                      font-size: 11px;
-                      font-weight: 600;
-                      color: #737373;
-                      letter-spacing: 0.5px;
-                      text-transform: uppercase;
-                    ">Notification</span>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-
-          <!-- ── BODY ── -->
-          <tr>
-            <td style="
-              background: #ffffff;
-              padding: 24px 0px;
-            ">
-
-              <!-- Title & Description -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 28px;">
-                <tr>
-                  <td>
-                    <h1 style="
-                      font-size: 20px;
-                      font-weight: 700;
-                      color: #111827;
-                      margin: 0 0 10px 0;
-                      letter-spacing: -0.3px;
-                      line-height: 1.3;
-                    ">${title}</h1>
-                    <p style="
-                      font-size: 14px;
-                      line-height: 1.6;
-                      color: #6b7280;
-                      margin: 0;
-                    ">${description}</p>
-                  </td>
-                </tr>
-              </table>
-
-              <!-- Divider -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px;">
-                <tr>
-                  <td style="border-top: 1px solid #e5e7eb;"></td>
-                </tr>
-              </table>
-
-              <!-- Section label: Issue Details -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 14px;">
-                <tr>
-                  <td style="
-                    font-size: 11px;
-                    font-weight: 700;
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
-                    color: #9ca3af;
-                  ">Issue Details</td>
-                </tr>
-              </table>
-
-              <!-- Metadata table -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="
-                border: 1px solid #e5e7eb;
-                border-radius: 8px;
-                overflow: hidden;
-                border-collapse: separate;
-                border-spacing: 0;
+            <!-- ── HEADER ── -->
+            <tr>
+              <td style="
+                background: #171717;
+                padding: 20px;
+                border-radius: 20px 20px 0 0;
               ">
-                ${renderMetaRow("Reference No.", `<span style="font-family: 'Courier New', monospace; font-size: 13px; color: #374151;">${body.referenceNo}</span>`)}
-                ${renderMetaRow("Type", body.type)}
-                ${renderMetaRow("Agent", body.agent)}
-                ${renderMetaRow("Priority", priorityBadge)}
-                ${renderMetaRow("Status", statusBadge)}
-                ${renderMetaRow("Submitter", body.submitter)}
-                ${renderMetaRow("Date Submitted", dateFormatter(body.date))}
-                ${renderMetaRow("Admin", body.admin)}
-                <tr>
-                  <td colspan="2" style="
-                    padding: 14px 16px 6px;
-                    font-size: 12.5px;
-                    font-weight: 600;
-                    color: #6b7280;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                    border-bottom: 1px solid #f3f4f6;
-                  ">Issue Title</td>
-                </tr>
-                <tr>
-                  <td colspan="2" style="
-                    padding: 4px 16px 14px;
-                    font-size: 14px;
-                    font-weight: 600;
-                    color: #111827;
-                    border-bottom: 1px solid #f3f4f6;
-                  ">${body.issueTitle}</td>
-                </tr>
-                <tr>
-                  <td colspan="2" style="
-                    padding: 14px 16px 6px;
-                    font-size: 12.5px;
-                    font-weight: 600;
-                    color: #6b7280;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                  ">Issue Description</td>
-                </tr>
-                <tr>
-                  <td colspan="2" style="
-                    padding: 4px 16px 16px;
-                    font-size: 13.5px;
-                    line-height: 1.65;
-                    color: #374151;
-                  ">${body.issueDescription}</td>
-                </tr>
-              </table>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                  <tr>
+                    <td align="left" style="padding-right: 10px;">
+                      <span style="
+                        font-size: 20px;
+                        font-weight: 600;
+                        color: #ffffff;
+                        letter-spacing: -0.3px;
+                      ">Help<span style="color: #a3a3a3;">Desk</span></span>
+                    </td>
+                    
+                    <td align="right" style="padding-left: 10px;">
+                      <span style="
+                        font-size: 11px;
+                        font-weight: 600;
+                        color: #737373;
+                        letter-spacing: 0.5px;
+                        text-transform: uppercase;
+                      ">Notification</span>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
 
-              <!-- Optional Reason Reopened Section -->
-              ${reasonHtml}
+            <!-- ── BODY ── -->
+            <tr>
+              <td style="
+                background: #ffffff;
+                padding: 24px 0px;
+              ">
 
-              <!-- Optional Reason Escalated Section -->
-              ${escalatedHtml}
+                <!-- Title & Description -->
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 24px;">
+                  <tr>
+                    <td>
+                      <h1 style="
+                        font-size: 20px;
+                        font-weight: 700;
+                        color: #111827;
+                        margin: 0 0 10px 0;
+                        letter-spacing: -0.3px;
+                        line-height: 1.3;
+                      ">${title}</h1>
+                      <p style="
+                        font-size: 14px;
+                        line-height: 1.6;
+                        color: #6b7280;
+                        margin: 0;
+                      ">${description}</p>
+                    </td>
+                  </tr>
+                </table>
 
-              <!-- Optional Issue Remarks Section -->
-              ${remarksHtml}
+                <!-- Optional Issue Remarks Section -->
+                ${remarksHtml}
 
-              <!-- Optional Comment Section -->
-              ${commentHtml}
+                <!-- Optional Comment Section -->
+                ${commentHtml}
 
-              <!-- View Issue Button -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 24px;">
-                <tr>
-                  <td align="center">
-                    <a href="${issueLink}" style="
-                      display: inline-block;
-                      background: #171717;
-                      color: #ffffff;
-                      font-size: 13.5px;
-                      font-weight: 600;
-                      text-decoration: none;
-                      padding: 12px 28px;
-                      border-radius: 6px;
-                      letter-spacing: 0.2px;
-                    ">View Issue →</a>
-                  </td>
-                </tr>
-              </table>
+                <!-- Optional Reason Reopened Section -->
+                ${reasonHtml}
 
-              <!-- ── FOOTER ── -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 36px; border-top: 1px solid #f3f4f6; padding-top: 22px;">
-                <tr>
-                  <td align="center">
-                    <p style="
-                      font-size: 12px;
-                      color: #9ca3af;
-                      margin: 0 0 4px;
-                    ">This is an automated notification from</p>
-                    <p style="
-                      font-size: 13px;
+                <!-- Optional Reason Escalated Section -->
+                ${escalatedHtml}
+
+              
+                <!-- View Issue Button -->
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 24px; margin-bottom:24px;">
+                  <tr>
+                    <td align="center">
+                      <a href="${issueLink}" style="
+                        display: inline-block;
+                        background: #171717;
+                        color: #ffffff;
+                        font-size: 13.5px;
+                        font-weight: 600;
+                        text-decoration: none;
+                        padding: 12px 28px;
+                        border-radius: 6px;
+                        letter-spacing: 0.2px;
+                      ">View Issue →</a>
+                    </td>
+                  </tr>
+                </table>
+
+                <!-- Section label: Issue Details -->
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 14px;">
+                  <tr>
+                    <td style="
+                      font-size: 11px;
                       font-weight: 700;
-                      color: #404040;
-                      margin: 0 0 12px;
-                      letter-spacing: -0.2px;
-                    ">HelpDesk</p>
-                    <p style="
-                      font-size: 11.5px;
-                      color: #d1d5db;
-                      margin: 0;
-                    ">Please do not reply to this email directly.</p>
-                  </td>
-                </tr>
-              </table>
+                      text-transform: uppercase;
+                      letter-spacing: 1px;
+                      color: #9ca3af;
+                    ">Issue Details</td>
+                  </tr>
+                </table>
 
-            </td>
-          </tr>
+                <!-- Metadata table -->
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="
+                  border: 1px solid #e5e7eb;
+                  border-radius: 8px;
+                  overflow: hidden;
+                  border-collapse: separate;
+                  border-spacing: 0;
+                ">
+                  ${renderMetaRow("Reference No.", `<span style="font-family: 'Courier New', monospace; font-size: 13px; color: #374151;">${body.referenceNo}</span>`)}
+                  ${renderMetaRow("Type", body.type)}
+                  ${renderMetaRow("Agent", body.agent)}
+                  ${renderMetaRow("Priority", priorityBadge)}
+                  ${renderMetaRow("Status", statusBadge)}
+                  ${renderMetaRow("Submitter", body.submitter)}
+                  ${renderMetaRow("Date Submitted", dateFormatter(body.date))}
+                  ${renderMetaRow("Admin", body.admin)}
+                  <tr>
+                    <td colspan="2" style="
+                      padding: 14px 16px 6px;
+                      font-size: 12.5px;
+                      font-weight: 600;
+                      color: #6b7280;
+                      text-transform: uppercase;
+                      letter-spacing: 0.5px;
+                    ">Issue Title</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" style="
+                      padding: 4px 16px 16px;
+                      font-size: 14px;
+                      font-weight: 600;
+                      color: #111827;
+                      border-bottom: 1px solid #f3f4f6;
+                    ">${body.issueTitle}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" style="
+                      padding: 14px 16px 6px;
+                      font-size: 12.5px;
+                      font-weight: 600;
+                      color: #6b7280;
+                      text-transform: uppercase;
+                      letter-spacing: 0.5px;
+                    ">Issue Description</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" style="
+                      padding: 4px 16px 16px;
+                      font-size: 13.5px;
+                      line-height: 1.65;
+                      color: #374151;
+                    ">${body.issueDescription}</td>
+                  </tr>
+                </table>
 
-          <!-- Bottom spacer -->
-          <tr>
-            <td style="padding-top: 20px;" align="center">
-              <p style="font-size: 11px; color: #9ca3af; margin: 0;">
-                © ${new Date().getFullYear()} HelpDesk. All rights reserved.
-              </p>
-            </td>
-          </tr>
+                <!-- ── FOOTER ── -->
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 36px;">
+                  <tr>
+                    <td align="center">
+                      <p style="
+                        font-size: 12px;
+                        color: #9ca3af;
+                        margin: 0 0 4px;
+                      ">This is an automated notification from</p>
+                      <p style="
+                        font-size: 13px;
+                        font-weight: 700;
+                        color: #404040;
+                        margin: 0 0 12px;
+                        letter-spacing: -0.2px;
+                      ">HelpDesk</p>
+                      <p style="
+                        font-size: 11.5px;
+                        color: #d1d5db;
+                        margin: 0;
+                      ">Please do not reply to this email directly.</p>
+                    </td>
+                  </tr>
+                </table>
 
-        </table>
-      </td>
-    </tr>
-  </table>
+              </td>
+            </tr>
 
-</body>
-</html>
+            <!-- Bottom spacer -->
+            <tr>
+              <td style="padding-top: 20px; padding-bottom:14px;" align="center">
+                <p style="font-size: 11px; color: #9ca3af; margin: 0;">
+                  © ${new Date().getFullYear()} HelpDesk. All rights reserved.
+                </p>
+              </td>
+            </tr>
+
+          </table>
+        </td>
+      </tr>
+    </table>
+
+  </body>
+  </html>
   `;
 }
