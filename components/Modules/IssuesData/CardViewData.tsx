@@ -40,7 +40,7 @@ const CardViewData = ({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {currentIssues.map((issueData) => (
         <div
           key={issueData.issue_uuid}
@@ -79,7 +79,7 @@ const CardViewData = ({
           {/* Body: Title & Description */}
           <div className="mb-4 flex flex-1 flex-col gap-2">
             <h3
-              className="line-clamp-1 text-sm font-semibold text-neutral-900 dark:text-neutral-100"
+              className="line-clamp-1 text-sm font-semibold wrap-break-word text-neutral-900 dark:text-neutral-100"
               title={titleHelper(issueData.issue_title)}
             >
               {issueData.issue_title}
@@ -88,7 +88,7 @@ const CardViewData = ({
             <div className="flex items-start gap-2 text-neutral-600 dark:text-neutral-400">
               <AlignLeft size={16} className="mt-0.5 shrink-0 opacity-60" />
               <p
-                className="line-clamp-1 text-xs leading-relaxed"
+                className="line-clamp-1 text-xs leading-relaxed wrap-break-word"
                 title={titleHelper(issueData.issue_description)}
               >
                 {issueData.issue_description}

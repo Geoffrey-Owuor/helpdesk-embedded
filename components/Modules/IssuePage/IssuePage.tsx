@@ -393,7 +393,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           <div className="flex flex-col gap-3">
             <h1
               title={titleHelper(issueData.issue_title)}
-              className="max-w-100 text-xl font-semibold wrap-break-word text-neutral-900 dark:text-white"
+              className="line-clamp-1 max-w-100 text-xl font-semibold wrap-break-word text-neutral-900 dark:text-white"
             >
               {issueData.issue_title}
             </h1>
