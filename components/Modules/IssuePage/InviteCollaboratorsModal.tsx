@@ -323,16 +323,16 @@ const InviteCollaboratorsModal = ({
                         {isCollaborator && (
                           <span
                             title="Already collaborating on this issue"
-                            className={`absolute -right-2 -bottom-2 flex h-5.5 w-5.5 items-center justify-center rounded-full text-white shadow-sm ring-2 ring-neutral-50 dark:ring-neutral-950 ${
+                            className={`absolute -right-2.5 flex h-5 w-5 items-center justify-center rounded-full text-white shadow-sm ring-2 ring-neutral-50 dark:ring-neutral-950 ${
                               isMarkedForRemoval
                                 ? "bg-red-600 dark:bg-red-500"
                                 : "bg-blue-600 dark:bg-blue-500"
                             }`}
                           >
                             {isMarkedForRemoval ? (
-                              <X className="h-3 w-3" />
+                              <X className="h-2.5 w-2.5" />
                             ) : (
-                              <UserRoundCheck className="h-3 w-3" />
+                              <UserRoundCheck className="h-2.5 w-2.5" />
                             )}
                           </span>
                         )}
