@@ -49,11 +49,11 @@ export const PUT = withAuth(async ({ request, user }) => {
     const currentSubmitterName = rows[0].issue_submitter_name;
     const currentReason = rows[0].issue_description;
 
-    // Issue is already closed
-    if (currentStatus !== "closed") {
+    // Issue is already closed/resolved
+    if (currentStatus !== "closed" && currentStatus !== "resolved") {
       await client.query("ROLLBACK");
       return NextResponse.json(
-        { message: "This issue is not yet closed" },
+        { message: "This issue has not been resolved/closed yet" },
         { status: 409 },
       );
     }

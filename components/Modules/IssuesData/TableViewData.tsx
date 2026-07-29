@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useLoadingStore } from "@/store/useLoadingStore";
 import IssuePriorityFormatter from "./IssuePriorityFormatter";
 import RelativeTimeBadge from "./RelativeTimeBadge";
-import { Paperclip } from "lucide-react";
+import { Paperclip, UsersRound } from "lucide-react";
 import { ResolutionTimePill } from "./ResolutionTimePill";
 
 type TableViewDataProps = {
@@ -141,6 +141,12 @@ const TableViewData = ({
                       </Link>
                       {Number(issueData.attachments_count) > 0 && (
                         <Paperclip className="h-3.5 w-3.5 text-neutral-600 dark:text-neutral-400" />
+                      )}
+                      {Number(issueData.collaborators_count) > 0 && (
+                        <UsersRound
+                          aria-label="Collaborated issue"
+                          className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400"
+                        />
                       )}
                     </div>
                   </td>

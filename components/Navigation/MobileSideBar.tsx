@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 "use client";
 
 import Link from "next/link";
@@ -12,11 +13,13 @@ import {
   ShieldPlus,
   LayoutDashboard,
   NotebookPen,
+  HousePlug,
 } from "lucide-react";
 import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
 import { useUser } from "@/contexts/UserContext";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import AdminPanel from "./AdminFunctions/AdminPanel";
+import { useIsEmbedd } from "@/hooks/useIsEmbedd";
 
 type MobileSideBarProps = {
   sideBarOpen: boolean;
@@ -32,6 +35,8 @@ const MobileSideBar = ({
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
   const { role, isSuper } = useUser();
   const [showAdminOptions, setShowAdminOptions] = useState(false);
+
+  const isEmbedded = useIsEmbedd();
 
   // Tab focus trapping
   const closeSidebar = useCallback(
@@ -169,6 +174,16 @@ const MobileSideBar = ({
               <NotebookPen className="h-5 w-5" />
               <span>Articles Hub</span>
             </Link>
+            {!isEmbedded && (
+              <a
+                href="/dashboard"
+                onClick={() => setSideBarOpen(false)}
+                className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              >
+                <HousePlug className="h-5 w-5" />
+                <span>Apps Hub</span>
+              </a>
+            )}
           </nav>
         </aside>
       </div>

@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import {
   Check,
   ChevronDown,
   Building2,
   HelpCircle,
   Loader2,
+  Search,
+  X,
 } from "lucide-react";
 import { IssueOption } from "@/serverActions/GetIssueTypes";
 import { generateValueType } from "@/public/assets";
@@ -33,6 +35,9 @@ const OptionsDropDown = ({
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // Search input state
+  const [searchQuery, setSearchQuery] = useState("");
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -46,6 +51,30 @@ const OptionsDropDown = ({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Clear search query whenever the dropdown opens/closes
+  useEffect(() => {
+    if (!isOpen) {
+      Promise.resolve().then(() => setSearchQuery(""));
+    }
+  }, [isOpen]);
+
+  // Memoized filtered options
+  const filteredOptions = useMemo(() => {
+    if (!searchQuery.trim()) return options;
+
+    const query = searchQuery.toLowerCase().trim();
+
+    return options.filter((option) => {
+      // Determine label to check against based on dropdown type
+      const targetLabel =
+        dropDownType === "department"
+          ? option.option
+          : generateValueType(option.option);
+
+      return targetLabel.toLowerCase().includes(query);
+    });
+  }, [options, searchQuery, dropDownType]);
 
   const handleSelect = (selectedValue: string) => {
     onChange(selectedValue);
@@ -99,13 +128,36 @@ const OptionsDropDown = ({
             Select {dropDownType === "department" ? "Department" : "Issue Type"}
           </div>
 
+          {/* SEARCH INPUT */}
+          <div className="relative px-1 pb-2">
+            <div className="relative flex items-center">
+              <Search className="absolute left-2.5 h-3.5 w-3.5 text-neutral-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={`Search ${dropDownType === "department" ? "departments" : "issue types"}...`}
+                className="w-full rounded-full border border-neutral-200 bg-neutral-100 py-2 pr-8 pl-8 text-xs text-neutral-900 placeholder-neutral-400 transition-colors focus:border-blue-500 focus:bg-white focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-500 dark:focus:border-blue-500 dark:focus:bg-neutral-900"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2 rounded-full p-0.5 text-neutral-400 hover:bg-neutral-200 hover:text-neutral-600 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+            </div>
+          </div>
+
           {loading ? (
             <div className="flex items-center gap-1 px-3 py-6 text-sm text-neutral-400 dark:text-neutral-500">
               <Loader2 className="h-4 w-4 animate-spin" />
               <span>Loading...</span>
             </div>
-          ) : options.length > 0 ? (
-            options.map((option) => (
+          ) : filteredOptions.length > 0 ? (
+            filteredOptions.map((option) => (
               <button
                 key={option.value}
                 type="button"
@@ -116,7 +168,9 @@ const OptionsDropDown = ({
                   title={generateValueType(option.option)}
                   className="line-clamp-1 text-left"
                 >
-                  {generateValueType(option.option)}
+                  {dropDownType === "department"
+                    ? option.option
+                    : generateValueType(option.option)}
                 </span>
                 {value === option.value && (
                   <Check className="h-4 w-4 text-blue-600 dark:text-blue-400" />
@@ -126,8 +180,9 @@ const OptionsDropDown = ({
           ) : (
             /* Fallback state when no options exist */
             <div className="px-3 py-6 text-center text-sm text-neutral-400 dark:text-neutral-500">
-              No {dropDownType === "department" ? "departments" : "issue types"}{" "}
-              found for this selection.
+              {searchQuery
+                ? "No matching results found."
+                : `No ${dropDownType === "department" ? "departments" : "issue types"} found for this selection.`}
             </div>
           )}
         </div>

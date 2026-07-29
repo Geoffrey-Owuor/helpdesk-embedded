@@ -125,11 +125,11 @@ const NotificationModal = ({
                       <CircleDot className="h-4 w-4" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+                      <p className="line-clamp-1 text-sm font-semibold wrap-break-word text-neutral-800 dark:text-neutral-200">
                         {issue.issue_title}
                       </p>
                       {issue.issue_description && (
-                        <p className="mt-0.5 line-clamp-2 text-xs text-neutral-500 dark:text-neutral-400">
+                        <p className="mt-0.5 line-clamp-2 text-xs wrap-break-word text-neutral-500 dark:text-neutral-400">
                           {issue.issue_description}
                         </p>
                       )}
