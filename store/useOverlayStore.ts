@@ -7,6 +7,8 @@ type OverlayText =
   | "Logging out"
   | "Reassigning"
   | "Adding"
+  | "Inviting"
+  | "Removing"
   | "";
 
 interface OverlayStore {

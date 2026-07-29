@@ -26,6 +26,7 @@ import {
   UndoDot,
   GitBranchPlus,
   GitMerge,
+  UserRoundPlus,
 } from "lucide-react";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import { dateFormatter, titleHelper } from "@/public/assets";
@@ -57,6 +58,8 @@ import EscalationHistoryModal from "./EscalationHistoryModal";
 import ReopenHistoryModal from "./ReopenHistoryModal";
 import RelativeTimeBadge from "../IssuesData/RelativeTimeBadge";
 import { ResolutionTimePill } from "../IssuesData/ResolutionTimePill";
+import InviteCollaboratorsModal from "./InviteCollaboratorsModal";
+import { fetchCollaborators } from "@/queries/fetchCollaborators";
 
 const statusOptions = baseOptions.filter((option) => option.value !== "open");
 
@@ -116,6 +119,14 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
   // Our issue data
   const issueData = recordsData.find((issue) => issue.issue_uuid === uuid);
 
+  // 5. The agents invited to collaborate on this issue
+  const { data: collaborators = [], isLoading: collaboratorsLoading } =
+    useQuery({
+      queryKey: ["issueCollaborators", uuid],
+      queryFn: () => fetchCollaborators(uuid),
+      enabled: Number(issueData?.collaborators_count) > 0,
+    });
+
   const router = useRouter();
 
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
@@ -123,6 +134,21 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
   const { role, email, department, userId, isSuper } = useUser();
+
+  // Am I one of the agents invited to collaborate on this issue?
+  const isCollaborator = collaborators.some(
+    (collaborator) => collaborator.collaborator_email === email,
+  );
+
+  // The assigned agent, a department admin or a super admin own the issue -
+  // they are the only ones who can remove a collaborator from it
+  const canManageCollaborators =
+    issueData?.issue_agent_email === email ||
+    isSuper ||
+    (role === "admin" && issueData?.issue_target_department === department);
+
+  // Everyone above, plus the invited collaborators, can work on the issue
+  const canActOnIssue = canManageCollaborators || isCollaborator;
 
   // States for the modals
   const [statusModalOpen, setStatusModalOpen] = useState(false);
@@ -139,6 +165,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
   const [isPriorityOpen, setIsPriorityOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isReassignModalOpen, setIsReassignModalOpen] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const priorityDropDownRef = useRef<HTMLDivElement>(null);
 
@@ -306,6 +333,20 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
         />
       )}
 
+      {/* Invite Collaborators Modal */}
+      {isInviteModalOpen && (
+        <InviteCollaboratorsModal
+          uuid={uuid}
+          closeModal={() => setIsInviteModalOpen(false)}
+          isModalOpen={isInviteModalOpen}
+          issueType={issueData.issue_type}
+          targetDepartment={issueData.issue_target_department}
+          activeQueryKey={activeQueryKey}
+          issueAgentEmail={issueData.issue_agent_email}
+          canManage={canManageCollaborators}
+        />
+      )}
+
       {/* Reopen Modal */}
       {reopenModalOpen && (
         <ReopenIssueModal
@@ -353,7 +394,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           <div className="flex flex-col gap-3">
             <h1
               title={titleHelper(issueData.issue_title)}
-              className="max-w-100 text-xl font-semibold wrap-break-word text-neutral-900 dark:text-white"
+              className="line-clamp-1 max-w-100 text-xl font-semibold wrap-break-word text-neutral-900 dark:text-white"
             >
               {issueData.issue_title}
             </h1>
@@ -396,11 +437,20 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                   escalation history
                 </button>
               )}
+              {/* Invite collaborators button */}
+              {canActOnIssue && issueData.issue_status !== "closed" && (
+                <button
+                  type="button"
+                  onClick={() => setIsInviteModalOpen(true)}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-blue-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-blue-800"
+                >
+                  <UserRoundPlus size={12} />
+                  Invite
+                </button>
+              )}
+
               {/* Escalation button */}
-              {(issueData.issue_agent_email === email ||
-                isSuper ||
-                (role === "admin" &&
-                  issueData.issue_target_department === department)) &&
+              {canActOnIssue &&
                 issueData.issue_status !== "resolved" &&
                 issueData.issue_status !== "closed" && (
                   <button
@@ -514,58 +564,52 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                     </div>
                   </div>
                 )}
-              {(issueData.issue_agent_email === email ||
-                isSuper ||
-                (role === "admin" &&
-                  issueData.issue_target_department === department)) &&
-                issueData.issue_status !== "closed" && (
-                  <div className="relative w-fit" ref={dropdownRef}>
-                    <button
-                      type="button" // Prevent form submission if inside a form
-                      onClick={() => setIsOpen(!isOpen)}
-                      className={`flex h-9.5 w-full min-w-43 items-center justify-between rounded-xl border bg-white px-3 text-sm transition-all sm:w-auto dark:bg-neutral-950 ${
-                        isOpen
-                          ? "border-blue-500 ring-2 ring-blue-500/20"
-                          : "border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900"
+              {canActOnIssue && issueData.issue_status !== "closed" && (
+                <div className="relative w-fit" ref={dropdownRef}>
+                  <button
+                    type="button" // Prevent form submission if inside a form
+                    onClick={() => setIsOpen(!isOpen)}
+                    className={`flex h-9.5 w-full min-w-43 items-center justify-between rounded-xl border bg-white px-3 text-sm transition-all sm:w-auto dark:bg-neutral-950 ${
+                      isOpen
+                        ? "border-blue-500 ring-2 ring-blue-500/20"
+                        : "border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-900"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300">
+                      <SquareCheckBig className="h-4 w-4" />
+                      <span className="font-semibold text-neutral-700 dark:text-neutral-300">
+                        Update Status:
+                      </span>
+                    </div>
+                    <ChevronDown
+                      className={`h-4 w-4 text-neutral-400 transition-transform ${
+                        isOpen ? "rotate-180" : ""
                       }`}
-                    >
-                      <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300">
-                        <SquareCheckBig className="h-4 w-4" />
-                        <span className="font-semibold text-neutral-700 dark:text-neutral-300">
-                          Update Status:
-                        </span>
+                    />
+                  </button>
+                  {/* Dropdown Menu */}
+                  {isOpen && (
+                    <div className="default-scrollbar absolute top-full right-0 z-20 mt-2 max-h-80 w-full min-w-43 origin-top-right overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-950 dark:shadow-none">
+                      <div className="px-2 py-2 text-xs font-semibold text-neutral-500 uppercase">
+                        Status options
                       </div>
-                      <ChevronDown
-                        className={`h-4 w-4 text-neutral-400 transition-transform ${
-                          isOpen ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
-                    {/* Dropdown Menu */}
-                    {isOpen && (
-                      <div className="default-scrollbar absolute top-full right-0 z-20 mt-2 max-h-80 w-full min-w-43 origin-top-right overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-950 dark:shadow-none">
-                        <div className="px-2 py-2 text-xs font-semibold text-neutral-500 uppercase">
-                          Status options
-                        </div>
-                        {statusOptions.map((option) => (
-                          <button
-                            key={option.value}
-                            onClick={() =>
-                              handleConfirmationDialog(option.value)
-                            }
-                            disabled={option.value === issueData.issue_status}
-                            className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-900"
-                          >
-                            {option.label}
-                            {issueData.issue_status === option.value && (
-                              <Check className="h-4 w-4 text-blue-600" />
-                            )}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
+                      {statusOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => handleConfirmationDialog(option.value)}
+                          disabled={option.value === issueData.issue_status}
+                          className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-900"
+                        >
+                          {option.label}
+                          {issueData.issue_status === option.value && (
+                            <Check className="h-4 w-4 text-blue-600" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -616,10 +660,48 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
               )}
             </div>
 
-            <InfoBlock
-              label="Reference Number"
-              value={issueData.issue_reference_id}
-            />
+            {/* The agents invited to collaborate on this issue */}
+            <div className="flex flex-col">
+              <span className="text-xs font-semibold tracking-wider text-neutral-500 uppercase dark:text-neutral-500">
+                Collaborators
+              </span>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                {Number(issueData.collaborators_count) > 0 ? (
+                  <>
+                    {collaboratorsLoading ? (
+                      <span className="text-sm text-neutral-400 italic dark:text-neutral-500">
+                        Loading collaborators...
+                      </span>
+                    ) : collaborators.length === 0 ? (
+                      <span className="text-sm text-neutral-400 italic dark:text-neutral-500">
+                        No collaborators on this issue.
+                      </span>
+                    ) : (
+                      collaborators.map((collaborator) => (
+                        <div
+                          key={collaborator.collaborator_email}
+                          title={`${collaborator.collaborator_email} - invited by ${collaborator.inviter_name}`}
+                          className="inline-flex items-center gap-1.5 rounded-full border border-blue-100 bg-blue-50 py-1 pr-3 pl-1 dark:border-blue-900/40 dark:bg-blue-900/20"
+                        >
+                          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white dark:bg-blue-500">
+                            {collaborator.collaborator_name
+                              .charAt(0)
+                              .toUpperCase()}
+                          </span>
+                          <span className="max-w-32 truncate text-xs font-semibold text-blue-800 dark:text-blue-300">
+                            {collaborator.collaborator_name}
+                          </span>
+                        </div>
+                      ))
+                    )}
+                  </>
+                ) : (
+                  <span className="text-sm text-neutral-400 italic dark:text-neutral-500">
+                    No collaborators on this issue.
+                  </span>
+                )}
+              </div>
+            </div>
           </DetailCard>
         </div>
 
@@ -647,7 +729,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
             <div className="prose prose-neutral dark:prose-invert max-w-none">
               <p
                 title={issueData.issue_description.toString()}
-                className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-300"
+                className="text-sm leading-relaxed wrap-break-word whitespace-pre-wrap text-neutral-600 dark:text-neutral-300"
               >
                 {issueData.issue_description}
               </p>
@@ -668,7 +750,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
               {issueData.issue_remarks ? (
                 <p
                   title={titleHelper(issueData.issue_remarks)}
-                  className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-300"
+                  className="text-sm leading-relaxed wrap-break-word whitespace-pre-wrap text-neutral-600 dark:text-neutral-300"
                 >
                   {issueData.issue_remarks}
                 </p>

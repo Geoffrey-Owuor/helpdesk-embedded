@@ -9,20 +9,28 @@ export const GET = withAuth(async ({ user, request }) => {
   const agentAdminFilter = searchParams.get("agentAdminFilter");
   const superAdminFilter = searchParams.get("superAdminFilter");
 
-  // 1. Determine Dynamic Column & Value (Same as before)
-  let filterColumn = "issue_submitter_id";
+  // 1. Determine Dynamic Clause & Value
+  // This has to mirror the visibility rules in /api/get-issues exactly,
+  // otherwise the cards will disagree with the issues table
+  let filterClause = "issue_submitter_id = $1";
   let filterValue = userId;
 
   switch (role) {
     case "admin":
       if (agentAdminFilter !== "agentAdminFilter") {
-        filterColumn = "issue_target_department";
+        filterClause = "issue_target_department = $1";
         filterValue = department;
       }
       break;
     case "agent":
       if (agentAdminFilter !== "agentAdminFilter") {
-        filterColumn = "issue_agent_email";
+        // Agents count their assigned issues plus the ones they collaborate on
+        filterClause = `(issue_agent_email = $1
+          OR EXISTS (
+            SELECT 1 FROM issue_collaborators ic
+            WHERE ic.issue_id = issues_table.issue_uuid
+            AND ic.collaborator_email = $1
+          ))`;
         filterValue = email;
       }
       break;
@@ -63,7 +71,7 @@ export const GET = withAuth(async ({ user, request }) => {
     FROM issues_table
   `;
 
-  if (!superAdminFilter || !isSuper) sql += ` WHERE ${filterColumn} = $1`;
+  if (!superAdminFilter || !isSuper) sql += ` WHERE ${filterClause}`;
   const params = superAdminFilter && isSuper ? [] : [filterValue];
 
   try {

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 "use client";
 import {
   Menu,
@@ -9,6 +10,8 @@ import {
   LayoutDashboard,
   NotebookPen,
   Keyboard,
+  CircleQuestionMark,
+  HousePlug,
 } from "lucide-react";
 import Link from "next/link";
 import ThemeToggle from "../Themes/ThemeToggle";
@@ -26,6 +29,7 @@ import Notifications from "./Notifications/Notifications";
 import ClientPortal from "../Modules/ClientPortal";
 import { useSidebarToggleStore } from "@/store/useSidebarToggleStore";
 import NewsButton from "../Modules/News/NewsButton";
+import { useIsEmbedd } from "@/hooks/useIsEmbedd";
 
 const DashboardSidebar = () => {
   const { username, role, isSuper } = useUser();
@@ -34,6 +38,8 @@ const DashboardSidebar = () => {
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [showUserSettings, setShowUserSettings] = useState(false);
   const showSidebar = useSidebarToggleStore((state) => state.showSidebar);
+
+  const isEmbedded = useIsEmbedd();
 
   // New Issue Keyboard Shortcut Listener
   useEffect(() => {
@@ -150,8 +156,7 @@ const DashboardSidebar = () => {
       <aside
         className={`fixed top-14 bottom-0 transition-all duration-200 ease-in-out ${showSidebar ? "translate-x-0" : "-translate-x-full"} left-0 z-50 hidden w-20 flex-col items-center border-neutral-200 pb-2 lg:flex dark:border-neutral-800`}
       >
-        {/* Nav items — grow to fill space */}
-        <nav className="sidebar-nav mb-2 flex w-full flex-1 flex-col items-center gap-1.5 px-2">
+        <div className="mx-auto mb-2 w-full px-2">
           {/* Home */}
           <SidebarLink
             href="/dashboard"
@@ -162,7 +167,10 @@ const DashboardSidebar = () => {
             showToolTip={true}
             ToolTipMessage="Dashboard"
           />
+        </div>
 
+        {/* Nav items — grow to fill space */}
+        <nav className="mb-2 flex w-full flex-1 scrollbar-none flex-col items-center gap-1.5 overflow-y-auto mask-[linear-gradient(to_bottom,transparent_0%,black_24px,black_calc(100%-24px),transparent_100%)] px-2">
           {/* New Issue */}
           <SidebarButton
             onClick={() => setIsIssueModalOpen(true)}
@@ -220,16 +228,39 @@ const DashboardSidebar = () => {
             showToolTip={true}
             ToolTipMessage="Articles Hub"
           />
-
-          {/* Back */}
-          <SidebarButton
-            onClick={() => router.back()}
-            icon={<ChevronLeft className="h-5 w-5" />}
-            label="Back"
-            showToolTip={true}
-            ToolTipMessage="Go Back"
-          />
         </nav>
+
+        {/* The back button */}
+        <div className="mt-auto w-full px-2">
+          <div className="flex w-full flex-col items-center justify-center gap-1.5">
+            {/* The main hub link - uses a tag to avoid basePath issues */}
+            {!isEmbedded && (
+              <a
+                href="/dashboard"
+                className="flex w-full flex-col items-center gap-1 rounded-2xl py-2.5 text-[10px] font-semibold text-neutral-600 transition-colors hover:bg-neutral-200 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+              >
+                <HousePlug className="h-5 w-5" />
+                <span>Hub</span>
+              </a>
+            )}
+            {/* Back */}
+            <SidebarButton
+              onClick={() => router.back()}
+              icon={<ChevronLeft className="h-5 w-5" />}
+              label="Back"
+              showToolTip={true}
+              ToolTipMessage="Go Back"
+            />
+            <Link
+              href="/manual"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full p-2 text-neutral-600 transition-colors hover:bg-neutral-200 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+            >
+              <CircleQuestionMark className="h-5 w-5" />
+            </Link>
+          </div>
+        </div>
       </aside>
     </>
   );
@@ -280,7 +311,7 @@ const SidebarButton = ({
         onClick={onClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={() => setIsHovered(false)}
-        className="flex w-full flex-col items-center gap-1 rounded-2xl py-2.5 text-[10px] font-semibold text-neutral-600 transition-colors hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800"
+        className="flex w-full flex-col items-center gap-1 rounded-2xl py-2.5 text-[10px] font-semibold text-neutral-600 transition-colors hover:bg-neutral-200 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
       >
         {icon}
         <span>{label}</span>
@@ -359,7 +390,7 @@ const SidebarLink = ({
         onClick={onClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={() => setIsHovered(false)}
-        className={`flex w-full flex-col items-center gap-1 ${isActive ? "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200" : "text-neutral-600 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-800"} rounded-2xl py-2.5 text-[10px] font-semibold`}
+        className={`flex w-full flex-col items-center gap-1 ${isActive ? "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200" : "text-neutral-600 hover:bg-neutral-200 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"} rounded-2xl py-2.5 text-[10px] font-semibold`}
       >
         {icon}
         <span>{label}</span>

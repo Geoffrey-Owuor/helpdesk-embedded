@@ -70,10 +70,10 @@ function renderIssueRow(issue: UnresolvedIssue): string {
             </tr>
           </table>
 
-          <h3 style="margin: 0 0 8px 0; font-size: 17px; font-weight: 700; color: #111827; line-height: 1.4;">
+          <h3 style="margin: 0 0 8px 0; font-size: 17px; font-weight: 700; color: #111827; line-height: 1.4; overflow-wrap: break-word; white-space: pre-wrap;">
             ${issue.issue_title}
           </h3>
-          <p style="margin: 0 0 20px 0; font-size: 14px; color: #4b5563; line-height: 1.6;">
+          <p style="margin: 0 0 20px 0; font-size: 14px; color: #4b5563; line-height: 1.6; overflow-wrap: break-word; white-space: pre-wrap;">
             ${issue.issue_description || "<em style='color: #9ca3af;'>No description provided</em>"}
           </p>
 
@@ -224,7 +224,7 @@ function generateReminderEmail(
                     text-transform: uppercase; letter-spacing: 1px;
                     color: #9ca3af; padding-bottom: 12px;
                     border-bottom: 2px solid #f3f4f6;
-                  ">Open Issues - ${agent}</td>
+                  ">Unresolved Issues - ${agent}</td>
                 </tr>
               </table>
 

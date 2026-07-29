@@ -31,11 +31,12 @@ export const emailSender = async ({
   author = "",
   attachments,
 }: EmailSenderProps) => {
-  // Constructing our comment data
-  const formattedDate = dateFormatter(new Date().toLocaleDateString());
-
   const commentData: IssueEmailComment | undefined = comment
-    ? { author: author, content: comment, submittedAt: formattedDate }
+    ? {
+        author: author,
+        content: comment,
+        submittedAt: dateFormatter(new Date().toLocaleDateString()),
+      }
     : undefined;
 
   // Getting the issue data for the email body

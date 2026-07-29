@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
 import { emailSender } from "@/services/EmailSender";
+import { canActOnIssue } from "@/lib/IssueAccess";
 
 export const PUT = withAuth(async ({ request, user }) => {
   const { username, userId, email } = user;
@@ -26,9 +27,10 @@ export const PUT = withAuth(async ({ request, user }) => {
 
     // Check if the issue is marked as closed
     const { rows } = await client.query(
-      `SELECT issue_status, issue_reference_id, issue_agent_id, 
-       issue_updated_at, issue_description, issue_agent_name, issue_agent_email 
-       FROM issues_table 
+      `SELECT issue_status, issue_reference_id, issue_agent_id,
+       issue_updated_at, issue_description, issue_agent_name, issue_agent_email,
+       issue_target_department
+       FROM issues_table
        WHERE issue_uuid = $1 FOR UPDATE`,
       [uuid],
     );
@@ -36,6 +38,18 @@ export const PUT = withAuth(async ({ request, user }) => {
     if (rows.length === 0) {
       await client.query("ROLLBACK");
       return NextResponse.json({ message: "Issue not found" }, { status: 404 });
+    }
+
+    // The assigned agent, a department admin, a super admin or a collaborator
+    // on the issue can escalate it
+    const isAllowed = await canActOnIssue(uuid, user, rows[0], client);
+
+    if (!isAllowed) {
+      await client.query("ROLLBACK");
+      return NextResponse.json(
+        { message: "You are not authorized to perform this action" },
+        { status: 403 },
+      );
     }
 
     //our current issue status
