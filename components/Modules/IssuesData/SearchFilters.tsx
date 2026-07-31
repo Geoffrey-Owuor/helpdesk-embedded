@@ -61,7 +61,7 @@ const SearchFilters = ({ onSearch }: FilterProps) => {
       className="flex h-9.5 items-center gap-1.5 rounded-xl bg-neutral-900 px-3 text-sm text-white hover:bg-neutral-800 disabled:opacity-60 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
     >
       <Search className="h-4 w-4" />
-      Search
+      Apply Filters
     </button>
   );
 };

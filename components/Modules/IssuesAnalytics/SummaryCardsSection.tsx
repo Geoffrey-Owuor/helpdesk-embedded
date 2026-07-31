@@ -20,7 +20,7 @@ const SummaryCardsSection = ({
   };
 
   return (
-    <div className="mb-6 flex flex-col gap-6">
+    <div className="mb-4 flex flex-col gap-6">
       <p className="text-sm text-neutral-500 dark:text-neutral-400">
         {isLoading
           ? "Calculating..."

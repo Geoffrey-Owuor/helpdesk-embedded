@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Check, ChevronDown, Filter } from "lucide-react";
+import { ChevronDown, Filter } from "lucide-react";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useUser } from "@/contexts/UserContext";
 
@@ -24,6 +24,28 @@ const SearchFilterLogic = ({ recordType }: { recordType: string }) => {
   const selectedFilter = useSearchStore((state) => state.selectedFilter);
   const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
   const setSelectedFilter = useSearchStore((state) => state.setSelectedFilter);
+
+  // Filter values
+  const status = useSearchStore((state) => state.status);
+  const reference = useSearchStore((state) => state.reference);
+  const fromDate = useSearchStore((state) => state.fromDate);
+  const toDate = useSearchStore((state) => state.toDate);
+  const department = useSearchStore((state) => state.department);
+  const agent = useSearchStore((state) => state.agent);
+  const issueType = useSearchStore((state) => state.issueType);
+  const issuePriority = useSearchStore((state) => state.issuePriority);
+  const submitter = useSearchStore((state) => state.submitter);
+
+  const hasValue: Record<string, boolean> = {
+    status: !!status,
+    reference: !!reference,
+    date: !!fromDate && !!toDate,
+    department: !!department,
+    agent: !!agent,
+    type: !!issueType,
+    priority: !!issuePriority,
+    submitter: !!submitter,
+  };
 
   const filterRef = useRef<HTMLDivElement>(null);
 
@@ -110,12 +132,18 @@ const SearchFilterLogic = ({ recordType }: { recordType: string }) => {
             <button
               key={option.value}
               onClick={() => handleSelectFilter(option.value)}
-              className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-900"
+              className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm ${
+                selectedFilter === option.value
+                  ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200"
+                  : "text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-900"
+              }`}
             >
-              {option.label}
-              {selectedFilter === option.value && (
-                <Check className="h-4 w-4 text-blue-600" />
-              )}
+              <span
+                className={`h-1.5 w-1.5 shrink-0 rounded-full ${
+                  hasValue[option.value] ? "bg-blue-600" : "bg-transparent"
+                }`}
+              />
+              <span className="truncate">{option.label}</span>
             </button>
           ))}
         </div>
