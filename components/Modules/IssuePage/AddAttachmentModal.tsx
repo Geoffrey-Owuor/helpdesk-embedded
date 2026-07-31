@@ -139,7 +139,7 @@ const AddAttachmentModal = ({
             <DocumentUpload
               files={files}
               setFiles={setFiles}
-              maxTotalSizeMB={2}
+              maxTotalSizeMB={5}
             />
 
             <button

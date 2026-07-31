@@ -34,7 +34,7 @@ export const GET = withAuth(async ({ params }) => {
 });
 
 // Same restrictions as attachments added at issue submission time
-const MAX_BYTES = 2 * 1024 * 1024;
+const MAX_BYTES = 5 * 1024 * 1024;
 const ALLOWED_TYPES: AllowedFileType[] = [
   "application/pdf",
   "image/jpeg",
