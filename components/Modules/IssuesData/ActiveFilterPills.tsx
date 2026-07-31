@@ -163,6 +163,16 @@ const ActiveFilterPills = ({
           </button>
         </div>
       ))}
+
+      {/* Render clear all filter when at least one filter is selected */}
+      {committedFilters && (
+        <button
+          onClick={() => setCommittedFilters(null)}
+          className="ml-2 text-xs text-neutral-600 underline hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300"
+        >
+          clear filters
+        </button>
+      )}
     </div>
   );
 };

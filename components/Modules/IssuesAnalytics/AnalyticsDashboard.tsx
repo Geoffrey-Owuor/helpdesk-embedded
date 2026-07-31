@@ -43,7 +43,7 @@ const AnalyticsDashboard = () => {
 
   return (
     <div className="mx-auto py-6 md:py-4">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-between">
         <div className="inline-flex flex-col">
           <span className="text-xl font-semibold">Issues Analytics</span>
           <span className="text-sm text-neutral-800 dark:text-neutral-400">
