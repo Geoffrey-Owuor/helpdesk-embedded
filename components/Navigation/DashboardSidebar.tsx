@@ -12,6 +12,7 @@ import {
   Keyboard,
   CircleQuestionMark,
   HousePlug,
+  ChartColumnBig,
 } from "lucide-react";
 import Link from "next/link";
 import ThemeToggle from "../Themes/ThemeToggle";
@@ -204,6 +205,19 @@ const DashboardSidebar = () => {
               onClick={() => handleRouteChange("/dashboard/superadmin")}
               showToolTip={true}
               ToolTipMessage="Super Admin"
+            />
+          )}
+
+          {/* Issues Analytics */}
+          {isSuper && (
+            <SidebarLink
+              href="/dashboard/analytics"
+              icon={<ChartColumnBig className="h-5 w-5" />}
+              label="Analytics"
+              isActive={highlightLink("/dashboard/analytics")}
+              onClick={() => handleRouteChange("/dashboard/analytics")}
+              showToolTip={true}
+              ToolTipMessage="Issues Analytics"
             />
           )}
 

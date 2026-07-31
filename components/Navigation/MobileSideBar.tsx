@@ -14,6 +14,7 @@ import {
   LayoutDashboard,
   NotebookPen,
   HousePlug,
+  ChartColumnBig,
 } from "lucide-react";
 import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
 import { useUser } from "@/contexts/UserContext";
@@ -151,6 +152,18 @@ const MobileSideBar = ({
               >
                 <ShieldPlus className="h-5 w-5" />
                 <span>Super Admin</span>
+              </Link>
+            )}
+
+            {/* Issues Analytics */}
+            {isSuper && (
+              <Link
+                href="/dashboard/analytics"
+                onClick={() => handleMobileRouteChange("/dashboard/analytics")}
+                className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              >
+                <ChartColumnBig className="h-5 w-5" />
+                <span>Analytics</span>
               </Link>
             )}
 
