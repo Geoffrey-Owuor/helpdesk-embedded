@@ -27,6 +27,7 @@ import {
   GitBranchPlus,
   GitMerge,
   UserRoundPlus,
+  Paperclip,
 } from "lucide-react";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import { dateFormatter, titleHelper } from "@/public/assets";
@@ -60,6 +61,7 @@ import RelativeTimeBadge from "../IssuesData/RelativeTimeBadge";
 import { ResolutionTimePill } from "../IssuesData/ResolutionTimePill";
 import InviteCollaboratorsModal from "./InviteCollaboratorsModal";
 import { fetchCollaborators } from "@/queries/fetchCollaborators";
+import AddAttachmentModal from "./AddAttachmentModal";
 
 const statusOptions = baseOptions.filter((option) => option.value !== "open");
 
@@ -166,6 +168,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isReassignModalOpen, setIsReassignModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isAddAttachmentOpen, setIsAddAttachmentOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const priorityDropDownRef = useRef<HTMLDivElement>(null);
 
@@ -347,6 +350,16 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
         />
       )}
 
+      {/* Add Attachment Modal */}
+      {isAddAttachmentOpen && (
+        <AddAttachmentModal
+          uuid={uuid}
+          closeModal={() => setIsAddAttachmentOpen(false)}
+          isModalOpen={isAddAttachmentOpen}
+          activeQueryKey={activeQueryKey}
+        />
+      )}
+
       {/* Reopen Modal */}
       {reopenModalOpen && (
         <ReopenIssueModal
@@ -446,6 +459,18 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                 >
                   <UserRoundPlus size={12} />
                   Invite
+                </button>
+              )}
+
+              {/* Add attachment button - visible to anyone who can view the issue */}
+              {issueData.issue_status !== "closed" && (
+                <button
+                  type="button"
+                  onClick={() => setIsAddAttachmentOpen(true)}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-indigo-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-indigo-800"
+                >
+                  <Paperclip size={12} />
+                  Add Attachment
                 </button>
               )}
 
