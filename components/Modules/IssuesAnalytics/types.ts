@@ -11,6 +11,7 @@ export interface AnalyticsIssueRow {
   issue_type: string;
   issue_priority: string;
   issue_title: string;
+  issue_description: string;
   issue_status: string;
   issue_agent_name: string;
   issue_agent_email: string;
