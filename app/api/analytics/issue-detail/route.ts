@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 
 export const GET = withAuth(async ({ user, request }) => {
-  if (!user.isSuper) {
+  if (user.role !== "admin") {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 
@@ -34,10 +34,7 @@ export const GET = withAuth(async ({ user, request }) => {
     const result = await query(baseQuery, [uuid]);
 
     if (result.length === 0) {
-      return NextResponse.json(
-        { message: "Issue not found" },
-        { status: 404 },
-      );
+      return NextResponse.json({ message: "Issue not found" }, { status: 404 });
     }
 
     return NextResponse.json(result[0], { status: 200 });

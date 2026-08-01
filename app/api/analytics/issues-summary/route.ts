@@ -52,7 +52,7 @@ interface DepartmentBreakdownRow {
 }
 
 export const GET = withAuth(async ({ user, request }) => {
-  if (!user.isSuper) {
+  if (user.role !== "admin") {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 

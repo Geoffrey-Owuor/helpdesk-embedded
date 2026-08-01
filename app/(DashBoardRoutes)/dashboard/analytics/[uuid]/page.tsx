@@ -9,7 +9,7 @@ type analyticsIssuePageProps = {
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const user = await requireSession();
-  if (!user?.isSuper) return { title: "Unauthorized Access" };
+  if (user?.role !== "admin") return { title: "Unauthorized Access" };
 
   return {
     title: "Issue Details",
@@ -19,7 +19,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
 
 const page = async ({ params }: analyticsIssuePageProps) => {
   const user = await requireSession();
-  if (!user?.isSuper) return <UnauthorizedModal />;
+  if (user?.role !== "admin") return <UnauthorizedModal />;
 
   const { uuid } = await params;
   return <AnalyticsIssueDetailPage uuid={uuid} />;

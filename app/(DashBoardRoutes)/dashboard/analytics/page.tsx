@@ -5,7 +5,8 @@ import AnalyticsDashboard from "@/components/Modules/IssuesAnalytics/AnalyticsDa
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const user = await requireSession();
-  if (!user?.isSuper) return { title: "Unauthorized Access" };
+
+  if (user?.role !== "admin") return { title: "Unauthorized Access" };
 
   return {
     title: "Issues Analytics",
@@ -16,7 +17,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
 const page = async () => {
   const user = await requireSession();
 
-  if (!user?.isSuper) return <UnauthorizedModal />;
+  if (user?.role !== "admin") return <UnauthorizedModal />;
   return <AnalyticsDashboard />;
 };
 
