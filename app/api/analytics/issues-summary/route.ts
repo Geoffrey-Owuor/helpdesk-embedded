@@ -41,6 +41,16 @@ interface TypeBreakdownRow {
   count: string;
 }
 
+interface AgentBreakdownRow {
+  agent_name: string;
+  count: string;
+}
+
+interface DepartmentBreakdownRow {
+  department: string;
+  count: string;
+}
+
 export const GET = withAuth(async ({ user, request }) => {
   if (!user.isSuper) {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
@@ -81,9 +91,9 @@ export const GET = withAuth(async ({ user, request }) => {
       COUNT(*) FILTER (WHERE EXISTS (SELECT 1 FROM issue_collaborators col WHERE col.issue_id = a.issue_uuid)) AS collaborated_count,
 
       AVG(EXTRACT(EPOCH FROM (a.issue_date_resolved - a.issue_created_at)))
-        FILTER (WHERE a.issue_date_resolved IS NOT NULL) AS avg_resolution_seconds,
+        FILTER (WHERE a.issue_date_resolved IS NOT NULL AND a.issue_status IN ('resolved', 'closed')) AS avg_resolution_seconds,
       AVG(EXTRACT(EPOCH FROM (NOW() - a.issue_created_at)))
-        FILTER (WHERE a.issue_date_resolved IS NULL) AS avg_stale_seconds,
+        FILTER (WHERE a.issue_status IN ('open', 'in progress')) AS avg_stale_seconds,
 
       COUNT(*) AS total_filtered
     FROM issues_table a
@@ -98,10 +108,34 @@ export const GET = withAuth(async ({ user, request }) => {
     ORDER BY count DESC
   `;
 
+  const agentBreakdownQuery = `
+    SELECT a.issue_agent_name AS agent_name, COUNT(*) AS count
+    FROM issues_table a
+    ${whereSql}
+    ${whereSql ? "AND" : "WHERE"} a.issue_agent_name IS NOT NULL
+    GROUP BY a.issue_agent_name
+    ORDER BY count DESC
+  `;
+
+  const departmentBreakdownQuery = `
+    SELECT a.issue_submitter_department AS department, COUNT(*) AS count
+    FROM issues_table a
+    ${whereSql}
+    GROUP BY a.issue_submitter_department
+    ORDER BY count DESC
+  `;
+
   try {
-    const [pivotResult, typeBreakdownResult] = await Promise.all([
+    const [
+      pivotResult,
+      typeBreakdownResult,
+      agentBreakdownResult,
+      departmentBreakdownResult,
+    ] = await Promise.all([
       query<PivotRow>(pivotQuery, params),
       query<TypeBreakdownRow>(typeBreakdownQuery, params),
+      query<AgentBreakdownRow>(agentBreakdownQuery, params),
+      query<DepartmentBreakdownRow>(departmentBreakdownQuery, params),
     ]);
 
     const row = pivotResult[0];
@@ -151,6 +185,14 @@ export const GET = withAuth(async ({ user, request }) => {
           issueType: r.issue_type,
           count: getCount(r.count),
         })),
+        agentBreakdown: agentBreakdownResult.map((r) => ({
+          agentName: r.agent_name,
+          count: getCount(r.count),
+        })),
+        departmentBreakdown: departmentBreakdownResult.map((r) => ({
+          department: r.department,
+          count: getCount(r.count),
+        })),
       },
       { status: 200 },
     );
@@ -166,6 +208,8 @@ export const GET = withAuth(async ({ user, request }) => {
         avgStaleSeconds: null,
         totalFiltered: 0,
         issueTypeBreakdown: [],
+        agentBreakdown: [],
+        departmentBreakdown: [],
       },
       { status: 500 },
     );
