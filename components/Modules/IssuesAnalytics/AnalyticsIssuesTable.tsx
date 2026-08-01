@@ -9,6 +9,7 @@ import { AssignedAgentFormatter } from "../IssuesData/AssignedAgentFormatter";
 import RelativeTimeBadge from "../IssuesData/RelativeTimeBadge";
 import { AnalyticsIssueRow } from "./types";
 import { ResolutionTimePill } from "../IssuesData/ResolutionTimePill";
+import Link from "next/link";
 
 const AnalyticsIssuesTable = ({
   rows,
@@ -71,12 +72,17 @@ const AnalyticsIssuesTable = ({
               >
                 <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
                   <div className="inline-flex items-center gap-2">
-                    <span
+                    <Link
+                      href={`/dashboard/analytics/${issue.issue_uuid}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setLoadingLine(true);
+                      }}
                       title={titleHelper(issue.issue_reference_id)}
-                      className="max-w-40 truncate text-sm font-semibold text-neutral-900 dark:text-neutral-100"
+                      className="max-w-50 truncate text-sm font-semibold text-neutral-900 hover:text-blue-500 hover:underline dark:text-neutral-100"
                     >
                       {issue.issue_reference_id}
-                    </span>
+                    </Link>
                     {Number(issue.attachments_count) > 0 && (
                       <Paperclip className="h-3.5 w-3.5 text-neutral-600 dark:text-neutral-400" />
                     )}
