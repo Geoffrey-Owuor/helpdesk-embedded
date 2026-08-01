@@ -129,7 +129,7 @@ const OptionsDropDown = ({
           </div>
 
           {/* SEARCH INPUT - Search threshold of six*/}
-          {filteredOptions.length > 6 && (
+          {options.length > 6 && (
             <div className="relative px-1 pb-2">
               <div className="relative flex items-center">
                 <Search className="absolute left-2.5 h-3.5 w-3.5 text-neutral-400" />
