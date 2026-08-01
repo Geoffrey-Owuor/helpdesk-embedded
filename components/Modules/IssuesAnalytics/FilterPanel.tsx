@@ -78,7 +78,7 @@ const ToggleChip = ({
     onClick={onToggle}
     className={`h-10 shrink-0 rounded-xl border px-4 text-sm font-medium transition-colors ${
       active
-        ? "border-blue-600 bg-blue-600 text-white hover:bg-blue-700"
+        ? "border-blue-700 bg-blue-700 text-white hover:bg-blue-800"
         : "border-neutral-300 bg-white text-neutral-600 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-900"
     }`}
   >

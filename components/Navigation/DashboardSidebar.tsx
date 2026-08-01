@@ -209,7 +209,7 @@ const DashboardSidebar = () => {
           )}
 
           {/* Issues Analytics */}
-          {isSuper && (
+          {role === "admin" && (
             <SidebarLink
               href="/dashboard/analytics"
               icon={<ChartColumnBig className="h-5 w-5" />}

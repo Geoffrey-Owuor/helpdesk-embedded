@@ -156,7 +156,7 @@ const MobileSideBar = ({
             )}
 
             {/* Issues Analytics */}
-            {isSuper && (
+            {role === "admin" && (
               <Link
                 href="/dashboard/analytics"
                 onClick={() => handleMobileRouteChange("/dashboard/analytics")}
