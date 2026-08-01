@@ -8,7 +8,7 @@ import { useUser } from "@/contexts/UserContext";
 const filterOptions = [
   { label: "Status", value: "status" },
   { label: "Reference", value: "reference" },
-  { label: "Date", value: "date" },
+  { label: "Date Range", value: "date" },
   { label: "Department", value: "department" },
   { label: "Agent", value: "agent" },
   { label: "Issue Type", value: "type" },

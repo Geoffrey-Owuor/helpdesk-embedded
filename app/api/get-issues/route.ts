@@ -6,13 +6,28 @@ export const GET = withAuth(async ({ user, request }) => {
   // destructure user details
   const { userId, email, role, department, isSuper } = user;
 
-  // Define our query limit
-  const limit = 500;
+  // Define our default/max query limits
+  const DEFAULT_LIMIT = 500;
+  const MAX_LIMIT = 5000;
 
   // Extract query parameters from the request url
   const searchParams = request.nextUrl.searchParams;
   const superAdminFilter = searchParams.get("superAdminFilter");
   const agentAdminFilter = searchParams.get("agentAdminFilter");
+  const requestedLimit = searchParams.get("limit");
+
+  // Only admins, agents, and super admins may request a limit above the
+  // default cap - users stay capped to keep the query cheap and prevent abuse
+  const canRequestExtendedLimit =
+    isSuper || role === "admin" || role === "agent";
+
+  let limit = DEFAULT_LIMIT;
+  if (canRequestExtendedLimit && requestedLimit) {
+    const parsedLimit = parseInt(requestedLimit, 10);
+    if (Number.isFinite(parsedLimit) && parsedLimit > 0) {
+      limit = Math.min(parsedLimit, MAX_LIMIT);
+    }
+  }
 
   try {
     // Simple testing version to see the nature of the api response
