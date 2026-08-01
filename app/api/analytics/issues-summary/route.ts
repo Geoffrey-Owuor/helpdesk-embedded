@@ -39,16 +39,22 @@ interface PivotRow {
 interface TypeBreakdownRow {
   issue_type: string;
   count: string;
+  avg_resolution_seconds: string | null;
+  avg_stale_seconds: string | null;
 }
 
 interface AgentBreakdownRow {
   agent_name: string;
   count: string;
+  avg_resolution_seconds: string | null;
+  avg_stale_seconds: string | null;
 }
 
 interface DepartmentBreakdownRow {
   department: string;
   count: string;
+  avg_resolution_seconds: string | null;
+  avg_stale_seconds: string | null;
 }
 
 export const GET = withAuth(async ({ user, request }) => {
@@ -100,8 +106,15 @@ export const GET = withAuth(async ({ user, request }) => {
     ${whereSql}
   `;
 
+  const timingAggregatesSql = `
+      AVG(EXTRACT(EPOCH FROM (a.issue_date_resolved - a.issue_created_at)))
+        FILTER (WHERE a.issue_date_resolved IS NOT NULL AND a.issue_status IN ('resolved', 'closed')) AS avg_resolution_seconds,
+      AVG(EXTRACT(EPOCH FROM (NOW() - a.issue_created_at)))
+        FILTER (WHERE a.issue_status IN ('open', 'in progress')) AS avg_stale_seconds
+  `;
+
   const typeBreakdownQuery = `
-    SELECT a.issue_type, COUNT(*) AS count
+    SELECT a.issue_type, COUNT(*) AS count, ${timingAggregatesSql}
     FROM issues_table a
     ${whereSql}
     GROUP BY a.issue_type
@@ -109,7 +122,7 @@ export const GET = withAuth(async ({ user, request }) => {
   `;
 
   const agentBreakdownQuery = `
-    SELECT a.issue_agent_name AS agent_name, COUNT(*) AS count
+    SELECT a.issue_agent_name AS agent_name, COUNT(*) AS count, ${timingAggregatesSql}
     FROM issues_table a
     ${whereSql}
     ${whereSql ? "AND" : "WHERE"} a.issue_agent_name IS NOT NULL
@@ -118,7 +131,7 @@ export const GET = withAuth(async ({ user, request }) => {
   `;
 
   const departmentBreakdownQuery = `
-    SELECT a.issue_submitter_department AS department, COUNT(*) AS count
+    SELECT a.issue_submitter_department AS department, COUNT(*) AS count, ${timingAggregatesSql}
     FROM issues_table a
     ${whereSql}
     GROUP BY a.issue_submitter_department
@@ -184,14 +197,20 @@ export const GET = withAuth(async ({ user, request }) => {
         issueTypeBreakdown: typeBreakdownResult.map((r) => ({
           issueType: r.issue_type,
           count: getCount(r.count),
+          avgResolutionSeconds: getAvg(r.avg_resolution_seconds),
+          avgStaleSeconds: getAvg(r.avg_stale_seconds),
         })),
         agentBreakdown: agentBreakdownResult.map((r) => ({
           agentName: r.agent_name,
           count: getCount(r.count),
+          avgResolutionSeconds: getAvg(r.avg_resolution_seconds),
+          avgStaleSeconds: getAvg(r.avg_stale_seconds),
         })),
         departmentBreakdown: departmentBreakdownResult.map((r) => ({
           department: r.department,
           count: getCount(r.count),
+          avgResolutionSeconds: getAvg(r.avg_resolution_seconds),
+          avgStaleSeconds: getAvg(r.avg_stale_seconds),
         })),
       },
       { status: 200 },

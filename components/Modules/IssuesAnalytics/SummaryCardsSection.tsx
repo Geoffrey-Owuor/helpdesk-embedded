@@ -6,6 +6,9 @@ import ActivityCards from "./ActivityCards";
 import IssueTypeBreakdownCard from "./IssueTypeBreakdownCard";
 import AgentBreakdownCard from "./AgentBreakdownCard";
 import DepartmentBreakdownCard from "./DepartmentBreakdownCard";
+import IssueTypeTimingCard from "./IssueTypeTimingCard";
+import AgentTimingCard from "./AgentTimingCard";
+import DepartmentTimingCard from "./DepartmentTimingCard";
 
 const SummaryCardsSection = ({
   summary,
@@ -58,6 +61,21 @@ const SummaryCardsSection = ({
           isLoading={isLoading}
         />
         <DepartmentBreakdownCard
+          departmentBreakdown={summary?.departmentBreakdown ?? []}
+          isLoading={isLoading}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <IssueTypeTimingCard
+          issueTypeBreakdown={summary?.issueTypeBreakdown ?? []}
+          isLoading={isLoading}
+        />
+        <AgentTimingCard
+          agentBreakdown={summary?.agentBreakdown ?? []}
+          isLoading={isLoading}
+        />
+        <DepartmentTimingCard
           departmentBreakdown={summary?.departmentBreakdown ?? []}
           isLoading={isLoading}
         />

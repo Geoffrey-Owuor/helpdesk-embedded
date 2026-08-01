@@ -60,7 +60,7 @@ const TableViewData = ({
             )}
             {visibleColumns.relativeTime && (
               <th className="px-4 pb-2 text-xs font-semibold tracking-wider whitespace-nowrap text-gray-500 uppercase dark:text-gray-400">
-                Relative Time Badge
+                Time Badge
               </th>
             )}
             {visibleColumns.date && (
