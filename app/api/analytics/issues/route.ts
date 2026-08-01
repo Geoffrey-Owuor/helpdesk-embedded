@@ -27,8 +27,8 @@ export const GET = withAuth(async ({ user, request }) => {
     const rowsQuery = `
       SELECT
         a.issue_uuid, a.issue_reference_id, a.issue_submitter_name, a.issue_submitter_department,
-        a.issue_target_department, a.issue_type, a.issue_priority, a.issue_title, a.issue_status,
-        a.issue_agent_name, a.issue_agent_email, a.issue_created_at, a.issue_date_resolved,
+        a.issue_target_department, a.issue_type, a.issue_priority, a.issue_title, a.issue_description, 
+        a.issue_status, a.issue_agent_name, a.issue_agent_email, a.issue_created_at, a.issue_date_resolved,
         (SELECT COUNT(*) FROM issue_attachments b WHERE b.issue_id = a.issue_uuid) AS attachments_count,
         (SELECT COUNT(*) FROM issue_reopening c WHERE c.issue_id = a.issue_uuid) AS reopened_count,
         (SELECT COUNT(*) FROM issue_escalation d WHERE d.issue_id = a.issue_uuid) AS escalated_count,

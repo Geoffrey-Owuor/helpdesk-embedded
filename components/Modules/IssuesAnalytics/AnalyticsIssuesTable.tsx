@@ -33,6 +33,8 @@ const AnalyticsIssuesTable = ({
               "Status",
               "Priority",
               "Type",
+              "Title",
+              "Description",
               "Submitter",
               "Submitter Dept",
               "Agent",
@@ -104,6 +106,22 @@ const AnalyticsIssuesTable = ({
                 <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
                   <p className="max-w-30 truncate text-sm text-gray-900 dark:text-white">
                     {issue.issue_type}
+                  </p>
+                </td>
+                <td
+                  title={issue.issue_title}
+                  className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50"
+                >
+                  <p className="max-w-30 truncate text-sm text-gray-900 dark:text-white">
+                    {issue.issue_title}
+                  </p>
+                </td>
+                <td
+                  title={issue.issue_description}
+                  className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50"
+                >
+                  <p className="max-w-50 truncate text-sm text-gray-900 dark:text-white">
+                    {issue.issue_description}
                   </p>
                 </td>
                 <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
