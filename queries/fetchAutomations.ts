@@ -21,6 +21,11 @@ export const fetchAutomations = async (
       apiUrl += `&departmentFilter=${encodeURIComponent(selectedDepartment)}`;
     }
 
+    // Extend the server-side query limit past the default cap when requested
+    if (queryOptions.recordsLimit) {
+      apiUrl += `&limit=${queryOptions.recordsLimit}`;
+    }
+
     // Fetch a response with the built url
     const response = await apiClient.get(apiUrl);
 

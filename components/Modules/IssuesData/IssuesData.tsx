@@ -18,7 +18,13 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchIssues } from "@/queries/fetchIssues";
 import { fetchAutomations } from "@/queries/fetchAutomations";
 import ActiveFilterPills from "./ActiveFilterPills";
-import { DEFAULT_FETCH_OPTIONS, Options } from "@/public/assets";
+import {
+  DEFAULT_FETCH_OPTIONS,
+  DEFAULT_RECORDS_LIMIT,
+  RECORDS_LIMIT_INCREMENT,
+  MAX_RECORDS_LIMIT,
+  Options,
+} from "@/public/assets";
 
 const IssuesData = ({ recordType }: { recordType: string }) => {
   const isAutomations = recordType === "automations";
@@ -38,13 +44,23 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
     null,
   );
 
+  // Server-side records limit - lets admins/agents/super admins page past the
+  // default cap to search further back than the default query window
+  const [recordsLimit, setRecordsLimit] = useState(DEFAULT_RECORDS_LIMIT);
+  const canExtendRecordsLimit = isSuper || role === "admin" || role === "agent";
+
   const {
     data: issuesData = [],
     isLoading: loading,
     refetch: refetchIssues,
   } = useQuery({
-    queryKey: ["issuesDashboardData", superAdminFilter, agentAdminFilter],
-    queryFn: () => fetchIssues(DEFAULT_FETCH_OPTIONS),
+    queryKey: [
+      "issuesDashboardData",
+      superAdminFilter,
+      agentAdminFilter,
+      recordsLimit,
+    ],
+    queryFn: () => fetchIssues({ ...DEFAULT_FETCH_OPTIONS, recordsLimit }),
     enabled: !isAutomations,
   });
 
@@ -53,8 +69,8 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
     isLoading: automationsLoading,
     refetch: refetchAutomations,
   } = useQuery({
-    queryKey: ["automationsDashboardData", selectedDepartment],
-    queryFn: () => fetchAutomations(DEFAULT_FETCH_OPTIONS),
+    queryKey: ["automationsDashboardData", selectedDepartment, recordsLimit],
+    queryFn: () => fetchAutomations({ ...DEFAULT_FETCH_OPTIONS, recordsLimit }),
     enabled: isAutomations,
   });
 
@@ -166,6 +182,21 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
     Promise.resolve().then(() => setCurrentPage(1));
   }, [filteredData, issuesPerPage]);
 
+  // Whether the current fetch is capped at the requested limit - i.e. there
+  // may be older records beyond what was returned
+  const isRecordsCapped = recordsData.length === recordsLimit;
+
+  const handleLoadMoreRecords = () => {
+    setRecordsLimit((prev) =>
+      Math.min(prev + RECORDS_LIMIT_INCREMENT, MAX_RECORDS_LIMIT),
+    );
+  };
+
+  const handleSetCustomRecordsLimit = (value: number) => {
+    if (!Number.isFinite(value) || value <= 0) return;
+    setRecordsLimit(Math.min(Math.round(value), MAX_RECORDS_LIMIT));
+  };
+
   // default subtitle
   const defaultSubtitle = `you have submitted`;
   const generatedSubtitle = () => {
@@ -215,8 +246,14 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
           {/* Clearing filters */}
           <ClearRefreshFilters
             handleRefetchIssues={() => {
-              refetchRecords();
               setCommittedFilters(null);
+              // Changing recordsLimit already triggers a refetch via the query
+              // key, so only call refetchRecords when the limit is unchanged
+              if (recordsLimit !== DEFAULT_RECORDS_LIMIT) {
+                setRecordsLimit(DEFAULT_RECORDS_LIMIT);
+              } else {
+                refetchRecords();
+              }
             }}
           />
 
@@ -275,6 +312,11 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
             indexOfFirstIssue={indexOfFirstIssue}
             indexOfLastIssue={indexOfLastIssue}
             issuesLength={filteredData.length}
+            showLoadMore={canExtendRecordsLimit && isRecordsCapped}
+            recordsLimit={recordsLimit}
+            maxRecordsLimit={MAX_RECORDS_LIMIT}
+            onLoadMoreRecords={handleLoadMoreRecords}
+            onSetCustomRecordsLimit={handleSetCustomRecordsLimit}
           />
         </div>
       )}

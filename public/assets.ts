@@ -115,6 +115,12 @@ export const issuePrefixMapping: Record<string, string> = {
 
 export const DEFAULT_FETCH_OPTIONS = { selectedFilter: "status", status: "" };
 
+// Records limit (server-side LIMIT) controls - lets admins/agents page past the
+// default cap to search further back than the default query window
+export const DEFAULT_RECORDS_LIMIT = 500;
+export const RECORDS_LIMIT_INCREMENT = 50;
+export const MAX_RECORDS_LIMIT = 5000;
+
 export type IssueValueTypes = string | number;
 
 export interface Options {
@@ -128,6 +134,7 @@ export interface Options {
   issueType?: string;
   issuePriority?: string;
   submitter?: string;
+  recordsLimit?: number;
 }
 
 // Issue Cards Count Types

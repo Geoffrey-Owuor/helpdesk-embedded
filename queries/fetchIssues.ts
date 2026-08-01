@@ -27,6 +27,11 @@ export const fetchIssues = async (
       url += `&agentAdminFilter=${agentAdminFilter}`;
     }
 
+    // Extend the server-side query limit past the default cap when requested
+    if (queryOptions.recordsLimit) {
+      url += `&limit=${queryOptions.recordsLimit}`;
+    }
+
     // Fetch a response with the built url
     const response = await apiClient.get(url);
 
