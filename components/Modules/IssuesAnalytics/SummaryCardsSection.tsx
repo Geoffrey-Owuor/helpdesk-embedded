@@ -4,6 +4,8 @@ import PriorityCards from "./PriorityCards";
 import TimingCards from "./TimingCards";
 import ActivityCards from "./ActivityCards";
 import IssueTypeBreakdownCard from "./IssueTypeBreakdownCard";
+import AgentBreakdownCard from "./AgentBreakdownCard";
+import DepartmentBreakdownCard from "./DepartmentBreakdownCard";
 
 const SummaryCardsSection = ({
   summary,
@@ -28,7 +30,6 @@ const SummaryCardsSection = ({
       </p>
 
       <StatusCards statusCounts={statusCounts} isLoading={isLoading} />
-      <PriorityCards statusCounts={statusCounts} isLoading={isLoading} />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="flex flex-col gap-6">
@@ -44,8 +45,20 @@ const SummaryCardsSection = ({
             isLoading={isLoading}
           />
         </div>
+        <PriorityCards statusCounts={statusCounts} isLoading={isLoading} />
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <IssueTypeBreakdownCard
           issueTypeBreakdown={summary?.issueTypeBreakdown ?? []}
+          isLoading={isLoading}
+        />
+        <AgentBreakdownCard
+          agentBreakdown={summary?.agentBreakdown ?? []}
+          isLoading={isLoading}
+        />
+        <DepartmentBreakdownCard
+          departmentBreakdown={summary?.departmentBreakdown ?? []}
           isLoading={isLoading}
         />
       </div>

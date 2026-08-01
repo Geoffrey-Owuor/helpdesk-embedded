@@ -1,5 +1,7 @@
 import { LucideIcon } from "lucide-react";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
+import { PriorityBreakdown } from "@/public/assets";
+import PriorityCounts from "@/components/Modules/IssuesCards/PriorityCounts";
 
 interface StatTileProps {
   label: string;
@@ -9,6 +11,7 @@ interface StatTileProps {
   bgColor: string;
   borderColor: string;
   isLoading: boolean;
+  breakdown?: PriorityBreakdown;
 }
 
 // Shared stat-tile look used across StatusCards/PriorityCards/TimingCards/
@@ -21,6 +24,7 @@ const StatTile = ({
   bgColor,
   borderColor,
   isLoading,
+  breakdown,
 }: StatTileProps) => (
   <div className="flex flex-col justify-between rounded-2xl border border-neutral-200 bg-white px-6 py-4 shadow-xs transition-all duration-200 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
     <span className="mb-1 text-sm font-semibold text-neutral-500 dark:text-neutral-400">
@@ -36,6 +40,9 @@ const StatTile = ({
         <Icon className="h-6 w-6" strokeWidth={2} />
       </div>
     </div>
+    {breakdown && (
+      <PriorityCounts cardLoading={isLoading} priorityCounts={breakdown} />
+    )}
   </div>
 );
 

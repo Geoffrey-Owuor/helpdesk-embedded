@@ -15,6 +15,8 @@ const emptySummary: AnalyticsSummary = {
   avgStaleSeconds: null,
   totalFiltered: 0,
   issueTypeBreakdown: [],
+  agentBreakdown: [],
+  departmentBreakdown: [],
 };
 
 export const fetchAnalyticsSummary = async (

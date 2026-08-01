@@ -13,6 +13,7 @@ const StatusCards = ({
     {
       label: "Open",
       count: statusCounts.open.total,
+      breakdown: statusCounts.open,
       icon: Clock,
       color: "text-amber-600 dark:text-amber-500",
       bgColor: "bg-amber-100 dark:bg-amber-900/30",
@@ -21,6 +22,7 @@ const StatusCards = ({
     {
       label: "In Progress",
       count: statusCounts.inProgress.total,
+      breakdown: statusCounts.inProgress,
       icon: Activity,
       color: "text-indigo-600 dark:text-indigo-500",
       bgColor: "bg-indigo-100 dark:bg-indigo-900/30",
@@ -29,6 +31,7 @@ const StatusCards = ({
     {
       label: "Resolved",
       count: statusCounts.resolved.total,
+      breakdown: statusCounts.resolved,
       icon: BookmarkCheck,
       color: "text-emerald-600 dark:text-emerald-500",
       bgColor: "bg-emerald-100 dark:bg-emerald-900/30",
@@ -37,6 +40,7 @@ const StatusCards = ({
     {
       label: "Closed",
       count: statusCounts.closed.total,
+      breakdown: statusCounts.closed,
       icon: CheckCircle2,
       color: "text-blue-600 dark:text-blue-500",
       bgColor: "bg-blue-100 dark:bg-blue-900/30",
@@ -56,6 +60,7 @@ const StatusCards = ({
           bgColor={item.bgColor}
           borderColor={item.borderColor}
           isLoading={isLoading}
+          breakdown={item.breakdown}
         />
       ))}
     </section>

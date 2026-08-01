@@ -34,6 +34,16 @@ export interface IssueTypeBreakdownEntry {
   count: number;
 }
 
+export interface AgentBreakdownEntry {
+  agentName: string;
+  count: number;
+}
+
+export interface DepartmentBreakdownEntry {
+  department: string;
+  count: number;
+}
+
 export interface AnalyticsSummary {
   statusCounts: DataCounts;
   reopenedCount: number;
@@ -43,6 +53,8 @@ export interface AnalyticsSummary {
   avgStaleSeconds: number | null;
   totalFiltered: number;
   issueTypeBreakdown: IssueTypeBreakdownEntry[];
+  agentBreakdown: AgentBreakdownEntry[];
+  departmentBreakdown: DepartmentBreakdownEntry[];
 }
 
 export interface AnalyticsIssueDetail {
