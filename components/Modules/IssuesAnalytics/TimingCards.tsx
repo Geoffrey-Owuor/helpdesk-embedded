@@ -14,7 +14,7 @@ const TimingCards = ({
   return (
     <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <StatTile
-        label="Avg. Resolution Time"
+        label="Avg. TAT Time"
         value={formatSecondsDuration(avgResolutionSeconds)}
         icon={Timer}
         color="text-teal-600 dark:text-teal-400"

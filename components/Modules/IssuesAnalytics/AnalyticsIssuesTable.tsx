@@ -6,7 +6,9 @@ import { useLoadingStore } from "@/store/useLoadingStore";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import IssuePriorityFormatter from "../IssuesData/IssuePriorityFormatter";
 import { AssignedAgentFormatter } from "../IssuesData/AssignedAgentFormatter";
+import RelativeTimeBadge from "../IssuesData/RelativeTimeBadge";
 import { AnalyticsIssueRow } from "./types";
+import { ResolutionTimePill } from "../IssuesData/ResolutionTimePill";
 
 const AnalyticsIssuesTable = ({
   rows,
@@ -33,12 +35,13 @@ const AnalyticsIssuesTable = ({
               "Status",
               "Priority",
               "Type",
-              "Title",
-              "Description",
+              "Time Badge",
+              "Date Submitted",
               "Submitter",
               "Submitter Dept",
               "Agent",
-              "Date Submitted",
+              "Title",
+              "Description",
             ].map((heading) => (
               <th
                 key={heading}
@@ -104,24 +107,32 @@ const AnalyticsIssuesTable = ({
                   <IssuePriorityFormatter priority={issue.issue_priority} />
                 </td>
                 <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
-                  <p className="max-w-30 truncate text-sm text-gray-900 dark:text-white">
-                    {issue.issue_type}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="max-w-30 truncate text-sm text-gray-900 dark:text-white">
+                      {issue.issue_type}
+                    </p>
+                    {/* Resolution Time */}
+                    {(issue.issue_status === "resolved" ||
+                      issue.issue_status === "closed") &&
+                      issue.issue_created_at &&
+                      issue.issue_date_resolved && (
+                        <ResolutionTimePill
+                          dateSubmitted={issue.issue_created_at}
+                          dateResolved={issue.issue_date_resolved}
+                        />
+                      )}
+                  </div>
                 </td>
-                <td
-                  title={issue.issue_title}
-                  className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50"
-                >
-                  <p className="max-w-30 truncate text-sm text-gray-900 dark:text-white">
-                    {issue.issue_title}
-                  </p>
+
+                <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
+                  <RelativeTimeBadge
+                    createdAt={issue.issue_created_at}
+                    status={issue.issue_status}
+                  />
                 </td>
-                <td
-                  title={issue.issue_description}
-                  className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50"
-                >
-                  <p className="max-w-50 truncate text-sm text-gray-900 dark:text-white">
-                    {issue.issue_description}
+                <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
+                  <p className="max-w-30 truncate text-sm text-gray-900 dark:text-white">
+                    {dateFormatter(issue.issue_created_at)}
                   </p>
                 </td>
                 <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
@@ -137,9 +148,20 @@ const AnalyticsIssuesTable = ({
                 <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
                   <AssignedAgentFormatter agentName={issue.issue_agent_name} />
                 </td>
-                <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
+                <td
+                  title={issue.issue_title}
+                  className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50"
+                >
                   <p className="max-w-30 truncate text-sm text-gray-900 dark:text-white">
-                    {dateFormatter(issue.issue_created_at)}
+                    {issue.issue_title}
+                  </p>
+                </td>
+                <td
+                  title={issue.issue_description}
+                  className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50"
+                >
+                  <p className="max-w-50 truncate text-sm text-gray-900 dark:text-white">
+                    {issue.issue_description}
                   </p>
                 </td>
               </tr>

@@ -33,16 +33,22 @@ export interface AnalyticsIssuesResponse {
 export interface IssueTypeBreakdownEntry {
   issueType: string;
   count: number;
+  avgResolutionSeconds: number | null;
+  avgStaleSeconds: number | null;
 }
 
 export interface AgentBreakdownEntry {
   agentName: string;
   count: number;
+  avgResolutionSeconds: number | null;
+  avgStaleSeconds: number | null;
 }
 
 export interface DepartmentBreakdownEntry {
   department: string;
   count: number;
+  avgResolutionSeconds: number | null;
+  avgStaleSeconds: number | null;
 }
 
 export interface AnalyticsSummary {
