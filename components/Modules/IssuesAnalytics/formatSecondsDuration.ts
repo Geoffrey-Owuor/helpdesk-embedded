@@ -11,12 +11,12 @@ export const formatSecondsDuration = (seconds: number | null): string => {
   const MONTH = 2592000;
   const YEAR = 31536000;
 
-  if (seconds >= YEAR) return `${Math.floor(seconds / YEAR)}y`;
-  if (seconds >= MONTH) return `${Math.floor(seconds / MONTH)}mon`;
-  if (seconds >= WEEK) return `${Math.floor(seconds / WEEK)}w`;
-  if (seconds >= DAY) return `${Math.floor(seconds / DAY)}d`;
-  if (seconds >= HOUR) return `${Math.floor(seconds / HOUR)}h`;
-  if (seconds >= MINUTE) return `${Math.floor(seconds / MINUTE)}min`;
+  if (seconds >= YEAR) return `${(seconds / YEAR).toFixed(1)}y`;
+  if (seconds >= MONTH) return `${(seconds / MONTH).toFixed(1)}mon`;
+  if (seconds >= WEEK) return `${(seconds / WEEK).toFixed(1)}w`;
+  if (seconds >= DAY) return `${(seconds / DAY).toFixed(1)}d`;
+  if (seconds >= HOUR) return `${(seconds / HOUR).toFixed(1)}h`;
+  if (seconds >= MINUTE) return `${(seconds / MINUTE).toFixed(1)}min`;
 
   return `${Math.floor(seconds)}sec`;
 };
