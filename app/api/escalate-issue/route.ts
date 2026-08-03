@@ -72,6 +72,29 @@ export const PUT = withAuth(async ({ request, user }) => {
       );
     }
 
+    //Trying to reassign an issue to the same agent (Feature add: Return a response with the agent name)
+    if (agentEmail === currentAgentEmail) {
+      await client.query("ROLLBACK");
+      return NextResponse.json(
+        { message: `Issue is already assigned to ${agentName}` },
+        { status: 409 },
+      );
+    }
+
+    // Get the agent id who this issue is being escalated to
+    const { rows: agentInfo } = await client.query(
+      `SELECT user_id FROM users WHERE email = $1`,
+      [agentEmail],
+    );
+
+    if (agentInfo.length === 0) {
+      await client.query("ROLLBACK");
+      return NextResponse.json(
+        { message: `Selected agent: ${agentName} not found` },
+        { status: 404 },
+      );
+    }
+
     // Check if there's escalation history for this particular issue
     const { rows: existingHistory } = await client.query(
       `
@@ -101,29 +124,6 @@ export const PUT = withAuth(async ({ request, user }) => {
           currentAgentEmail,
           currentAgentId,
         ],
-      );
-    }
-
-    //Trying to reassign an issue to the same agent (Feature add: Return a response with the agent name)
-    if (agentEmail === currentAgentEmail) {
-      await client.query("ROLLBACK");
-      return NextResponse.json(
-        { message: `Issue is already assigned to ${agentName}` },
-        { status: 409 },
-      );
-    }
-
-    // Get the agent id who this issue is being escalated to
-    const { rows: agentInfo } = await client.query(
-      `SELECT user_id FROM users WHERE email = $1`,
-      [agentEmail],
-    );
-
-    if (agentInfo.length === 0) {
-      await client.query("ROLLBACK");
-      return NextResponse.json(
-        { message: `Selected agent: ${agentName} not found` },
-        { status: 404 },
       );
     }
 
@@ -168,7 +168,13 @@ export const PUT = withAuth(async ({ request, user }) => {
     const reasonEscalated = reason;
 
     // Fire and forget - Calling the email sender service
-    emailSender({ title, description, uuid, reasonEscalated });
+    emailSender({
+      title,
+      description,
+      uuid,
+      reasonEscalated,
+      prevAgentEmail: currentAgentEmail,
+    });
 
     // return a response
     return NextResponse.json(

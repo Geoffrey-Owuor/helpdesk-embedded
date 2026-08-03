@@ -20,6 +20,7 @@ type EmailSenderProps = {
     content: string;
     contentType: string;
   }[];
+  prevAgentEmail?: string;
 };
 export const emailSender = async ({
   title,
@@ -30,6 +31,7 @@ export const emailSender = async ({
   reasonEscalated = "",
   author = "",
   attachments,
+  prevAgentEmail,
 }: EmailSenderProps) => {
   const commentData: IssueEmailComment | undefined = comment
     ? {
@@ -41,6 +43,13 @@ export const emailSender = async ({
 
   // Getting the issue data for the email body
   const { issueData, emails, ccEmails, remarks } = await getEmailData(uuid);
+
+  // Pass in the previous agent email to the array if provided
+  const finalEmailArray = prevAgentEmail
+    ? emails.includes(prevAgentEmail)
+      ? emails
+      : [...emails, prevAgentEmail]
+    : emails;
 
   const emailParams: IssueNotificationEmailParams = {
     title: title,
@@ -57,7 +66,7 @@ export const emailSender = async ({
 
   //Sending the email
   await sendEmail({
-    to: emails,
+    to: finalEmailArray,
     cc: ccEmails,
     subject: title,
     html: emailHtml,

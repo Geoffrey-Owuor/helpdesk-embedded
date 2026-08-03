@@ -120,7 +120,12 @@ export const PUT = withAuth(async ({ request, user }) => {
     const description = `Issue ${referenceNumber} has been reassigned to ${agentName} by ${username}`;
 
     // Fire and Forget - Calling the email sender service
-    emailSender({ title, description, uuid });
+    emailSender({
+      title,
+      description,
+      uuid,
+      prevAgentEmail: currentAgentEmail,
+    });
 
     // return a response
     return NextResponse.json(
