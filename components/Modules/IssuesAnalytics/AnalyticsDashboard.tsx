@@ -60,6 +60,7 @@ const AnalyticsDashboard = () => {
       </div>
 
       <FilterPanel />
+
       <ActiveAnalyticsFilterPills />
       <SummaryCardsSection summary={summary} isLoading={summaryLoading} />
 

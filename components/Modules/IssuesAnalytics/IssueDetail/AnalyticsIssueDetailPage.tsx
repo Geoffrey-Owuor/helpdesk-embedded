@@ -12,6 +12,7 @@ import {
   MessageSquare,
   FileQuestion,
   LayoutDashboard,
+  ArrowRight,
 } from "lucide-react";
 import IssueDetailsSkeleton from "@/components/Skeletons/IssueDetailsSkeleton";
 import IssueStatusFormatter from "@/components/Modules/IssuesData/IssueStatusFormatter";
@@ -27,6 +28,7 @@ import { fetchAnalyticsIssueDetail } from "@/queries/analytics/fetchAnalyticsIss
 import { fetchCollaborators } from "@/queries/fetchCollaborators";
 import { dateFormatter, titleHelper } from "@/public/assets";
 import ReadOnlyHistoryButtons from "./ReadOnlyHistoryButtons";
+import { useLoadingStore } from "@/store/useLoadingStore";
 
 const AnalyticsIssueDetailPage = ({ uuid }: { uuid: string }) => {
   const {
@@ -46,6 +48,7 @@ const AnalyticsIssueDetailPage = ({ uuid }: { uuid: string }) => {
       enabled: Number(issueData?.collaborators_count) > 0,
     });
 
+  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
   if (isLoading) return <IssueDetailsSkeleton />;
 
   if (isError || !issueData) {
@@ -58,8 +61,8 @@ const AnalyticsIssueDetailPage = ({ uuid }: { uuid: string }) => {
           Issue not found
         </h2>
         <p className="mt-2 text-center text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
-          We couldn&apos;t find the issue you are looking for. It may have
-          been deleted or the link may be incorrect.
+          We couldn&apos;t find the issue you are looking for. It may have been
+          deleted or the link may be incorrect.
         </p>
         <div className="mt-8 flex w-full flex-col items-center gap-3 sm:flex-row sm:justify-center">
           <Link
@@ -86,13 +89,23 @@ const AnalyticsIssueDetailPage = ({ uuid }: { uuid: string }) => {
       {/* --- HEADER --- */}
       <div className="mb-4 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
         <div className="flex flex-col gap-3">
-          <Link
-            href="/dashboard/analytics"
-            className="inline-flex w-fit items-center gap-1.5 text-xs font-semibold text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Back to Analytics
-          </Link>
+          <div className="flex flex-wrap items-center gap-4">
+            <Link
+              href="/dashboard/analytics"
+              className="inline-flex w-fit items-center gap-1.5 rounded-full bg-neutral-200 px-3 py-1 text-xs font-semibold text-neutral-600 hover:bg-neutral-300 hover:text-neutral-800 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-800/80 dark:hover:text-neutral-200"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+              Back to Analytics
+            </Link>
+            <Link
+              onClick={() => setLoadingLine(true)}
+              href={`/dashboard/${issueData.issue_uuid}?type=issue&title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`}
+              className="inline-flex w-fit items-center gap-1.5 rounded-full bg-neutral-200 px-3 py-1 text-xs font-semibold text-neutral-600 hover:bg-neutral-300 hover:text-neutral-800 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-800/80 dark:hover:text-neutral-200"
+            >
+              Go to Issue
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
           <h1
             title={titleHelper(issueData.issue_title)}
             className="line-clamp-1 max-w-100 text-xl font-semibold wrap-break-word text-neutral-900 dark:text-white"
@@ -301,7 +314,10 @@ const AnalyticsIssueDetailPage = ({ uuid }: { uuid: string }) => {
                 value: dateFormatter(issueData.issue_date_closed ?? ""),
               },
             ].map(({ label, value }) => (
-              <div key={label} className="flex items-center justify-between py-3">
+              <div
+                key={label}
+                className="flex items-center justify-between py-3"
+              >
                 <span className="text-sm text-neutral-500 dark:text-neutral-400">
                   {label}
                 </span>

@@ -326,7 +326,7 @@ const FilterPanel = () => {
   };
 
   return (
-    <div className="mb-4 rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-950">
+    <div className="sticky top-0 z-50 mb-4 rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-950">
       <div className="flex flex-wrap items-center gap-3">
         <FilterFieldSelector
           activeKey={activeField}

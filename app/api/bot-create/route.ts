@@ -35,8 +35,8 @@ export async function POST(request: NextRequest) {
     // 2. Extract Text Fields
     const user_name = formData.get("user_name") as string;
     const user_email = formData.get("user_email") as string;
-    const user_department = formData.get("user_department") as string;
-    const target_department = formData.get("target_department") as string;
+    const user_department = formData.get("user_department") as string; //derived from our side
+    const target_department = formData.get("target_department") as string; //IT & Projects
     const issue_type = formData.get("issue_type") as string;
     const issue_title = formData.get("issue_title") as string;
     const issue_description = formData.get("issue_description") as string;
