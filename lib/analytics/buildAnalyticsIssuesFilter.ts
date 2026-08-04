@@ -34,7 +34,10 @@ export const buildAnalyticsIssuesFilter = (
 
   if (filters.agent) {
     params.push(filters.agent);
-    clauses.push(`${col("issue_agent_email")} = $${params.length}`);
+    const agentParamIndex = params.length;
+    clauses.push(
+      `(${col("issue_agent_email")} = $${agentParamIndex} OR EXISTS (SELECT 1 FROM issue_collaborators ac WHERE ac.issue_id = ${col("issue_uuid")} AND ac.collaborator_email = $${agentParamIndex}))`,
+    );
   }
 
   if (filters.issueType) {

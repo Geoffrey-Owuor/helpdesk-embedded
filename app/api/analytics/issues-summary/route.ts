@@ -121,12 +121,36 @@ export const GET = withAuth(async ({ user, request }) => {
     ORDER BY count DESC
   `;
 
+  // Common table expression
   const agentBreakdownQuery = `
-    SELECT a.issue_agent_name AS agent_name, COUNT(*) AS count, ${timingAggregatesSql}
-    FROM issues_table a
-    ${whereSql}
-    ${whereSql ? "AND" : "WHERE"} a.issue_agent_name IS NOT NULL
-    GROUP BY a.issue_agent_name
+    WITH filtered_issues AS (
+      SELECT a.issue_uuid, a.issue_agent_name, a.issue_agent_email, a.issue_status,
+             a.issue_created_at, a.issue_date_resolved
+      FROM issues_table a
+      ${whereSql}
+    ),
+    agent_issue_map AS (
+      SELECT issue_uuid, issue_agent_name AS agent_name, issue_agent_email AS agent_email,
+             issue_status, issue_created_at, issue_date_resolved
+      FROM filtered_issues
+      WHERE issue_agent_email IS NOT NULL
+
+      UNION ALL
+
+      SELECT fi.issue_uuid, col.collaborator_name AS agent_name, col.collaborator_email AS agent_email,
+             fi.issue_status, fi.issue_created_at, fi.issue_date_resolved
+      FROM filtered_issues fi
+      JOIN issue_collaborators col ON col.issue_id = fi.issue_uuid
+    )
+    SELECT
+      agent_name,
+      COUNT(*) AS count,
+      AVG(EXTRACT(EPOCH FROM (issue_date_resolved - issue_created_at)))
+        FILTER (WHERE issue_date_resolved IS NOT NULL AND issue_status IN ('resolved', 'closed')) AS avg_resolution_seconds,
+      AVG(EXTRACT(EPOCH FROM (NOW() - issue_created_at)))
+        FILTER (WHERE issue_status IN ('open', 'in progress')) AS avg_stale_seconds
+    FROM agent_issue_map
+    GROUP BY agent_email, agent_name
     ORDER BY count DESC
   `;
 
