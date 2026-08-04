@@ -6,6 +6,16 @@ import { CheckBehalfUser } from "@/serverActions/CheckBehalfUser";
 import { writeFile, mkdir } from "fs/promises";
 import { issuePrefixMapping } from "@/public/assets";
 import path from "path";
+import type { AllowedFileType } from "@/components/Modules/IssueModals/DocumentUpload";
+
+// Same restrictions as attachments added at issue submission time
+const MAX_BYTES = 2 * 1024 * 1024;
+const ALLOWED_TYPES: AllowedFileType[] = [
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+];
 
 export async function POST(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -35,7 +45,6 @@ export async function POST(request: NextRequest) {
     // 2. Extract Text Fields
     const user_name = formData.get("user_name") as string;
     const user_email = formData.get("user_email") as string;
-    const user_department = formData.get("user_department") as string; //derived from our side
     const target_department = formData.get("target_department") as string; //IT & Projects
     const issue_type = formData.get("issue_type") as string;
     const issue_title = formData.get("issue_title") as string;
@@ -45,7 +54,6 @@ export async function POST(request: NextRequest) {
     if (
       !user_name ||
       !user_email ||
-      !user_department ||
       !target_department ||
       !issue_type ||
       !issue_title ||
@@ -57,8 +65,45 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Call the check behalf user to verify the user submitting an issue
+    const returnedUser = await CheckBehalfUser({
+      name: user_name,
+      email: user_email,
+    });
+
+    if (!returnedUser) {
+      return NextResponse.json(
+        {
+          message:
+            "User details could not be verified against company user records, contact admin",
+        },
+        { status: 422 },
+      );
+    }
+
     // 3. Extract and Process Files
     const files = formData.getAll("attachments") as File[];
+
+    const hasInvalidType = files.some(
+      (file) => !ALLOWED_TYPES.includes(file.type as AllowedFileType),
+    );
+
+    if (hasInvalidType) {
+      return NextResponse.json(
+        { message: "Only PDFs, JPGs, PNGs, and WebP files are allowed" },
+        { status: 400 },
+      );
+    }
+
+    const totalSize = files.reduce((total, file) => total + file.size, 0);
+
+    if (totalSize > MAX_BYTES) {
+      return NextResponse.json(
+        { message: "Total attachment size cannot exceed 2MB" },
+        { status: 400 },
+      );
+    }
+
     const emailAttachments = [];
     const dbAttachments = [];
 
@@ -97,23 +142,6 @@ export async function POST(request: NextRequest) {
         size: file.size,
         localUrl: `${uniqueFilename}`,
       });
-    }
-
-    // Call the check behalf user to verify the user submitting an issue
-    const returnedUser = await CheckBehalfUser({
-      name: user_name,
-      email: user_email,
-      department: user_department,
-    });
-
-    if (!returnedUser) {
-      return NextResponse.json(
-        {
-          message:
-            "Could not verify/create the user trying to submit, please contact your admin",
-        },
-        { status: 422 },
-      );
     }
 
     // get a pool client
@@ -249,7 +277,7 @@ export async function POST(request: NextRequest) {
 
     // Return a response to the client
     return NextResponse.json(
-      { message: "Your issue has been submitted successfully!" },
+      { message: "Issue has been submitted successfully!" },
       { status: 200 },
     );
   } catch (error) {

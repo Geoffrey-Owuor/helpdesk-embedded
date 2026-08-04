@@ -85,17 +85,26 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
-    // Only trigger logic if the specific param exists
-    if (searchParams.get("reset") === "success") {
-      triggerAlert("success", "Your password has been reset successfully");
+    const reset = searchParams.get("reset");
+    const disabled = searchParams.get("disabled");
 
-      // Now clean the URL
-      const newUrl = window.location.pathname;
-      window.history.replaceState(null, "", newUrl);
+    let shouldCleanUrl = false;
+
+    if (reset === "success") {
+      triggerAlert("success", "Your password has been reset successfully");
+      shouldCleanUrl = true;
+    } else if (disabled === "true") {
+      triggerAlert(
+        "error",
+        "Your account has been disabled, please contact your administrator",
+      );
+      shouldCleanUrl = true;
     }
-    // If the param is NOT 'success', we do nothing.
-    // This leaves the alert visible until the user manually closes it
-    // or the AlertContext handles the timeout.
+
+    // Clean the URL once if any alert was triggered
+    if (shouldCleanUrl) {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
   }, [searchParams, triggerAlert]);
 
   // 2. Modify your handleLogin function

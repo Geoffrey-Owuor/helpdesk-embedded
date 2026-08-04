@@ -98,7 +98,9 @@ export async function GET(request: NextRequest) {
 
     // Check if the user is an active user
     if (!userObject.is_user_active) {
-      return Response.redirect(new URL(`${basePath}/login`, baseUrl));
+      return Response.redirect(
+        new URL(`${basePath}/login?disabled=true`, baseUrl),
+      );
     }
 
     // Check if user is a super admin

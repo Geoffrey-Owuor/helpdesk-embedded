@@ -105,7 +105,7 @@ export async function GET(req: NextRequest) {
       // Check if the user is active
       if (!returnedUser.is_user_active) {
         cookieStore.delete("oauth_is_popup");
-        return handleRedirect(`${basePath}/login`);
+        return handleRedirect(`${basePath}/login?disabled=true`);
       }
 
       const superAdmin = await query(superAdminQuery, [returnedUser.user_id]);
