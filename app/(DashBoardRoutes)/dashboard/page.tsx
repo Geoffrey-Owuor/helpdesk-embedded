@@ -5,9 +5,9 @@ import IssuesData from "@/components/Modules/IssuesData/IssuesData";
 const page = () => {
   return (
     <>
-      <IssuesCards type="issues" />
+      <IssuesCards />
 
-      <IssuesData recordType="issues" />
+      <IssuesData />
     </>
   );
 };

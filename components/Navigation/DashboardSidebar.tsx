@@ -3,7 +3,6 @@
 import {
   Menu,
   CirclePlus,
-  Bot,
   ChevronLeft,
   ShieldUser,
   ShieldPlus,
@@ -181,19 +180,6 @@ const DashboardSidebar = () => {
             isNewIssue={true}
             ToolTipMessage="Ctrl + Q"
           />
-
-          {/* Automations */}
-          {isSuper && (
-            <SidebarLink
-              href="/dashboard/automations"
-              icon={<Bot className="h-5 w-5" />}
-              label="Automate"
-              isActive={highlightLink("/dashboard/automations")}
-              onClick={() => handleRouteChange("/dashboard/automations")}
-              showToolTip={true}
-              ToolTipMessage="Automations Page"
-            />
-          )}
 
           {/* Super Admin */}
           {isSuper && (

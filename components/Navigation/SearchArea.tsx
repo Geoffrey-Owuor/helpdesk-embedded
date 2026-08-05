@@ -2,59 +2,36 @@
 
 import { useLoadingStore } from "@/store/useLoadingStore";
 import { fetchIssues } from "@/queries/fetchIssues";
-import { fetchAutomations } from "@/queries/fetchAutomations";
-import { DEFAULT_FETCH_OPTIONS, IssueValueTypes } from "@/public/assets";
+import { IssueValueTypes } from "@/public/assets";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useRouter } from "next/navigation";
 import { useState, useMemo } from "react";
-import { useUser } from "@/contexts/UserContext";
 import { usePathname } from "next/navigation";
 import { dateFormatter } from "@/public/assets";
 import { dynamicCircleColor } from "./Notifications/NotificationModal";
-import {
-  Search,
-  CheckCircle2,
-  Bot,
-  ArrowRight,
-  Loader2,
-  CircleDot,
-  X,
-} from "lucide-react";
+import { Search, ArrowRight, Loader2, CircleDot, X } from "lucide-react";
 
 const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
-  const { isSuper } = useUser();
   const router = useRouter();
   const pathname = usePathname();
 
   // Local States
-  const [isAutomation, setIsAutomation] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Global stores
   const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
   const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
   const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
-  const selectedDepartment = useSearchStore(
-    (state) => state.selectedDepartment,
-  );
 
-  // Queries
-  const { data: issuesData = [], isLoading: loading } = useQuery({
-    queryKey: ["issuesDashboardData", superAdminFilter, agentAdminFilter],
-    queryFn: () => fetchIssues(DEFAULT_FETCH_OPTIONS),
-    enabled: !isAutomation,
+  // Global search only scans the first page of results (sorted newest-first)
+  // rather than the whole dataset - a quick-jump tool, not the main search.
+  const { data, isLoading: recordsLoading } = useQuery({
+    queryKey: ["issuesDashboardData", superAdminFilter, agentAdminFilter, null, 1, 100],
+    queryFn: () => fetchIssues(null, 1, 100),
   });
 
-  const { data: automationsData = [], isLoading: automationsLoading } =
-    useQuery({
-      queryKey: ["automationsDashboardData", selectedDepartment],
-      queryFn: () => fetchAutomations(DEFAULT_FETCH_OPTIONS),
-      enabled: isAutomation,
-    });
-
-  const recordsData = isAutomation ? automationsData : issuesData;
-  const recordsLoading = isAutomation ? automationsLoading : loading;
+  const recordsData = useMemo(() => data?.rows ?? [], [data]);
 
   // --- Search Filtering Logic ---
   // Memoized so it only recalculates when the query or active dataset changes
@@ -64,7 +41,6 @@ const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
     const lowerQuery = searchQuery.toLowerCase();
 
     return recordsData.filter((record) => {
-      // TODO: Adjust these object keys if your automation data model differs from your issues data model
       const titleMatch = record.issue_title
         ?.toString()
         .toLowerCase()
@@ -98,9 +74,7 @@ const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
 
     const basePath = `/dashboard/${record.issue_uuid}`;
 
-    const typeParam = isAutomation ? "automation" : "issue";
-    // TODO: Verify that `record.issue_uuid` exists on both issues and automations.
-    const route = `${basePath}?type=${typeParam}&title=${encodeURIComponent(
+    const route = `${basePath}?title=${encodeURIComponent(
       record.issue_title || "",
     )}&description=${encodeURIComponent(record.issue_description || "")}`;
 
@@ -119,41 +93,6 @@ const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
           Search
         </h3>
 
-        {/* Dataset Toggle Pills */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setIsAutomation(false)}
-            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
-              !isAutomation
-                ? "bg-neutral-900 text-white shadow-sm dark:bg-white dark:text-neutral-900"
-                : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800/50 dark:text-neutral-400 dark:hover:bg-neutral-800"
-            }`}
-          >
-            <CheckCircle2
-              size={14}
-              className={!isAutomation ? "opacity-100" : "opacity-70"}
-            />
-            Issues
-          </button>
-
-          {isSuper && (
-            <button
-              onClick={() => setIsAutomation(true)}
-              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
-                isAutomation
-                  ? "bg-neutral-900 text-white shadow-sm dark:bg-white dark:text-neutral-900"
-                  : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800/50 dark:text-neutral-400 dark:hover:bg-neutral-800"
-              }`}
-            >
-              <Bot
-                size={14}
-                className={isAutomation ? "opacity-100" : "opacity-70"}
-              />
-              Automations
-            </button>
-          )}
-        </div>
-
         {/* Search Input Bar */}
         <div className="relative">
           <input
@@ -162,7 +101,7 @@ const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
             disabled={recordsLoading}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={`Search ${isAutomation ? "automations" : "issues"}...`}
+            placeholder="Search issues..."
             className="h-11 w-full px-0.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none dark:text-white dark:placeholder:text-neutral-500"
           />
 

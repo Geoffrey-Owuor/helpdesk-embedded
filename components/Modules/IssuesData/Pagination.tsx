@@ -10,7 +10,6 @@ import {
 import {
   Dispatch,
   SetStateAction,
-  FormEvent,
   useEffect,
   useState,
   useRef,
@@ -26,13 +25,6 @@ type PaginationProps = {
   indexOfFirstIssue: number;
   indexOfLastIssue: number;
   issuesLength: number;
-  // Load-more (server-side records limit) props - admins/agents/super admins
-  // only, and only relevant to consumers backed by a capped server fetch
-  showLoadMore?: boolean;
-  recordsLimit?: number;
-  maxRecordsLimit?: number;
-  onLoadMoreRecords?: () => void;
-  onSetCustomRecordsLimit?: (value: number) => void;
 };
 const Pagination = ({
   currentPage,
@@ -44,27 +36,10 @@ const Pagination = ({
   indexOfFirstIssue,
   indexOfLastIssue,
   issuesLength,
-  showLoadMore = false,
-  recordsLimit = 0,
-  maxRecordsLimit = 0,
-  onLoadMoreRecords = () => {},
-  onSetCustomRecordsLimit = () => {},
 }: PaginationProps) => {
   // State for the rows per page dropdown
   const [isPerPageOpen, setIsPerPageOpen] = useState(false);
   const perPageRef = useRef<HTMLDivElement>(null);
-
-  // Local state for the custom records limit input
-  const [customLimitInput, setCustomLimitInput] = useState("");
-
-  const handleCustomLimitSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    const value = Number(customLimitInput);
-    if (Number.isFinite(value) && value > 0) {
-      onSetCustomRecordsLimit(value);
-      setCustomLimitInput("");
-    }
-  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -81,49 +56,6 @@ const Pagination = ({
   }, []);
   return (
     <div className="mt-2 mb-6 flex flex-col py-3">
-      {/* Load-more / custom records limit - only shown when the current fetch
-      is capped at its requested limit, and only to admins/agents/super admins */}
-      {showLoadMore && (
-        <div className="mb-4 flex flex-wrap items-center gap-3 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 dark:border-neutral-800 dark:bg-neutral-900/40">
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            Showing the {recordsLimit} most recent records - there may be older
-            ones beyond this.
-          </p>
-
-          <button
-            type="button"
-            onClick={onLoadMoreRecords}
-            disabled={recordsLimit >= maxRecordsLimit}
-            className="inline-flex items-center gap-1 rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm font-semibold text-neutral-700 transition-colors hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800"
-          >
-            Load next 50
-          </button>
-
-          <form
-            onSubmit={handleCustomLimitSubmit}
-            className="flex items-center gap-2"
-          >
-            <input
-              type="number"
-              inputMode="numeric"
-              min={1}
-              max={maxRecordsLimit}
-              step={1}
-              value={customLimitInput}
-              onChange={(e) => setCustomLimitInput(e.target.value)}
-              placeholder={`Custom limit (max ${maxRecordsLimit})`}
-              className="w-44 rounded-lg border border-neutral-300 bg-white px-2 py-1.5 text-sm text-neutral-900 dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-100"
-            />
-            <button
-              type="submit"
-              className="rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm font-semibold text-neutral-700 transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800"
-            >
-              Apply
-            </button>
-          </form>
-        </div>
-      )}
-
       <div className="flex items-center justify-between">
         {totalPages > 1 && (
           <div className="flex flex-1 justify-between md:hidden">

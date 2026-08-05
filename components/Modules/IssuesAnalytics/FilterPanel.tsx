@@ -9,7 +9,7 @@ import {
   priorityOptions,
 } from "@/public/assets";
 import { DatePicker } from "../DatePicker";
-import AnalyticsDropdown from "./AnalyticsDropdown";
+import CustomDropdown from "../CustomDropdown";
 import { fetchGlobalAgents } from "@/queries/analytics/fetchGlobalAgents";
 import { fetchGlobalIssueTypes } from "@/queries/analytics/fetchGlobalIssueTypes";
 
@@ -241,7 +241,7 @@ const FilterPanel = () => {
     switch (activeField) {
       case "department":
         return (
-          <AnalyticsDropdown
+          <CustomDropdown
             label="Department"
             hideLabel
             options={departmentOptions}
@@ -252,7 +252,7 @@ const FilterPanel = () => {
         );
       case "agent":
         return (
-          <AnalyticsDropdown
+          <CustomDropdown
             label="Agent"
             hideLabel
             options={agentOptions}
@@ -263,7 +263,7 @@ const FilterPanel = () => {
         );
       case "issueType":
         return (
-          <AnalyticsDropdown
+          <CustomDropdown
             label="Issue Type"
             hideLabel
             options={issueTypeOptions}
@@ -274,7 +274,7 @@ const FilterPanel = () => {
         );
       case "status":
         return (
-          <AnalyticsDropdown
+          <CustomDropdown
             label="Status"
             hideLabel
             options={statusOptions}
@@ -285,7 +285,7 @@ const FilterPanel = () => {
         );
       case "priority":
         return (
-          <AnalyticsDropdown
+          <CustomDropdown
             label="Priority"
             hideLabel
             options={priorityOptions}

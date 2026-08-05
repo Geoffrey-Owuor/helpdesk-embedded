@@ -3,7 +3,7 @@ import { Metadata } from "next";
 
 type issuePageProps = {
   params: Promise<{ uuid: string }>;
-  searchParams: Promise<{ type: string; title: string; description: string }>;
+  searchParams: Promise<{ title: string; description: string }>;
 };
 
 // Generating page metadata
@@ -20,10 +20,9 @@ export const generateMetadata = async ({
   };
 };
 
-const page = async ({ params, searchParams }: issuePageProps) => {
+const page = async ({ params }: issuePageProps) => {
   const { uuid } = await params;
-  const { type } = await searchParams;
-  return <IssuePage uuid={uuid} type={type} />;
+  return <IssuePage uuid={uuid} />;
 };
 
 export default page;

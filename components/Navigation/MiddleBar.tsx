@@ -9,7 +9,6 @@ import {
   Search,
   LayoutDashboard,
   CirclePlus,
-  Bot,
   ShieldPlus,
   ShieldUser,
   NotebookPen,
@@ -141,14 +140,6 @@ const MiddleBar = () => {
                   }}
                   accent
                 />
-
-                {isSuper && (
-                  <PillButton
-                    icon={<Bot size={14} />}
-                    label="Automations"
-                    onClick={() => handleNavigation("/dashboard/automations")}
-                  />
-                )}
 
                 <PillButton
                   icon={<NotebookPen size={14} />}

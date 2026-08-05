@@ -1,5 +1,6 @@
 "use client";
 import { useSearchStore } from "@/store/useSearchStore";
+import { useIssuesFilterStore } from "@/store/useIssuesFilterStore";
 import { Building2, Send } from "lucide-react";
 
 const ViewAgentAdminFilter = () => {
@@ -8,7 +9,7 @@ const ViewAgentAdminFilter = () => {
   const setAgentAdminFilter = useSearchStore(
     (state) => state.setAgentAdminFilter,
   );
-  const resetFilters = useSearchStore((state) => state.resetFilters);
+  const resetFilters = useIssuesFilterStore((state) => state.resetFilters);
 
   // Check is filter has been applied
   const filterApplied = agentAdminFilter === "agentAdminFilter";

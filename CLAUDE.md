@@ -36,12 +36,12 @@ Local dev requires a `.env.local` with Postgres connection vars (`DATABASE_HOST`
 
 ### Roles & permissions
 
-Three roles on `users.role`: `user` (submit/view own issues, read articles), `agent` (works assigned issues), `admin` (manages issues/agents/issue-type mappings for their department; access to Automations and IT Team pages). A separate `isSuper` boolean (backed by `super_admins`) grants full Super Admin panel access (users, issue types, department→agent mappings, group emails) independent of `role`. When adding UI or API routes, gate on both `role` and `isSuper` as appropriate — they are orthogonal.
+Three roles on `users.role`: `user` (submit/view own issues, read articles), `agent` (works assigned issues), `admin` (manages issues/agents/issue-type mappings for their department; access to the IT Team page). A separate `isSuper` boolean (backed by `super_admins`) grants full Super Admin panel access (users, issue types, department→agent mappings, group emails) independent of `role`. When adding UI or API routes, gate on both `role` and `isSuper` as appropriate — they are orthogonal.
 
 ### App Router structure
 
 - `app/(auth)/` — login/register/password-reset/SSO pages (route group, no `/auth` in the URL)
-- `app/(DashBoardRoutes)/dashboard/` — authenticated dashboard: issues, articles, automations, superadmin panel
+- `app/(DashBoardRoutes)/dashboard/` — authenticated dashboard: issues, articles, analytics, superadmin panel
 - `app/api/*/route.ts` — REST-style route handlers (most wrapped in `withAuth`); this is where server-side mutation/query logic for client components lives
 - `app/articles/`, `app/it-team/`, `app/manual/`, `app/changelog/` — public/semi-public informational pages
 - Server actions in `serverActions/` are used instead of API routes when a server component needs to fetch/mutate data directly (e.g. `GetIssueTypes`, `QuickCreate`, `CheckBehalfUser`). Prefer server actions for server-component data needs and `app/api` routes for client-triggered fetches/mutations that go through `AxiosClient`/TanStack Query.
@@ -50,7 +50,7 @@ Three roles on `users.role`: `user` (submit/view own issues, read articles), `ag
 
 Two separate state systems are used for different purposes — don't blur them:
 
-- **TanStack Query** (`queries/`, wired up via `components/Navigation/QueryProvider.tsx`) — server data fetching/caching/invalidation (issues, automations, attachments, cards).
+- **TanStack Query** (`queries/`, wired up via `components/Navigation/QueryProvider.tsx`) — server data fetching/caching/invalidation (issues, analytics, attachments, cards).
 - **Zustand** (`store/`) — client-only UI state: alerts, overlays/modals, confirm dialogs, sidebar toggle, active tab, table column visibility, search, and DB connectivity status (`useDbStore`, consumed by `components/Modules/DbStatus/DbStatusPill.tsx` / `DbRecoveryManager.tsx`).
 
 Client HTTP calls go through the shared `lib/AxiosClient.ts` instance; `utils/AxiosErrorHelper.ts` normalizes error handling.
