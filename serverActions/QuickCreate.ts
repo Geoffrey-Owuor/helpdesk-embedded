@@ -107,7 +107,6 @@ export async function QuickCreate(formData: FormData): Promise<AlertMessage> {
     const returnedUser = await CheckBehalfUser({
       name: user_name,
       email: user_email,
-      department: user_department,
     });
 
     if (!returnedUser) {
