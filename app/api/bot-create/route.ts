@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
 
   const secret = searchParams.get("secret");
 
-  if (secret !== process.env.CRON_SECRET) {
+  if (secret !== process.env.BOT_SECRET) {
     return NextResponse.json(
       {
         message:
