@@ -15,6 +15,8 @@ import { useConfirmStore } from "@/store/useConfirmStore";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { IssueDetail } from "@/queries/fetchIssue";
+import { invalidateIssuesCaches } from "@/utils/invalidateIssuesCaches";
 
 type Payload = {
   uuid: string;
@@ -29,7 +31,6 @@ type EscalateIssueProps = {
   isModalOpen: boolean;
   issueType: IssueValueTypes;
   targetDepartment: IssueValueTypes;
-  activeQueryKey: (string | boolean)[];
   issueAgentEmail: IssueValueTypes;
 };
 
@@ -37,7 +38,6 @@ const EscalateIssueModal = ({
   uuid,
   closeModal,
   isModalOpen,
-  activeQueryKey,
   targetDepartment,
   issueAgentEmail,
 }: EscalateIssueProps) => {
@@ -81,21 +81,15 @@ const EscalateIssueModal = ({
     // TODO: Confirm this is the correct endpoint for your escalation route
     mutationFn: (payload: Payload) => apiClient.put("/escalate-issue", payload),
     onSuccess: (response, payload) => {
-      queryClient.setQueryData(
-        activeQueryKey,
-        (oldData: Record<string, IssueValueTypes>[]) => {
-          if (!oldData) return oldData;
-          return oldData.map((issue: Record<string, IssueValueTypes>) =>
-            issue.issue_uuid === payload.uuid
-              ? {
-                  ...issue,
-                  issue_agent_name: payload.agentName,
-                  issue_agent_email: payload.agentEmail,
-                  issue_updated_at: new Date().toISOString(),
-                }
-              : issue,
-          );
-        },
+      queryClient.setQueryData(["issue", uuid], (old: IssueDetail | undefined) =>
+        old
+          ? {
+              ...old,
+              issue_agent_name: payload.agentName,
+              issue_agent_email: payload.agentEmail,
+              issue_updated_at: new Date().toISOString(),
+            }
+          : old,
       );
 
       hideOverlay();
@@ -109,6 +103,9 @@ const EscalateIssueModal = ({
       hideOverlay();
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
+    },
+    onSettled: () => {
+      invalidateIssuesCaches(queryClient, { uuid });
     },
   });
 

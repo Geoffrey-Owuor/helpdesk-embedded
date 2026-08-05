@@ -9,18 +9,18 @@ import { useConfirmStore } from "@/store/useConfirmStore";
 import { useAlertStore } from "@/store/useAlertStore";
 import { generateValueType } from "@/public/assets";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { IssueDetail } from "@/queries/fetchIssue";
+import { invalidateIssuesCaches } from "@/utils/invalidateIssuesCaches";
 
 type IssueTypeModalProps = {
   targetDepartment: IssueValueTypes;
   currentType: IssueValueTypes;
-  activeQueryKey: (string | boolean)[];
   uuid: string;
 };
 const IssueTypeModal = ({
   targetDepartment,
   uuid,
   currentType,
-  activeQueryKey,
 }: IssueTypeModalProps) => {
   // Query client initialization
   const queryClient = useQueryClient();
@@ -59,20 +59,14 @@ const IssueTypeModal = ({
       apiClient.patch("/patch-issuetype", { type: value, uuid }),
 
     onSuccess: (response, value) => {
-      queryClient.setQueryData(
-        activeQueryKey,
-        (oldData: Record<string, IssueValueTypes>[]) => {
-          if (!oldData) return oldData;
-          return oldData.map((issue: Record<string, IssueValueTypes>) =>
-            issue.issue_uuid === uuid
-              ? {
-                  ...issue,
-                  issue_type: value,
-                  issue_updated_at: new Date().toISOString(),
-                }
-              : issue,
-          );
-        },
+      queryClient.setQueryData(["issue", uuid], (old: IssueDetail | undefined) =>
+        old
+          ? {
+              ...old,
+              issue_type: value,
+              issue_updated_at: new Date().toISOString(),
+            }
+          : old,
       );
 
       triggerAlert("success", response.data.message);
@@ -82,6 +76,10 @@ const IssueTypeModal = ({
       const errorMessage = getApiErrorMessage(error);
       console.error("Error while trying to patch issue type:", errorMessage);
       triggerAlert("error", errorMessage);
+    },
+
+    onSettled: () => {
+      invalidateIssuesCaches(queryClient, { uuid });
     },
   });
 

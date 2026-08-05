@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchStore } from "@/store/useSearchStore";
+import { useIssuesFilterStore } from "@/store/useIssuesFilterStore";
 import {
   Clock,
   CheckCircle2,
@@ -11,54 +12,35 @@ import {
 } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
-import DepartmentsDropDown from "../AutomationsPage/DepartmentsDropDown";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { fetchIssueCards } from "@/queries/fetchIssueCards";
-import { fetchAutomationCards } from "@/queries/fetchAutomationCards";
 import { useQuery } from "@tanstack/react-query";
 import SuperAdminFilter from "./SuperAdminFilter";
 import { defaultCounts } from "@/public/assets";
 import PriorityCounts from "./PriorityCounts";
 
-const IssuesCards = ({ type }: { type: string }) => {
-  const isAutomations = type === "automations";
-
+const IssuesCards = () => {
   const { role, department, isSuper } = useUser();
   const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
   const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
-  const selectedDepartment = useSearchStore(
-    (state) => state.selectedDepartment,
-  );
+  const committedFilters = useIssuesFilterStore((state) => state.committedFilters);
 
   const {
-    data: issueCounts = defaultCounts,
-    isLoading: loading,
-    refetch: refetchIssueCounts,
+    data: cardCounts = defaultCounts,
+    isLoading: cardLoading,
+    refetch: refetchCardCounts,
   } = useQuery({
-    queryKey: ["dashboardIssueCounts", agentAdminFilter, superAdminFilter],
-    queryFn: fetchIssueCards,
-    enabled: !isAutomations,
-  });
-
-  const {
-    data: automationCounts = defaultCounts,
-    isLoading: automationLoading,
-    refetch: refetchAutomationCounts,
-  } = useQuery({
-    queryKey: ["dashboardAutomationCounts", selectedDepartment],
-    queryFn: fetchAutomationCards,
-    enabled: isAutomations,
+    queryKey: [
+      "dashboardIssueCounts",
+      agentAdminFilter,
+      superAdminFilter,
+      committedFilters,
+    ],
+    queryFn: () => fetchIssueCards(committedFilters),
   });
 
   // Call srolling top hook
   useScrollToTop();
-
-  // Defining our card variables
-  const cardCounts = isAutomations ? automationCounts : issueCounts;
-  const refetchCardCounts = isAutomations
-    ? refetchAutomationCounts
-    : refetchIssueCounts;
-  const cardLoading = isAutomations ? automationLoading : loading;
 
   // Derive total count returned totals
   const totalCounts =
@@ -120,20 +102,15 @@ const IssuesCards = ({ type }: { type: string }) => {
       <div className="mb-4 flex items-center justify-between">
         <div className="flex flex-col items-center gap-4 md:flex-row md:gap-6">
           <div className="inline-flex flex-col">
-            <span className="text-xl font-semibold">
-              {isAutomations ? "Automations" : "Issues"} Summary
-            </span>
+            <span className="text-xl font-semibold">Issues Summary</span>
             <span className="text-sm text-neutral-800 dark:text-neutral-400">
-              {isAutomations
-                ? "Department Automations"
-                : superAdminFilter && isSuper
-                  ? "All Submitted Issues"
-                  : `${subtitleMapping[role]} Issues`}{" "}
+              {superAdminFilter && isSuper
+                ? "All Submitted Issues"
+                : `${subtitleMapping[role]} Issues`}{" "}
               Overview
             </span>
           </div>
-          {isAutomations && <DepartmentsDropDown />}
-          {!isAutomations && isSuper && <SuperAdminFilter />}
+          {isSuper && <SuperAdminFilter />}
         </div>
         <div className="flex items-center gap-4">
           {/* Refresh button */}

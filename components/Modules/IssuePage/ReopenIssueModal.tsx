@@ -3,28 +3,25 @@ import ClientPortal from "../ClientPortal";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { IssueValueTypes } from "@/public/assets";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { FormEvent, useRef, useState } from "react";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import { BookmarkCheck, MessageSquareText, X } from "lucide-react";
+import { IssueDetail } from "@/queries/fetchIssue";
+import { invalidateIssuesCaches } from "@/utils/invalidateIssuesCaches";
 
 type ReopenIssueModalProps = {
   uuid: string;
   closeModal: () => void;
   isModalOpen: boolean;
-  activeQueryKey: (string | boolean)[];
-  activeCardsKey: (string | boolean)[];
 };
 
 const ReopenIssueModal = ({
   uuid,
   closeModal,
   isModalOpen,
-  activeQueryKey,
-  activeCardsKey,
 }: ReopenIssueModalProps) => {
   const queryClient = useQueryClient();
 
@@ -47,21 +44,15 @@ const ReopenIssueModal = ({
     mutationFn: () => apiClient.put("/reopen-issue", { uuid, reason }),
     onMutate: () => showOverlay("Updating"),
     onSuccess: (response) => {
-      queryClient.setQueryData(
-        activeQueryKey,
-        (oldData: Record<string, IssueValueTypes>[]) => {
-          if (!oldData) return oldData;
-          return oldData.map((issue) =>
-            issue.issue_uuid === uuid
-              ? {
-                  ...issue,
-                  issue_status: "open",
-                  issue_updated_at: new Date().toISOString(),
-                  issue_created_at: new Date().toISOString(),
-                }
-              : issue,
-          );
-        },
+      queryClient.setQueryData(["issue", uuid], (old: IssueDetail | undefined) =>
+        old
+          ? {
+              ...old,
+              issue_status: "open",
+              issue_updated_at: new Date().toISOString(),
+              issue_created_at: new Date().toISOString(),
+            }
+          : old,
       );
 
       closeModal();
@@ -72,7 +63,7 @@ const ReopenIssueModal = ({
     },
     onSettled: () => {
       hideOverlay();
-      queryClient.invalidateQueries({ queryKey: activeCardsKey });
+      invalidateIssuesCaches(queryClient, { uuid });
     },
   });
 

@@ -1,37 +1,32 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { Search, X, RotateCcw, ChevronDown } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { useAnalyticsFilterStore } from "@/store/useAnalyticsFilterStore";
-import {
-  baseDepartments,
-  statusOptions,
-  priorityOptions,
-} from "@/public/assets";
+import { useIssuesFilterStore } from "@/store/useIssuesFilterStore";
+import { useUser } from "@/contexts/UserContext";
+import { useSearchStore } from "@/store/useSearchStore";
+import { baseDepartments, statusOptions, priorityOptions } from "@/public/assets";
 import { DatePicker } from "../DatePicker";
 import CustomDropdown from "../CustomDropdown";
-import { fetchGlobalAgents } from "@/queries/analytics/fetchGlobalAgents";
-import { fetchGlobalIssueTypes } from "@/queries/analytics/fetchGlobalIssueTypes";
 
 type FilterFieldKey =
+  | "status"
+  | "reference"
+  | "dateRange"
   | "department"
   | "agent"
   | "issueType"
-  | "status"
-  | "priority"
-  | "submitter"
-  | "reference"
-  | "dateRange";
+  | "issuePriority"
+  | "submitter";
 
 const filterFieldOptions: { key: FilterFieldKey; label: string }[] = [
+  { key: "status", label: "Status" },
+  { key: "reference", label: "Reference" },
+  { key: "dateRange", label: "Date Range" },
   { key: "department", label: "Department" },
   { key: "agent", label: "Agent" },
   { key: "issueType", label: "Issue Type" },
-  { key: "status", label: "Status" },
-  { key: "priority", label: "Priority" },
+  { key: "issuePriority", label: "Issue Priority" },
   { key: "submitter", label: "Submitter" },
-  { key: "reference", label: "Reference Number" },
-  { key: "dateRange", label: "Date Range" },
 ];
 
 const TextInput = ({
@@ -64,28 +59,6 @@ const TextInput = ({
   </div>
 );
 
-const ToggleChip = ({
-  label,
-  active,
-  onToggle,
-}: {
-  label: string;
-  active: boolean;
-  onToggle: () => void;
-}) => (
-  <button
-    type="button"
-    onClick={onToggle}
-    className={`h-10 shrink-0 rounded-xl border px-4 text-sm font-medium transition-colors ${
-      active
-        ? "border-blue-700 bg-blue-700 text-white hover:bg-blue-800"
-        : "border-neutral-300 bg-white text-neutral-600 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-900"
-    }`}
-  >
-    {label}
-  </button>
-);
-
 // Lets the user pick which filter field the panel's single filter slot
 // currently controls. Dot indicators flag fields that already hold a draft
 // value, since only one field's control is visible at a time.
@@ -93,10 +66,12 @@ const FilterFieldSelector = ({
   activeKey,
   onChange,
   hasValue,
+  visibleOptions,
 }: {
   activeKey: FilterFieldKey;
   onChange: (key: FilterFieldKey) => void;
   hasValue: Record<FilterFieldKey, boolean>;
+  visibleOptions: { key: FilterFieldKey; label: string }[];
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -141,7 +116,7 @@ const FilterFieldSelector = ({
 
       {isOpen && (
         <div className="absolute top-full left-0 z-20 mt-2 w-full rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-950 dark:shadow-none">
-          {filterFieldOptions.map((option) => (
+          {visibleOptions.map((option) => (
             <button
               key={option.key}
               type="button"
@@ -169,109 +144,78 @@ const FilterFieldSelector = ({
   );
 };
 
-const FilterPanel = () => {
-  const [activeField, setActiveField] = useState<FilterFieldKey>("department");
+const IssuesFilterPanel = () => {
+  const { role } = useUser();
+  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
 
   const {
+    status,
+    reference,
     department,
     agent,
     issueType,
-    status,
-    priority,
+    issuePriority,
+    submitter,
     fromDate,
     toDate,
-    reopened,
-    escalated,
-    collaborated,
-    submitter,
-    reference,
+    setStatus,
+    setReference,
     setDepartment,
     setAgent,
     setIssueType,
-    setStatus,
-    setPriority,
+    setIssuePriority,
+    setSubmitter,
     setFromDate,
     setToDate,
-    setReopened,
-    setEscalated,
-    setCollaborated,
-    setSubmitter,
-    setReference,
     applyFilters,
     resetFilters,
-  } = useAnalyticsFilterStore();
+  } = useIssuesFilterStore();
 
-  const { data: globalAgents = [] } = useQuery({
-    queryKey: ["analyticsGlobalAgents"],
-    queryFn: fetchGlobalAgents,
-  });
+  const [activeField, setActiveField] = useState<FilterFieldKey>("status");
 
-  const { data: globalIssueTypes = [] } = useQuery({
-    queryKey: ["analyticsGlobalIssueTypes"],
-    queryFn: fetchGlobalIssueTypes,
-  });
+  // Hide "agent" for agents not viewing their own submissions, and "submitter"
+  // for plain users - mirrors the previous SearchFilterLogic.tsx visibility rules.
+  const visibleOptions = useMemo(() => {
+    return filterFieldOptions.filter((option) => {
+      if (
+        role === "agent" &&
+        agentAdminFilter !== "agentAdminFilter" &&
+        option.key === "agent"
+      )
+        return false;
+
+      if (role === "user" && option.key === "submitter") return false;
+
+      return true;
+    });
+  }, [role, agentAdminFilter]);
+
+  // Derived rather than synced via effect - falls back to the first visible
+  // option whenever the currently active field becomes hidden by role rules.
+  const effectiveActiveField = visibleOptions.some(
+    (option) => option.key === activeField,
+  )
+    ? activeField
+    : (visibleOptions[0]?.key ?? "status");
 
   const departmentOptions = baseDepartments.map((dept) => ({
     label: dept.option,
     value: dept.value,
   }));
 
-  const agentOptions = globalAgents.map((a) => ({
-    label: `${a.agent_name} - ${a.department}`,
-    value: a.agent_email,
-  }));
-
-  const issueTypeOptions = globalIssueTypes.map((type) => ({
-    label: type,
-    value: type,
-  }));
-
   const hasValue: Record<FilterFieldKey, boolean> = {
+    status: !!status,
+    reference: !!reference,
+    dateRange: !!fromDate || !!toDate,
     department: !!department,
     agent: !!agent,
     issueType: !!issueType,
-    status: !!status,
-    priority: !!priority,
+    issuePriority: !!issuePriority,
     submitter: !!submitter,
-    reference: !!reference,
-    dateRange: !!fromDate || !!toDate,
   };
 
   const renderActiveControl = () => {
-    switch (activeField) {
-      case "department":
-        return (
-          <CustomDropdown
-            label="Department"
-            hideLabel
-            options={departmentOptions}
-            value={department}
-            onChange={setDepartment}
-            placeholder="All departments"
-          />
-        );
-      case "agent":
-        return (
-          <CustomDropdown
-            label="Agent"
-            hideLabel
-            options={agentOptions}
-            value={agent}
-            onChange={setAgent}
-            placeholder="All agents"
-          />
-        );
-      case "issueType":
-        return (
-          <CustomDropdown
-            label="Issue Type"
-            hideLabel
-            options={issueTypeOptions}
-            value={issueType}
-            onChange={setIssueType}
-            placeholder="All issue types"
-          />
-        );
+    switch (effectiveActiveField) {
       case "status":
         return (
           <CustomDropdown
@@ -280,26 +224,7 @@ const FilterPanel = () => {
             options={statusOptions}
             value={status}
             onChange={setStatus}
-            placeholder="All statuses"
-          />
-        );
-      case "priority":
-        return (
-          <CustomDropdown
-            label="Priority"
-            hideLabel
-            options={priorityOptions}
-            value={priority}
-            onChange={setPriority}
-            placeholder="All priorities"
-          />
-        );
-      case "submitter":
-        return (
-          <TextInput
-            value={submitter}
-            onChange={setSubmitter}
-            placeholder="Search submitter name..."
+            placeholder="Select status..."
           />
         );
       case "reference":
@@ -307,7 +232,7 @@ const FilterPanel = () => {
           <TextInput
             value={reference}
             onChange={setReference}
-            placeholder="Search reference id..."
+            placeholder="Search reference ID..."
           />
         );
       case "dateRange":
@@ -322,6 +247,52 @@ const FilterPanel = () => {
             <DatePicker value={toDate} onChange={setToDate} placeholder="To" />
           </div>
         );
+      case "department":
+        return (
+          <CustomDropdown
+            label="Department"
+            hideLabel
+            options={departmentOptions}
+            value={department}
+            onChange={setDepartment}
+            placeholder="Select department..."
+          />
+        );
+      case "agent":
+        return (
+          <TextInput
+            value={agent}
+            onChange={setAgent}
+            placeholder="Search agent name..."
+          />
+        );
+      case "issueType":
+        return (
+          <TextInput
+            value={issueType}
+            onChange={setIssueType}
+            placeholder="Search issue type..."
+          />
+        );
+      case "issuePriority":
+        return (
+          <CustomDropdown
+            label="Issue Priority"
+            hideLabel
+            options={priorityOptions}
+            value={issuePriority}
+            onChange={setIssuePriority}
+            placeholder="Select priority..."
+          />
+        );
+      case "submitter":
+        return (
+          <TextInput
+            value={submitter}
+            onChange={setSubmitter}
+            placeholder="Search submitter..."
+          />
+        );
     }
   };
 
@@ -329,30 +300,13 @@ const FilterPanel = () => {
     <div className="sticky top-0 z-50 mb-4 rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-950">
       <div className="flex flex-wrap items-center gap-3">
         <FilterFieldSelector
-          activeKey={activeField}
+          activeKey={effectiveActiveField}
           onChange={setActiveField}
           hasValue={hasValue}
+          visibleOptions={visibleOptions}
         />
 
         <div className="min-w-55 flex-1">{renderActiveControl()}</div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <ToggleChip
-            label="Reopened"
-            active={reopened}
-            onToggle={() => setReopened(!reopened)}
-          />
-          <ToggleChip
-            label="Escalated"
-            active={escalated}
-            onToggle={() => setEscalated(!escalated)}
-          />
-          <ToggleChip
-            label="Collaborated"
-            active={collaborated}
-            onToggle={() => setCollaborated(!collaborated)}
-          />
-        </div>
 
         <div className="ml-auto flex items-center gap-2">
           <button
@@ -377,4 +331,4 @@ const FilterPanel = () => {
   );
 };
 
-export default FilterPanel;
+export default IssuesFilterPanel;

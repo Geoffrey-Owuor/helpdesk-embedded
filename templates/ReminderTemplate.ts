@@ -27,7 +27,7 @@ function renderIssueRow(issue: UnresolvedIssue): string {
   );
 
   // Building the issue uuid link
-  const issueLink = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/${issue.issue_uuid}?type=issue&title=${encodeURIComponent(issue.issue_title)}&description=${encodeURIComponent(issue.issue_description)}`;
+  const issueLink = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/${issue.issue_uuid}?title=${encodeURIComponent(issue.issue_title)}&description=${encodeURIComponent(issue.issue_description)}`;
 
   return `
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="

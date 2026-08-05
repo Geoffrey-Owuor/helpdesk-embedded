@@ -2,35 +2,34 @@
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Check, X, Search } from "lucide-react";
 
-export interface AnalyticsDropdownOption {
+export interface DropdownOption {
   label: string;
   value: string;
 }
 
-interface AnalyticsDropdownProps {
+interface CustomDropdownProps {
   label: string;
-  options: AnalyticsDropdownOption[];
+  options: DropdownOption[];
   value: string;
   onChange: (value: string) => void;
   placeholder: string;
   hideLabel?: boolean;
 }
 
-// Option count above which the in-menu search box is shown — short lists
+// Option count above which the in-menu search box is shown - short lists
 // (Priority, Status) don't need it, long ones (Agent, Issue Type) do.
 const SEARCH_THRESHOLD = 6;
 
-// Single-select, clearable dropdown for the analytics filter panel.
-// Modeled on the CustomDropdown inside SearchInputFields.tsx, which is a
-// private, unexported component of that file and can't be reused directly.
-const AnalyticsDropdown = ({
+// Single-select, clearable dropdown shared by the Issues Data and Issues
+// Analytics filter panels.
+const CustomDropdown = ({
   label,
   options,
   value,
   onChange,
   placeholder,
   hideLabel = false,
-}: AnalyticsDropdownProps) => {
+}: CustomDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -155,4 +154,4 @@ const AnalyticsDropdown = ({
   );
 };
 
-export default AnalyticsDropdown;
+export default CustomDropdown;

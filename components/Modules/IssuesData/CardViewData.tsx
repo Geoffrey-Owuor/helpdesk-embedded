@@ -21,13 +21,9 @@ import { ResolutionTimePill } from "./ResolutionTimePill";
 
 type CardViewDataProps = {
   currentIssues: Record<string, string | number>[];
-  dynamicUrlParam: string;
 };
 
-const CardViewData = ({
-  currentIssues,
-  dynamicUrlParam,
-}: CardViewDataProps) => {
+const CardViewData = ({ currentIssues }: CardViewDataProps) => {
   const router = useRouter();
   const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
 
@@ -47,7 +43,7 @@ const CardViewData = ({
           onClick={() => {
             setLoadingLine(true);
             router.push(
-              `/dashboard/${issueData.issue_uuid}?type=${dynamicUrlParam}&title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`,
+              `/dashboard/${issueData.issue_uuid}?title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`,
             );
           }}
           className="group flex cursor-pointer flex-col justify-between rounded-xl border border-neutral-200 bg-white p-5 shadow-xs transition-all duration-200 hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700"
@@ -61,7 +57,7 @@ const CardViewData = ({
                   setLoadingLine(true);
                 }}
                 title={titleHelper(issueData.issue_reference_id)}
-                href={`/dashboard/${issueData.issue_uuid}?type=${dynamicUrlParam}&title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`}
+                href={`/dashboard/${issueData.issue_uuid}?title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`}
                 className="flex items-center gap-1.5 text-sm font-semibold text-neutral-500 transition-colors hover:text-blue-500 hover:underline dark:text-neutral-400"
               >
                 <span className="max-w-50 truncate">

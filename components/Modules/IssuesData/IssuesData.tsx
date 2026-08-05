@@ -2,55 +2,37 @@
 import IssuesDataSkeleton from "@/components/Skeletons/IssuesDataSkeleton";
 import { useUser } from "@/contexts/UserContext";
 import ShowHideColumnsLogic from "./ShowHideColumnsLogic";
-import SearchFilterLogic from "./SearchFilterLogic";
-import SearchInputFields from "./SearchInputFields";
-import ClearRefreshFilters from "./ClearRefreshFilters";
-import SearchFilters from "./SearchFilters";
-import { useState, useEffect, useMemo } from "react";
+import IssuesFilterPanel from "./IssuesFilterPanel";
 import { useSearchStore } from "@/store/useSearchStore";
+import { useIssuesFilterStore } from "@/store/useIssuesFilterStore";
 import ViewAgentAdminFilter from "./ViewAgentAdminFilter";
-import Pagination from "./Pagination";
+import IssuesPagination from "./IssuesPagination";
 import ToggleTableView from "./ToggleTableView";
 import TableViewData from "./TableViewData";
 import CardViewData from "./CardViewData";
 import ExportData from "./ExportData";
 import { useQuery } from "@tanstack/react-query";
 import { fetchIssues } from "@/queries/fetchIssues";
-import { fetchAutomations } from "@/queries/fetchAutomations";
-import ActiveFilterPills from "./ActiveFilterPills";
-import {
-  DEFAULT_FETCH_OPTIONS,
-  DEFAULT_RECORDS_LIMIT,
-  RECORDS_LIMIT_INCREMENT,
-  MAX_RECORDS_LIMIT,
-  Options,
-} from "@/public/assets";
+import ActiveIssuesFilterPills from "./ActiveIssuesFilterPills";
+import { RotateCw } from "lucide-react";
 
-const IssuesData = ({ recordType }: { recordType: string }) => {
-  const isAutomations = recordType === "automations";
-
+const IssuesData = () => {
   const { role, department, isSuper } = useUser();
 
   // useSearchStore Data
   const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
   const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
   const isTableView = useSearchStore((state) => state.isTableView);
-  const selectedDepartment = useSearchStore(
-    (state) => state.selectedDepartment,
-  );
 
-  // Committed state - only applies filters when search button is clicked
-  const [committedFilters, setCommittedFilters] = useState<Options | null>(
-    null,
+  // useIssuesFilterStore Data
+  const committedFilters = useIssuesFilterStore(
+    (state) => state.committedFilters,
   );
-
-  // Server-side records limit - lets admins/agents/super admins page past the
-  // default cap to search further back than the default query window
-  const [recordsLimit, setRecordsLimit] = useState(DEFAULT_RECORDS_LIMIT);
-  const canExtendRecordsLimit = isSuper || role === "admin" || role === "agent";
+  const page = useIssuesFilterStore((state) => state.page);
+  const pageSize = useIssuesFilterStore((state) => state.pageSize);
 
   const {
-    data: issuesData = [],
+    data,
     isLoading: loading,
     refetch: refetchIssues,
   } = useQuery({
@@ -58,144 +40,15 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
       "issuesDashboardData",
       superAdminFilter,
       agentAdminFilter,
-      recordsLimit,
+      committedFilters,
+      page,
+      pageSize,
     ],
-    queryFn: () => fetchIssues({ ...DEFAULT_FETCH_OPTIONS, recordsLimit }),
-    enabled: !isAutomations,
+    queryFn: () => fetchIssues(committedFilters, page, pageSize),
   });
 
-  const {
-    data: automationsData = [],
-    isLoading: automationsLoading,
-    refetch: refetchAutomations,
-  } = useQuery({
-    queryKey: ["automationsDashboardData", selectedDepartment, recordsLimit],
-    queryFn: () => fetchAutomations({ ...DEFAULT_FETCH_OPTIONS, recordsLimit }),
-    enabled: isAutomations,
-  });
-
-  // Defining our variables based on record type
-  const recordsData = isAutomations ? automationsData : issuesData;
-  const recordsLoading = isAutomations ? automationsLoading : loading;
-  const refetchRecords = isAutomations ? refetchAutomations : refetchIssues;
-
-  const filteredData = useMemo(() => {
-    if (!committedFilters) return recordsData;
-
-    return recordsData.filter((record) => {
-      const {
-        status,
-        fromDate,
-        toDate,
-        reference,
-        department,
-        agent,
-        issueType,
-        issuePriority,
-        submitter,
-      } = committedFilters;
-
-      if (status && record.issue_status !== status) return false;
-      if (
-        reference &&
-        !record.issue_reference_id
-          .toString()
-          .toLocaleLowerCase()
-          .includes(reference.toLowerCase())
-      )
-        return false;
-      if (department) {
-        let departmentCheck;
-
-        if (role === "user") {
-          departmentCheck = record.issue_target_department;
-        } else if (role === "admin" || role === "agent") {
-          departmentCheck =
-            agentAdminFilter === "agentAdminFilter"
-              ? record.issue_target_department
-              : record.issue_submitter_department;
-        } else {
-          departmentCheck = record.issue_target_department;
-        }
-
-        if (departmentCheck !== department) return false;
-      }
-      if (
-        agent &&
-        !record.issue_agent_name
-          .toString()
-          .toLocaleLowerCase()
-          .includes(agent.toLocaleLowerCase())
-      )
-        return false;
-      if (
-        issueType &&
-        !record.issue_type
-          .toString()
-          .toLocaleLowerCase()
-          .includes(issueType.toLocaleLowerCase())
-      )
-        return false;
-      if (issuePriority && record.issue_priority !== issuePriority)
-        return false;
-      if (
-        submitter &&
-        !record.issue_submitter_name
-          .toString()
-          .toLocaleLowerCase()
-          .includes(submitter.toLocaleLowerCase())
-      )
-        return false;
-      if (fromDate && new Date(record.issue_created_at) < new Date(fromDate))
-        return false;
-      if (
-        toDate &&
-        new Date(record.issue_created_at) >
-          new Date(new Date(toDate).setHours(23, 59, 59, 999))
-      )
-        return false;
-
-      return true;
-    });
-  }, [recordsData, committedFilters, role, agentAdminFilter]);
-
-  // Generate a dynamic url param that we will pass to the issue url - based on the data we are currently viewing
-  // We have two sources of data, some are in issuesData,  some are in Automations (based on recordType)
-  const dynamicUrlParam = isAutomations ? "automation" : "issue";
-
-  // Pagination states and logic
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const [issuesPerPage, setIssuesPerPage] = useState(6);
-  const perPageOptions = [6, 12, 24, 48, 96, 192];
-
-  const totalPages = Math.ceil(filteredData.length / issuesPerPage);
-  const indexOfLastIssue = currentPage * issuesPerPage;
-  const indexOfFirstIssue = indexOfLastIssue - issuesPerPage;
-  const currentIssues = filteredData.slice(
-    indexOfFirstIssue,
-    Math.min(indexOfLastIssue, filteredData.length),
-  );
-
-  // useEffect that resets current page when data changes or records per page changes
-  useEffect(() => {
-    Promise.resolve().then(() => setCurrentPage(1));
-  }, [filteredData, issuesPerPage]);
-
-  // Whether the current fetch is capped at the requested limit - i.e. there
-  // may be older records beyond what was returned
-  const isRecordsCapped = recordsData.length === recordsLimit;
-
-  const handleLoadMoreRecords = () => {
-    setRecordsLimit((prev) =>
-      Math.min(prev + RECORDS_LIMIT_INCREMENT, MAX_RECORDS_LIMIT),
-    );
-  };
-
-  const handleSetCustomRecordsLimit = (value: number) => {
-    if (!Number.isFinite(value) || value <= 0) return;
-    setRecordsLimit(Math.min(Math.round(value), MAX_RECORDS_LIMIT));
-  };
+  const rows = data?.rows ?? [];
+  const total = data?.total ?? 0;
 
   // default subtitle
   const defaultSubtitle = `you have submitted`;
@@ -218,106 +71,60 @@ const IssuesData = ({ recordType }: { recordType: string }) => {
 
   return (
     <>
-      {/* Title Area Refresh Button, show/hide columns and Clear filters functionalities */}
+      {/* Title Area Refresh Button, show/hide columns functionalities */}
       <div className="mb-4 flex flex-col gap-6 md:flex-row md:justify-between">
         {/* The title and toggle */}
         <div className="flex items-center justify-between md:justify-center md:gap-10">
           <div className="inline-flex flex-col">
-            <span className="text-xl font-semibold">
-              {isAutomations ? "Automations" : "Issues"} Data
-            </span>
+            <span className="text-xl font-semibold">Issues Data</span>
             <span className="text-sm text-neutral-800 dark:text-neutral-400">
-              {isAutomations
-                ? `${selectedDepartment || "All"} Automations Summary`
-                : superAdminFilter && isSuper
-                  ? "All department submitted issues"
-                  : `Issues ${generatedSubtitle()}`}
+              {superAdminFilter && isSuper
+                ? "All department submitted issues"
+                : `Issues ${generatedSubtitle()}`}
             </span>
 
             <span className="text-xs text-neutral-500">
-              Returned results: {filteredData.length || "none"}
+              Returned results: {total || "none"}
             </span>
           </div>
-          {role !== "user" && !isAutomations && <ViewAgentAdminFilter />}
+          {role !== "user" && <ViewAgentAdminFilter />}
         </div>
 
-        {/* The refresh button, clear filters, hide columns */}
-        <div className="flex items-center justify-start gap-4 md:justify-center">
-          {/* Clearing filters */}
-          <ClearRefreshFilters
-            handleRefetchIssues={() => {
-              setCommittedFilters(null);
-              // Changing recordsLimit already triggers a refetch via the query
-              // key, so only call refetchRecords when the limit is unchanged
-              if (recordsLimit !== DEFAULT_RECORDS_LIMIT) {
-                setRecordsLimit(DEFAULT_RECORDS_LIMIT);
-              } else {
-                refetchRecords();
-              }
-            }}
-          />
+        {/* The refresh button and hide columns */}
+        <div className="flex flex-wrap items-center justify-start gap-4 md:justify-center">
+          <button
+            onClick={() => refetchIssues()}
+            title="Refresh"
+            className="rounded-xl bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+          >
+            <RotateCw className="h-4.5 w-4.5" />
+          </button>
 
           {/* Show/Hide Columns Logic */}
           <ShowHideColumnsLogic />
-        </div>
-      </div>
 
-      {/* The filtering logic and search input fields */}
-
-      <div className="mb-4 flex flex-wrap items-center justify-start gap-4">
-        <SearchFilterLogic recordType={recordType} />
-        <SearchInputFields />
-        {/* The search button */}
-        <SearchFilters
-          onSearch={(filters: Options) => setCommittedFilters(filters)}
-        />
-
-        {/* Toggle between table and card view and Export Data buttons*/}
-        <div className="ml-0 flex items-center gap-4 md:ml-auto">
-          <ExportData fetchAutomations={recordType} />
+          {/* Export and table toggle */}
+          <ExportData />
           <ToggleTableView />
         </div>
       </div>
 
-      {/* Active filter pills */}
-      <ActiveFilterPills
-        committedFilters={committedFilters}
-        setCommittedFilters={setCommittedFilters}
-      />
+      {/* The consolidated filter panel */}
+      <IssuesFilterPanel />
+      <ActiveIssuesFilterPills />
 
-      {recordsLoading ? (
+      {loading ? (
         <IssuesDataSkeleton isTableView={isTableView} />
       ) : (
         <div>
           {isTableView ? (
-            <TableViewData
-              currentIssues={currentIssues}
-              dynamicUrlParam={dynamicUrlParam}
-            />
+            <TableViewData currentIssues={rows} />
           ) : (
-            <CardViewData
-              currentIssues={currentIssues}
-              dynamicUrlParam={dynamicUrlParam}
-            />
+            <CardViewData currentIssues={rows} />
           )}
 
           {/* Our pagination ui */}
-          <Pagination
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            totalPages={totalPages}
-            issuesPerPage={issuesPerPage}
-            setIssuesPerPage={setIssuesPerPage}
-            perPageOptions={perPageOptions}
-            indexOfFirstIssue={indexOfFirstIssue}
-            indexOfLastIssue={indexOfLastIssue}
-            issuesLength={filteredData.length}
-            showLoadMore={canExtendRecordsLimit && isRecordsCapped}
-            recordsLimit={recordsLimit}
-            maxRecordsLimit={MAX_RECORDS_LIMIT}
-            onLoadMoreRecords={handleLoadMoreRecords}
-            onSetCustomRecordsLimit={handleSetCustomRecordsLimit}
-          />
+          <IssuesPagination total={total} />
         </div>
       )}
     </>

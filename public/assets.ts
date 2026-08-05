@@ -70,13 +70,6 @@ export const dateFormatter = (dateString: IssueValueTypes) => {
   });
 };
 
-// Automation type filters
-export const AUTOMATION_TYPE_FILTERS = [
-  "RPA",
-  "Staff Purchase",
-  "Requisition Hub",
-];
-
 // export our departments
 export const baseDepartments = [
   { option: "IT & Projects", value: "IT & Projects" },
@@ -113,29 +106,10 @@ export const issuePrefixMapping: Record<string, string> = {
   Directorate: "DIR",
 };
 
-export const DEFAULT_FETCH_OPTIONS = { selectedFilter: "status", status: "" };
-
-// Records limit (server-side LIMIT) controls - lets admins/agents page past the
-// default cap to search further back than the default query window
-export const DEFAULT_RECORDS_LIMIT = 500;
-export const RECORDS_LIMIT_INCREMENT = 50;
-export const MAX_RECORDS_LIMIT = 5000;
+// Default page size for server-side paginated issue queries
+export const DEFAULT_PAGE_SIZE = 25;
 
 export type IssueValueTypes = string | number;
-
-export interface Options {
-  selectedFilter?: string;
-  fromDate?: string;
-  toDate?: string;
-  status?: string;
-  reference?: string;
-  department?: string;
-  agent?: string;
-  issueType?: string;
-  issuePriority?: string;
-  submitter?: string;
-  recordsLimit?: number;
-}
 
 // Issue Cards Count Types
 export interface PriorityBreakdown {

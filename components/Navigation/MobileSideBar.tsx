@@ -7,7 +7,6 @@ import { Dispatch, SetStateAction } from "react";
 import { useState, useCallback, useRef } from "react";
 import {
   CirclePlus,
-  Bot,
   X,
   ShieldUser,
   ShieldPlus,
@@ -128,20 +127,6 @@ const MobileSideBar = ({
               <CirclePlus className="h-5 w-5" />
               <span>New Issue</span>
             </button>
-
-            {/* Link: Automations */}
-            {isSuper && (
-              <Link
-                href="/dashboard/automations"
-                onClick={() =>
-                  handleMobileRouteChange("/dashboard/automations")
-                }
-                className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
-              >
-                <Bot className="h-5 w-5" />
-                <span>Automations</span>
-              </Link>
-            )}
 
             {/* Super Admin  */}
             {isSuper && (

@@ -11,20 +11,19 @@ import { useOverlayStore } from "@/store/useOverlayStore";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { IssueValueTypes } from "@/public/assets";
+import { IssueDetail } from "@/queries/fetchIssue";
+import { invalidateIssuesCaches } from "@/utils/invalidateIssuesCaches";
 
 type AddAttachmentModalProps = {
   uuid: string;
   isModalOpen: boolean;
   closeModal: () => void;
-  activeQueryKey: (string | boolean)[];
 };
 
 const AddAttachmentModal = ({
   uuid,
   isModalOpen,
   closeModal,
-  activeQueryKey,
 }: AddAttachmentModalProps) => {
   const queryClient = useQueryClient();
   const [files, setFiles] = useState<File[]>([]);
@@ -50,28 +49,22 @@ const AddAttachmentModal = ({
     },
 
     onSuccess: (response, uploadFiles) => {
-      // Keeps the attachments indicator on the issues table/cards in sync
+      // Keeps the attachments indicator on the issue page/list/cards in sync
       // without refetching the whole dashboard list
-      queryClient.setQueryData(
-        activeQueryKey,
-        (oldData: Record<string, IssueValueTypes>[]) => {
-          if (!oldData) return oldData;
-
-          return oldData.map((issue: Record<string, IssueValueTypes>) =>
-            issue.issue_uuid === uuid
-              ? {
-                  ...issue,
-                  attachments_count:
-                    Number(issue.attachments_count ?? 0) + uploadFiles.length,
-                  issue_updated_at: new Date().toISOString(),
-                }
-              : issue,
-          );
-        },
+      queryClient.setQueryData(["issue", uuid], (old: IssueDetail | undefined) =>
+        old
+          ? {
+              ...old,
+              attachments_count:
+                Number(old.attachments_count ?? 0) + uploadFiles.length,
+              issue_updated_at: new Date().toISOString(),
+            }
+          : old,
       );
 
       // Refetch the attachments viewer on this page
       queryClient.invalidateQueries({ queryKey: ["issueAttachments", uuid] });
+      invalidateIssuesCaches(queryClient, { uuid });
 
       hideOverlay();
       setFiles([]);
