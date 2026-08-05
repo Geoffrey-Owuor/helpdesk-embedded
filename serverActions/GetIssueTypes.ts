@@ -20,7 +20,8 @@ const getIssueTypes = async (department: string) => {
      FROM issues_mapping AS m
      INNER JOIN users AS u
      ON m.admin_id = u.user_id
-     WHERE u.department = $1`;
+     WHERE u.department = $1
+     ORDER BY m.id ASC`;
   const params = [department];
 
   try {

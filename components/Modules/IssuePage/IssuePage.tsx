@@ -675,14 +675,17 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           <DetailCard title="Issue Data" icon={Hash}>
             <div className="flex flex-wrap items-center justify-between gap-4">
               <InfoBlock label="Issue Type" value={issueData.issue_type} />
-              {isSuper && issueData.issue_status === "open" && (
-                <IssueTypeModal
-                  targetDepartment={issueData.issue_target_department}
-                  uuid={uuid}
-                  activeQueryKey={activeQueryKey}
-                  currentType={issueData.issue_type}
-                />
-              )}
+              {/* Changing the issue type */}
+              {role === "admin" &&
+                issueData.issue_target_department === department &&
+                issueData.issue_status !== "closed" && (
+                  <IssueTypeModal
+                    targetDepartment={issueData.issue_target_department}
+                    uuid={uuid}
+                    activeQueryKey={activeQueryKey}
+                    currentType={issueData.issue_type}
+                  />
+                )}
             </div>
 
             {/* The agents invited to collaborate on this issue */}

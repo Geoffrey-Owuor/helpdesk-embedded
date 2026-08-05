@@ -2,15 +2,14 @@ import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
-import { emailSender } from "@/services/EmailSender";
 
 export const PATCH = withAuth(async ({ user, request }) => {
   let client: PoolClient | undefined;
 
-  const { isSuper, email, userId, username } = user;
+  const { role } = user;
 
   //Is user a super admin
-  if (!isSuper) {
+  if (role !== "admin") {
     return NextResponse.json(
       { message: "You are not authorized to perform this action" },
       { status: 403 },
@@ -50,7 +49,6 @@ export const PATCH = withAuth(async ({ user, request }) => {
     // Our current issue type and status
     const currentStatus = rows[0].issue_status;
     const currentType = rows[0].issue_type;
-    const referenceNumber = rows[0].issue_reference_id;
 
     // Issue is already marked as closed
     if (currentStatus === "closed") {
@@ -74,26 +72,17 @@ export const PATCH = withAuth(async ({ user, request }) => {
     const updateQuery = `
     UPDATE issues_table
     SET issue_type = $1,
-    issue_assigner_id = $2,
-    issue_assigner_email = $3,
-    issue_assigner_name = $4,
     issue_updated_at = CURRENT_TIMESTAMP
-    WHERE issue_uuid = $5
+    WHERE issue_uuid = $2
     `;
 
     // The params
-    const params = [type, userId, email, username, uuid];
+    const params = [type, uuid];
 
     await client.query(updateQuery, params);
 
     // Commit the transaction
     await client.query("COMMIT");
-
-    // Fire and forget - Email sender
-    const title = `${referenceNumber} issue type updated to ${type}`;
-    const description = `${referenceNumber} issue type has been updated to ${type} by ${username}`;
-
-    emailSender({ title, description, uuid });
 
     // Return a response
     return NextResponse.json(
