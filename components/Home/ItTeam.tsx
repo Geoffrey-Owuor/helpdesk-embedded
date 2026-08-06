@@ -88,7 +88,7 @@ const TEAM_MEMBERS = [
       "Fred performs designated high-level business process workflows within the ERP system to support essential daily operations, collaborating closely with the senior ERP team to ensure system efficiency.",
 
     email: "fnyaboga@hotpoint.co.ke",
-    extension: "TBD",
+    extension: "1011",
   },
 ];
 
