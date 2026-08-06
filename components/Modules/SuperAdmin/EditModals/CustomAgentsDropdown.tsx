@@ -89,7 +89,7 @@ const CustomAgentsDropdown = ({
       </button>
 
       {isOpen && (
-        <ul className="default-scrollbar absolute top-full left-0 z-70 mt-1.5 max-h-60 w-full overflow-y-auto rounded-xl border border-neutral-200 bg-white py-1.5 shadow-xl dark:border-neutral-700 dark:bg-neutral-900">
+        <ul className="default-scrollbar absolute top-full left-0 z-70 mt-1.5 flex max-h-60 w-full flex-col gap-2 overflow-y-auto rounded-xl border border-neutral-200 bg-white py-1.5 shadow-xl dark:border-neutral-700 dark:bg-neutral-900">
           {options.map((item) => (
             <button
               key={item.value}

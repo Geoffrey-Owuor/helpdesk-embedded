@@ -3,8 +3,7 @@ import ClientPortal from "../../ClientPortal";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useRef } from "react";
-import { X, KeyRound, Plus, User, Trash2 } from "lucide-react";
-import FormAsterisk from "../../FormAsterisk";
+import { X, KeyRound, Plus, Trash2, UserRound } from "lucide-react";
 import apiClient from "@/lib/AxiosClient";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useConfirmStore } from "@/store/useConfirmStore";
@@ -14,6 +13,7 @@ import { dateFormatter } from "@/public/assets";
 import { FEATURES, FeatureKey } from "@/lib/FeatureAccess";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import { UserRecord } from "../Users";
+import CustomDropdown from "../EditModals/CustomDropDown";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -54,6 +54,16 @@ const GrantForm = ({ users, onCancel, onSave, isSaving }: GrantFormProps) => {
     feature: FEATURES.ANALYTICS,
   });
 
+  const userOptions = users.map((user) => ({
+    option: `${user.username} (${user.email})`,
+    value: user.user_id,
+  }));
+
+  const featureOptions = Object.values(FEATURES).map((feature) => ({
+    option: featureLabel(feature),
+    value: feature,
+  }));
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.userId) return;
@@ -70,74 +80,22 @@ const GrantForm = ({ users, onCancel, onSave, isSaving }: GrantFormProps) => {
       </p>
 
       {/* User */}
-      <div className="flex flex-col gap-1.5">
-        <label
-          htmlFor="userId"
-          className="flex items-center gap-1 text-sm font-medium text-neutral-700 dark:text-neutral-300"
-        >
-          User
-          <FormAsterisk />
-        </label>
-        <div className="relative">
-          <div className="absolute top-1/2 left-3.5 -translate-y-1/2">
-            <User className="h-4 w-4 text-neutral-400" />
-          </div>
-          <select
-            id="userId"
-            name="userId"
-            value={formData.userId}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, userId: e.target.value }))
-            }
-            required
-            className="w-full rounded-xl border border-neutral-300 bg-white py-2.5 pr-3.5 pl-9 text-sm text-neutral-900 shadow-sm transition-all duration-150 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
-          >
-            <option value="" disabled>
-              Select a user
-            </option>
-            {users.map((user) => (
-              <option key={user.user_id} value={user.user_id}>
-                {user.username} ({user.email})
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+      <CustomDropdown
+        label="User"
+        options={userOptions}
+        value={formData.userId}
+        onChange={(val) => setFormData((prev) => ({ ...prev, userId: val }))}
+      />
 
       {/* Feature */}
-      <div className="flex flex-col gap-1.5">
-        <label
-          htmlFor="feature"
-          className="flex items-center gap-1 text-sm font-medium text-neutral-700 dark:text-neutral-300"
-        >
-          Feature
-          <FormAsterisk />
-        </label>
-        <div className="relative">
-          <div className="absolute top-1/2 left-3.5 -translate-y-1/2">
-            <KeyRound className="h-4 w-4 text-neutral-400" />
-          </div>
-          <select
-            id="feature"
-            name="feature"
-            value={formData.feature}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                feature: e.target.value as FeatureKey,
-              }))
-            }
-            required
-            className="w-full rounded-xl border border-neutral-300 bg-white py-2.5 pr-3.5 pl-9 text-sm text-neutral-900 shadow-sm transition-all duration-150 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
-          >
-            {Object.values(FEATURES).map((feature) => (
-              <option key={feature} value={feature}>
-                {featureLabel(feature)}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+      <CustomDropdown
+        label="Feature"
+        options={featureOptions}
+        value={formData.feature}
+        onChange={(val) =>
+          setFormData((prev) => ({ ...prev, feature: val as FeatureKey }))
+        }
+      />
 
       {/* Actions */}
       <div className="flex items-center justify-end gap-2.5 pt-1">
@@ -209,7 +167,10 @@ const SpecialAccessModal = ({
     onMutate: () => showOverlay("Adding"),
     onSuccess: (res) => {
       setShowAddForm(false);
-      triggerAlert("success", res.data.message ?? "Access granted successfully");
+      triggerAlert(
+        "success",
+        res.data.message ?? "Access granted successfully",
+      );
     },
     onError: (err) => triggerAlert("error", getApiErrorMessage(err)),
     onSettled: () => {
@@ -227,10 +188,15 @@ const SpecialAccessModal = ({
       }),
     onMutate: () => showOverlay("Deleting"),
     onSuccess: (res, id) => {
-      queryClient.setQueryData(["specialAccessData"], (old: SpecialAccessGrant[]) =>
-        old ? old.filter((r) => r.id !== id) : old,
+      queryClient.setQueryData(
+        ["specialAccessData"],
+        (old: SpecialAccessGrant[]) =>
+          old ? old.filter((r) => r.id !== id) : old,
       );
-      triggerAlert("success", res.data.message ?? "Access revoked successfully");
+      triggerAlert(
+        "success",
+        res.data.message ?? "Access revoked successfully",
+      );
     },
     onError: (err) => triggerAlert("error", getApiErrorMessage(err)),
     onSettled: () => {
@@ -328,7 +294,7 @@ const SpecialAccessModal = ({
                   >
                     <div className="flex min-w-0 flex-col gap-1">
                       <div className="flex items-center gap-1.5">
-                        <User className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
+                        <UserRound className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
                         <span className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
                           {grant.username}
                         </span>
