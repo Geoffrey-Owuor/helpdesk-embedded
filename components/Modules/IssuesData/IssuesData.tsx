@@ -13,7 +13,6 @@ import CardViewData from "./CardViewData";
 import ExportData from "./ExportData";
 import { useQuery } from "@tanstack/react-query";
 import { fetchIssues } from "@/queries/fetchIssues";
-import ActiveIssuesFilterPills from "./ActiveIssuesFilterPills";
 import { RotateCw } from "lucide-react";
 
 const IssuesData = () => {
@@ -111,7 +110,6 @@ const IssuesData = () => {
 
       {/* The consolidated filter panel */}
       <IssuesFilterPanel />
-      <ActiveIssuesFilterPills />
 
       {loading ? (
         <IssuesDataSkeleton isTableView={isTableView} />

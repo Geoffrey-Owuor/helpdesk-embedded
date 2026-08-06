@@ -12,6 +12,7 @@ import { DatePicker } from "../DatePicker";
 import CustomDropdown from "../CustomDropdown";
 import { fetchGlobalAgents } from "@/queries/analytics/fetchGlobalAgents";
 import { fetchGlobalIssueTypes } from "@/queries/analytics/fetchGlobalIssueTypes";
+import ActiveAnalyticsFilterPills from "./ActiveAnalyticsFilterPills";
 
 type FilterFieldKey =
   | "department"
@@ -373,6 +374,7 @@ const FilterPanel = () => {
           </button>
         </div>
       </div>
+      <ActiveAnalyticsFilterPills />
     </div>
   );
 };

@@ -4,8 +4,13 @@ import { Search, X, RotateCcw, ChevronDown } from "lucide-react";
 import { useIssuesFilterStore } from "@/store/useIssuesFilterStore";
 import { useUser } from "@/contexts/UserContext";
 import { useSearchStore } from "@/store/useSearchStore";
-import { baseDepartments, statusOptions, priorityOptions } from "@/public/assets";
+import {
+  baseDepartments,
+  statusOptions,
+  priorityOptions,
+} from "@/public/assets";
 import { DatePicker } from "../DatePicker";
+import ActiveIssuesFilterPills from "./ActiveIssuesFilterPills";
 import CustomDropdown from "../CustomDropdown";
 
 type FilterFieldKey =
@@ -327,6 +332,8 @@ const IssuesFilterPanel = () => {
           </button>
         </div>
       </div>
+      {/* Filter pills */}
+      <ActiveIssuesFilterPills />
     </div>
   );
 };
