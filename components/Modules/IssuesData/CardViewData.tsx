@@ -14,6 +14,8 @@ import {
   UserRound,
   Paperclip,
   UsersRound,
+  UndoDot,
+  GitMerge,
 } from "lucide-react";
 import IssuePriorityFormatter from "./IssuePriorityFormatter";
 import RelativeTimeBadge from "./RelativeTimeBadge";
@@ -145,17 +147,31 @@ const CardViewData = ({ currentIssues }: CardViewDataProps) => {
                   agentName={issueData.issue_agent_name}
                 />
                 <div className="flex items-center gap-1.5">
-                  {Number(issueData.collaborators_count) > 0 && (
+                  {Number(issueData.attachments_count) > 0 && (
+                    <Paperclip
+                      size={14}
+                      className="text-neutral-400 transition-colors group-hover:text-neutral-600 dark:text-neutral-500 dark:group-hover:text-neutral-300"
+                    />
+                  )}
+                  {Number(issueData.reopened_count) > 0 && (
+                    <UndoDot
+                      size={14}
+                      aria-label="Reopened issue"
+                      className="text-fuchsia-500 transition-colors group-hover:text-fuchsia-600 dark:text-fuchsia-400 dark:group-hover:text-fuchsia-300"
+                    />
+                  )}
+                  {Number(issueData.escalated_count) > 0 && (
+                    <GitMerge
+                      size={14}
+                      aria-label="Escalated issue"
+                      className="text-red-500 transition-colors group-hover:text-red-600 dark:text-red-400 dark:group-hover:text-red-300"
+                    />
+                  )}
+                  {Number(issueData.collaborators_count) > 0 ? (
                     <UsersRound
                       size={14}
                       aria-label="Collaborated issue"
                       className="text-blue-500 transition-colors group-hover:text-blue-600 dark:text-blue-400 dark:group-hover:text-blue-300"
-                    />
-                  )}
-                  {Number(issueData.attachments_count) > 0 ? (
-                    <Paperclip
-                      size={14}
-                      className="text-neutral-400 transition-colors group-hover:text-neutral-600 dark:text-neutral-500 dark:group-hover:text-neutral-300"
                     />
                   ) : (
                     <ArrowRight

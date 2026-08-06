@@ -24,7 +24,7 @@ const AnalyticsIssuesTable = ({
   const goToIssue = (issue: AnalyticsIssueRow) => {
     setLoadingLine(true);
     router.push(
-      `/dashboard/${issue.issue_uuid}?title=${encodeURIComponent(issue.issue_title)}&description=${encodeURIComponent(issue.issue_description)}`,
+      `/dashboard/analytics/${issue.issue_uuid}?title=${encodeURIComponent(issue.issue_title)}&description=${encodeURIComponent(issue.issue_description)}`,
     );
   };
 
@@ -75,7 +75,7 @@ const AnalyticsIssuesTable = ({
                 <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
                   <div className="inline-flex items-center gap-2">
                     <Link
-                      href={`/dashboard/${issue.issue_uuid}?title=${encodeURIComponent(issue.issue_title)}&description=${encodeURIComponent(issue.issue_description)}`}
+                      href={`/dashboard/analytics/${issue.issue_uuid}?title=${encodeURIComponent(issue.issue_title)}&description=${encodeURIComponent(issue.issue_description)}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         setLoadingLine(true);

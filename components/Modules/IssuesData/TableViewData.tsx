@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useLoadingStore } from "@/store/useLoadingStore";
 import IssuePriorityFormatter from "./IssuePriorityFormatter";
 import RelativeTimeBadge from "./RelativeTimeBadge";
-import { Paperclip, UsersRound } from "lucide-react";
+import { GitMerge, Paperclip, UndoDot, UsersRound } from "lucide-react";
 import { ResolutionTimePill } from "./ResolutionTimePill";
 
 type TableViewDataProps = {
@@ -137,6 +137,18 @@ const TableViewData = ({ currentIssues }: TableViewDataProps) => {
                       </Link>
                       {Number(issueData.attachments_count) > 0 && (
                         <Paperclip className="h-3.5 w-3.5 text-neutral-600 dark:text-neutral-400" />
+                      )}
+                      {Number(issueData.reopened_count) > 0 && (
+                        <UndoDot
+                          aria-label="Reopened issue"
+                          className="h-3.5 w-3.5 text-fuchsia-600 dark:text-fuchsia-400"
+                        />
+                      )}
+                      {Number(issueData.escalated_count) > 0 && (
+                        <GitMerge
+                          aria-label="Escalated issue"
+                          className="h-3.5 w-3.5 text-red-600 dark:text-red-400"
+                        />
                       )}
                       {Number(issueData.collaborators_count) > 0 && (
                         <UsersRound
