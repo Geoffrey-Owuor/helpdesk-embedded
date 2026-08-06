@@ -1,13 +1,14 @@
 import { query } from "@/lib/Db";
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
+import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
 import {
   buildAnalyticsIssuesFilter,
   parseAnalyticsFilterParams,
 } from "@/lib/analytics/buildAnalyticsIssuesFilter";
 
 export const GET = withAuth(async ({ user, request }) => {
-  if (user.role !== "admin") {
+  if (!hasFeatureAccess(user, FEATURES.ANALYTICS)) {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 

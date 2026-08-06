@@ -1,6 +1,7 @@
 import { query } from "@/lib/Db";
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
+import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
 import { unstable_cache } from "next/cache";
 
 const getGlobalIssueTypes = unstable_cache(
@@ -19,7 +20,7 @@ const getGlobalIssueTypes = unstable_cache(
 );
 
 export const GET = withAuth(async ({ user }) => {
-  if (user.role !== "admin") {
+  if (!hasFeatureAccess(user, FEATURES.ANALYTICS)) {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 

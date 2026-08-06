@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
 import { useUser } from "@/contexts/UserContext";
+import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import AdminPanel from "./AdminFunctions/AdminPanel";
 import { useIsEmbedd } from "@/hooks/useIsEmbedd";
@@ -33,7 +34,7 @@ const MobileSideBar = ({
   setSideBarOpen,
 }: MobileSideBarProps) => {
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
-  const { role, isSuper } = useUser();
+  const { role, isSuper, specialAccess } = useUser();
   const [showAdminOptions, setShowAdminOptions] = useState(false);
 
   const isEmbedded = useIsEmbedd();
@@ -141,7 +142,7 @@ const MobileSideBar = ({
             )}
 
             {/* Issues Analytics */}
-            {role === "admin" && (
+            {hasFeatureAccess({ role, specialAccess }, FEATURES.ANALYTICS) && (
               <Link
                 href="/dashboard/analytics"
                 onClick={() => handleMobileRouteChange("/dashboard/analytics")}

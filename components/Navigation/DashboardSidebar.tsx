@@ -30,9 +30,10 @@ import ClientPortal from "../Modules/ClientPortal";
 import { useSidebarToggleStore } from "@/store/useSidebarToggleStore";
 import NewsButton from "../Modules/News/NewsButton";
 import { useIsEmbedd } from "@/hooks/useIsEmbedd";
+import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
 
 const DashboardSidebar = () => {
-  const { username, role, isSuper } = useUser();
+  const { username, role, isSuper, specialAccess } = useUser();
   const [sideBarOpen, setSideBarOpen] = useState(false);
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
@@ -195,7 +196,7 @@ const DashboardSidebar = () => {
           )}
 
           {/* Issues Analytics */}
-          {role === "admin" && (
+          {hasFeatureAccess({ role, specialAccess }, FEATURES.ANALYTICS) && (
             <SidebarLink
               href="/dashboard/analytics"
               icon={<ChartColumnBig className="h-5 w-5" />}

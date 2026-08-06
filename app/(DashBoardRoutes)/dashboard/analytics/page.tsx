@@ -1,12 +1,14 @@
 import { Metadata } from "next";
 import { requireSession } from "@/lib/Auth";
+import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
 import UnauthorizedModal from "@/components/Navigation/UnauthorizedModal";
 import AnalyticsDashboard from "@/components/Modules/IssuesAnalytics/AnalyticsDashboard";
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const user = await requireSession();
 
-  if (user?.role !== "admin") return { title: "Unauthorized Access" };
+  if (!hasFeatureAccess(user, FEATURES.ANALYTICS))
+    return { title: "Unauthorized Access" };
 
   return {
     title: "Issues Analytics",
@@ -17,7 +19,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
 const page = async () => {
   const user = await requireSession();
 
-  if (user?.role !== "admin") return <UnauthorizedModal />;
+  if (!hasFeatureAccess(user, FEATURES.ANALYTICS)) return <UnauthorizedModal />;
   return <AnalyticsDashboard />;
 };
 

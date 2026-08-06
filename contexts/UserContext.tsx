@@ -33,6 +33,7 @@ export const UserProvider = ({ children, user }: UserProviderProps) => {
       role: user.role,
       department: user.department,
       isSuper: user.isSuper,
+      specialAccess: user.specialAccess,
     }),
     [
       user.userId,
@@ -41,6 +42,7 @@ export const UserProvider = ({ children, user }: UserProviderProps) => {
       user.role,
       user.department,
       user.isSuper,
+      user.specialAccess,
     ],
   );
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
