@@ -53,6 +53,12 @@ const MiddleBar = () => {
         e.preventDefault(); // Prevent typing the '/' character
         setIsOpen((prev) => !prev);
       }
+
+      // Ctrl + Left Arrow to navigate back
+      if (e.ctrlKey && e.key === "ArrowLeft") {
+        e.preventDefault();
+        router.back();
+      }
     };
 
     document.addEventListener("keydown", handleKeyDown);
@@ -60,7 +66,7 @@ const MiddleBar = () => {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen]);
+  }, [isOpen, router]);
 
   // --- Navigation Helper ---
   const handleNavigation = (path: string) => {

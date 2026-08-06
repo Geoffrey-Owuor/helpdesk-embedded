@@ -59,6 +59,7 @@ import InviteCollaboratorsModal from "./InviteCollaboratorsModal";
 import { fetchCollaborators } from "@/queries/fetchCollaborators";
 import AddAttachmentModal from "./AddAttachmentModal";
 import { invalidateIssuesCaches } from "@/utils/invalidateIssuesCaches";
+import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 
 const statusOptions = baseOptions.filter((option) => option.value !== "open");
 
@@ -641,9 +642,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                 {Number(issueData.collaborators_count) > 0 ? (
                   <>
                     {collaboratorsLoading ? (
-                      <span className="text-sm text-neutral-400 italic dark:text-neutral-500">
-                        Loading collaborators...
-                      </span>
+                      <SkeletonBox className="h-7.5 w-40 rounded-full!" />
                     ) : collaborators.length === 0 ? (
                       <span className="text-sm text-neutral-400 italic dark:text-neutral-500">
                         No collaborators on this issue.

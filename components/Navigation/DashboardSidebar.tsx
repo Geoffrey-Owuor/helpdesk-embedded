@@ -177,7 +177,7 @@ const DashboardSidebar = () => {
             icon={<CirclePlus className="h-5 w-5" />}
             label="New Issue"
             showToolTip={true}
-            isNewIssue={true}
+            showTooltipIcon={true}
             ToolTipMessage="Ctrl + Q"
           />
 
@@ -249,7 +249,8 @@ const DashboardSidebar = () => {
               icon={<ChevronLeft className="h-5 w-5" />}
               label="Back"
               showToolTip={true}
-              ToolTipMessage="Go Back"
+              showTooltipIcon={true}
+              ToolTipMessage="Ctrl + <"
             />
             <Link
               href="/manual"
@@ -272,7 +273,7 @@ type SidebarButtonProps = {
   onClick: () => void;
   icon: React.ReactNode;
   label: string;
-  isNewIssue?: boolean;
+  showTooltipIcon?: boolean;
   showToolTip?: boolean;
   ToolTipMessage?: string;
 };
@@ -281,7 +282,7 @@ const SidebarButton = ({
   onClick,
   icon,
   label,
-  isNewIssue = false,
+  showTooltipIcon = false,
   showToolTip = false,
   ToolTipMessage,
 }: SidebarButtonProps) => {
@@ -326,7 +327,7 @@ const SidebarButton = ({
             className="pointer-events-none fixed z-9999 ml-3 -translate-y-1/2"
           >
             <div className="relative flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-semibold whitespace-nowrap text-white shadow-lg dark:bg-white dark:text-neutral-900">
-              {isNewIssue && (
+              {showTooltipIcon && (
                 <Keyboard
                   size={14}
                   className="shrink-0 text-neutral-400 dark:text-neutral-500"

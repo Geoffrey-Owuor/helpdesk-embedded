@@ -99,12 +99,12 @@ const IssuesData = () => {
             <RotateCw className="h-4.5 w-4.5" />
           </button>
 
-          {/* Show/Hide Columns Logic */}
-          <ShowHideColumnsLogic />
-
           {/* Export and table toggle */}
           <ExportData />
           <ToggleTableView />
+
+          {/* Show/Hide Columns Logic */}
+          <ShowHideColumnsLogic />
         </div>
       </div>
 
