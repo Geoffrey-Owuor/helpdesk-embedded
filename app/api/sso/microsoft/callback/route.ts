@@ -7,6 +7,7 @@ import {
   hashRefreshToken,
 } from "@/lib/Auth";
 import { query } from "@/lib/Db";
+import { getUserPrivileges } from "@/lib/UserPrivileges";
 import { getRequestOrigin } from "@/lib/getRequestOrigin";
 import { NextRequest } from "next/server";
 import { basePath } from "@/public/assets";
@@ -91,12 +92,6 @@ export async function GET(req: NextRequest) {
       FROM users WHERE email = $1 LIMIT 1
     `;
 
-    // Super admin query
-    const superAdminQuery = `
-      SELECT super_admin_id FROM super_admins 
-      WHERE super_admin_id = $1 LIMIT 1
-    `;
-
     const user = await query(baseQuery, [profile.email]);
 
     if (user.length > 0) {
@@ -108,9 +103,9 @@ export async function GET(req: NextRequest) {
         return handleRedirect(`${basePath}/login?disabled=true`);
       }
 
-      const superAdmin = await query(superAdminQuery, [returnedUser.user_id]);
-
-      const isSuper = superAdmin.length > 0;
+      const { isSuper, specialAccess } = await getUserPrivileges(
+        returnedUser.user_id,
+      );
 
       //  Creating our payload
       const payload = {
@@ -119,7 +114,8 @@ export async function GET(req: NextRequest) {
         role: returnedUser.role,
         department: returnedUser.department,
         email: returnedUser.email,
-        isSuper: isSuper,
+        isSuper,
+        specialAccess,
       };
 
       //Generate access tokens
@@ -154,6 +150,7 @@ export async function GET(req: NextRequest) {
         department: "no_department",
         email: profile.email,
         isSuper: false,
+        specialAccess: [],
       };
 
       const pendingRegistrationToken = await signAccessToken(tempPayload);

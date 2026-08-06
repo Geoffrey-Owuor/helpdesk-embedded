@@ -10,6 +10,7 @@ export interface AuthJWTPayload extends JWTPayload {
   role: string;
   department: string;
   isSuper: boolean;
+  specialAccess: string[];
 }
 
 const ACCESS_SECRET = new TextEncoder().encode(process.env.ACCESS_TOKEN_SECRET);

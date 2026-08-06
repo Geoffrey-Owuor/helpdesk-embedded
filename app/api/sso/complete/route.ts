@@ -48,6 +48,7 @@ export async function POST(req: NextRequest) {
       department: returnedUser.department,
       email: returnedUser.email,
       isSuper: false,
+      specialAccess: [],
     };
 
     // 4. Generate Tokens & Session

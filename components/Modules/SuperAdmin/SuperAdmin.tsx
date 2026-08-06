@@ -3,13 +3,15 @@ import { useState } from "react";
 import Users from "./Users";
 import IssuesMapping from "./IssuesMapping/IssuesMapping";
 import { useQueryClient } from "@tanstack/react-query";
-import { Bug, Building2, RotateCw, UsersRound } from "lucide-react";
+import { Bug, Building2, KeyRound, RotateCw, UsersRound } from "lucide-react";
 import GroupEmailsModal from "./GroupEmails/GroupEmailsModal";
+import SpecialAccessModal from "./SpecialAccess/SpecialAccessModal";
 
 const SuperAdmin = () => {
   const querClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("users");
   const [showGroupsModal, setShowGroupsModal] = useState(false);
+  const [showSpecialAccessModal, setShowSpecialAccessModal] = useState(false);
 
   const queryKey =
     activeTab === "users" ? ["UserCountsData"] : ["IssueCountsData"];
@@ -24,6 +26,13 @@ const SuperAdmin = () => {
         <GroupEmailsModal
           isModalOpen={showGroupsModal}
           closeModal={() => setShowGroupsModal(false)}
+        />
+      )}
+      {/* Special Access Modal */}
+      {showSpecialAccessModal && (
+        <SpecialAccessModal
+          isModalOpen={showSpecialAccessModal}
+          closeModal={() => setShowSpecialAccessModal(false)}
         />
       )}
       <div className="py-6 md:py-3.5">
@@ -53,6 +62,15 @@ const SuperAdmin = () => {
             >
               <Building2 strokeWidth={1.5} className="h-4 w-4" />
               <span>Departments</span>
+            </button>
+
+            {/* Special Access Button */}
+            <button
+              onClick={() => setShowSpecialAccessModal(true)}
+              className="inline-flex items-center gap-2 rounded-xl bg-neutral-100 px-3 py-2 text-sm text-neutral-800 hover:bg-neutral-200/60 dark:bg-neutral-800/60 dark:text-neutral-300 dark:hover:bg-neutral-800/80"
+            >
+              <KeyRound strokeWidth={1.5} className="h-4 w-4" />
+              <span>Special Access</span>
             </button>
             <div className="inline-flex items-center gap-1 rounded-2xl border border-neutral-200 bg-neutral-50 p-1 shadow-inner dark:border-neutral-800 dark:bg-neutral-950">
               <button

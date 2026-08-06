@@ -6,6 +6,7 @@ import {
   hashRefreshToken,
 } from "@/lib/Auth";
 import { createSession } from "@/lib/Auth";
+import { getUserPrivileges } from "@/lib/UserPrivileges";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -67,16 +68,8 @@ export async function POST() {
       return NextResponse.json({ message: "Token not found" }, { status: 401 });
     }
 
-    // Check if the user is a super admin
-    const superAdmins = await query(
-      `
-      SELECT super_admin_id FROM super_admins 
-      WHERE super_admin_id = $1 LIMIT 1
-      `,
-      [userId],
-    );
-
-    const isSuper = superAdmins.length > 0;
+    // Check for elevated/special privileges (super admin, feature grants)
+    const { isSuper, specialAccess } = await getUserPrivileges(userId);
 
     // Generate new tokens
     const newPayload = {
@@ -86,6 +79,7 @@ export async function POST() {
       role,
       department,
       isSuper,
+      specialAccess,
     };
 
     const newAccessToken = await signAccessToken(newPayload);
