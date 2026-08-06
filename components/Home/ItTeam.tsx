@@ -88,7 +88,7 @@ const TEAM_MEMBERS = [
       "This team member performs designated high-level business process workflows within the ERP system to support essential daily operations, collaborating closely with the senior ERP team to ensure system efficiency.",
 
     email: "staff@example.com",
-    extension: "TBD",
+    extension: "0000",
   },
 ];
 
