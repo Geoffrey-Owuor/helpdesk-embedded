@@ -52,7 +52,7 @@ const ShowHideColumnsLogic = () => {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="default-scrollbar absolute top-full right-0 z-20 mt-2 max-h-80 w-56 overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-950 dark:shadow-none">
+        <div className="default-scrollbar absolute top-full right-0 z-60 mt-2 max-h-80 w-56 overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-950 dark:shadow-none">
           <div className="flex items-center justify-between p-2 text-xs font-semibold text-neutral-500 uppercase">
             <span>Visible Columns</span>
             <button

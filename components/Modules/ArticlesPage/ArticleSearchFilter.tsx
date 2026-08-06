@@ -224,7 +224,7 @@ const ArticleSearchFilter = ({
           {committedFilters.map((pill) => (
             <div
               key={pill.id}
-              className="flex items-center gap-1.5 rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-900 dark:bg-blue-900/30 dark:text-blue-100"
+              className="flex items-center gap-1.5 rounded-full bg-blue-100 px-3 py-1 text-xs text-blue-900 dark:bg-blue-900/30 dark:text-blue-100"
             >
               <span className="font-semibold capitalize">
                 {pill.category.replace("_", " ")}:

@@ -85,7 +85,7 @@ const ActiveIssuesFilterPills = () => {
 
       {hasDateFilter && (
         <div className={pillClasses}>
-          <span>
+          <span className="font-semibold">
             Date: <span className="font-normal">{getDateRangeText()}</span>
           </span>
           <button
@@ -103,7 +103,7 @@ const ActiveIssuesFilterPills = () => {
 
       {standardKeys.map((key) => (
         <div key={key} className={pillClasses}>
-          <span>
+          <span className="font-semibold">
             {filterLabels[key]}:{" "}
             <span className="font-normal">{getDisplayValue(key)}</span>
           </span>

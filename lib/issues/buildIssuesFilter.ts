@@ -36,8 +36,15 @@ export const buildIssuesVisibilityClause = (
   tableAlias = "a",
   startParamIndex = 1,
 ): { clause: string | null; params: (string | number)[] } => {
-  const { role, userId, email, department, isSuper, agentAdminFilter, superAdminFilter } =
-    visibility;
+  const {
+    role,
+    userId,
+    email,
+    department,
+    isSuper,
+    agentAdminFilter,
+    superAdminFilter,
+  } = visibility;
   const col = (name: string) => `${tableAlias}.${name}`;
   const params: (string | number)[] = [];
 
@@ -130,7 +137,9 @@ export const buildIssuesSearchFilterClause = (
   if (filters.agent) {
     const idx = nextIndex();
     params.push(`%${filters.agent}%`);
-    clauses.push(`${col("issue_agent_name")} ILIKE $${idx}`);
+    clauses.push(
+      `(${col("issue_agent_name")} ILIKE $${idx} OR EXISTS (SELECT 1 FROM issue_collaborators ac WHERE ac.issue_id = ${col("issue_uuid")} AND ac.collaborator_name ILIKE $${idx}))`,
+    );
   }
 
   if (filters.issueType) {
