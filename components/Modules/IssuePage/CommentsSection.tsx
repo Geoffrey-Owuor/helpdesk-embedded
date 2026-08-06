@@ -49,7 +49,13 @@ function formatCommentDateTime(inputString: string | number): string {
   return `${day}/${month}/${year}, ${formattedHours}.${minutes}${ampm}`;
 }
 
-const CommentsSection = ({ uuid }: { uuid: string }) => {
+const CommentsSection = ({
+  uuid,
+  canComment = true,
+}: {
+  uuid: string;
+  canComment?: boolean;
+}) => {
   const [comment, setComment] = useState("");
   const [showCommentsInput, setShowCommentsInput] = useState(false);
   const { username, email } = useUser();
@@ -129,18 +135,20 @@ const CommentsSection = ({ uuid }: { uuid: string }) => {
           >
             <RotateCcw className="h-4.5 w-4.5" />
           </button>
-          <button
-            onClick={() => setShowCommentsInput((prev) => !prev)}
-            className="flex items-center gap-2 rounded-xl bg-black px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-neutral-900 dark:bg-white dark:text-black dark:hover:bg-gray-200"
-          >
-            <MessageCirclePlus className="h-4 w-4" />
-            <span className="hidden sm:inline-flex">Add comment</span>
-          </button>
+          {canComment && (
+            <button
+              onClick={() => setShowCommentsInput((prev) => !prev)}
+              className="flex items-center gap-2 rounded-xl bg-black px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-neutral-900 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+            >
+              <MessageCirclePlus className="h-4 w-4" />
+              <span className="hidden sm:inline-flex">Add comment</span>
+            </button>
+          )}
         </div>
       </div>
 
       {/* The comments textarea */}
-      {showCommentsInput && (
+      {canComment && showCommentsInput && (
         <div className="relative mb-8 w-full">
           <textarea
             rows={4}
