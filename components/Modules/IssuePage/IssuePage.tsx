@@ -146,14 +146,16 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
       apiClient.put("/update-priority", { uuid, priority }),
 
     onSuccess: (response, newPriority) => {
-      queryClient.setQueryData(["issue", uuid], (old: IssueDetail | undefined) =>
-        old
-          ? {
-              ...old,
-              issue_priority: newPriority,
-              issue_updated_at: new Date().toISOString(),
-            }
-          : old,
+      queryClient.setQueryData(
+        ["issue", uuid],
+        (old: IssueDetail | undefined) =>
+          old
+            ? {
+                ...old,
+                issue_priority: newPriority,
+                issue_updated_at: new Date().toISOString(),
+              }
+            : old,
       );
 
       triggerAlert("success", response.data.message);
@@ -685,8 +687,10 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                 </div>
                 Description
               </h2>
-              {(userId === issueData.issue_submitter_id || isSuper) &&
-                issueData.issue_status === "open" && (
+              {(userId === issueData.issue_submitter_id ||
+                (role === "admin" &&
+                  department === issueData.issue_target_department)) &&
+                issueData.issue_status !== "closed" && (
                   <button
                     type="button"
                     onClick={() => setIsEditModalOpen(true)}

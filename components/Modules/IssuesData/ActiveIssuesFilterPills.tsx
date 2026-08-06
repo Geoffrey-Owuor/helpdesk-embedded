@@ -1,7 +1,12 @@
 "use client";
 import { X } from "lucide-react";
 import { useIssuesFilterStore } from "@/store/useIssuesFilterStore";
-import { baseDepartments, statusOptions, priorityOptions, dateFormatter } from "@/public/assets";
+import {
+  baseDepartments,
+  statusOptions,
+  priorityOptions,
+  dateFormatter,
+} from "@/public/assets";
 import { IssuesFilterParams } from "@/lib/issues/buildIssuesFilter";
 
 const filterLabels: Record<string, string> = {
@@ -15,7 +20,9 @@ const filterLabels: Record<string, string> = {
 };
 
 const ActiveIssuesFilterPills = () => {
-  const committedFilters = useIssuesFilterStore((state) => state.committedFilters);
+  const committedFilters = useIssuesFilterStore(
+    (state) => state.committedFilters,
+  );
   const removeFilter = useIssuesFilterStore((state) => state.removeFilter);
 
   if (!committedFilters) return null;
@@ -26,7 +33,8 @@ const ActiveIssuesFilterPills = () => {
 
   if (activeKeys.length === 0) return null;
 
-  const hasDateFilter = !!committedFilters.fromDate || !!committedFilters.toDate;
+  const hasDateFilter =
+    !!committedFilters.fromDate || !!committedFilters.toDate;
 
   const standardKeys = activeKeys.filter(
     (key) => key !== "fromDate" && key !== "toDate",
@@ -70,7 +78,7 @@ const ActiveIssuesFilterPills = () => {
     "flex items-center gap-1.5 rounded-full bg-blue-100 px-3 py-1.5 text-xs font-medium text-blue-900 transition-colors dark:bg-blue-900/30 dark:text-blue-100";
 
   return (
-    <div className="mb-4 flex flex-wrap items-center gap-2">
+    <div className="mt-3 flex flex-wrap items-center gap-2">
       <span className="mr-1 text-sm text-neutral-500 dark:text-neutral-400">
         Active Filters:
       </span>

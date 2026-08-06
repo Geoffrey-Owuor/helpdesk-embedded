@@ -105,36 +105,44 @@ export const buildIssuesSearchFilterClause = (
   const col = (name: string) => `${tableAlias}.${name}`;
   const clauses: string[] = [];
   const params: (string | number)[] = [];
+  // Must be called BEFORE pushing the value it's indexing, since it derives
+  // the placeholder number from the current (pre-push) params.length.
   const nextIndex = () => startParamIndex + params.length;
 
   if (filters.status) {
+    const idx = nextIndex();
     params.push(filters.status);
-    clauses.push(`${col("issue_status")} = $${nextIndex()}`);
+    clauses.push(`${col("issue_status")} = $${idx}`);
   }
 
   if (filters.issuePriority) {
+    const idx = nextIndex();
     params.push(filters.issuePriority);
-    clauses.push(`${col("issue_priority")} = $${nextIndex()}`);
+    clauses.push(`${col("issue_priority")} = $${idx}`);
   }
 
   if (filters.reference) {
+    const idx = nextIndex();
     params.push(`%${filters.reference}%`);
-    clauses.push(`${col("issue_reference_id")} ILIKE $${nextIndex()}`);
+    clauses.push(`${col("issue_reference_id")} ILIKE $${idx}`);
   }
 
   if (filters.agent) {
+    const idx = nextIndex();
     params.push(`%${filters.agent}%`);
-    clauses.push(`${col("issue_agent_name")} ILIKE $${nextIndex()}`);
+    clauses.push(`${col("issue_agent_name")} ILIKE $${idx}`);
   }
 
   if (filters.issueType) {
+    const idx = nextIndex();
     params.push(`%${filters.issueType}%`);
-    clauses.push(`${col("issue_type")} ILIKE $${nextIndex()}`);
+    clauses.push(`${col("issue_type")} ILIKE $${idx}`);
   }
 
   if (filters.submitter) {
+    const idx = nextIndex();
     params.push(`%${filters.submitter}%`);
-    clauses.push(`${col("issue_submitter_name")} ILIKE $${nextIndex()}`);
+    clauses.push(`${col("issue_submitter_name")} ILIKE $${idx}`);
   }
 
   if (filters.department) {
@@ -149,18 +157,21 @@ export const buildIssuesSearchFilterClause = (
           : "issue_submitter_department"
         : "issue_target_department";
 
+    const idx = nextIndex();
     params.push(filters.department);
-    clauses.push(`${col(departmentColumn)} = $${nextIndex()}`);
+    clauses.push(`${col(departmentColumn)} = $${idx}`);
   }
 
   if (filters.fromDate) {
+    const idx = nextIndex();
     params.push(filters.fromDate);
-    clauses.push(`${col("issue_created_at")}::date >= $${nextIndex()}`);
+    clauses.push(`${col("issue_created_at")}::date >= $${idx}`);
   }
 
   if (filters.toDate) {
+    const idx = nextIndex();
     params.push(filters.toDate);
-    clauses.push(`${col("issue_created_at")}::date <= $${nextIndex()}`);
+    clauses.push(`${col("issue_created_at")}::date <= $${idx}`);
   }
 
   return { clauses, params };

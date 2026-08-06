@@ -6,7 +6,6 @@ import { fetchAnalyticsIssues } from "@/queries/analytics/fetchAnalyticsIssues";
 import { fetchAnalyticsSummary } from "@/queries/analytics/fetchAnalyticsSummary";
 import IssuesDataSkeleton from "@/components/Skeletons/IssuesDataSkeleton";
 import FilterPanel from "./FilterPanel";
-import ActiveAnalyticsFilterPills from "./ActiveAnalyticsFilterPills";
 import SummaryCardsSection from "./SummaryCardsSection";
 import AnalyticsIssuesTable from "./AnalyticsIssuesTable";
 import AnalyticsPagination from "./AnalyticsPagination";
@@ -61,7 +60,6 @@ const AnalyticsDashboard = () => {
 
       <FilterPanel />
 
-      <ActiveAnalyticsFilterPills />
       <SummaryCardsSection summary={summary} isLoading={summaryLoading} />
 
       {issuesLoading ? (
