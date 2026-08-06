@@ -20,6 +20,7 @@ import { RefetchFunction } from "./AgentsInfo";
 
 type EditIssueTypeInfoProps = {
   issueType: string;
+  longName: string;
   issuePriority: string;
   agentNames: { agentName: string; agentEmail: string }[];
   agentEmail: string;
@@ -29,6 +30,7 @@ type EditIssueTypeInfoProps = {
 
 const EditIssueTypeInfo = ({
   issueType,
+  longName,
   issuePriority,
   agentNames,
   agentEmail,
@@ -36,6 +38,7 @@ const EditIssueTypeInfo = ({
   setActiveEditId,
 }: EditIssueTypeInfoProps) => {
   const [selectedType, setSelectedType] = useState(issueType || "");
+  const [selectedLongName, setSelectedLongName] = useState(longName || "");
   const [selectedPriority, setSelectedPriority] = useState(issuePriority || "");
   const [selectedEmail, setSelectedEmail] = useState(agentEmail || "");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -87,6 +90,7 @@ const EditIssueTypeInfo = ({
     if (
       (agentEmail === selectedEmail &&
         issueType === selectedType &&
+        longName === selectedLongName &&
         issuePriority === selectedPriority) ||
       !selectedEmail ||
       !selectedType ||
@@ -103,6 +107,7 @@ const EditIssueTypeInfo = ({
         selectedEmail,
         selectedType,
         issueType,
+        longName: selectedLongName,
         selectedPriority,
       });
 
@@ -158,6 +163,22 @@ const EditIssueTypeInfo = ({
             onBlur={(e) => setSelectedType(e.target.value.trim())}
             className="w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:focus:border-blue-500"
             placeholder="e.g. Technical Support"
+          />
+        </div>
+
+        {/* 1b. Display Name Input */}
+        <div className="space-y-1.5">
+          <label className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
+            <Bug size={12} />
+            <span>Display Name</span>
+          </label>
+          <input
+            type="text"
+            value={selectedLongName}
+            onChange={(e) => setSelectedLongName(e.target.value)}
+            onBlur={(e) => setSelectedLongName(e.target.value.trim())}
+            className="w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:focus:border-blue-500"
+            placeholder="Friendly name shown to users (defaults to Issue Type)"
           />
         </div>
 
@@ -283,6 +304,7 @@ const EditIssueTypeInfo = ({
             disabled={
               (agentEmail === selectedEmail &&
                 issueType === selectedType &&
+                longName === selectedLongName &&
                 issuePriority === selectedPriority) ||
               !selectedEmail ||
               !selectedType ||

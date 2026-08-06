@@ -6,6 +6,9 @@ import { unstable_cache } from "next/cache";
 export interface IssueOption {
   option: string;
   value: string;
+  // Optional so plain { option, value } shapes (e.g. department dropdown
+  // options) still satisfy this type without needing to fake a longName.
+  longName?: string;
 }
 
 export interface IssueAgentMapping {
@@ -16,7 +19,7 @@ export interface IssueAgentMapping {
 
 const getIssueTypes = async (department: string) => {
   // Draft the query
-  const baseQuery = `SELECT m.issue_type
+  const baseQuery = `SELECT m.issue_type, m.long_name
      FROM issues_mapping AS m
      INNER JOIN users AS u
      ON m.admin_id = u.user_id
@@ -61,6 +64,7 @@ export const fetchedIssueTypes = unstable_cache(
     return data.map((item) => ({
       option: item.issue_type,
       value: item.issue_type,
+      longName: item.long_name || item.issue_type,
     }));
   },
   ["issue_types_by_dept"],

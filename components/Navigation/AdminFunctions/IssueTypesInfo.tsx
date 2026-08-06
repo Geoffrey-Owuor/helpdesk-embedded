@@ -165,9 +165,16 @@ const IssueTypesInfo = ({
                       <div className="rounded-lg bg-neutral-100 p-2 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
                         <Bug className="transition-colors group-hover:text-red-500" />
                       </div>
-                      <h5 className="max-w-22.5 truncate text-sm font-semibold text-neutral-900 sm:max-w-none dark:text-neutral-100">
-                        {item.issue_type}
-                      </h5>
+                      <div className="flex flex-col">
+                        <h5 className="max-w-22.5 truncate text-sm font-semibold text-neutral-900 sm:max-w-none dark:text-neutral-100">
+                          {item.long_name}
+                        </h5>
+                        {item.long_name !== item.issue_type && (
+                          <span className="text-[10px] text-neutral-500">
+                            {item.issue_type}
+                          </span>
+                        )}
+                      </div>
                       {/* Priority Icon */}
                       <IssuePriorityFormatter
                         priority={item.issue_priority}
@@ -218,6 +225,7 @@ const IssueTypesInfo = ({
                   <EditIssueTypeInfo
                     agentEmail={item.agent_email}
                     issueType={item.issue_type}
+                    longName={item.long_name}
                     issuePriority={item.issue_priority}
                     refetchAgentsInfo={refetchAgentsInfo}
                     agentNames={agentNames}
