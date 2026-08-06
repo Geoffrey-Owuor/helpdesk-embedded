@@ -38,6 +38,21 @@ const OptionsDropDown = ({
   // Search input state
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Short-code -> long-name map, sourced from the DB via IssueOption.longName.
+  // Department options don't carry a longName (they're already human-readable).
+  const issueTypeMap = useMemo(() => {
+    if (dropDownType === "department") return undefined;
+
+    return Object.fromEntries(
+      (options as IssueOption[]).map(
+        (option): [string, string] => [
+          option.value,
+          option.longName ?? option.value,
+        ],
+      ),
+    );
+  }, [options, dropDownType]);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -70,11 +85,11 @@ const OptionsDropDown = ({
       const targetLabel =
         dropDownType === "department"
           ? option.option
-          : generateValueType(option.option);
+          : generateValueType(option.option, issueTypeMap);
 
       return targetLabel.toLowerCase().includes(query);
     });
-  }, [options, searchQuery, dropDownType]);
+  }, [options, searchQuery, dropDownType, issueTypeMap]);
 
   const handleSelect = (selectedValue: string) => {
     onChange(selectedValue);
@@ -109,7 +124,7 @@ const OptionsDropDown = ({
             className={`${!value ? "text-neutral-500" : "line-clamp-1 text-neutral-900 dark:text-neutral-100"}`}
           >
             {value
-              ? generateValueType(value)
+              ? generateValueType(value, issueTypeMap)
               : dropDownType === "department"
                 ? "Select a department..."
                 : "Select an issue type..."}
@@ -168,12 +183,12 @@ const OptionsDropDown = ({
                   className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
                 >
                   <span
-                    title={generateValueType(option.option)}
+                    title={generateValueType(option.option, issueTypeMap)}
                     className="line-clamp-1 text-left"
                   >
                     {dropDownType === "department"
                       ? option.option
-                      : generateValueType(option.option)}
+                      : generateValueType(option.option, issueTypeMap)}
                   </span>
                   {value === option.value && (
                     <Check className="h-4 w-4 text-blue-600 dark:text-blue-400" />

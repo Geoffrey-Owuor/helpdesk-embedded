@@ -4,7 +4,7 @@ import { query } from "@/lib/Db";
 import { revalidateTag } from "next/cache";
 
 export const POST = withAuth(async ({ user, request }) => {
-  const { role, userId } = user;
+  const { role } = user;
 
   // Check if user is not an admin
   if (role !== "admin") {
@@ -15,7 +15,8 @@ export const POST = withAuth(async ({ user, request }) => {
   }
 
   try {
-    const { issueType, agentEmail, issuePriority } = await request.json();
+    const { issueType, agentEmail, issuePriority, longName } =
+      await request.json();
 
     // Bad request
     if (!issueType || !agentEmail || !issuePriority) {
@@ -42,7 +43,7 @@ export const POST = withAuth(async ({ user, request }) => {
 
     // Check if the selected agent exits
     const existingAgent = await query(
-      `SELECT user_id FROM users WHERE email = $1`,
+      `SELECT user_id FROM users WHERE email = $1 AND is_user_active = TRUE LIMIT 1`,
       [agentEmail],
     );
     if (existingAgent.length === 0) {
@@ -52,15 +53,23 @@ export const POST = withAuth(async ({ user, request }) => {
       );
     }
 
+    const agentId = existingAgent[0].user_id;
+
     // Everything is ok - perform the insert query
     const insertQuery = `
-        INSERT INTO issues_mapping(issue_type, issue_priority, admin_id, agent_id)
+        INSERT INTO issues_mapping(issue_type, issue_priority, admin_id, agent_id, long_name)
         VALUES
-        ($1, $2, $3, (SELECT user_id FROM users WHERE email = $4 LIMIT 1))
+        ($1, $2, $3, $4, $5)
         `;
 
     // Execute the query
-    await query(insertQuery, [issueType, issuePriority, userId, agentEmail]);
+    await query(insertQuery, [
+      issueType,
+      issuePriority,
+      agentId,
+      agentId,
+      longName || issueType,
+    ]);
 
     // Revalidate the cache tags
     revalidateTag("GetIssueAgents", { expire: 0 });

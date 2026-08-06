@@ -41,6 +41,20 @@ const IssueTypeModal = ({
     enabled: !!targetDepartment,
   });
 
+  // Short-code -> long-name map, sourced from the DB via fetchedIssueTypes
+  const issueTypeMap: Record<string, string> = useMemo(
+    () =>
+      Object.fromEntries(
+        options.map(
+          (option): [string, string] => [
+            option.value,
+            option.longName ?? option.value,
+          ],
+        ),
+      ),
+    [options],
+  );
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -64,11 +78,11 @@ const IssueTypeModal = ({
 
     return options.filter((option) => {
       // Determine label to check against based on dropdown type
-      const targetLabel = generateValueType(option.option);
+      const targetLabel = generateValueType(option.option, issueTypeMap);
 
       return targetLabel.toLowerCase().includes(query);
     });
-  }, [options, searchQuery]);
+  }, [options, searchQuery, issueTypeMap]);
 
   const { mutate: updateIssueType, isPending: isUpdating } = useMutation({
     mutationFn: (value: string) =>
@@ -185,10 +199,10 @@ const IssueTypeModal = ({
                   className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-neutral-800"
                 >
                   <span
-                    title={generateValueType(option.option)}
+                    title={generateValueType(option.option, issueTypeMap)}
                     className="line-clamp-1 text-left"
                   >
-                    {generateValueType(option.option)}
+                    {generateValueType(option.option, issueTypeMap)}
                   </span>
                   {currentType === option.value && (
                     <Check className="h-4 w-4 text-blue-600 dark:text-blue-400" />
