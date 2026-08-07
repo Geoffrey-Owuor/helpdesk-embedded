@@ -141,7 +141,7 @@ export const AnalyticsIssuePage = ({ uuid }: { uuid: string }) => {
             <ArrowLeft className="h-3 w-3" />
             Back to analytics
           </Link>
-          {role === "admin" && (
+          {role !== "user" && (
             <Link
               href={`/dashboard/${issueData.issue_uuid}?title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`}
               className="inline-flex items-center gap-2 rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-semibold text-neutral-600 hover:bg-neutral-200 hover:text-neutral-700 dark:bg-neutral-800/70 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-300"
