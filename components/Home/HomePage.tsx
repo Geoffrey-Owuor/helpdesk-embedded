@@ -4,7 +4,10 @@ import Hero from "@/components/Home/Hero";
 import { useEffect, useState } from "react";
 import QuickCreateButton from "./QuickCreateButton";
 import HomePageAlert from "../Modules/HomePageAlert";
+import HowItWorks from "./HowItWorks";
+import Features from "./Features";
 import HomeNews from "./HomeNews";
+import ExploreCta from "./ExploreCta";
 import Footer from "@/components/Home/Footer";
 
 const HomePage = () => {
@@ -29,13 +32,24 @@ const HomePage = () => {
   };
 
   return (
-    <div className="layout-scrollbar home-container h-screen overflow-y-auto bg-white dark:bg-neutral-950">
+    <div className="layout-scrollbar home-container h-screen overflow-y-auto scroll-smooth bg-white dark:bg-neutral-950">
       <div className="mx-auto max-w-6xl 2xl:max-w-7xl">
         <HomeNavBar />
+
+        {/* Headline, CTAs and the dashboard preview */}
         <Hero />
+
+        {/* The three-step submission journey */}
+        <HowItWorks />
+
+        {/* Capability highlights */}
+        <Features />
 
         {/* The homepage news component here */}
         <HomeNews />
+
+        {/* Closing call to action */}
+        <ExploreCta />
 
         {/* The quick create button */}
         <QuickCreateButton />

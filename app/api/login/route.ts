@@ -6,6 +6,7 @@ import {
   hashRefreshToken,
 } from "@/lib/Auth";
 import { createSession } from "@/lib/Auth";
+import { getUserPrivileges } from "@/lib/UserPrivileges";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -70,16 +71,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 4. Check if the user is a super admin
-    const superAdmins = await query(
-      `
-      SELECT super_admin_id FROM super_admins 
-      WHERE super_admin_id = $1 LIMIT 1
-      `,
-      [user.user_id],
-    );
-
-    const isSuperAdmin = superAdmins.length > 0;
+    // 4. Check for elevated/special privileges (super admin, feature grants)
+    const { isSuper, specialAccess } = await getUserPrivileges(user.user_id);
 
     // Define the payload
     const payload = {
@@ -88,7 +81,8 @@ export async function POST(request: NextRequest) {
       role: user.role,
       department: user.department,
       email: user.email,
-      isSuper: isSuperAdmin,
+      isSuper,
+      specialAccess,
     };
 
     // Generate access tokens

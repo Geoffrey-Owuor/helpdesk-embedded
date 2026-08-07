@@ -3,15 +3,28 @@
 import { MessageCirclePlus, Keyboard } from "lucide-react";
 import { useState, useEffect } from "react";
 import QuickCreateModal from "./QuickCreateModal";
+import { useQuickCreateStore } from "@/store/useQuickCreateStore";
 
 const QuickCreateButton = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [fullUrl, setFullUrl] = useState("");
+
+  // Modal state lives in the store so the hero/CTA buttons can open it too
+  const isModalOpen = useQuickCreateStore((state) => state.isOpen);
+  const closeQuickCreate = useQuickCreateStore(
+    (state) => state.closeQuickCreate,
+  );
+  const toggleQuickCreate = useQuickCreateStore(
+    (state) => state.toggleQuickCreate,
+  );
 
   // --- Keyboard Shortcut Listener ---
   useEffect(() => {
+    //Return if in an external domain
+    if (window.location.href === process.env.NEXT_PUBLIC_BASE_URL) return;
+
     // Set full url
     Promise.resolve().then(() => setFullUrl(window.location.href));
+
     const handleKeyDown = (e: KeyboardEvent) => {
       // Don't trigger if the user is typing in an input or textarea
       const target = e.target as HTMLElement;
@@ -24,13 +37,13 @@ const QuickCreateButton = () => {
       // Listen for Ctrl + Q
       if (e.ctrlKey && e.key.toLowerCase() === "q") {
         e.preventDefault(); // Prevent any default browser behavior
-        setIsModalOpen((prev) => !prev);
+        toggleQuickCreate();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [toggleQuickCreate]);
 
   const showButton = fullUrl !== process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -38,12 +51,15 @@ const QuickCreateButton = () => {
     <>
       {/* Quick Create Modal */}
       {isModalOpen && (
-        <QuickCreateModal isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
+        <QuickCreateModal
+          isOpen={isModalOpen}
+          setIsOpen={() => closeQuickCreate()}
+        />
       )}
 
       {fullUrl && showButton && (
         <button
-          onClick={() => setIsModalOpen((prev) => !prev)}
+          onClick={toggleQuickCreate}
           aria-label="Quick create issue"
           // Positioned fixed at the bottom right.
           // active:scale-90 creates the zoom-in-out click animation.
@@ -60,7 +76,7 @@ const QuickCreateButton = () => {
             <div className="absolute right-6 -bottom-1 h-2.5 w-2.5 rotate-45 rounded-sm bg-neutral-900 dark:bg-white" />
           </div>
 
-          {/* Text Container 
+          {/* Text Container
         - Placed *before* the icon so it expands towards the left.
         - max-w-0 and opacity-0 hide it initially.
         - On group-hover, max-w increases and it fades in.

@@ -101,7 +101,9 @@ export const PUT = withAuth(async ({ request, user }) => {
       UPDATE issues_table
       SET issue_status = $1,
       issue_created_at = CURRENT_TIMESTAMP,
-      issue_updated_at = CURRENT_TIMESTAMP
+      issue_updated_at = CURRENT_TIMESTAMP,
+      issue_date_closed = NULL,
+      issue_date_resolved = NULL
       WHERE issue_uuid = $2
       `,
       ["open", uuid],

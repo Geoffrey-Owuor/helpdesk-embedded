@@ -6,7 +6,7 @@ HelpDesk is a centralized issue-tracking and internal knowledge-base application
 
 - **Issue lifecycle** — submit, assign/reassign, escalate, resolve, close, and reopen issues, each with an audit trail (`issue_escalation`, `issue_reopening` tables) and threaded comments
 - **Department & issue-type routing** — issues are mapped to the correct department and agent via an issue-type → agent/admin mapping, configurable from the Super Admin panel (`IssuesMapping`)
-- **Role-based access** — three roles (`user`, `agent`, `admin`) plus a separate super-admin flag (`isSuper`) for full system administration; a dedicated IT Team page and an Automations page are gated to non-`user` roles
+- **Role-based access** — three roles (`user`, `agent`, `admin`) plus a separate super-admin flag (`isSuper`) for full system administration; a dedicated IT Team page is gated to non-`user` roles
 - **Knowledge base / Articles** — markdown-based articles with a code/markdown editor, table of contents, search/filter, and preview
 - **Notifications & changelog** — in-app notification feed and a changelog/news page
 - **Bug reporting** — in-app bug report form that emails the dev/admin team
@@ -66,8 +66,8 @@ Open http://localhost:3000 in your browser.
 
 - `app/` — Next.js App Router pages and route handlers
   - `app/(auth)/` — login, register, forgot/reset password, SSO completion
-  - `app/(DashBoardRoutes)/dashboard/` — the authenticated dashboard: issues, articles, automations, superadmin panel
-  - `app/api/` — REST-style route handlers for issues, comments, users, articles, automations, notifications, SSO, cron triggers, etc.
+  - `app/(DashBoardRoutes)/dashboard/` — the authenticated dashboard: issues, articles, analytics, superadmin panel
+  - `app/api/` — REST-style route handlers for issues, comments, users, articles, analytics, notifications, SSO, cron triggers, etc.
   - `app/articles/`, `app/it-team/`, `app/manual/`, `app/changelog/` — public/semi-public informational pages
 - `components/` — React components, grouped by area (`Modules/IssuePage`, `Modules/ArticlesPage`, `Modules/SuperAdmin`, `Navigation`, `Home`, `AuthPages`, `Skeletons`, `Themes`)
 - `serverActions/` — Next.js server actions used for data fetching/mutations from server components
@@ -88,7 +88,7 @@ Notable API routes under `app/api` include: `get-issues`, `post-issue`, `update-
 
 - **user** — submits and views their own issues, reads articles
 - **agent** — works issues assigned to them within their department/issue type
-- **admin** — manages issues, agents, and issue-type mappings for their department; can access the Automations and IT Team pages
+- **admin** — manages issues, agents, and issue-type mappings for their department; can access the IT Team page
 - **super admin** (`isSuper`, backed by the `super_admins` table) — full access via the Super Admin panel: manage users, issue types, department-to-agent mappings, and group emails
 
 ## Development notes

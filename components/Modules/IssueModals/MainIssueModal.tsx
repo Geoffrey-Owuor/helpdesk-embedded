@@ -33,11 +33,11 @@ import FormAsterisk from "../FormAsterisk";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
-import { useSearchStore } from "@/store/useSearchStore";
 import { useUser } from "@/contexts/UserContext";
 import SubmitForAUser, { SubmitForUserData } from "./SubmitForAUser";
 import DocumentUpload from "./DocumentUpload";
 import Link from "next/link";
+import { invalidateIssuesCaches } from "@/utils/invalidateIssuesCaches";
 
 // Priority icon types
 const priorityIcons: Record<string, LucideIcon> = {
@@ -106,12 +106,6 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   const modalRef = useRef<HTMLDivElement | null>(null);
   useFocusTrapping(modalRef, isOpen, closeModal);
 
-  const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
-  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
-  const selectedDepartment = useSearchStore(
-    (state) => state.selectedDepartment,
-  );
-
   // State for the Assignment Bot Card
   const [assignmentInfo, setAssignmentInfo] =
     useState<IssueAgentMapping | null>(null);
@@ -124,20 +118,6 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
-
-  const activeQueryKey = [
-    "issuesDashboardData",
-    superAdminFilter,
-    agentAdminFilter,
-  ];
-
-  const activeCardsKey = [
-    "dashboardIssueCounts",
-    agentAdminFilter,
-    superAdminFilter,
-  ];
-  const automationsQueryKey = ["automationsDashboardData", selectedDepartment];
-  const automationCardsKey = ["dashboardAutomationCounts", selectedDepartment];
 
   // set options error
   const optionsError = alertType === "error";
@@ -235,15 +215,8 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
         },
       });
 
-      // Refetch issues data in the background
-      queryClient.invalidateQueries({ queryKey: activeQueryKey });
-      queryClient.invalidateQueries({ queryKey: activeCardsKey });
-
-      // Refetch automations data if issue type is Automation
-      if (formData.issue_type === "Automation") {
-        queryClient.invalidateQueries({ queryKey: automationsQueryKey });
-        queryClient.invalidateQueries({ queryKey: automationCardsKey });
-      }
+      // Refetch issues/cards/analytics data in the background
+      invalidateIssuesCaches(queryClient);
 
       // Hide the overlay
       hideOverlay();

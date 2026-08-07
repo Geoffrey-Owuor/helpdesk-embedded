@@ -28,34 +28,17 @@ export const titleHelper = (value: IssueValueTypes) => {
   return value.toString();
 };
 
-// Issue type names object mapping
-const ISSUE_TYPE_MAPPING: Record<string, string> = {
-  Other: "Other Issue",
-  Orion: "Orion",
-  "Software Issue": "App or Software Help",
-  "Hardware Issue": "Computer & Device Repair",
-  "Delivery DMS": "Delivery Management System",
-  "POS L1": "Retail POS L1",
-  "POS L2": "Retail POS L2",
-  "Network Issue": "Wi-Fi & Internet Connectivity",
-  WMS: "Warehouse Management System",
-  FSM: "Field Service Management",
-  MS365: "Email & Calendar Issues",
-  "Printer Access": "Printing & Scanning",
-  "Account Access": "Password Reset / Account Login",
-  Qlik: "Qlik",
-  RPA: "Robotic Process Automation",
-  "Document DMS": "Document Management System",
-  "Staff Purchase": "Staff Product Purchase",
-  "Apps Hub": "Hotpoint Apps Hub",
-  "ERP Code Creation": "ERP Product Code Creation",
-};
-
 // Handling cases where issue type is other and later other issue types that require formatting
-export const generateValueType = (value: string) => {
-  const generatedValue = ISSUE_TYPE_MAPPING[value] || value;
+// The short-code -> long-name mapping now lives in the database (issues_mapping.long_name),
+// fetched via serverActions/GetIssueTypes.ts. Callers build a { shortCode: longName } map from
+// that data (IssueOption[]) and pass it in here instead of relying on a static lookup.
+export const generateValueType = (
+  value: string,
+  issueTypeMap?: Record<string, string>,
+) => {
+  if (!value) return "";
 
-  return generatedValue;
+  return issueTypeMap?.[value] || value;
 };
 
 // Date formatter to format date for the ui
@@ -69,13 +52,6 @@ export const dateFormatter = (dateString: IssueValueTypes) => {
     day: "numeric",
   });
 };
-
-// Automation type filters
-export const AUTOMATION_TYPE_FILTERS = [
-  "RPA",
-  "Staff Purchase",
-  "Requisition Hub",
-];
 
 // export our departments
 export const baseDepartments = [
@@ -113,22 +89,10 @@ export const issuePrefixMapping: Record<string, string> = {
   Directorate: "DIR",
 };
 
-export const DEFAULT_FETCH_OPTIONS = { selectedFilter: "status", status: "" };
+// Default page size for server-side paginated issue queries
+export const DEFAULT_PAGE_SIZE = 25;
 
 export type IssueValueTypes = string | number;
-
-export interface Options {
-  selectedFilter?: string;
-  fromDate?: string;
-  toDate?: string;
-  status?: string;
-  reference?: string;
-  department?: string;
-  agent?: string;
-  issueType?: string;
-  issuePriority?: string;
-  submitter?: string;
-}
 
 // Issue Cards Count Types
 export interface PriorityBreakdown {
@@ -201,7 +165,7 @@ export const DefaultIssuesMappingCounts: IssuesMappingCounts = {
   critical: 0,
 };
 
-export const AppVersion = "v1.0";
+export const AppVersion = "v2.0";
 
 // Status Options
 export const statusOptions = [

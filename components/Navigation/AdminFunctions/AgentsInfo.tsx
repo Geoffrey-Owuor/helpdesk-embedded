@@ -4,7 +4,7 @@ import { Mail, Tag, Info, UserRoundPlus, Trash2 } from "lucide-react";
 import { arrayReducer } from "@/utils/ArrayReducer";
 import { abbreviateUserName } from "@/public/assets";
 import AgentsInfoSkeleton from "@/components/Skeletons/AgentsInfoSkeleton";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useUser } from "@/contexts/UserContext";
 import AddAgent from "./AddAgent";
 import apiClient from "@/lib/AxiosClient";
@@ -13,6 +13,7 @@ import { useConfirmStore } from "@/store/useConfirmStore";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { IssueAgents } from "@/serverActions/GetIssueAgents";
+import SearchInput from "@/components/Modules/SuperAdmin/SearchInput";
 
 export type RefetchFunction = () => Promise<void>;
 
@@ -28,6 +29,7 @@ const AgentsInfo = ({
   refetchAgentsInfo,
 }: AgentsInfoProps) => {
   const [showAddAgentModal, setShowAddAgentModal] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
   // state stores
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
@@ -39,6 +41,17 @@ const AgentsInfo = ({
 
   // Grouping the flattened array
   const agentsInfo = arrayReducer(agentsFlatInfo);
+
+  // Filtering agents by name or email
+  const filteredAgentsInfo = useMemo(() => {
+    if (!searchValue) return agentsInfo;
+    const lowSearch = searchValue.toLowerCase();
+    return agentsInfo.filter(
+      (agent) =>
+        agent.name.toLowerCase().includes(lowSearch) ||
+        agent.email.toLowerCase().includes(lowSearch),
+    );
+  }, [searchValue, agentsInfo]);
 
   // Confirm Agent deletion
   const handleConfirmDeletion = (agentEmail: string, agentName: string) => {
@@ -112,13 +125,20 @@ const AgentsInfo = ({
             </p>
           </div>
 
-          <button
-            onClick={() => setShowAddAgentModal((prev) => !prev)}
-            className="mb-4 flex items-center gap-1.5 rounded-xl bg-neutral-900 px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
-          >
-            <UserRoundPlus className="h-4 w-4" />
-            <span>Add Agent</span>
-          </button>
+          <div className="mb-4 flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => setShowAddAgentModal((prev) => !prev)}
+              className="flex items-center gap-1.5 rounded-xl bg-neutral-900 px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+            >
+              <UserRoundPlus className="h-4 w-4" />
+              <span>Add Agent</span>
+            </button>
+
+            <SearchInput
+              searchValue={searchValue}
+              onSearch={(value) => setSearchValue(value)}
+            />
+          </div>
 
           {/* Add Agent Modal */}
           <AddAgent
@@ -127,8 +147,15 @@ const AgentsInfo = ({
             setShowAgentModal={setShowAddAgentModal}
           />
 
+          {filteredAgentsInfo.length === 0 && (
+            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-neutral-300 py-12 text-neutral-500 dark:border-neutral-800">
+              <Info className="mb-2 opacity-20" size={32} />
+              <p className="text-sm">No agents match your search.</p>
+            </div>
+          )}
+
           <div className="grid gap-4">
-            {agentsInfo.map((agent) => (
+            {filteredAgentsInfo.map((agent) => (
               <div
                 key={agent.email}
                 className="group flex flex-col gap-4 rounded-xl border border-neutral-200 bg-white p-4 transition-all hover:border-neutral-300 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900/40 dark:hover:border-neutral-700"

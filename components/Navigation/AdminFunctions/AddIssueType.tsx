@@ -34,6 +34,7 @@ const AddIssueType = ({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isPriorityDropdownOpen, setIsPriorityDropdownOpen] = useState(false);
   const [issueType, setIssueType] = useState("");
+  const [longName, setLongName] = useState("");
   const [issuePriority, setIssuePriority] = useState("");
   const [agentEmail, setAgentEmail] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -91,6 +92,7 @@ const AddIssueType = ({
     try {
       const response = await apiClient.post("/add-issuetype", {
         issueType,
+        longName,
         issuePriority,
         agentEmail,
       });
@@ -146,6 +148,22 @@ const AddIssueType = ({
             onBlur={(e) => setIssueType(e.target.value.trim())}
             className="w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:focus:border-blue-500"
             placeholder="e.g. Technical Support"
+          />
+        </div>
+
+        {/* 1b. Display Name Input */}
+        <div className="space-y-1.5">
+          <label className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
+            <Bug size={12} />
+            <span>Display Name</span>
+          </label>
+          <input
+            type="text"
+            value={longName}
+            onChange={(e) => setLongName(e.target.value)}
+            onBlur={(e) => setLongName(e.target.value.trim())}
+            className="w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:focus:border-blue-500"
+            placeholder="Friendly name shown to users (defaults to Issue Type)"
           />
         </div>
 

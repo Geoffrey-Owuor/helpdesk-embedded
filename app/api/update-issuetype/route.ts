@@ -7,7 +7,7 @@ import { PoolClient } from "pg";
 export const PUT = withAuth(async ({ request, user }) => {
   let client: PoolClient | undefined;
 
-  const { userId, role } = user;
+  const { role } = user;
 
   // Make sure the user running the query is an admin
   if (role !== "admin") {
@@ -18,8 +18,13 @@ export const PUT = withAuth(async ({ request, user }) => {
   }
 
   try {
-    const { selectedType, selectedEmail, issueType, selectedPriority } =
-      await request.json();
+    const {
+      selectedType,
+      selectedEmail,
+      issueType,
+      selectedPriority,
+      longName,
+    } = await request.json();
 
     if (!selectedType || !selectedEmail || !issueType || !selectedPriority) {
       return NextResponse.json(
@@ -36,8 +41,8 @@ export const PUT = withAuth(async ({ request, user }) => {
 
     // Check if the issue type exists
     const { rows } = await client.query(
-      `SELECT issue_type FROM issues_mapping WHERE issue_type = $1 AND admin_id = $2 FOR UPDATE`,
-      [issueType, userId],
+      `SELECT issue_type FROM issues_mapping WHERE issue_type = $1`,
+      [issueType],
     );
 
     // Issue type does not exist
@@ -49,22 +54,37 @@ export const PUT = withAuth(async ({ request, user }) => {
       );
     }
 
+    // Check if the agent exists
+    const { rows: existingAgent } = await client.query(
+      `SELECT user_id FROM users WHERE email = $1 AND is_user_active = TRUE LIMIT 1`,
+      [selectedEmail],
+    );
+
+    if (existingAgent.length === 0) {
+      await client.query("ROLLBACK");
+      return NextResponse.json(
+        { message: "Selected agent could not be found" },
+        { status: 404 },
+      );
+    }
+
     // Issue type exists - we can update it
     const updateQuery = `
        UPDATE issues_mapping
        SET issue_type = $1,
        issue_priority = $2,
-       agent_id = (SELECT user_id FROM users WHERE email = $3 LIMIT 1)
-       WHERE issue_type = $4 AND admin_id = $5
+       agent_id = $3,
+       long_name = $4
+       WHERE issue_type = $5
     `;
 
     // Run the query
     await client.query(updateQuery, [
       selectedType,
       selectedPriority,
-      selectedEmail,
+      existingAgent[0].user_id,
+      longName || selectedType,
       issueType,
-      userId,
     ]);
 
     // Commit the transaction

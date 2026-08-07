@@ -7,7 +7,7 @@ import { PoolClient } from "pg";
 export const DELETE = withAuth(async ({ user, request }) => {
   let client: PoolClient | undefined;
 
-  const { role, userId } = user;
+  const { role } = user;
 
   // User must be an admin
   if (role !== "admin") {
@@ -39,9 +39,9 @@ export const DELETE = withAuth(async ({ user, request }) => {
     // Check if we have the issue type in our mapping
     const { rows } = await client.query(
       `SELECT issue_type FROM issues_mapping
-        WHERE issue_type = $1 AND admin_id = $2 FOR UPDATE
+        WHERE issue_type = $1 FOR UPDATE
         `,
-      [issueType, userId],
+      [issueType],
     );
 
     if (rows.length === 0) {
@@ -55,9 +55,9 @@ export const DELETE = withAuth(async ({ user, request }) => {
     // Issue is there, we perform our deletion
     await client.query(
       `DELETE FROM issues_mapping
-        WHERE issue_type = $1 AND admin_id = $2
+        WHERE issue_type = $1
         `,
-      [issueType, userId],
+      [issueType],
     );
 
     // commit the transaction

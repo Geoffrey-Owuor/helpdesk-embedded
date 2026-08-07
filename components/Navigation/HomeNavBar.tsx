@@ -83,13 +83,13 @@ const HomeNavBar = () => {
           <div className="flex items-center gap-2">
             <Link
               href="/login"
-              className="rounded-full px-4 py-1.5 text-black hover:bg-gray-200 dark:text-white dark:hover:bg-neutral-800"
+              className="rounded-full px-4 py-2 text-sm font-semibold text-black hover:bg-gray-200 dark:text-white dark:hover:bg-neutral-800"
             >
               Login
             </Link>
             <Link
               href="/register"
-              className="rounded-full bg-neutral-950 px-4 py-1.5 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+              className="rounded-full bg-neutral-950 px-4 py-2 text-sm font-semibold text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
             >
               Register
             </Link>

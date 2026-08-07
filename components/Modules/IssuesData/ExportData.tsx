@@ -6,40 +6,45 @@ import { useState } from "react";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useSearchStore } from "@/store/useSearchStore";
+import { useIssuesFilterStore } from "@/store/useIssuesFilterStore";
 import { useUser } from "@/contexts/UserContext";
 
-const ExportData = ({ fetchAutomations }: { fetchAutomations: string }) => {
+const ExportData = () => {
   const [isExporting, setIsExporting] = useState(false);
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const { username, isSuper } = useUser();
 
-  // Getting the data needed from the store
-  const fromDate = useSearchStore((state) => state.fromDate);
-  const toDate = useSearchStore((state) => state.toDate);
+  // Getting the data needed from the stores
+  const fromDate = useIssuesFilterStore((state) => state.fromDate);
+  const toDate = useIssuesFilterStore((state) => state.toDate);
   const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
   const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
 
   // Dynamically building our url
-  let baseUrl = `/excel-export?fetchAutomations=${fetchAutomations || "issues"}`;
+  let baseUrl = `/excel-export`;
+  const params: string[] = [];
 
   // Adding the super admin filter
   if (isSuper && superAdminFilter) {
-    const filterValue = "superAdminFilter";
-    baseUrl += `&superAdminFilter=${filterValue}`;
+    params.push("superAdminFilter=superAdminFilter");
   }
   // Adding the agent admin filter
   if (agentAdminFilter === "agentAdminFilter") {
-    baseUrl += `&agentAdminFilter=${agentAdminFilter}`;
+    params.push(`agentAdminFilter=${agentAdminFilter}`);
   }
 
   // Adding the dates
   if (fromDate && toDate) {
-    baseUrl += `&fromDate=${fromDate}&toDate=${toDate}`;
+    params.push(`fromDate=${fromDate}`, `toDate=${toDate}`);
+  }
+
+  if (params.length) {
+    baseUrl += `?${params.join("&")}`;
   }
 
   // Dynamic excel document name with the date the document was downloaded
   const date = new Date().toLocaleDateString("en-GB");
-  const documentName = `${fetchAutomations === "automations" ? "automations_data" : "issues_data"}_${username}_${date}.xlsx`;
+  const documentName = `issues_data_${username}_${date}.xlsx`;
 
   const handleExport = async () => {
     setIsExporting(true);

@@ -7,16 +7,17 @@ import { Dispatch, SetStateAction } from "react";
 import { useState, useCallback, useRef } from "react";
 import {
   CirclePlus,
-  Bot,
   X,
   ShieldUser,
   ShieldPlus,
   LayoutDashboard,
   NotebookPen,
   HousePlug,
+  ChartColumnBig,
 } from "lucide-react";
 import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
 import { useUser } from "@/contexts/UserContext";
+import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import AdminPanel from "./AdminFunctions/AdminPanel";
 import { useIsEmbedd } from "@/hooks/useIsEmbedd";
@@ -33,7 +34,7 @@ const MobileSideBar = ({
   setSideBarOpen,
 }: MobileSideBarProps) => {
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
-  const { role, isSuper } = useUser();
+  const { role, isSuper, specialAccess } = useUser();
   const [showAdminOptions, setShowAdminOptions] = useState(false);
 
   const isEmbedded = useIsEmbedd();
@@ -128,20 +129,6 @@ const MobileSideBar = ({
               <span>New Issue</span>
             </button>
 
-            {/* Link: Automations */}
-            {isSuper && (
-              <Link
-                href="/dashboard/automations"
-                onClick={() =>
-                  handleMobileRouteChange("/dashboard/automations")
-                }
-                className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
-              >
-                <Bot className="h-5 w-5" />
-                <span>Automations</span>
-              </Link>
-            )}
-
             {/* Super Admin  */}
             {isSuper && (
               <Link
@@ -151,6 +138,18 @@ const MobileSideBar = ({
               >
                 <ShieldPlus className="h-5 w-5" />
                 <span>Super Admin</span>
+              </Link>
+            )}
+
+            {/* Issues Analytics */}
+            {hasFeatureAccess({ role, specialAccess }, FEATURES.ANALYTICS) && (
+              <Link
+                href="/dashboard/analytics"
+                onClick={() => handleMobileRouteChange("/dashboard/analytics")}
+                className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              >
+                <ChartColumnBig className="h-5 w-5" />
+                <span>Analytics</span>
               </Link>
             )}
 

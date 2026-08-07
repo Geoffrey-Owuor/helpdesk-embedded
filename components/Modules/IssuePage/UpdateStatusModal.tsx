@@ -10,15 +10,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
-import { IssueValueTypes } from "@/public/assets";
+import { IssueDetail } from "@/queries/fetchIssue";
+import { invalidateIssuesCaches } from "@/utils/invalidateIssuesCaches";
 
 type UpdateStatusModalProps = {
   isOpen: boolean;
   closeModal: () => void;
   uuid: string;
   selectedStatus: string;
-  activeQueryKey: (string | boolean)[];
-  activeCardsKey: (string | boolean)[];
 };
 
 const UpdateStatusModal = ({
@@ -26,8 +25,6 @@ const UpdateStatusModal = ({
   closeModal,
   uuid,
   selectedStatus,
-  activeQueryKey,
-  activeCardsKey,
 }: UpdateStatusModalProps) => {
   const queryClient = useQueryClient();
   const modalRef = useRef<HTMLDivElement | null>(null);
@@ -53,29 +50,23 @@ const UpdateStatusModal = ({
       }),
     onMutate: () => showOverlay("Updating"),
     onSuccess: (response) => {
-      queryClient.setQueryData(
-        activeQueryKey,
-        (oldData: Record<string, IssueValueTypes>[]) => {
-          if (!oldData) return oldData;
-          return oldData.map((issue) =>
-            issue.issue_uuid === uuid
-              ? {
-                  ...issue,
-                  issue_status: selectedStatus,
-                  issue_remarks: remarks,
-                  issue_updated_at: new Date().toISOString(),
-                  issue_date_resolved:
-                    selectedStatus === "resolved"
-                      ? new Date().toISOString()
-                      : issue.issue_date_resolved,
-                  issue_date_closed:
-                    selectedStatus === "closed"
-                      ? new Date().toISOString()
-                      : issue.issue_date_closed,
-                }
-              : issue,
-          );
-        },
+      queryClient.setQueryData(["issue", uuid], (old: IssueDetail | undefined) =>
+        old
+          ? {
+              ...old,
+              issue_status: selectedStatus,
+              issue_remarks: remarks,
+              issue_updated_at: new Date().toISOString(),
+              issue_date_resolved:
+                selectedStatus === "resolved"
+                  ? new Date().toISOString()
+                  : old.issue_date_resolved,
+              issue_date_closed:
+                selectedStatus === "closed"
+                  ? new Date().toISOString()
+                  : old.issue_date_closed,
+            }
+          : old,
       );
 
       closeModal();
@@ -86,7 +77,7 @@ const UpdateStatusModal = ({
     },
     onSettled: () => {
       hideOverlay();
-      queryClient.invalidateQueries({ queryKey: activeCardsKey });
+      invalidateIssuesCaches(queryClient, { uuid });
     },
   });
 

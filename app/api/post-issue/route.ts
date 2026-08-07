@@ -7,6 +7,16 @@ import { CheckBehalfUser } from "@/serverActions/CheckBehalfUser";
 import { writeFile, mkdir } from "fs/promises";
 import { issuePrefixMapping } from "@/public/assets";
 import path from "path";
+import type { AllowedFileType } from "@/components/Modules/IssueModals/DocumentUpload";
+
+// Same restrictions as attachments added at issue submission time
+const MAX_BYTES = 2 * 1024 * 1024;
+const ALLOWED_TYPES: AllowedFileType[] = [
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+];
 
 export const POST = withAuth(async ({ request, user }) => {
   // initialize the pool client variable
@@ -52,8 +62,52 @@ export const POST = withAuth(async ({ request, user }) => {
       );
     }
 
+    // Function to create/return the user who is being created a ticket for
+    // And return the user details required for proceeding
+    if (behalf_user_department && behalf_user_name && behalf_user_email) {
+      const returnedUser = await CheckBehalfUser({
+        name: behalf_user_name,
+        email: behalf_user_email,
+      });
+
+      if (!returnedUser) {
+        return NextResponse.json(
+          {
+            message:
+              "Could not verify/create the user you're trying to submit for, please contact your admin",
+          },
+          { status: 422 },
+        );
+      }
+
+      selectedName = returnedUser.name;
+      selectedId = returnedUser.userId;
+      selectedEmail = returnedUser.email;
+      selectedDepartment = returnedUser.department;
+    }
+
     // 3. Extract and Process Files
     const files = formData.getAll("attachments") as File[];
+
+    const hasInvalidType = files.some(
+      (file) => !ALLOWED_TYPES.includes(file.type as AllowedFileType),
+    );
+
+    if (hasInvalidType) {
+      return NextResponse.json(
+        { message: "Only PDFs, JPGs, PNGs, and WebP files are allowed" },
+        { status: 400 },
+      );
+    }
+
+    const totalSize = files.reduce((total, file) => total + file.size, 0);
+
+    if (totalSize > MAX_BYTES) {
+      return NextResponse.json(
+        { message: "Total attachment size cannot exceed 2MB" },
+        { status: 400 },
+      );
+    }
     const emailAttachments = [];
     const dbAttachments = [];
 
@@ -92,31 +146,6 @@ export const POST = withAuth(async ({ request, user }) => {
         size: file.size,
         localUrl: `${uniqueFilename}`,
       });
-    }
-
-    // Function to create/return the user who is being created a ticket for
-    // And return the user details required for proceeding
-    if (behalf_user_department && behalf_user_name && behalf_user_email) {
-      const returnedUser = await CheckBehalfUser({
-        name: behalf_user_name,
-        email: behalf_user_email,
-        department: behalf_user_department,
-      });
-
-      if (!returnedUser) {
-        return NextResponse.json(
-          {
-            message:
-              "Could not verify/create the user you're trying to submit for, please contact your admin",
-          },
-          { status: 422 },
-        );
-      }
-
-      selectedName = returnedUser.name;
-      selectedId = returnedUser.userId;
-      selectedEmail = returnedUser.email;
-      selectedDepartment = returnedUser.department;
     }
 
     // get a pool client

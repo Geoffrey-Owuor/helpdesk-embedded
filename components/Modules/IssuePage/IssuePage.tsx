@@ -27,6 +27,7 @@ import {
   GitBranchPlus,
   GitMerge,
   UserRoundPlus,
+  Paperclip,
 } from "lucide-react";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import { dateFormatter, titleHelper } from "@/public/assets";
@@ -45,12 +46,8 @@ import CommentsSection from "./CommentsSection";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import IssueTypeModal from "./IssueTypeModal";
 import IssuePriorityFormatter from "../IssuesData/IssuePriorityFormatter";
-import { useSearchStore } from "@/store/useSearchStore";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { fetchIssues } from "@/queries/fetchIssues";
-import { fetchAutomations } from "@/queries/fetchAutomations";
-import { IssueValueTypes } from "@/public/assets";
-import { DEFAULT_FETCH_OPTIONS } from "@/public/assets";
+import { fetchIssue, IssueDetail } from "@/queries/fetchIssue";
 import { statusOptions as baseOptions } from "@/public/assets";
 import { priorityOptions } from "@/public/assets";
 import EscalateIssueModal from "./EscalateIssueModal";
@@ -60,66 +57,30 @@ import RelativeTimeBadge from "../IssuesData/RelativeTimeBadge";
 import { ResolutionTimePill } from "../IssuesData/ResolutionTimePill";
 import InviteCollaboratorsModal from "./InviteCollaboratorsModal";
 import { fetchCollaborators } from "@/queries/fetchCollaborators";
+import AddAttachmentModal from "./AddAttachmentModal";
+import { invalidateIssuesCaches } from "@/utils/invalidateIssuesCaches";
+import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 
 const statusOptions = baseOptions.filter((option) => option.value !== "open");
 
-export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
+export const IssuePage = ({ uuid }: { uuid: string }) => {
   // Initialize the query client
   const queryClient = useQueryClient();
 
-  const isAutomation = type === "automation";
-
-  // 1. Grab the exact same filters from your search store to match the Query Keys
-  const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
-  const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
-  const selectedDepartment = useSearchStore(
-    (state) => state.selectedDepartment,
-  );
-
-  // 2. Query Issues (Will instantly hit the cache if already loaded on the list page)
+  // Fetch the issue directly by uuid - role-visibility gated server-side, so
+  // a 404 covers both "doesn't exist" and "exists but not visible to you".
   const {
-    data: issuesData = [],
-    isLoading: issuesLoading,
-    refetch: refetchIssues,
+    data: issueData,
+    isLoading: loading,
+    isError,
+    refetch: refetchData,
   } = useQuery({
-    queryKey: ["issuesDashboardData", superAdminFilter, agentAdminFilter],
-    queryFn: () => fetchIssues(DEFAULT_FETCH_OPTIONS),
-    enabled: !isAutomation,
+    queryKey: ["issue", uuid],
+    queryFn: () => fetchIssue(uuid),
+    retry: false,
   });
 
-  // 3. Query Automations (Will instantly hit the cache if already loaded)
-  const {
-    data: automationsData = [],
-    isLoading: automationsLoading,
-    refetch: refetchAutomations,
-  } = useQuery({
-    queryKey: ["automationsDashboardData", selectedDepartment],
-    queryFn: () => fetchAutomations(DEFAULT_FETCH_OPTIONS),
-    enabled: isAutomation,
-  });
-
-  // 4. Define our variables based on the record type
-  const recordsData = isAutomation ? automationsData : issuesData;
-  const loading = isAutomation ? automationsLoading : issuesLoading;
-  const refetchInfo = isAutomation ? refetchAutomations : refetchIssues;
-
-  // Define the exact active query key based on the record type
-  const activeQueryKey = isAutomation
-    ? ["automationsDashboardData", selectedDepartment]
-    : ["issuesDashboardData", superAdminFilter, agentAdminFilter];
-
-  const activeCardsKey = isAutomation
-    ? ["dashboardAutomationCounts", selectedDepartment]
-    : ["dashboardIssueCounts", agentAdminFilter, superAdminFilter];
-
-  const refetchData = () => {
-    refetchInfo();
-  };
-
-  // Our issue data
-  const issueData = recordsData.find((issue) => issue.issue_uuid === uuid);
-
-  // 5. The agents invited to collaborate on this issue
+  // The agents invited to collaborate on this issue
   const { data: collaborators = [], isLoading: collaboratorsLoading } =
     useQuery({
       queryKey: ["issueCollaborators", uuid],
@@ -166,6 +127,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isReassignModalOpen, setIsReassignModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isAddAttachmentOpen, setIsAddAttachmentOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const priorityDropDownRef = useRef<HTMLDivElement>(null);
 
@@ -186,19 +148,15 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
 
     onSuccess: (response, newPriority) => {
       queryClient.setQueryData(
-        activeQueryKey,
-        (oldData: Record<string, IssueValueTypes>[]) => {
-          if (!oldData) return oldData;
-          return oldData.map((issue: Record<string, IssueValueTypes>) =>
-            issue.issue_uuid === uuid
-              ? {
-                  ...issue,
-                  issue_priority: newPriority,
-                  issue_updated_at: new Date().toISOString(),
-                }
-              : issue,
-          );
-        },
+        ["issue", uuid],
+        (old: IssueDetail | undefined) =>
+          old
+            ? {
+                ...old,
+                issue_priority: newPriority,
+                issue_updated_at: new Date().toISOString(),
+              }
+            : old,
       );
 
       triggerAlert("success", response.data.message);
@@ -210,7 +168,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
     },
 
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: activeCardsKey });
+      invalidateIssuesCaches(queryClient, { uuid });
     },
   });
 
@@ -253,8 +211,8 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
 
   if (loading) return <IssueDetailsSkeleton />;
 
-  // Case where the issueData has not been found (The object is blank)
-  if (!issueData) {
+  // 404 from the server covers both "doesn't exist" and "not visible to you"
+  if (isError || !issueData) {
     return (
       <div className="mx-auto my-12 flex w-full max-w-md flex-col items-center justify-center rounded-2xl border-2 border-dashed border-neutral-200 bg-neutral-50/50 p-8 dark:border-neutral-800 dark:bg-neutral-900/20">
         {/* Icon */}
@@ -303,8 +261,6 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           closeModal={() => setStatusModalOpen(false)}
           uuid={uuid}
           selectedStatus={selectedStatus}
-          activeQueryKey={activeQueryKey}
-          activeCardsKey={activeCardsKey}
         />
       )}
       {/* Title and description edit modal */}
@@ -314,7 +270,6 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           description={issueData.issue_description}
           isModalOpen={isEditModalOpen}
           closeModal={() => setIsEditModalOpen(false)}
-          activeQueryKey={activeQueryKey}
           uuid={uuid}
           userId={issueData.issue_submitter_id}
         />
@@ -328,7 +283,6 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           isModalOpen={isReassignModalOpen}
           issueType={issueData.issue_type}
           targetDepartment={issueData.issue_target_department}
-          activeQueryKey={activeQueryKey}
           issueAgentEmail={issueData.issue_agent_email}
         />
       )}
@@ -341,9 +295,17 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           isModalOpen={isInviteModalOpen}
           issueType={issueData.issue_type}
           targetDepartment={issueData.issue_target_department}
-          activeQueryKey={activeQueryKey}
           issueAgentEmail={issueData.issue_agent_email}
           canManage={canManageCollaborators}
+        />
+      )}
+
+      {/* Add Attachment Modal */}
+      {isAddAttachmentOpen && (
+        <AddAttachmentModal
+          uuid={uuid}
+          closeModal={() => setIsAddAttachmentOpen(false)}
+          isModalOpen={isAddAttachmentOpen}
         />
       )}
 
@@ -353,8 +315,6 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           uuid={uuid}
           closeModal={() => setReopenModalOpen(false)}
           isModalOpen={reopenModalOpen}
-          activeQueryKey={activeQueryKey}
-          activeCardsKey={activeCardsKey}
         />
       )}
 
@@ -364,7 +324,6 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           uuid={uuid}
           closeModal={() => setEscalateModalOpen(false)}
           isModalOpen={escalateModalOpen}
-          activeQueryKey={activeQueryKey}
           issueAgentEmail={issueData.issue_agent_email}
           issueType={issueData.issue_type}
           targetDepartment={issueData.issue_target_department}
@@ -449,6 +408,18 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                 </button>
               )}
 
+              {/* Add attachment button - visible to anyone who can view the issue */}
+              {issueData.issue_status !== "closed" && (
+                <button
+                  type="button"
+                  onClick={() => setIsAddAttachmentOpen(true)}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-indigo-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-indigo-800"
+                >
+                  <Paperclip size={12} />
+                  Add Attachment
+                </button>
+              )}
+
               {/* Escalation button */}
               {canActOnIssue &&
                 issueData.issue_status !== "resolved" &&
@@ -481,7 +452,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                   />
                 )}
               <button
-                onClick={refetchData}
+                onClick={() => refetchData()}
                 className="rounded-xl bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
               >
                 <RotateCcw className="h-4.5 w-4.5" />
@@ -650,14 +621,16 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
           <DetailCard title="Issue Data" icon={Hash}>
             <div className="flex flex-wrap items-center justify-between gap-4">
               <InfoBlock label="Issue Type" value={issueData.issue_type} />
-              {isSuper && issueData.issue_status === "open" && (
-                <IssueTypeModal
-                  targetDepartment={issueData.issue_target_department}
-                  uuid={uuid}
-                  activeQueryKey={activeQueryKey}
-                  currentType={issueData.issue_type}
-                />
-              )}
+              {/* Changing the issue type */}
+              {role === "admin" &&
+                issueData.issue_target_department === department &&
+                issueData.issue_status !== "closed" && (
+                  <IssueTypeModal
+                    targetDepartment={issueData.issue_target_department}
+                    uuid={uuid}
+                    currentType={issueData.issue_type}
+                  />
+                )}
             </div>
 
             {/* The agents invited to collaborate on this issue */}
@@ -669,9 +642,7 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                 {Number(issueData.collaborators_count) > 0 ? (
                   <>
                     {collaboratorsLoading ? (
-                      <span className="text-sm text-neutral-400 italic dark:text-neutral-500">
-                        Loading collaborators...
-                      </span>
+                      <SkeletonBox className="h-7.5 w-40 rounded-full!" />
                     ) : collaborators.length === 0 ? (
                       <span className="text-sm text-neutral-400 italic dark:text-neutral-500">
                         No collaborators on this issue.
@@ -715,8 +686,10 @@ export const IssuePage = ({ uuid, type }: { uuid: string; type: string }) => {
                 </div>
                 Description
               </h2>
-              {(userId === issueData.issue_submitter_id || isSuper) &&
-                issueData.issue_status === "open" && (
+              {(userId === issueData.issue_submitter_id ||
+                (role === "admin" &&
+                  department === issueData.issue_target_department)) &&
+                issueData.issue_status !== "closed" && (
                   <button
                     type="button"
                     onClick={() => setIsEditModalOpen(true)}

@@ -121,7 +121,7 @@ const DocumentUpload = ({
       <label className="text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400">
         Attachments{" "}
         <span className="font-normal normal-case opacity-70">
-          (Optional, Max 2MB)
+          (Optional, Max {maxTotalSizeMB}MB)
         </span>
       </label>
 

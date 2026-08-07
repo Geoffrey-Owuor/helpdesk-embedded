@@ -14,7 +14,7 @@ export const POST = withAuth(async ({ request, user }) => {
   }
 
   try {
-    const { issueType, issuePriority, agentEmail, adminEmail } =
+    const { issueType, issuePriority, agentEmail, adminEmail, longName } =
       await request.json();
 
     if (!issueType || !issuePriority || !agentEmail || !adminEmail) {
@@ -81,11 +81,17 @@ export const POST = withAuth(async ({ request, user }) => {
 
     // Insert Query
     const insertQuery = `
-    INSERT INTO issues_mapping(issue_type, admin_id, agent_id, issue_priority)
-    VALUES ($1, $2, $3, $4)
+    INSERT INTO issues_mapping(issue_type, admin_id, agent_id, issue_priority, long_name)
+    VALUES ($1, $2, $3, $4, $5)
     `;
 
-    const insertParams = [issueType, adminId, agentId, issuePriority];
+    const insertParams = [
+      issueType,
+      adminId,
+      agentId,
+      issuePriority,
+      longName || issueType,
+    ];
 
     await query(insertQuery, insertParams);
 
