@@ -167,18 +167,23 @@ const CardViewData = ({ currentIssues }: CardViewDataProps) => {
                       className="text-red-500 transition-colors group-hover:text-red-600 dark:text-red-400 dark:group-hover:text-red-300"
                     />
                   )}
-                  {Number(issueData.collaborators_count) > 0 ? (
+                  {Number(issueData.collaborators_count) > 0 && (
                     <UsersRound
                       size={14}
                       aria-label="Collaborated issue"
                       className="text-blue-500 transition-colors group-hover:text-blue-600 dark:text-blue-400 dark:group-hover:text-blue-300"
                     />
-                  ) : (
-                    <ArrowRight
-                      size={14}
-                      className="text-neutral-400 transition-colors group-hover:text-neutral-600 dark:text-neutral-500 dark:group-hover:text-neutral-300"
-                    />
                   )}
+
+                  {!Number(issueData.attachments_count) &&
+                    !Number(issueData.reopened_count) &&
+                    !Number(issueData.escalated_count) &&
+                    !Number(issueData.collaborators_count) && (
+                      <ArrowRight
+                        size={14}
+                        className="text-neutral-400 transition-colors group-hover:text-neutral-600 dark:text-neutral-500 dark:group-hover:text-neutral-300"
+                      />
+                    )}
                 </div>
               </div>
             </div>

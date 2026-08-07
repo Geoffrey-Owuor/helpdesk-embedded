@@ -9,7 +9,7 @@ import {
   BugPlay,
   Trash2,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import EditIssueTypeInfo from "./EditIssueTypeInfo";
 import { arrayReducer } from "@/utils/ArrayReducer";
 import IssueTypesInfoSkeleton from "@/components/Skeletons/IssueTypesInfoSkeleton";
@@ -22,6 +22,7 @@ import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import IssuePriorityFormatter from "@/components/Modules/IssuesData/IssuePriorityFormatter";
 import { AgentsInfoProps } from "./AgentsInfo";
+import SearchInput from "@/components/Modules/SuperAdmin/SearchInput";
 
 const IssueTypesInfo = ({
   loading,
@@ -33,6 +34,9 @@ const IssueTypesInfo = ({
 
   // State for showing the AddIssueType Modal
   const [showAddIssueModal, setShowAddIssueModal] = useState(false);
+
+  // State for the search query
+  const [searchValue, setSearchValue] = useState("");
 
   // state stores
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
@@ -54,6 +58,17 @@ const IssueTypesInfo = ({
     agentName: agentInfo.name,
     agentEmail: agentInfo.email,
   }));
+
+  // Filtering issue types by short name or long name
+  const filteredAgentsFlatInfo = useMemo(() => {
+    if (!searchValue) return agentsFlatInfo;
+    const lowSearch = searchValue.toLowerCase();
+    return agentsFlatInfo.filter(
+      (item) =>
+        item.issue_type.toLowerCase().includes(lowSearch) ||
+        item.long_name.toLowerCase().includes(lowSearch),
+    );
+  }, [searchValue, agentsFlatInfo]);
 
   // Handling issue deletion confirmation
   const handleConfirmIssueDeletion = (issueType: string) => {
@@ -127,13 +142,20 @@ const IssueTypesInfo = ({
             </p>
           </div>
 
-          <button
-            onClick={() => setShowAddIssueModal((prev) => !prev)}
-            className="mb-4 flex items-center gap-1.5 rounded-xl bg-neutral-900 px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
-          >
-            <BugPlay className="h-4 w-4" />
-            <span>Add Issue Type</span>
-          </button>
+          <div className="mb-4 flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => setShowAddIssueModal((prev) => !prev)}
+              className="flex items-center gap-1.5 rounded-xl bg-neutral-900 px-3 py-2 text-sm text-white transition-colors duration-200 hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+            >
+              <BugPlay className="h-4 w-4" />
+              <span>Add Issue Type</span>
+            </button>
+
+            <SearchInput
+              searchValue={searchValue}
+              onSearch={(value) => setSearchValue(value)}
+            />
+          </div>
 
           {/* The AddIssueType Modal */}
           <AddIssueType
@@ -143,8 +165,15 @@ const IssueTypesInfo = ({
             agentNames={agentNames}
           />
 
+          {filteredAgentsFlatInfo.length === 0 && (
+            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-neutral-300 py-12 text-neutral-500 dark:border-neutral-800">
+              <Info className="mb-2 opacity-20" size={32} />
+              <p className="text-sm">No issue types match your search.</p>
+            </div>
+          )}
+
           <div className="grid gap-3">
-            {agentsFlatInfo.map((item, index) => (
+            {filteredAgentsFlatInfo.map((item, index) => (
               // Outer wrapper div
               <div
                 key={`${item.issue_type}-${index}`}

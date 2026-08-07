@@ -165,7 +165,7 @@ export const DefaultIssuesMappingCounts: IssuesMappingCounts = {
   critical: 0,
 };
 
-export const AppVersion = "v1.0";
+export const AppVersion = "v2.0";
 
 // Status Options
 export const statusOptions = [
