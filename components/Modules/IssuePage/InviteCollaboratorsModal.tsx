@@ -25,6 +25,8 @@ import { useUser } from "@/contexts/UserContext";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { IssueDetail } from "@/queries/fetchIssue";
+import { invalidateIssuesCaches } from "@/utils/invalidateIssuesCaches";
 
 type SelectedAgent = {
   name: string;
@@ -37,7 +39,6 @@ type InviteCollaboratorsModalProps = {
   isModalOpen: boolean;
   issueType: IssueValueTypes;
   targetDepartment: IssueValueTypes;
-  activeQueryKey: (string | boolean)[];
   issueAgentEmail: IssueValueTypes;
   canManage: boolean;
 };
@@ -47,7 +48,6 @@ const InviteCollaboratorsModal = ({
   closeModal,
   isModalOpen,
   issueType,
-  activeQueryKey,
   targetDepartment,
   issueAgentEmail,
   canManage,
@@ -94,24 +94,17 @@ const InviteCollaboratorsModal = ({
   // Keeps the collaborated indicator on the issues table/cards in sync without
   // refetching the whole dashboard list
   const patchCollaboratorsCount = (delta: number) => {
-    queryClient.setQueryData(
-      activeQueryKey,
-      (oldData: Record<string, IssueValueTypes>[]) => {
-        if (!oldData) return oldData;
-
-        return oldData.map((issue: Record<string, IssueValueTypes>) =>
-          issue.issue_uuid === uuid
-            ? {
-                ...issue,
-                collaborators_count: Math.max(
-                  Number(issue.collaborators_count ?? 0) + delta,
-                  0,
-                ),
-                issue_updated_at: new Date().toISOString(),
-              }
-            : issue,
-        );
-      },
+    queryClient.setQueryData(["issue", uuid], (old: IssueDetail | undefined) =>
+      old
+        ? {
+            ...old,
+            collaborators_count: Math.max(
+              Number(old.collaborators_count ?? 0) + delta,
+              0,
+            ),
+            issue_updated_at: new Date().toISOString(),
+          }
+        : old,
     );
   };
 
@@ -151,6 +144,7 @@ const InviteCollaboratorsModal = ({
     onSuccess: (response, payload) => {
       patchCollaboratorsCount(payload.length);
       queryClient.invalidateQueries({ queryKey: ["issueCollaborators", uuid] });
+      invalidateIssuesCaches(queryClient, { uuid });
 
       // Hide overlay on success
       hideOverlay();
@@ -179,6 +173,7 @@ const InviteCollaboratorsModal = ({
     onSuccess: (response, payload) => {
       patchCollaboratorsCount(-payload.length);
       queryClient.invalidateQueries({ queryKey: ["issueCollaborators", uuid] });
+      invalidateIssuesCaches(queryClient, { uuid });
 
       hideOverlay();
       setSelectedRemovals([]);

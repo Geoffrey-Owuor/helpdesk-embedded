@@ -11,6 +11,8 @@ import FormAsterisk from "../FormAsterisk";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { IssueDetail } from "@/queries/fetchIssue";
+import { invalidateIssuesCaches } from "@/utils/invalidateIssuesCaches";
 
 type Payload = {
   uuid: string;
@@ -23,7 +25,6 @@ type TitleDescriptionModalProps = {
   title: IssueValueTypes;
   description: IssueValueTypes;
   uuid: string;
-  activeQueryKey: (string | boolean)[];
   userId: IssueValueTypes;
   isModalOpen: boolean;
   closeModal: () => void;
@@ -32,7 +33,6 @@ const TitleDescriptionModal = ({
   title,
   description,
   uuid,
-  activeQueryKey,
   userId,
   isModalOpen,
   closeModal,
@@ -81,21 +81,15 @@ const TitleDescriptionModal = ({
 
     onSuccess: (response, payload) => {
       // 1. Update cache only after confirmed API success
-      queryClient.setQueryData(
-        activeQueryKey,
-        (oldData: Record<string, IssueValueTypes>[]) => {
-          if (!oldData) return oldData;
-          return oldData.map((issue: Record<string, IssueValueTypes>) =>
-            issue.issue_uuid === payload.uuid
-              ? {
-                  ...issue,
-                  issue_title: payload.issue_title,
-                  issue_description: payload.issue_description,
-                  issue_updated_at: new Date().toISOString(),
-                }
-              : issue,
-          );
-        },
+      queryClient.setQueryData(["issue", uuid], (old: IssueDetail | undefined) =>
+        old
+          ? {
+              ...old,
+              issue_title: payload.issue_title,
+              issue_description: payload.issue_description,
+              issue_updated_at: new Date().toISOString(),
+            }
+          : old,
       );
 
       // Hide overlay on success
@@ -110,6 +104,9 @@ const TitleDescriptionModal = ({
       hideOverlay();
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
+    },
+    onSettled: () => {
+      invalidateIssuesCaches(queryClient, { uuid });
     },
   });
 

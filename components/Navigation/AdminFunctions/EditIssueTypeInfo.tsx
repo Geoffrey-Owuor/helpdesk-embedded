@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect, Dispatch, SetStateAction } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+  useMemo,
+} from "react";
 import {
   Check,
   ChevronDown,
@@ -8,6 +15,8 @@ import {
   Bug,
   Save,
   ArrowUpDown,
+  X,
+  Search,
 } from "lucide-react";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
@@ -20,6 +29,7 @@ import { RefetchFunction } from "./AgentsInfo";
 
 type EditIssueTypeInfoProps = {
   issueType: string;
+  longName: string;
   issuePriority: string;
   agentNames: { agentName: string; agentEmail: string }[];
   agentEmail: string;
@@ -29,6 +39,7 @@ type EditIssueTypeInfoProps = {
 
 const EditIssueTypeInfo = ({
   issueType,
+  longName,
   issuePriority,
   agentNames,
   agentEmail,
@@ -36,10 +47,27 @@ const EditIssueTypeInfo = ({
   setActiveEditId,
 }: EditIssueTypeInfoProps) => {
   const [selectedType, setSelectedType] = useState(issueType || "");
+  const [selectedLongName, setSelectedLongName] = useState(longName || "");
   const [selectedPriority, setSelectedPriority] = useState(issuePriority || "");
   const [selectedEmail, setSelectedEmail] = useState(agentEmail || "");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isPriorityDropdownOpen, setIsPriorityDropdownOpen] = useState(false);
+
+  // Search Query
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Memoized filtered agents
+  const filteredAgents = useMemo(() => {
+    if (!searchQuery.trim()) return agentNames;
+
+    const query = searchQuery.toLowerCase().trim();
+
+    return agentNames.filter(
+      (agent) =>
+        agent.agentName.toLowerCase().includes(query) ||
+        agent.agentEmail.toLowerCase().includes(query),
+    );
+  }, [agentNames, searchQuery]);
 
   // State stores
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
@@ -87,6 +115,7 @@ const EditIssueTypeInfo = ({
     if (
       (agentEmail === selectedEmail &&
         issueType === selectedType &&
+        longName === selectedLongName &&
         issuePriority === selectedPriority) ||
       !selectedEmail ||
       !selectedType ||
@@ -103,6 +132,7 @@ const EditIssueTypeInfo = ({
         selectedEmail,
         selectedType,
         issueType,
+        longName: selectedLongName,
         selectedPriority,
       });
 
@@ -161,6 +191,22 @@ const EditIssueTypeInfo = ({
           />
         </div>
 
+        {/* 1b. Display Name Input */}
+        <div className="space-y-1.5">
+          <label className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
+            <Bug size={12} />
+            <span>Display Name</span>
+          </label>
+          <input
+            type="text"
+            value={selectedLongName}
+            onChange={(e) => setSelectedLongName(e.target.value)}
+            onBlur={(e) => setSelectedLongName(e.target.value.trim())}
+            className="w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm transition-all outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:focus:border-blue-500"
+            placeholder="Friendly name shown to users (defaults to Issue Type)"
+          />
+        </div>
+
         {/* 2. Agent Selection Dropdown */}
         <div className="space-y-1.5" ref={dropdownRef}>
           <label className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
@@ -193,29 +239,55 @@ const EditIssueTypeInfo = ({
             </button>
 
             {isDropdownOpen && (
-              <div className="default-scrollbar absolute left-0 z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-xl border border-neutral-200 bg-white p-2 shadow-xl dark:border-neutral-700 dark:bg-neutral-800">
-                {agentNames.map((agent) => (
-                  <button
-                    key={agent.agentEmail}
-                    onClick={() => {
-                      setSelectedEmail(agent.agentEmail);
-                      setIsDropdownOpen(false);
-                    }}
-                    className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-700"
-                  >
-                    <div className="flex flex-col">
-                      <span className="font-semibold text-neutral-900 dark:text-neutral-100">
-                        {agent.agentName}
-                      </span>
-                      <span className="text-[10px] text-neutral-500">
-                        {agent.agentEmail}
-                      </span>
+              <div className="absolute left-0 z-20 mt-1 w-full rounded-xl border border-neutral-200 bg-white px-1 py-2 shadow-xl dark:border-neutral-700 dark:bg-neutral-800">
+                {/* SEARCH INPUT - Search threshold of six*/}
+                {agentNames.length >= 6 && (
+                  <div className="relative px-1 pb-2">
+                    <div className="relative flex items-center">
+                      <Search className="absolute left-2.5 h-3.5 w-3.5 text-neutral-400" />
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search Agents"
+                        className="w-full rounded-full border border-neutral-200 bg-neutral-100 py-2 pr-8 pl-8 text-xs text-neutral-900 placeholder-neutral-400 transition-colors focus:border-blue-500 focus:bg-white focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500 dark:focus:border-blue-500 dark:focus:bg-neutral-950/50"
+                      />
+                      {searchQuery && (
+                        <button
+                          type="button"
+                          onClick={() => setSearchQuery("")}
+                          className="absolute right-2 rounded-full p-0.5 text-neutral-400 hover:bg-neutral-200 hover:text-neutral-600 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      )}
                     </div>
-                    {selectedName === agent.agentName && (
-                      <Check size={14} className="text-blue-500" />
-                    )}
-                  </button>
-                ))}
+                  </div>
+                )}
+                <div className="default-scrollbar max-h-48 overflow-y-auto">
+                  {filteredAgents.map((agent) => (
+                    <button
+                      key={agent.agentEmail}
+                      onClick={() => {
+                        setSelectedEmail(agent.agentEmail);
+                        setIsDropdownOpen(false);
+                      }}
+                      className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                    >
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-neutral-900 dark:text-neutral-100">
+                          {agent.agentName}
+                        </span>
+                        <span className="text-[10px] text-neutral-500">
+                          {agent.agentEmail}
+                        </span>
+                      </div>
+                      {selectedName === agent.agentName && (
+                        <Check size={14} className="text-blue-500" />
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -283,6 +355,7 @@ const EditIssueTypeInfo = ({
             disabled={
               (agentEmail === selectedEmail &&
                 issueType === selectedType &&
+                longName === selectedLongName &&
                 issuePriority === selectedPriority) ||
               !selectedEmail ||
               !selectedType ||

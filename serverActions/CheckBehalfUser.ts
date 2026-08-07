@@ -14,13 +14,11 @@ export interface ReturnedUser {
 type CheckBehalfUserProps = {
   name: string;
   email: string;
-  department: string;
 };
 
 export const CheckBehalfUser = async ({
   name,
   email,
-  department,
 }: CheckBehalfUserProps): Promise<ReturnedUser | null> => {
   try {
     // Check if the user is already registered and return their payload
@@ -45,13 +43,16 @@ export const CheckBehalfUser = async ({
     } else {
       // Confirm if we have the staff info in our database
       const existingStaff = await query(
-        `SELECT id FROM company_user_records WHERE email = $1`,
+        `SELECT name, email, department FROM company_user_records WHERE email = $1 LIMIT 1`,
         [email],
       );
 
       if (existingStaff.length === 0) {
         return null;
       }
+
+      const staffInfo = existingStaff[0];
+
       // User does not exist, try creating a new user, return the data, and notify the user
       const resetToken = crypto.randomUUID();
       const tempPassword = crypto.randomBytes(4).toString("hex");
@@ -69,9 +70,9 @@ export const CheckBehalfUser = async ({
 
       // Insert params
       const insertParams = [
-        name,
-        email,
-        department,
+        staffInfo.name,
+        staffInfo.email,
+        staffInfo.department,
         hashedPassword,
         "user",
         resetToken,

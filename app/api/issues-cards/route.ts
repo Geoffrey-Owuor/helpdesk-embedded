@@ -2,39 +2,25 @@ import { query } from "@/lib/Db";
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { defaultCounts } from "@/public/assets";
+import {
+  buildIssuesFilter,
+  parseIssuesFilterParams,
+} from "@/lib/issues/buildIssuesFilter";
 
 export const GET = withAuth(async ({ user, request }) => {
   const { userId, role, email, department, isSuper } = user;
   const searchParams = request.nextUrl.searchParams;
   const agentAdminFilter = searchParams.get("agentAdminFilter");
   const superAdminFilter = searchParams.get("superAdminFilter");
+  const filters = parseIssuesFilterParams(searchParams);
 
-  // 1. Determine Dynamic Clause & Value
-  // This has to mirror the visibility rules in /api/get-issues exactly,
-  // otherwise the cards will disagree with the issues table
-  let filterClause = "issue_submitter_id = $1";
-  let filterValue = userId;
-
-  switch (role) {
-    case "admin":
-      if (agentAdminFilter !== "agentAdminFilter") {
-        filterClause = "issue_target_department = $1";
-        filterValue = department;
-      }
-      break;
-    case "agent":
-      if (agentAdminFilter !== "agentAdminFilter") {
-        // Agents count their assigned issues plus the ones they collaborate on
-        filterClause = `(issue_agent_email = $1
-          OR EXISTS (
-            SELECT 1 FROM issue_collaborators ic
-            WHERE ic.issue_id = issues_table.issue_uuid
-            AND ic.collaborator_email = $1
-          ))`;
-        filterValue = email;
-      }
-      break;
-  }
+  // Shared with /api/get-issues so the cards can never disagree with the
+  // issues table about which rows are "in view" for the active filters.
+  const { whereSql, params } = buildIssuesFilter(
+    { role, userId, email, department, isSuper, agentAdminFilter, superAdminFilter },
+    filters,
+    "issues_table",
+  );
 
   // 2. The Optimized Query: "The Pivot"
   // We scan the table ONCE. As we look at each row, we decide which "bucket" it counts towards.
@@ -71,8 +57,7 @@ export const GET = withAuth(async ({ user, request }) => {
     FROM issues_table
   `;
 
-  if (!superAdminFilter || !isSuper) sql += ` WHERE ${filterClause}`;
-  const params = superAdminFilter && isSuper ? [] : [filterValue];
+  sql += whereSql;
 
   try {
     // 3. Execute ONE query

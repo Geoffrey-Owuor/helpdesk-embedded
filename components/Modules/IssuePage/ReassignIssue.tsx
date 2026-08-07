@@ -21,6 +21,8 @@ import { useConfirmStore } from "@/store/useConfirmStore";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { IssueDetail } from "@/queries/fetchIssue";
+import { invalidateIssuesCaches } from "@/utils/invalidateIssuesCaches";
 
 type Payload = {
   uuid: string;
@@ -34,7 +36,6 @@ type ReassignIssueProps = {
   isModalOpen: boolean;
   issueType: IssueValueTypes;
   targetDepartment: IssueValueTypes;
-  activeQueryKey: (string | boolean)[];
   issueAgentEmail: IssueValueTypes;
 };
 
@@ -43,7 +44,6 @@ const ReassignIssue = ({
   closeModal,
   isModalOpen,
   issueType,
-  activeQueryKey,
   targetDepartment,
   issueAgentEmail,
 }: ReassignIssueProps) => {
@@ -86,22 +86,15 @@ const ReassignIssue = ({
   const { mutate: updateAgent, isPending: isUpdating } = useMutation({
     mutationFn: (payload: Payload) => apiClient.put("/reassign-issue", payload),
     onSuccess: (response, payload) => {
-      queryClient.setQueryData(
-        activeQueryKey,
-        (oldData: Record<string, IssueValueTypes>[]) => {
-          if (!oldData) return oldData;
-          // Map through the array and update the specific issue's status
-          return oldData.map((issue: Record<string, IssueValueTypes>) =>
-            issue.issue_uuid === payload.uuid
-              ? {
-                  ...issue,
-                  issue_agent_name: payload.agentName,
-                  issue_agent_email: payload.agentEmail,
-                  issue_updated_at: new Date().toISOString(),
-                }
-              : issue,
-          );
-        },
+      queryClient.setQueryData(["issue", uuid], (old: IssueDetail | undefined) =>
+        old
+          ? {
+              ...old,
+              issue_agent_name: payload.agentName,
+              issue_agent_email: payload.agentEmail,
+              issue_updated_at: new Date().toISOString(),
+            }
+          : old,
       );
 
       // Hide overlay on success
@@ -121,6 +114,12 @@ const ReassignIssue = ({
       hideOverlay();
       const errorMessage = getApiErrorMessage(error);
       triggerAlert("error", errorMessage);
+    },
+    onSettled: () => {
+      // Previously missing entirely - reassignment never invalidated cards/
+      // list/analytics, so those views could silently disagree with the
+      // assigned agent shown on the issue page.
+      invalidateIssuesCaches(queryClient, { uuid });
     },
   });
   //function for calling the api endpoint to handle reassigning

@@ -10,6 +10,9 @@
 }
 
 :root {
+  /* Homepage ambient grid line colour */
+  --home-grid-line: rgba(10, 10, 10, 0.055);
+
   /* Matches Tailwind neutral-200 for the base skeleton color */
   --shimmer-background: #e5e5e5;
 
@@ -23,6 +26,9 @@
 }
 
 [data-theme="dark"] {
+  /* Homepage ambient grid line colour */
+  --home-grid-line: rgba(255, 255, 255, 0.05);
+
   /* Matches Tailwind neutral-900 for dark mode base */
   --shimmer-background: #171717;
 
@@ -71,6 +77,65 @@
 
 .animate-slideUp {
   animation: slideUp 0.2s ease-out forwards;
+}
+
+/* Homepage entrance + ambient motion */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeUp {
+  opacity: 0;
+  animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes ambientDrift {
+  0%,
+  100% {
+    transform: translate3d(-50%, 0, 0) scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translate3d(-50%, 2.5rem, 0) scale(1.08);
+    opacity: 1;
+  }
+}
+
+.animate-ambientDrift {
+  animation: ambientDrift 14s ease-in-out infinite;
+}
+
+@keyframes flowRight {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
+
+.animate-flowRight {
+  animation: flowRight 3.5s ease-in-out infinite;
+}
+
+/* Respect users who ask for less motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fadeUp {
+    opacity: 1;
+    animation: none;
+  }
+
+  .animate-ambientDrift,
+  .animate-flowRight {
+    animation: none;
+  }
 }
 
 @keyframes shimmer {

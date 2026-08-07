@@ -10,6 +10,7 @@ import { getRequestOrigin } from "@/lib/getRequestOrigin";
 import { cookies } from "next/headers";
 import crypto from "crypto";
 import { query } from "@/lib/Db";
+import { getUserPrivileges } from "@/lib/UserPrivileges";
 import { basePath } from "@/public/assets";
 
 export async function GET(request: NextRequest) {
@@ -76,6 +77,7 @@ export async function GET(request: NextRequest) {
         department: "no_department",
         email: email,
         isSuper: false,
+        specialAccess: [],
       };
 
       const pendingRegistrationToken = await signAccessToken(tempPayload);
@@ -98,19 +100,15 @@ export async function GET(request: NextRequest) {
 
     // Check if the user is an active user
     if (!userObject.is_user_active) {
-      return Response.redirect(new URL(`${basePath}/login`, baseUrl));
+      return Response.redirect(
+        new URL(`${basePath}/login?disabled=true`, baseUrl),
+      );
     }
 
-    // Check if user is a super admin
-    const superAdmin = await query(
-      `
-       SELECT super_admin_id FROM super_admins 
-       WHERE super_admin_id = $1 LIMIT 1
-      `,
-      [userObject.user_id],
+    // Check for elevated/special privileges (super admin, feature grants)
+    const { isSuper, specialAccess } = await getUserPrivileges(
+      userObject.user_id,
     );
-
-    const isSuper = superAdmin.length > 0;
 
     // The required payload
     const userPayload = {
@@ -119,7 +117,8 @@ export async function GET(request: NextRequest) {
       role: userObject.role,
       department: userObject.department,
       email: userObject.email,
-      isSuper: isSuper,
+      isSuper,
+      specialAccess,
     };
 
     // Tokens

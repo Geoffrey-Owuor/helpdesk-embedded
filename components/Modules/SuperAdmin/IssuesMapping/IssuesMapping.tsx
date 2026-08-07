@@ -24,6 +24,7 @@ export interface IssueMappingRecord {
   admin_name: string;
   admin_email: string;
   issue_type: string;
+  long_name: string;
   issue_priority: string;
 }
 
@@ -97,16 +98,6 @@ const IssuesMapping = () => {
       return response.data;
     },
   });
-
-  // Filtered mapped data - admins
-  const adminInformation = [
-    ...new Map(
-      issuesMapping.map((issue) => [
-        issue.admin_email,
-        { option: issue.admin_name, value: issue.admin_email },
-      ]),
-    ).values(),
-  ];
 
   // Filtered mapped data - agents
   const agentsInformation = [
@@ -209,7 +200,7 @@ const IssuesMapping = () => {
 
         <ExportData
           agentsInfo={agentsInformation}
-          adminsInfo={adminInformation}
+          adminsInfo={agentsInformation}
           type="issues"
           refetch={() => refetchIssuesMapping()}
         />
@@ -275,9 +266,14 @@ const IssuesMapping = () => {
 
                   {/* Issue Type */}
                   <td className="bg-white px-4 py-3 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
-                    <span className="font-medium text-neutral-700 dark:text-neutral-300">
-                      {item.issue_type}
-                    </span>
+                    <div className="flex flex-col">
+                      <span className="font-medium text-neutral-700 dark:text-neutral-300">
+                        {item.long_name}
+                      </span>
+                      <span className="text-[11px] text-neutral-500">
+                        {item.issue_type}
+                      </span>
+                    </div>
                   </td>
 
                   {/* Priority */}
@@ -309,10 +305,11 @@ const IssuesMapping = () => {
                           isModalOpen={activeEditId === item.issue_id}
                           hideModal={() => setActiveEditId(null)}
                           agentsInfo={agentsInformation}
-                          adminsInfo={adminInformation}
+                          adminsInfo={agentsInformation}
                           issueId={item.issue_id}
                           issueInfo={{
                             issueType: item.issue_type,
+                            longName: item.long_name,
                             issuePriority: item.issue_priority,
                             adminEmail: item.admin_email,
                             agentEmail: item.agent_email,

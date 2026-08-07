@@ -14,6 +14,8 @@ import {
   UserRound,
   Paperclip,
   UsersRound,
+  UndoDot,
+  GitMerge,
 } from "lucide-react";
 import IssuePriorityFormatter from "./IssuePriorityFormatter";
 import RelativeTimeBadge from "./RelativeTimeBadge";
@@ -21,13 +23,9 @@ import { ResolutionTimePill } from "./ResolutionTimePill";
 
 type CardViewDataProps = {
   currentIssues: Record<string, string | number>[];
-  dynamicUrlParam: string;
 };
 
-const CardViewData = ({
-  currentIssues,
-  dynamicUrlParam,
-}: CardViewDataProps) => {
+const CardViewData = ({ currentIssues }: CardViewDataProps) => {
   const router = useRouter();
   const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
 
@@ -47,7 +45,7 @@ const CardViewData = ({
           onClick={() => {
             setLoadingLine(true);
             router.push(
-              `/dashboard/${issueData.issue_uuid}?type=${dynamicUrlParam}&title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`,
+              `/dashboard/${issueData.issue_uuid}?title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`,
             );
           }}
           className="group flex cursor-pointer flex-col justify-between rounded-xl border border-neutral-200 bg-white p-5 shadow-xs transition-all duration-200 hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700"
@@ -61,7 +59,7 @@ const CardViewData = ({
                   setLoadingLine(true);
                 }}
                 title={titleHelper(issueData.issue_reference_id)}
-                href={`/dashboard/${issueData.issue_uuid}?type=${dynamicUrlParam}&title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`}
+                href={`/dashboard/${issueData.issue_uuid}?title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`}
                 className="flex items-center gap-1.5 text-sm font-semibold text-neutral-500 transition-colors hover:text-blue-500 hover:underline dark:text-neutral-400"
               >
                 <span className="max-w-50 truncate">
@@ -149,6 +147,26 @@ const CardViewData = ({
                   agentName={issueData.issue_agent_name}
                 />
                 <div className="flex items-center gap-1.5">
+                  {Number(issueData.attachments_count) > 0 && (
+                    <Paperclip
+                      size={14}
+                      className="text-neutral-400 transition-colors group-hover:text-neutral-600 dark:text-neutral-500 dark:group-hover:text-neutral-300"
+                    />
+                  )}
+                  {Number(issueData.reopened_count) > 0 && (
+                    <UndoDot
+                      size={14}
+                      aria-label="Reopened issue"
+                      className="text-fuchsia-500 transition-colors group-hover:text-fuchsia-600 dark:text-fuchsia-400 dark:group-hover:text-fuchsia-300"
+                    />
+                  )}
+                  {Number(issueData.escalated_count) > 0 && (
+                    <GitMerge
+                      size={14}
+                      aria-label="Escalated issue"
+                      className="text-red-500 transition-colors group-hover:text-red-600 dark:text-red-400 dark:group-hover:text-red-300"
+                    />
+                  )}
                   {Number(issueData.collaborators_count) > 0 && (
                     <UsersRound
                       size={14}
@@ -156,17 +174,16 @@ const CardViewData = ({
                       className="text-blue-500 transition-colors group-hover:text-blue-600 dark:text-blue-400 dark:group-hover:text-blue-300"
                     />
                   )}
-                  {Number(issueData.attachments_count) > 0 ? (
-                    <Paperclip
-                      size={14}
-                      className="text-neutral-400 transition-colors group-hover:text-neutral-600 dark:text-neutral-500 dark:group-hover:text-neutral-300"
-                    />
-                  ) : (
-                    <ArrowRight
-                      size={14}
-                      className="text-neutral-400 transition-colors group-hover:text-neutral-600 dark:text-neutral-500 dark:group-hover:text-neutral-300"
-                    />
-                  )}
+
+                  {!Number(issueData.attachments_count) &&
+                    !Number(issueData.reopened_count) &&
+                    !Number(issueData.escalated_count) &&
+                    !Number(issueData.collaborators_count) && (
+                      <ArrowRight
+                        size={14}
+                        className="text-neutral-400 transition-colors group-hover:text-neutral-600 dark:text-neutral-500 dark:group-hover:text-neutral-300"
+                      />
+                    )}
                 </div>
               </div>
             </div>

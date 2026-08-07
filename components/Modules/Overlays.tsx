@@ -7,18 +7,32 @@ import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 
-const CustomLoader = ({ className }: { className: string }) => (
+// A refined dual-tone ring spinner: a static track plus a spinning accent
+// arc, matching the app's blue-600 accent color used elsewhere in the UI.
+const LogoutSpinner = ({ className }: { className: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={48}
-    height={48}
+    width={40}
+    height={40}
     viewBox="0 0 24 24"
+    fill="none"
     className={className}
   >
+    <circle
+      cx={12}
+      cy={12}
+      r={10}
+      stroke="currentColor"
+      strokeWidth={2}
+      className="text-neutral-200 dark:text-neutral-800"
+    />
     <path
-      fill="currentColor"
-      d="M12 18a2 2 0 1 0 0 4a2 2 0 1 0 0-4m0-16a2 2 0 1 0 0 4a2 2 0 1 0 0-4M7.76 19.07c-.78.78-2.05.78-2.83 0s-.78-2.05 0-2.83s2.05-.78 2.83 0s.78 2.05 0 2.83M19.07 7.76c-.78.78-2.05.78-2.83 0s-.78-2.05 0-2.83s2.05-.78 2.83 0s.78 2.05 0 2.83M4 14c-1.1 0-2-.9-2-2s.9-2 2-2s2 .9 2 2s-.9 2-2 2m16 0c-1.1 0-2-.9-2-2s.9-2 2-2s2 .9 2 2s-.9 2-2 2M4.93 7.76c-.78-.78-.78-2.05 0-2.83s2.05-.78 2.83 0s.78 2.05 0 2.83s-2.05.78-2.83 0m11.31 11.31c-.78-.78-.78-2.05 0-2.83s2.05-.78 2.83 0s.78 2.05 0 2.83s-2.05.78-2.83 0"
-    ></path>
+      d="M12 2a10 10 0 0 1 10 10"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      className="text-neutral-800 dark:text-neutral-200"
+    />
   </svg>
 );
 
@@ -34,29 +48,33 @@ export const PromiseOverlay = () => {
     hideOverlay();
   }, [pathname, hideOverlay]);
 
+  const isLoggingOut = overlaytext === "Logging out";
+
   const content = (
     <div
-      className={`fixed inset-0 z-9999 flex h-screen items-center justify-center ${overlaytext === "Logging out" ? "bg-white dark:bg-neutral-950" : "bg-black/30 dark:bg-black/60"}`}
+      className={`fixed inset-0 z-9999 flex h-screen items-center justify-center ${isLoggingOut ? "bg-white dark:bg-neutral-950" : "bg-black/30 dark:bg-black/60"}`}
     >
-      {/* Container to align the spinner and text horizontally */}
-      <div className="flex items-center space-x-2">
-        {/* The Lucide Loader spinner */}
-        {overlaytext === "Logging out" ? (
-          <CustomLoader
-            className="animate-spin text-neutral-900 dark:text-white"
-            aria-label="overlay text"
-          />
-        ) : (
+      {isLoggingOut ? (
+        // Vertically stacked, centered layout for the full-page logout state
+        <div className="flex flex-col items-center gap-3">
+          <LogoutSpinner className="animate-spin" aria-label="overlay text" />
+          <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
+            {overlaytext}...
+          </span>
+        </div>
+      ) : (
+        // Container to align the spinner and text horizontally
+        <div className="flex items-center space-x-2">
           <Loader2
             className="h-9 w-9 animate-spin text-neutral-900 dark:text-white"
             aria-label="overlay text"
           />
-        )}
-        {/* The text, styled for dark and light modes */}
-        <span className="text-base text-neutral-900 dark:text-white">
-          {overlaytext}...
-        </span>
-      </div>
+          {/* The text, styled for dark and light modes */}
+          <span className="text-base text-neutral-900 dark:text-white">
+            {overlaytext}...
+          </span>
+        </div>
+      )}
     </div>
   );
 

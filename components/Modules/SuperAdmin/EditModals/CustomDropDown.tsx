@@ -7,6 +7,9 @@ import {
   Activity,
   LucideIcon,
   Siren,
+  UserRound,
+  KeyRound,
+  Search,
 } from "lucide-react";
 import FormAsterisk from "../../FormAsterisk";
 
@@ -27,7 +30,13 @@ const LabelIcon: Record<string, LucideIcon> = {
   Role: Shield,
   Status: Activity,
   Priority: Siren,
+  User: UserRound,
+  Feature: KeyRound,
 };
+
+// Option count above which the in-menu search box is shown - short lists
+// don't need it, long ones (User) do.
+const SEARCH_THRESHOLD = 6;
 
 const CustomDropdown = ({
   label,
@@ -36,6 +45,7 @@ const CustomDropdown = ({
   onChange,
 }: CustomDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const selectedOption = options.find((opt) => opt.value === value);
@@ -44,13 +54,25 @@ const CustomDropdown = ({
   // Getting the relevant icon
   const Icon = LabelIcon[label];
 
+  const showSearch = options.length > SEARCH_THRESHOLD;
+  const filteredOptions = showSearch
+    ? options.filter((opt) =>
+        opt.option.toLowerCase().includes(search.trim().toLowerCase()),
+      )
+    : options;
+
+  const closeMenu = () => {
+    setIsOpen(false);
+    setSearch("");
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
-        setIsOpen(false);
+        closeMenu();
       }
     };
 
@@ -64,7 +86,7 @@ const CustomDropdown = ({
 
   const handleSelect = (selectedValue: string) => {
     onChange(selectedValue);
-    setIsOpen(false);
+    closeMenu();
   };
 
   return (
@@ -102,22 +124,43 @@ const CustomDropdown = ({
       </button>
 
       {isOpen && (
-        <ul className="default-scrollbar absolute top-full left-0 z-70 mt-1.5 max-h-60 w-full overflow-y-auto rounded-xl border border-neutral-200 bg-white py-1.5 shadow-xl dark:border-neutral-700 dark:bg-neutral-900">
-          {/* Options list */}
-          {options.map((item) => (
-            <li
-              key={item.value}
-              onClick={() => handleSelect(item.value)}
-              className={`mx-1.5 cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors duration-100 hover:bg-neutral-100 dark:hover:bg-neutral-800 ${
-                value === item.value
-                  ? "bg-neutral-100 font-medium text-neutral-900 dark:bg-neutral-800 dark:text-white"
-                  : "text-neutral-700 dark:text-neutral-300"
-              }`}
-            >
-              {item.option}
-            </li>
-          ))}
-        </ul>
+        <div className="absolute top-full left-0 z-70 mt-1.5 w-full rounded-xl border border-neutral-200 bg-white py-1.5 shadow-xl dark:border-neutral-700 dark:bg-neutral-900">
+          {showSearch && (
+            <div className="relative mb-1.5 px-2">
+              <Search className="pointer-events-none absolute top-1/2 left-5 h-3.5 w-3.5 -translate-y-1/2 text-neutral-400" />
+              <input
+                type="text"
+                autoFocus
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search..."
+                className="h-8 w-full rounded-full border border-neutral-200 bg-neutral-50 pr-3 pl-8 text-sm text-neutral-900 outline-none placeholder:text-neutral-400 focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
+              />
+            </div>
+          )}
+          <ul className="default-scrollbar max-h-60 overflow-y-auto">
+            {/* Options list */}
+            {filteredOptions.length === 0 ? (
+              <li className="px-3.5 py-2 text-sm text-neutral-400">
+                No matches found
+              </li>
+            ) : (
+              filteredOptions.map((item) => (
+                <li
+                  key={item.value}
+                  onClick={() => handleSelect(item.value)}
+                  className={`mx-1.5 cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors duration-100 hover:bg-neutral-100 dark:hover:bg-neutral-800 ${
+                    value === item.value
+                      ? "bg-neutral-100 font-medium text-neutral-900 dark:bg-neutral-800 dark:text-white"
+                      : "text-neutral-700 dark:text-neutral-300"
+                  }`}
+                >
+                  {item.option}
+                </li>
+              ))
+            )}
+          </ul>
+        </div>
       )}
     </div>
   );

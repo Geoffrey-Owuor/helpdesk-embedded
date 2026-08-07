@@ -2,15 +2,14 @@ import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { NextResponse } from "next/server";
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
-import { emailSender } from "@/services/EmailSender";
 
 export const PUT = withAuth(async ({ user, request }) => {
   let client: PoolClient | undefined;
 
-  const { role, username, userId, email, isSuper } = user;
+  const { role } = user;
 
   //  Admin functionality only
-  if (role !== "admin" && !isSuper) {
+  if (role !== "admin") {
     return NextResponse.json(
       { message: "You are not authorized to perform this action" },
       { status: 403 },
@@ -47,7 +46,6 @@ export const PUT = withAuth(async ({ user, request }) => {
     //our current issue status
     const currentStatus = rows[0].issue_status;
     const currentPriority = rows[0].issue_priority;
-    const referenceNumber = rows[0].issue_reference_id;
 
     // Issue is already closed
     if (currentStatus === "closed") {
@@ -68,31 +66,21 @@ export const PUT = withAuth(async ({ user, request }) => {
     }
 
     // Grouping our parameters
-    const queryParams = [priority, userId, email, username, uuid];
+    const queryParams = [priority, uuid];
 
     // Our query
     await client.query(
       `
         UPDATE issues_table
         SET issue_priority = $1,
-        issue_assigner_id = $2,
-        issue_assigner_email = $3,
-        issue_assigner_name = $4,
         issue_updated_at = CURRENT_TIMESTAMP
-        WHERE issue_uuid = $5
+        WHERE issue_uuid = $2
         `,
       queryParams,
     );
 
     // Commit the transaction
     await client.query("COMMIT");
-
-    // EMAIL SERVICE
-    const title = `Issue ${referenceNumber} Priority Changed to ${priority}`;
-    const description = `Priority of Issue ${referenceNumber} has been changed to ${priority} by ${username}`;
-
-    // Fire and forget - Calling the email sender service
-    emailSender({ title, description, uuid });
 
     // Return a response to the user
     return NextResponse.json(

@@ -38,6 +38,21 @@ const OptionsDropDown = ({
   // Search input state
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Short-code -> long-name map, sourced from the DB via IssueOption.longName.
+  // Department options don't carry a longName (they're already human-readable).
+  const issueTypeMap = useMemo(() => {
+    if (dropDownType === "department") return undefined;
+
+    return Object.fromEntries(
+      (options as IssueOption[]).map(
+        (option): [string, string] => [
+          option.value,
+          option.longName ?? option.value,
+        ],
+      ),
+    );
+  }, [options, dropDownType]);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -70,11 +85,11 @@ const OptionsDropDown = ({
       const targetLabel =
         dropDownType === "department"
           ? option.option
-          : generateValueType(option.option);
+          : generateValueType(option.option, issueTypeMap);
 
       return targetLabel.toLowerCase().includes(query);
     });
-  }, [options, searchQuery, dropDownType]);
+  }, [options, searchQuery, dropDownType, issueTypeMap]);
 
   const handleSelect = (selectedValue: string) => {
     onChange(selectedValue);
@@ -109,7 +124,7 @@ const OptionsDropDown = ({
             className={`${!value ? "text-neutral-500" : "line-clamp-1 text-neutral-900 dark:text-neutral-100"}`}
           >
             {value
-              ? generateValueType(value)
+              ? generateValueType(value, issueTypeMap)
               : dropDownType === "department"
                 ? "Select a department..."
                 : "Select an issue type..."}
@@ -123,68 +138,72 @@ const OptionsDropDown = ({
         />
       </button>
       {isOpen && (
-        <div className="default-scrollbar absolute top-full left-0 z-20 mt-1 max-h-60 w-full overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-2xl dark:border-neutral-700 dark:bg-neutral-900">
+        <div className="absolute top-full left-0 z-20 mt-1 w-full rounded-xl border border-neutral-300 bg-white p-1 shadow-2xl dark:border-neutral-700 dark:bg-neutral-900">
           <div className="px-2 py-2 text-xs font-semibold text-neutral-500 uppercase">
             Select {dropDownType === "department" ? "Department" : "Issue Type"}
           </div>
 
-          {/* SEARCH INPUT */}
-          <div className="relative px-1 pb-2">
-            <div className="relative flex items-center">
-              <Search className="absolute left-2.5 h-3.5 w-3.5 text-neutral-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={`Search ${dropDownType === "department" ? "departments" : "issue types"}...`}
-                className="w-full rounded-full border border-neutral-200 bg-neutral-100 py-2 pr-8 pl-8 text-xs text-neutral-900 placeholder-neutral-400 transition-colors focus:border-blue-500 focus:bg-white focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-500 dark:focus:border-blue-500 dark:focus:bg-neutral-900"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-2 rounded-full p-0.5 text-neutral-400 hover:bg-neutral-200 hover:text-neutral-600 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              )}
-            </div>
-          </div>
-
-          {loading ? (
-            <div className="flex items-center gap-1 px-3 py-6 text-sm text-neutral-400 dark:text-neutral-500">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Loading...</span>
-            </div>
-          ) : filteredOptions.length > 0 ? (
-            filteredOptions.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => handleSelect(option.value)}
-                className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
-              >
-                <span
-                  title={generateValueType(option.option)}
-                  className="line-clamp-1 text-left"
-                >
-                  {dropDownType === "department"
-                    ? option.option
-                    : generateValueType(option.option)}
-                </span>
-                {value === option.value && (
-                  <Check className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+          {/* SEARCH INPUT - Search threshold of six*/}
+          {options.length > 6 && (
+            <div className="relative px-1 pb-2">
+              <div className="relative flex items-center">
+                <Search className="absolute left-2.5 h-3.5 w-3.5 text-neutral-400" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={`Search ${dropDownType === "department" ? "departments" : "issue types"}...`}
+                  className="w-full rounded-full border border-neutral-200 bg-neutral-100 py-2 pr-8 pl-8 text-xs text-neutral-900 placeholder-neutral-400 transition-colors focus:border-blue-500 focus:bg-white focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-500 dark:focus:border-blue-500 dark:focus:bg-neutral-900"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-2 rounded-full p-0.5 text-neutral-400 hover:bg-neutral-200 hover:text-neutral-600 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
                 )}
-              </button>
-            ))
-          ) : (
-            /* Fallback state when no options exist */
-            <div className="px-3 py-6 text-center text-sm text-neutral-400 dark:text-neutral-500">
-              {searchQuery
-                ? "No matching results found."
-                : `No ${dropDownType === "department" ? "departments" : "issue types"} found for this selection.`}
+              </div>
             </div>
           )}
+
+          <div className="default-scrollbar max-h-60 overflow-y-auto">
+            {loading ? (
+              <div className="flex items-center gap-1 px-3 py-6 text-sm text-neutral-400 dark:text-neutral-500">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Loading...</span>
+              </div>
+            ) : filteredOptions.length > 0 ? (
+              filteredOptions.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => handleSelect(option.value)}
+                  className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                >
+                  <span
+                    title={generateValueType(option.option, issueTypeMap)}
+                    className="line-clamp-1 text-left"
+                  >
+                    {dropDownType === "department"
+                      ? option.option
+                      : generateValueType(option.option, issueTypeMap)}
+                  </span>
+                  {value === option.value && (
+                    <Check className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  )}
+                </button>
+              ))
+            ) : (
+              /* Fallback state when no options exist */
+              <div className="px-3 py-6 text-center text-sm text-neutral-400 dark:text-neutral-500">
+                {searchQuery
+                  ? "No matching results found."
+                  : `No ${dropDownType === "department" ? "departments" : "issue types"} found for this selection.`}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

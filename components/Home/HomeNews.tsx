@@ -31,22 +31,22 @@ const HomeNews = () => {
   const displayedNews = newsList.slice(0, 6);
 
   return (
-    <section className="relative mb-16 px-4 sm:px-6 lg:px-8">
+    <section id="news" className="custom:px-8 relative scroll-mt-20 px-4 pb-16">
       <NewsDetailModal
         news={selectedNews}
         onClose={() => setSelectedNews(null)}
       />
 
       {/* Header Area */}
-      <div className="mb-6 flex flex-col items-center text-center">
-        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold tracking-widest text-blue-600 uppercase dark:border-blue-900/50 dark:bg-blue-900/20 dark:text-blue-400">
+      <div className="mb-8 flex flex-col items-center text-center">
+        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-semibold tracking-widest text-neutral-500 uppercase dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400">
           <Newspaper className="h-3.5 w-3.5" />
           The Latest
         </div>
-        <h2 className="mb-3 text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl dark:text-white">
+        <h2 className="mb-3 text-3xl font-semibold tracking-tight text-balance text-neutral-900 sm:text-4xl dark:text-white">
           News & Announcements
         </h2>
-        <p className="max-w-2xl text-base text-neutral-600 dark:text-neutral-400">
+        <p className="max-w-2xl text-base text-pretty text-neutral-600 dark:text-neutral-400">
           Stay in the loop. Read up on new releases, policy updates, and team
           milestones straight from the source.
         </p>

@@ -9,7 +9,6 @@ import { useRouter, usePathname } from "next/navigation";
 import { RouteChangeProps } from "./NotificationModal";
 import { useAlertStore } from "@/store/useAlertStore";
 import { fetchIssues } from "@/queries/fetchIssues";
-import { DEFAULT_FETCH_OPTIONS } from "@/public/assets";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
@@ -36,8 +35,6 @@ const Notifications = () => {
 
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
 
-  const type = "issue";
-
   const router = useRouter();
 
   const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
@@ -54,7 +51,7 @@ const Notifications = () => {
     if (basePath === pathname) return;
 
     // our dashboard path
-    const dashboardPath = `${basePath}?type=${type}&title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}`;
+    const dashboardPath = `${basePath}?title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}`;
 
     setLoadingLine(true);
 
@@ -75,19 +72,21 @@ const Notifications = () => {
     },
   });
 
+  // Notification badge only needs a recent-issues snapshot to diff against
+  // notificationDate - the first page (sorted newest-first) is sufficient.
   const {
-    data: defaultData = [],
+    data: defaultData,
     isLoading: defaultLoading,
     refetch: refetchDefaultData,
   } = useQuery({
-    queryKey: ["issuesDashboardData", superAdminFilter, agentAdminFilter],
-    queryFn: () => fetchIssues(DEFAULT_FETCH_OPTIONS),
+    queryKey: ["issuesDashboardData", superAdminFilter, agentAdminFilter, null, 1, 100],
+    queryFn: () => fetchIssues(null, 1, 100),
   });
 
   // Filter issuesData to only those created on or after notificationDate
   const filteredIssues =
     notificationData?.notificationDate && defaultData
-      ? defaultData.filter(
+      ? defaultData.rows.filter(
           (issue) =>
             new Date(issue.issue_created_at) >
             new Date(notificationData.notificationDate),

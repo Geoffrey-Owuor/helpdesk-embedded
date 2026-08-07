@@ -23,6 +23,7 @@ const priorityOptions = baseOptions.map((option) => ({
 
 export interface EditIssueInfo {
   issueType: string;
+  longName: string;
   issuePriority: string;
   agentEmail: string;
   adminEmail: string;
@@ -126,6 +127,7 @@ const EditIssueTypeModal = ({
                 admin_name: adminName,
                 admin_email: payload.adminEmail,
                 issue_type: payload.issueType,
+                long_name: payload.longName || payload.issueType,
                 issue_priority: payload.issuePriority,
               };
             }
@@ -208,6 +210,31 @@ const EditIssueTypeModal = ({
                   onBlur={handleBlur}
                   required
                   placeholder="Enter Issue Type"
+                  className="w-full rounded-xl border border-neutral-300 bg-white py-2.5 pr-3.5 pl-9 text-sm text-neutral-900 shadow-sm transition-all duration-150 placeholder:text-neutral-400 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
+                />
+              </div>
+            </div>
+
+            {/* Display Name */}
+            <div className="flex flex-col gap-1.5">
+              <label
+                htmlFor="longName"
+                className="flex items-center gap-1 text-sm font-medium text-neutral-700 dark:text-neutral-300"
+              >
+                Display Name
+              </label>
+              <div className="relative">
+                <div className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2">
+                  <Bug className="h-4 w-4 text-neutral-400" />
+                </div>
+                <input
+                  id="longName"
+                  name="longName"
+                  type="text"
+                  value={formData.longName}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  placeholder="Friendly name shown to users (defaults to Issue Type)"
                   className="w-full rounded-xl border border-neutral-300 bg-white py-2.5 pr-3.5 pl-9 text-sm text-neutral-900 shadow-sm transition-all duration-150 placeholder:text-neutral-400 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
                 />
               </div>

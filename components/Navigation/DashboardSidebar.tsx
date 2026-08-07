@@ -3,7 +3,6 @@
 import {
   Menu,
   CirclePlus,
-  Bot,
   ChevronLeft,
   ShieldUser,
   ShieldPlus,
@@ -12,6 +11,7 @@ import {
   Keyboard,
   CircleQuestionMark,
   HousePlug,
+  ChartColumnBig,
 } from "lucide-react";
 import Link from "next/link";
 import ThemeToggle from "../Themes/ThemeToggle";
@@ -30,9 +30,10 @@ import ClientPortal from "../Modules/ClientPortal";
 import { useSidebarToggleStore } from "@/store/useSidebarToggleStore";
 import NewsButton from "../Modules/News/NewsButton";
 import { useIsEmbedd } from "@/hooks/useIsEmbedd";
+import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
 
 const DashboardSidebar = () => {
-  const { username, role, isSuper } = useUser();
+  const { username, role, isSuper, specialAccess } = useUser();
   const [sideBarOpen, setSideBarOpen] = useState(false);
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
@@ -177,22 +178,9 @@ const DashboardSidebar = () => {
             icon={<CirclePlus className="h-5 w-5" />}
             label="New Issue"
             showToolTip={true}
-            isNewIssue={true}
+            showTooltipIcon={true}
             ToolTipMessage="Ctrl + Q"
           />
-
-          {/* Automations */}
-          {isSuper && (
-            <SidebarLink
-              href="/dashboard/automations"
-              icon={<Bot className="h-5 w-5" />}
-              label="Automate"
-              isActive={highlightLink("/dashboard/automations")}
-              onClick={() => handleRouteChange("/dashboard/automations")}
-              showToolTip={true}
-              ToolTipMessage="Automations Page"
-            />
-          )}
 
           {/* Super Admin */}
           {isSuper && (
@@ -204,6 +192,19 @@ const DashboardSidebar = () => {
               onClick={() => handleRouteChange("/dashboard/superadmin")}
               showToolTip={true}
               ToolTipMessage="Super Admin"
+            />
+          )}
+
+          {/* Issues Analytics */}
+          {hasFeatureAccess({ role, specialAccess }, FEATURES.ANALYTICS) && (
+            <SidebarLink
+              href="/dashboard/analytics"
+              icon={<ChartColumnBig className="h-5 w-5" />}
+              label="Analytics"
+              isActive={highlightLink("/dashboard/analytics")}
+              onClick={() => handleRouteChange("/dashboard/analytics")}
+              showToolTip={true}
+              ToolTipMessage="Issues Analytics"
             />
           )}
 
@@ -249,7 +250,8 @@ const DashboardSidebar = () => {
               icon={<ChevronLeft className="h-5 w-5" />}
               label="Back"
               showToolTip={true}
-              ToolTipMessage="Go Back"
+              showTooltipIcon={true}
+              ToolTipMessage="Ctrl + <"
             />
             <Link
               href="/manual"
@@ -272,7 +274,7 @@ type SidebarButtonProps = {
   onClick: () => void;
   icon: React.ReactNode;
   label: string;
-  isNewIssue?: boolean;
+  showTooltipIcon?: boolean;
   showToolTip?: boolean;
   ToolTipMessage?: string;
 };
@@ -281,7 +283,7 @@ const SidebarButton = ({
   onClick,
   icon,
   label,
-  isNewIssue = false,
+  showTooltipIcon = false,
   showToolTip = false,
   ToolTipMessage,
 }: SidebarButtonProps) => {
@@ -326,7 +328,7 @@ const SidebarButton = ({
             className="pointer-events-none fixed z-9999 ml-3 -translate-y-1/2"
           >
             <div className="relative flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-semibold whitespace-nowrap text-white shadow-lg dark:bg-white dark:text-neutral-900">
-              {isNewIssue && (
+              {showTooltipIcon && (
                 <Keyboard
                   size={14}
                   className="shrink-0 text-neutral-400 dark:text-neutral-500"

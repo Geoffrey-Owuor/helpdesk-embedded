@@ -17,8 +17,14 @@ export const PUT = withAuth(async ({ user, request }) => {
   }
 
   try {
-    const { issueId, issueType, issuePriority, agentEmail, adminEmail } =
-      await request.json();
+    const {
+      issueId,
+      issueType,
+      issuePriority,
+      agentEmail,
+      adminEmail,
+      longName,
+    } = await request.json();
 
     if (
       !issueId ||
@@ -114,8 +120,9 @@ export const PUT = withAuth(async ({ user, request }) => {
     SET issue_type = $1,
     admin_id = $2,
     agent_id = $3,
-    issue_priority = $4
-    WHERE id = $5
+    issue_priority = $4,
+    long_name = $5
+    WHERE id = $6
     `;
 
     const updateParams = [
@@ -123,6 +130,7 @@ export const PUT = withAuth(async ({ user, request }) => {
       adminId,
       agentId,
       issuePriority,
+      longName || issueType,
       issueNumber,
     ];
 
