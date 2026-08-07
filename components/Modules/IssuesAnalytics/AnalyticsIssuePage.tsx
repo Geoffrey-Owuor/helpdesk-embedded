@@ -41,7 +41,7 @@ import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 // Read-only mirror of IssuePage used by the analytics table, since analytics
 // viewers may not have permission to act on the underlying issue.
 export const AnalyticsIssuePage = ({ uuid }: { uuid: string }) => {
-  const { role } = useUser();
+  const { role, email, isSuper } = useUser();
   const {
     data: issueData,
     isLoading: loading,
@@ -69,6 +69,16 @@ export const AnalyticsIssuePage = ({ uuid }: { uuid: string }) => {
 
   // call useScrollToTop hook
   useScrollToTop();
+
+  // Who can go to a particular issue - We expose the "Go to issue" button for them (Limits a user bumping into "Issue not found" when they click on "go to issue")
+  const userCanView = issueData?.issue_submitter_email === email;
+  const agentCanView =
+    issueData?.issue_agent_email === email ||
+    !!collaborators.find(
+      (collaborator) =>
+        collaborator.collaborator_email === issueData?.issue_agent_email,
+    );
+  const adminsCanView = role === "admin" || isSuper;
 
   if (loading) return <IssueDetailsSkeleton />;
 
@@ -141,7 +151,7 @@ export const AnalyticsIssuePage = ({ uuid }: { uuid: string }) => {
             <ArrowLeft className="h-3 w-3" />
             Back to analytics
           </Link>
-          {role !== "user" && (
+          {(userCanView || agentCanView || adminsCanView) && (
             <Link
               href={`/dashboard/${issueData.issue_uuid}?title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`}
               className="inline-flex items-center gap-2 rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-semibold text-neutral-600 hover:bg-neutral-200 hover:text-neutral-700 dark:bg-neutral-800/70 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-300"
