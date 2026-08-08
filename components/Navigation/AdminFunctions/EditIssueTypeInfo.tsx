@@ -265,28 +265,37 @@ const EditIssueTypeInfo = ({
                   </div>
                 )}
                 <div className="default-scrollbar max-h-48 overflow-y-auto">
-                  {filteredAgents.map((agent) => (
-                    <button
-                      key={agent.agentEmail}
-                      onClick={() => {
-                        setSelectedEmail(agent.agentEmail);
-                        setIsDropdownOpen(false);
-                      }}
-                      className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-700"
-                    >
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-neutral-900 dark:text-neutral-100">
-                          {agent.agentName}
-                        </span>
-                        <span className="text-[10px] text-neutral-500">
-                          {agent.agentEmail}
-                        </span>
-                      </div>
-                      {selectedName === agent.agentName && (
-                        <Check size={14} className="text-blue-500" />
-                      )}
-                    </button>
-                  ))}
+                  {filteredAgents.length > 0 ? (
+                    filteredAgents.map((agent) => (
+                      <button
+                        key={agent.agentEmail}
+                        onClick={() => {
+                          setSelectedEmail(agent.agentEmail);
+                          setIsDropdownOpen(false);
+                        }}
+                        className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                      >
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-neutral-900 dark:text-neutral-100">
+                            {agent.agentName}
+                          </span>
+                          <span className="text-[10px] text-neutral-500">
+                            {agent.agentEmail}
+                          </span>
+                        </div>
+                        {selectedName === agent.agentName && (
+                          <Check size={14} className="text-blue-500" />
+                        )}
+                      </button>
+                    ))
+                  ) : (
+                    /* Fallback state when no options exist */
+                    <div className="px-3 py-6 text-center text-sm text-neutral-400 dark:text-neutral-500">
+                      {searchQuery
+                        ? "No matching results found."
+                        : `No agents found`}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

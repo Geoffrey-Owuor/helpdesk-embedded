@@ -1,6 +1,11 @@
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
 import HomeNavBar from "../Navigation/HomeNavBar";
 import Footer from "./Footer";
-import { Mail, Phone } from "lucide-react";
+import SkeletonBox from "../Skeletons/SkeletonBox";
+import { Mail, Phone, Users } from "lucide-react";
+import { GetItTeam, ItTeamMember } from "@/serverActions/GetItTeam";
 
 // User Icon
 const UserIcon = ({ className = "" }: { className?: string }) => (
@@ -18,81 +23,16 @@ const UserIcon = ({ className = "" }: { className?: string }) => (
   </svg>
 );
 
-// TODO: Update these placeholder members with actual IT team data
-const TEAM_MEMBERS = [
-  {
-    id: 1,
-    name: "Naheed Manjothi",
-    title: "Head Of Department",
-    description:
-      "Naheed leads the IT department's strategic vision, overseeing technology infrastructure, security, and digital initiatives to align with and drive the company's core business objectives.",
-
-    email: "naheed@hotpoint.co.ke",
-    extension: "1010",
-  },
-  {
-    id: 2,
-    name: "George Okoro",
-    title: "System Administrator",
-    description:
-      "George manages and maintains the company's IT infrastructure, ensuring network stability, system security, and reliable server performance to support daily operations.",
-
-    email: "gokoro@hotpoint.co.ke",
-    extension: "1003",
-  },
-  {
-    id: 3,
-    name: "Philip Kamau",
-    title: "IT Engineer",
-    description:
-      "Philip designs, deploys, and optimizes the company's hardware and software systems, delivering robust technical solutions and high-level support across the organization's network.",
-
-    email: "phillip@hotpoint.co.ke",
-    extension: "1006",
-  },
-  {
-    id: 4,
-    name: "Sylvester Chettier",
-    title: "ERP Administrator",
-    description:
-      "Sylvester oversees the maintenance, optimization, and integration of the company's ERP systems, ensuring seamless business workflows and data integrity across all departments.",
-
-    email: "sylvester@hotpoint.co.ke",
-    extension: "1012",
-  },
-  {
-    id: 5,
-    name: "Bilha Mmbone",
-    title: "IT Support Engineer",
-    description:
-      "Bilha provides vital technical assistance and troubleshooting for hardware, software, and network issues, ensuring minimal downtime and high-quality support for all end-users.",
-
-    email: "bilha@hotpoint.co.ke",
-    extension: "1013",
-  },
-  {
-    id: 6,
-    name: "Geoffrey Owuor",
-    title: "Software Developer",
-    description:
-      "Geoffrey designs, builds, and maintains the company's internal tools and software applications, writing clean, efficient code to enhance digital processes and system capabilities.",
-
-    email: "geoffrey@hotpoint.co.ke",
-    extension: "1018",
-  },
-  {
-    id: 7,
-    name: "Fred Nyaboga",
-    title: "IT Support Engineer",
-    description:
-      "Fred performs designated high-level business process workflows within the ERP system to support essential daily operations, collaborating closely with the senior ERP team to ensure system efficiency.",
-
-    email: "fnyaboga@hotpoint.co.ke",
-    extension: "1011",
-  },
-];
-
 const ItTeam = () => {
+  const {
+    data: teamMembers = [],
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["itTeamData"],
+    queryFn: GetItTeam,
+  });
+
   return (
     <main className="layout-scrollbar home-container flex h-screen flex-col overflow-y-auto bg-white dark:bg-neutral-950">
       <HomeNavBar />
@@ -111,52 +51,78 @@ const ItTeam = () => {
         </div>
 
         {/* Team Grid */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {TEAM_MEMBERS.map((member) => (
-            <div
-              key={member.id}
-              className="flex flex-col rounded-2xl border border-neutral-200 bg-neutral-50/50 p-6 shadow-xs transition-all hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-900/30"
-            >
-              {/* Card Header: Avatar, Name, Title & LinkedIn */}
-              <div className="mb-4 flex items-start justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-neutral-200 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
-                    <UserIcon className="text-2xl" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-                      {member.name}
-                    </h3>
-                    <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
-                      {member.title}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Description */}
-              <p className="mb-6 line-clamp-5 text-sm text-neutral-600 dark:text-neutral-400">
-                {member.description}
-              </p>
-
-              {/* Spacer to push contact info to the bottom if descriptions vary in length */}
-              <div className="mt-auto flex flex-col gap-2 border-t border-neutral-200 pt-4 dark:border-neutral-800">
-                {/* Email */}
-                {/* TODO: Update href if you want mailto functionality (e.g., href={`mailto:${member.email}`}) */}
-                <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
-                  <Mail className="h-4 w-4 shrink-0 text-neutral-400" />
-                  <span className="truncate">{member.email}</span>
-                </div>
-
-                {/* Phone Extension */}
-                <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
-                  <Phone className="h-4 w-4 shrink-0 text-neutral-400" />
-                  <span>Ext: {member.extension}</span>
-                </div>
-              </div>
+        {isLoading ? (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <SkeletonBox key={index} className="h-64" />
+            ))}
+          </div>
+        ) : teamMembers.length === 0 ? (
+          <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-neutral-300 bg-neutral-50/50 py-20 text-center dark:border-neutral-800 dark:bg-neutral-900/20">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-neutral-200/50 text-neutral-400 dark:bg-neutral-800/50 dark:text-neutral-500">
+              <Users className="h-6 w-6" />
             </div>
-          ))}
-        </div>
+            <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+              No team members found
+            </h3>
+            <p className="mt-1 max-w-sm text-sm text-neutral-500 dark:text-neutral-400">
+              It looks like the IT team directory is empty right now. Check
+              back later.
+            </p>
+            <button
+              onClick={() => refetch()}
+              className="mt-4 rounded-full bg-neutral-100 px-4 py-1.5 text-sm font-medium hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+            >
+              Retry
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {teamMembers.map((member: ItTeamMember) => (
+              <div
+                key={member.id}
+                className="flex flex-col rounded-2xl border border-neutral-200 bg-neutral-50/50 p-6 shadow-xs transition-all hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-900/30"
+              >
+                {/* Card Header: Avatar, Name, Title */}
+                <div className="mb-4 flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-neutral-200 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
+                      <UserIcon className="text-2xl" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+                        {member.name}
+                      </h3>
+                      <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                        {member.title_name}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <p className="mb-6 line-clamp-5 text-sm text-neutral-600 dark:text-neutral-400">
+                  {member.title_description}
+                </p>
+
+                {/* Spacer to push contact info to the bottom if descriptions vary in length */}
+                <div className="mt-auto flex flex-col gap-2 border-t border-neutral-200 pt-4 dark:border-neutral-800">
+                  {/* Email */}
+                  <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
+                    <Mail className="h-4 w-4 shrink-0 text-neutral-400" />
+                    <span className="truncate">{member.email}</span>
+                  </div>
+
+                  {/* Phone Extension */}
+                  <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
+                    <Phone className="h-4 w-4 shrink-0 text-neutral-400" />
+                    <span>Ext: {member.phone_extension}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <Footer />

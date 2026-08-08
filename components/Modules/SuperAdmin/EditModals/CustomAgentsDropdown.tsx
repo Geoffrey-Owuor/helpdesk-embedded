@@ -139,27 +139,34 @@ const CustomAgentsDropdown = ({
           )}
 
           <div className="default-scrollbar flex max-h-60 flex-col overflow-y-auto">
-            {filteredOptions.map((item) => (
-              <button
-                key={item.value}
-                onClick={() => handleSelect(item.value)}
-                disabled={item.value === "Unassigned"}
-                className={`mx-1.5 cursor-pointer rounded-lg px-3 py-2 text-left text-sm transition-colors duration-100 hover:bg-neutral-100 disabled:opacity-50 dark:hover:bg-neutral-800 ${
-                  value === item.value
-                    ? "bg-neutral-100 font-medium text-neutral-900 dark:bg-neutral-800 dark:text-white"
-                    : "text-neutral-700 dark:text-neutral-300"
-                }`}
-              >
-                <div className="flex flex-col">
-                  <span className="font-semibold text-neutral-900 dark:text-neutral-100">
-                    {item.option}
-                  </span>
-                  <span className="text-[10px] text-neutral-500">
-                    {item.value}
-                  </span>
-                </div>
-              </button>
-            ))}
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((item) => (
+                <button
+                  key={item.value}
+                  onClick={() => handleSelect(item.value)}
+                  disabled={item.value === "Unassigned"}
+                  className={`mx-1.5 cursor-pointer rounded-lg px-3 py-2 text-left text-sm transition-colors duration-100 hover:bg-neutral-100 disabled:opacity-50 dark:hover:bg-neutral-800 ${
+                    value === item.value
+                      ? "bg-neutral-100 font-medium text-neutral-900 dark:bg-neutral-800 dark:text-white"
+                      : "text-neutral-700 dark:text-neutral-300"
+                  }`}
+                >
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-neutral-900 dark:text-neutral-100">
+                      {item.option}
+                    </span>
+                    <span className="text-[10px] text-neutral-500">
+                      {item.value}
+                    </span>
+                  </div>
+                </button>
+              ))
+            ) : (
+              /* Fallback state when no options exist */
+              <div className="px-3 py-6 text-center text-sm text-neutral-400 dark:text-neutral-500">
+                {searchQuery ? "No matching results found." : `No agents found`}
+              </div>
+            )}
           </div>
         </ul>
       )}
