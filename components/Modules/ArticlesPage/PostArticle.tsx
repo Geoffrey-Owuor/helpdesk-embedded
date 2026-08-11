@@ -2,18 +2,21 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { GetArticleKey } from "@/serverActions/GetArticleKey";
+import { useUser } from "@/contexts/UserContext";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import ArticleFormWrapper from "./ArticleFormWrapper";
+import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import {
   Send,
   CheckCircle2,
   ShieldAlert,
   KeyRound,
   RotateCcw,
+  Copy,
 } from "lucide-react";
 
 export interface FormData {
@@ -34,6 +37,8 @@ const InitialFormState: FormData = {
 
 const PostArticle = () => {
   const queryClient = useQueryClient();
+  const { role } = useUser();
+  const isAdmin = role === "admin";
 
   // Fetch the article key from the database
   const {
@@ -47,6 +52,7 @@ const PostArticle = () => {
   });
 
   const [formData, setFormData] = useState<FormData>(InitialFormState);
+  const [keyCopied, setKeyCopied] = useState(false);
 
   const keyIsInvalid =
     formData.articleKey.length > 0 && formData.articleKey !== VALID_KEY;
@@ -67,6 +73,16 @@ const PostArticle = () => {
 
   const handleTypeSelect = (value: string) => {
     setFormData((prev) => ({ ...prev, articleType: value }));
+  };
+
+  const handleCopyKey = async () => {
+    try {
+      await navigator.clipboard.writeText(VALID_KEY);
+      setKeyCopied(true);
+      setTimeout(() => setKeyCopied(false), 2000);
+    } catch {
+      triggerAlert("error", "Failed to copy article key.");
+    }
   };
 
   const handleConfirmSubmit = (e: FormEvent) => {
@@ -158,6 +174,29 @@ const PostArticle = () => {
                 <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500 dark:text-green-400" />
               )}
             </div>
+            {/* Fetched article key (admin only) */}
+            {isAdmin &&
+              (fetching ? (
+                <SkeletonBox className="h-10 w-40" />
+              ) : (
+                <div className="flex w-fit items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3.5 py-2.5 text-sm dark:border-neutral-800 dark:bg-neutral-900/60">
+                  <span className="text-neutral-900 dark:text-neutral-100">
+                    {VALID_KEY}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopyKey}
+                    title="Copy article key"
+                    className="text-neutral-400 transition-colors duration-150 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-200"
+                  >
+                    {keyCopied ? (
+                      <CheckCircle2 className="h-4 w-4 text-green-500 dark:text-green-400" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              ))}
             {/* Refresh button */}
             <button
               type="button"
