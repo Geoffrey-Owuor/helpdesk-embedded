@@ -23,9 +23,10 @@ export const getUserArticles = async (
   let baseQuery = `
   SELECT 
   user_id, article_id, article_type, article_title, article_subtitle, article_content,
-  article_read_time, article_updated_at, user_department, user_name,
-  can_edit
-  FROM articles`;
+  article_read_time, article_updated_at, user_department, user_name, can_edit
+  FROM articles
+  ORDER BY article_updated_at DESC
+  `;
 
   if (userId) {
     baseQuery += ` WHERE user_id = $1`;

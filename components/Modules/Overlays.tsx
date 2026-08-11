@@ -12,8 +12,8 @@ import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 const LogoutSpinner = ({ className }: { className: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={40}
-    height={40}
+    width={48}
+    height={48}
     viewBox="0 0 24 24"
     fill="none"
     className={className}
@@ -58,19 +58,19 @@ export const PromiseOverlay = () => {
         // Vertically stacked, centered layout for the full-page logout state
         <div className="flex flex-col items-center gap-3">
           <LogoutSpinner className="animate-spin" aria-label="overlay text" />
-          <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
+          <span className="font-medium text-neutral-800 dark:text-neutral-200">
             {overlaytext}...
           </span>
         </div>
       ) : (
         // Container to align the spinner and text horizontally
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-col items-center gap-3">
           <Loader2
-            className="h-9 w-9 animate-spin text-neutral-900 dark:text-white"
+            className="h-12 w-12 animate-spin text-neutral-900 dark:text-white"
             aria-label="overlay text"
           />
           {/* The text, styled for dark and light modes */}
-          <span className="text-base text-neutral-900 dark:text-white">
+          <span className="text-neutral-900 dark:text-white">
             {overlaytext}...
           </span>
         </div>
