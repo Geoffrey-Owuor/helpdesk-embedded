@@ -17,7 +17,7 @@ export const getArticle = async (uuid: string): Promise<ArticleData | null> => {
   SELECT 
   article_type, article_title, article_subtitle, article_content,
   article_read_time, article_updated_at, user_department, user_name
-  FROM articles WHERE article_id = $1 ORDER BY article_updated_at DESC`;
+  FROM articles WHERE article_id = $1`;
 
   try {
     const articleData = await query<ArticleData>(baseQuery, [uuid]);
