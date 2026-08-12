@@ -9,6 +9,7 @@ import FilterPanel from "./FilterPanel";
 import SummaryCardsSection from "./SummaryCardsSection";
 import AnalyticsIssuesTable from "./AnalyticsIssuesTable";
 import AnalyticsPagination from "./AnalyticsPagination";
+import AiInsightPanel from "./AiInsightPanel";
 
 const AnalyticsDashboard = () => {
   const committedFilters = useAnalyticsFilterStore(
@@ -61,6 +62,12 @@ const AnalyticsDashboard = () => {
       <FilterPanel />
 
       <SummaryCardsSection summary={summary} isLoading={summaryLoading} />
+
+      {!summaryLoading && (
+        <div className="mb-4">
+          <AiInsightPanel summary={summary} committedFilters={committedFilters} />
+        </div>
+      )}
 
       {issuesLoading ? (
         <IssuesDataSkeleton isTableView={true} />
