@@ -23,7 +23,9 @@ const IssuesCards = () => {
   const { role, department, isSuper } = useUser();
   const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
   const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
-  const committedFilters = useIssuesFilterStore((state) => state.committedFilters);
+  const committedFilters = useIssuesFilterStore(
+    (state) => state.committedFilters,
+  );
 
   const {
     data: cardCounts = defaultCounts,
