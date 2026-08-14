@@ -14,9 +14,11 @@ import {
   NotebookPen,
   ChevronLeft,
   SlidersHorizontal,
+  ChartColumnBig,
 } from "lucide-react";
 import { useLoadingStore } from "@/store/useLoadingStore";
 import SearchArea from "./SearchArea";
+import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
 
 const MiddleBar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,7 +29,7 @@ const MiddleBar = () => {
 
   const router = useRouter();
   const pathname = usePathname();
-  const { role, isSuper } = useUser();
+  const { role, isSuper, specialAccess } = useUser();
   const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
 
   // --- Keyboard & Click Outside Listeners ---
@@ -158,6 +160,18 @@ const MiddleBar = () => {
                     icon={<ShieldPlus size={14} />}
                     label="Super Admin"
                     onClick={() => handleNavigation("/dashboard/superadmin")}
+                  />
+                )}
+
+                {/* Issues Analytics */}
+                {hasFeatureAccess(
+                  { role, specialAccess },
+                  FEATURES.ANALYTICS,
+                ) && (
+                  <PillButton
+                    icon={<ChartColumnBig size={14} />}
+                    label="Analytics"
+                    onClick={() => handleNavigation("/dashboard/analytics")}
                   />
                 )}
 
