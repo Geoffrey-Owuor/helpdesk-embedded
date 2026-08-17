@@ -53,18 +53,22 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL(`${basePath}/login`, baseUrl));
     }
 
-    // If there is already a valid session of the user available,
-    // redirect directly to their dashboard
-    const existingUser = await requireSession();
-    if (existingUser?.email)
-      return NextResponse.redirect(new URL(`${basePath}/dashboard`, baseUrl));
-
     const user = await query(
       `
         SELECT user_id, username, email, department, role, is_user_active FROM users WHERE email = $1 LIMIT 1
         `,
       [email],
     );
+
+    // If there is already a valid session of the user available,
+    // redirect directly to their dashboard - but only if the account
+    // is still active. A stale-but-unexpired refresh token cookie for
+    // a since-disabled account must not short-circuit past the
+    // is_user_active check below.
+    const existingUser = await requireSession();
+    if (existingUser?.email && user[0]?.is_user_active) {
+      return NextResponse.redirect(new URL(`${basePath}/dashboard`, baseUrl));
+    }
 
     // No user found - trigger the helpdesk app to complete the sso as we already know
     // the passed email is a valid ms365 email
