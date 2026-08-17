@@ -1,40 +1,11 @@
 "use client";
 
-import { ArrowRight, Loader2, X } from "lucide-react";
+import { ArrowRight, Loader, Loader2, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
-
-// A refined dual-tone ring spinner: a static track plus a spinning accent
-// arc, matching the app's blue-600 accent color used elsewhere in the UI.
-const LogoutSpinner = ({ className }: { className: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={48}
-    height={48}
-    viewBox="0 0 24 24"
-    fill="none"
-    className={className}
-  >
-    <circle
-      cx={12}
-      cy={12}
-      r={10}
-      stroke="currentColor"
-      strokeWidth={2}
-      className="text-neutral-200 dark:text-neutral-800"
-    />
-    <path
-      d="M12 2a10 10 0 0 1 10 10"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      className="text-neutral-800 dark:text-neutral-200"
-    />
-  </svg>
-);
 
 // Overlay displayed when performing crud operations or logging out
 export const PromiseOverlay = () => {
@@ -57,7 +28,10 @@ export const PromiseOverlay = () => {
       {isLoggingOut ? (
         // Vertically stacked, centered layout for the full-page logout state
         <div className="flex flex-col items-center gap-3">
-          <LogoutSpinner className="animate-spin" aria-label="overlay text" />
+          <Loader
+            className="h-12 w-12 animate-spin text-neutral-900 dark:text-white"
+            aria-label="overlay text"
+          />
           <span className="font-medium text-neutral-800 dark:text-neutral-200">
             {overlaytext}...
           </span>

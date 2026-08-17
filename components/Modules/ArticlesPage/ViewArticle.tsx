@@ -2,6 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import ReactMarkdown, { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
 import { UserRound, Calendar, Clock, Building2, ArrowLeft } from "lucide-react";
 import { getArticle } from "@/serverActions/GetArticle";
 import ArticleTypeFormatter from "./ArticleTypeFormatter";
@@ -144,9 +145,10 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
         <div className="mb-8 h-px bg-linear-to-r from-transparent via-neutral-300 to-transparent sm:mb-12 dark:via-neutral-700" />
 
         {/* Content Section */}
-        <div className="prose prose-lg dark:prose-invert prose-img:rounded-xl prose-headings:font-semibold prose-a:text-neutral-700 dark:prose-a:text-neutral-300 max-w-none wrap-break-word">
+        <div className="prose prose-lg dark:prose-invert prose-img:rounded-xl prose-headings:font-semibold prose-a:text-neutral-700 dark:prose-a:text-neutral-300 prose-code:before:content-none prose-code:after:content-none prose-code:rounded-md prose-code:bg-neutral-100 dark:prose-code:bg-neutral-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:font-normal prose-code:text-[0.875em] max-w-none wrap-break-word">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeHighlight]}
             components={MarkdownComponents}
           >
             {article.article_content}
