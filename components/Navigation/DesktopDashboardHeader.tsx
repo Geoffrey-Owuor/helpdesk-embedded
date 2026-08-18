@@ -81,7 +81,7 @@ const DesktopDashboardHeader = () => {
         isUserSettingsOpen={showUserSettings}
         setIsUserSettingsOpen={setShowUserSettings}
       />
-      <header className="z-40 hidden w-full lg:block">
+      <header className="custom:block z-40 hidden w-full">
         <div className="flex w-full items-center justify-between px-4 py-2">
           <div className="flex items-center gap-2.5">
             {/* Far Left: Dashboard Logo */}
