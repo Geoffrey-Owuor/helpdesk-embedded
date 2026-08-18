@@ -47,6 +47,9 @@ export async function POST() {
     const isUserActive = rows[0].is_user_active;
 
     if (!isUserActive) {
+      cookieStore.delete("accessToken");
+      cookieStore.delete("refreshToken");
+
       return NextResponse.json(
         { message: "User account is disabled" },
         { status: 401 },

@@ -38,6 +38,7 @@ import SubmitForAUser, { SubmitForUserData } from "./SubmitForAUser";
 import DocumentUpload from "./DocumentUpload";
 import Link from "next/link";
 import { invalidateIssuesCaches } from "@/utils/invalidateIssuesCaches";
+import AiRefineSuggestion from "./AiRefineSuggestion";
 
 // Priority icon types
 const priorityIcons: Record<string, LucideIcon> = {
@@ -506,6 +507,28 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                   className="resize-none rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
                 />
               </div>
+
+              {/* AI Refine Suggestion */}
+              {role !== "user" && (
+                <AiRefineSuggestion
+                  title={formData.issue_title}
+                  description={formData.issue_description}
+                  onRefine={async () => {
+                    const response = await apiClient.post("/ai/refine-issue", {
+                      title: formData.issue_title,
+                      description: formData.issue_description,
+                    });
+                    return response.data;
+                  }}
+                  onApply={(title, description) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      issue_title: title,
+                      issue_description: description,
+                    }))
+                  }
+                />
+              )}
 
               {/* Document Upload */}
               <DocumentUpload
