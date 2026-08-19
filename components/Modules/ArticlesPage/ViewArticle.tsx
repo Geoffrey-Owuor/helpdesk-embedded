@@ -9,6 +9,7 @@ import ArticleTypeFormatter from "./ArticleTypeFormatter";
 import { dateFormatter } from "@/public/assets";
 import { generateSlug } from "@/utils/GenerateSlug";
 import ArticleTOC from "./ArticleTOC";
+import MarkdownVideoLink from "./MarkdownVideoLink";
 import { usePathname } from "next/navigation";
 import { useLoadingStore } from "@/store/useLoadingStore";
 import ViewArticleSkeleton from "@/components/Skeletons/ViewArticleSkeleton";
@@ -49,6 +50,7 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
         </h2>
       );
     },
+    a: MarkdownVideoLink,
   };
 
   if (loading) return <ViewArticleSkeleton isInDashboard={isInDashboard} />;
