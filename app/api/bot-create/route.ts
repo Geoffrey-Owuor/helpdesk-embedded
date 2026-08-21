@@ -268,12 +268,12 @@ export async function POST(request: NextRequest) {
     const description = `A new issue has been raised to ${target_department} by ${returnedUser.name}`;
 
     // Fire and forget - calling the email sender service
-    // emailSender({
-    //   title,
-    //   description,
-    //   uuid: resultantUuid,
-    //   attachments: emailAttachments.length > 0 ? emailAttachments : undefined,
-    // });
+    emailSender({
+      title,
+      description,
+      uuid: resultantUuid,
+      attachments: emailAttachments.length > 0 ? emailAttachments : undefined,
+    });
 
     // Return a response to the client
     return NextResponse.json(
