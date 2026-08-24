@@ -9,7 +9,7 @@ type ArticleTOCProps = {
 };
 
 const ArticleTOCSkeleton = () => (
-  <nav className="sticky top-12 hidden max-h-[calc(100vh-5rem)] w-70 shrink-0 flex-col overflow-y-auto rounded-xl p-4 lg:flex">
+  <nav className="sticky top-2 hidden max-h-[calc(100vh-2rem)] w-70 shrink-0 scrollbar-thin flex-col overflow-y-auto rounded-xl p-4 lg:flex">
     <div className="mb-4 border-b-2 border-neutral-200 pb-2 dark:border-neutral-800">
       <SkeletonBox className="h-3.5 w-24 bg-neutral-200 dark:bg-neutral-800" />
     </div>
@@ -111,7 +111,7 @@ const ArticleTOC = ({ content, containerId }: ArticleTOCProps) => {
   if (headingsLoading) return <ArticleTOCSkeleton />;
 
   return (
-    <nav className="sticky top-12 hidden max-h-[calc(100vh-2rem)] w-70 shrink-0 flex-col overflow-y-auto rounded-xl p-4 lg:flex">
+    <nav className="sticky top-2 hidden max-h-[calc(100vh-2rem)] w-70 shrink-0 scrollbar-thin flex-col overflow-y-auto rounded-xl p-4 lg:flex">
       <h4 className="mb-4 border-b-2 border-neutral-300 pb-2 text-sm font-bold tracking-wider text-neutral-500 uppercase dark:border-neutral-600 dark:text-neutral-400">
         On this page
       </h4>

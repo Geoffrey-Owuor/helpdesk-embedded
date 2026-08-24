@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ApiHandler } from "@/utils/ApiHandler";
 import AuthShell from "./AuthShell";
-import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Loader2, AlertTriangle } from "lucide-react";
 import { useIsEmbedd } from "@/hooks/useIsEmbedd";
 import { useAlertStore } from "@/store/useAlertStore";
 import { basePath } from "@/public/assets";
@@ -31,6 +31,9 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [remainingAttempts, setRemainingAttempts] = useState<number | null>(
+    null,
+  );
 
   const isEmbedded = useIsEmbedd();
 
@@ -62,6 +65,7 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setRemainingAttempts(null);
 
     try {
       // Standard fetch for login
@@ -76,6 +80,11 @@ export default function LoginPage() {
         window.location.href = `${basePath}/dashboard`;
       } else {
         setError(data.message || "Login Failed");
+        setRemainingAttempts(
+          typeof data.remainingAttempts === "number"
+            ? data.remainingAttempts
+            : null,
+        );
         setLoading(false);
       }
     } catch (error) {
@@ -150,8 +159,24 @@ export default function LoginPage() {
         {/* Login Fields */}
         <form onSubmit={handleSubmit} autoComplete="off" className="space-y-6">
           {error && (
-            <div className="rounded-full bg-red-50 px-4 py-3 text-center text-sm text-red-500 dark:bg-red-900/20 dark:text-red-400">
-              {error}
+            <div
+              className={
+                remainingAttempts === 1
+                  ? "flex items-center justify-center gap-2 rounded-full border border-red-300 bg-red-100 px-4 py-3 text-center text-sm font-semibold text-red-700 dark:border-red-800 dark:bg-red-900/40 dark:text-red-300"
+                  : "rounded-full bg-red-50 px-4 py-3 text-center text-sm text-red-500 dark:bg-red-900/20 dark:text-red-400"
+              }
+            >
+              {remainingAttempts === 1 && (
+                <AlertTriangle className="h-4 w-4 shrink-0" />
+              )}
+              <span>
+                {error}
+                {remainingAttempts !== null &&
+                  remainingAttempts > 0 &&
+                  (remainingAttempts === 1
+                    ? " This is your last attempt before your account is locked."
+                    : ` You have ${remainingAttempts} attempts remaining before your account is locked.`)}
+              </span>
             </div>
           )}
           {/* Email Input */}
