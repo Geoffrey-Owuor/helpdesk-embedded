@@ -116,7 +116,10 @@ export const PUT = withAuth(async ({ user, request }) => {
     // Update date closed when status is closed
     if (status === "closed") {
       await client.query(
-        `UPDATE issues_table SET issue_date_closed = CURRENT_TIMESTAMP WHERE issue_uuid = $1`,
+        `UPDATE issues_table
+         SET issue_date_resolved = CURRENT_TIMESTAMP,
+         issue_date_closed = CURRENT_TIMESTAMP 
+         WHERE issue_uuid = $1`,
         [uuid],
       );
     }

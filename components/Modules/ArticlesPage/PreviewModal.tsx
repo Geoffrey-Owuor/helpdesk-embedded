@@ -1,6 +1,7 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
+import MarkdownVideoLink from "./MarkdownVideoLink";
 
 const PreviewModal = ({
   isOpen,
@@ -18,6 +19,7 @@ const PreviewModal = ({
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeHighlight]}
+              components={{ a: MarkdownVideoLink }}
             >
               {content || "*Nothing to preview yet...*"}
             </ReactMarkdown>

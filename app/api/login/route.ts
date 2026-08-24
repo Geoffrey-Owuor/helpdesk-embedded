@@ -7,6 +7,7 @@ import {
 } from "@/lib/Auth";
 import { createSession } from "@/lib/Auth";
 import { getUserPrivileges } from "@/lib/UserPrivileges";
+import { MAX_LOGIN_ATTEMPTS } from "@/lib/AuthConstants";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -46,10 +47,10 @@ export async function POST(request: NextRequest) {
     if (!isValid) {
       const newAttempts = (user.password_attempts || 0) + 1;
 
-      if (newAttempts >= 3) {
+      if (newAttempts >= MAX_LOGIN_ATTEMPTS) {
         // Lock the account and update total attempts
-        const lockQuery = `UPDATE users 
-                           SET password_attempts = $1, is_user_active = false 
+        const lockQuery = `UPDATE users
+                           SET password_attempts = $1, is_user_active = false
                            WHERE user_id = $2`;
         await query(lockQuery, [newAttempts, user.user_id]);
 
@@ -59,13 +60,16 @@ export async function POST(request: NextRequest) {
         );
       } else {
         // Increment the counter only
-        const incrementQuery = `UPDATE users 
-                                SET password_attempts = $1 
+        const incrementQuery = `UPDATE users
+                                SET password_attempts = $1
                                 WHERE user_id = $2`;
         await query(incrementQuery, [newAttempts, user.user_id]);
 
         return NextResponse.json(
-          { message: "Wrong email or password" },
+          {
+            message: "Wrong email or password.",
+            remainingAttempts: MAX_LOGIN_ATTEMPTS - newAttempts,
+          },
           { status: 401 },
         );
       }
