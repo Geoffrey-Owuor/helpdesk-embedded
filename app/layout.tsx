@@ -41,7 +41,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="HelpDesk" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-gray-50 antialiased dark:bg-neutral-950`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-gray-50 font-sans antialiased dark:bg-neutral-950`}
       >
         <Provider>
           <DbRecoveryManager />
