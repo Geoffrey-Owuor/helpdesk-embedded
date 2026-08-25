@@ -28,7 +28,11 @@
   );
 }
 
-[data-theme="dark"] {
+html[data-font="geist"] {
+  font-family: var(--font-sans);
+}
+
+html[data-theme="dark"] {
   /* Homepage ambient grid line colour */
   --home-grid-line: rgba(255, 255, 255, 0.05);
 
@@ -217,7 +221,7 @@ html {
   scrollbar-width: thin;
 }
 
-[data-theme="dark"] .default-scrollbar {
+html[data-theme="dark"] .default-scrollbar {
   scrollbar-color: #484848 transparent;
 }
 
@@ -225,7 +229,7 @@ html {
   scrollbar-color: #a3a3a3 transparent;
 }
 
-[data-theme="dark"] .layout-scrollbar {
+html[data-theme="dark"] .layout-scrollbar {
   scrollbar-color: #484848 transparent;
 }
 
@@ -247,7 +251,7 @@ html {
   border-radius: 999px;
 }
 
-[data-theme="dark"] .sidebar-nav::-webkit-scrollbar-thumb {
+html[data-theme="dark"] .sidebar-nav::-webkit-scrollbar-thumb {
   background-color: rgb(115 115 115 / 0.4); /* neutral-500 at 40% */
 }
 
