@@ -14,6 +14,7 @@ import ExportData from "./ExportData";
 import { useQuery } from "@tanstack/react-query";
 import { fetchIssues } from "@/queries/fetchIssues";
 import { RotateCw } from "lucide-react";
+import PinnedIssuesSection from "../PinnedIssues/PinnedIssuesSection";
 
 const IssuesData = () => {
   const { role, department, isSuper } = useUser();
@@ -110,6 +111,9 @@ const IssuesData = () => {
 
       {/* The consolidated filter panel */}
       <IssuesFilterPanel />
+
+      {/* Pinned issues, shown ahead of the general fetched issues */}
+      <PinnedIssuesSection />
 
       {loading ? (
         <IssuesDataSkeleton isTableView={isTableView} />
