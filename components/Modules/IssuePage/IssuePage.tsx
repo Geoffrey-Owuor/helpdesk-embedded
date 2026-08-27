@@ -60,6 +60,7 @@ import { fetchCollaborators } from "@/queries/fetchCollaborators";
 import AddAttachmentModal from "./AddAttachmentModal";
 import { invalidateIssuesCaches } from "@/utils/invalidateIssuesCaches";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
+import PinButton from "../PinnedIssues/PinButton";
 
 const statusOptions = baseOptions.filter((option) => option.value !== "open");
 
@@ -375,6 +376,19 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
 
           <div className="flex flex-col items-start gap-3 lg:items-end">
             <div className="flex flex-wrap items-center gap-2">
+              {/* Pin button */}
+              <PinButton
+                showLabel
+                issue={{
+                  issue_uuid: uuid,
+                  issue_reference_id: String(issueData.issue_reference_id),
+                  issue_status: String(issueData.issue_status),
+                  issue_priority: String(issueData.issue_priority),
+                  issue_title: String(issueData.issue_title),
+                  issue_description: String(issueData.issue_description),
+                }}
+              />
+
               {/* Escalation history button */}
               {Number(issueData.reopened_count) > 0 && (
                 <button
