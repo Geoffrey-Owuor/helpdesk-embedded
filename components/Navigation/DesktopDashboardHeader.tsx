@@ -9,6 +9,7 @@ import UserInfoCard from "../Modules/UserInfoCard";
 import UserSettings from "./UserSettings/UserSettings";
 import ThemeToggle from "../Themes/ThemeToggle";
 import Notifications from "./Notifications/Notifications";
+import PinnedIssuesButton from "../Modules/PinnedIssues/PinnedIssuesButton";
 import MiddleBar from "./MiddleBar";
 import NewsButton from "../Modules/News/NewsButton";
 import { useSidebarToggleStore } from "@/store/useSidebarToggleStore";
@@ -120,6 +121,7 @@ const DesktopDashboardHeader = () => {
           <div className="flex shrink-0 items-center gap-4">
             <NewsButton />
             <ThemeToggle />
+            <PinnedIssuesButton />
             <Notifications />
 
             <div

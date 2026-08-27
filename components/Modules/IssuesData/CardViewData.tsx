@@ -20,6 +20,7 @@ import {
 import IssuePriorityFormatter from "./IssuePriorityFormatter";
 import RelativeTimeBadge from "./RelativeTimeBadge";
 import { ResolutionTimePill } from "./ResolutionTimePill";
+import PinButton from "../PinnedIssues/PinButton";
 
 type CardViewDataProps = {
   currentIssues: Record<string, string | number>[];
@@ -71,7 +72,19 @@ const CardViewData = ({ currentIssues }: CardViewDataProps) => {
                 showText={false}
               />
             </div>
-            <IssueStatusFormatter status={issueData.issue_status} />
+            <div className="flex items-center gap-1">
+              <IssueStatusFormatter status={issueData.issue_status} />
+              <PinButton
+                issue={{
+                  issue_uuid: String(issueData.issue_uuid),
+                  issue_reference_id: String(issueData.issue_reference_id),
+                  issue_status: String(issueData.issue_status),
+                  issue_priority: String(issueData.issue_priority),
+                  issue_title: String(issueData.issue_title),
+                  issue_description: String(issueData.issue_description),
+                }}
+              />
+            </div>
           </div>
 
           {/* Body: Title & Description */}
