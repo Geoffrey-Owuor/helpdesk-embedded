@@ -1,15 +1,10 @@
 "use client";
 
-import { X, PinOff, MapPinX } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction, MouseEvent, useRef } from "react";
+import { X, MapPinX } from "lucide-react";
+import { Dispatch, SetStateAction, useRef } from "react";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
-import { useLoadingStore } from "@/store/useLoadingStore";
-import { useAlertStore } from "@/store/useAlertStore";
-import { usePinnedIssuesStore, PinnedIssue } from "@/store/usePinnedIssuesStore";
-import { titleHelper } from "@/public/assets";
-import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
-import IssuePriorityFormatter from "../IssuesData/IssuePriorityFormatter";
+import { PinnedIssue } from "@/store/usePinnedIssuesStore";
+import PinnedIssueListItem from "./PinnedIssueListItem";
 
 type PinnedIssuesModalProps = {
   isModalOpen: boolean;
@@ -24,25 +19,6 @@ const PinnedIssuesModal = ({
 }: PinnedIssuesModalProps) => {
   const modalRef = useRef<HTMLDivElement | null>(null);
   useFocusTrapping(modalRef, isModalOpen, () => setIsModalOpen(false));
-
-  const router = useRouter();
-  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
-  const triggerAlert = useAlertStore((state) => state.triggerAlert);
-  const unpinIssue = usePinnedIssuesStore((state) => state.unpinIssue);
-
-  const handleRouteChange = (issue: PinnedIssue) => {
-    setIsModalOpen(false);
-    setLoadingLine(true);
-    router.push(
-      `/dashboard/${issue.issue_uuid}?title=${encodeURIComponent(issue.issue_title)}&description=${encodeURIComponent(issue.issue_description)}`,
-    );
-  };
-
-  const handleUnpin = (e: MouseEvent<HTMLButtonElement>, issue_uuid: string) => {
-    e.stopPropagation();
-    unpinIssue(issue_uuid);
-    triggerAlert("success", "Issue unpinned");
-  };
 
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 p-4 transition-all dark:bg-black/80">
@@ -82,45 +58,11 @@ const PinnedIssuesModal = ({
           ) : (
             <ul className="divide-y divide-neutral-100 dark:divide-neutral-800/60">
               {pinnedIssues.map((issue) => (
-                <li
+                <PinnedIssueListItem
                   key={issue.issue_uuid}
-                  onClick={() => handleRouteChange(issue)}
-                  className="flex cursor-pointer items-start gap-3 px-6 py-4 hover:bg-neutral-50 dark:hover:bg-neutral-900/50"
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="mb-1.5 flex flex-wrap items-center gap-2">
-                      <span className="text-xs font-semibold text-neutral-400 dark:text-neutral-500">
-                        {issue.issue_reference_id}
-                      </span>
-                      <IssueStatusFormatter status={issue.issue_status} />
-                      <IssuePriorityFormatter
-                        priority={issue.issue_priority}
-                        showText={false}
-                      />
-                    </div>
-                    <p
-                      title={titleHelper(issue.issue_title)}
-                      className="line-clamp-1 text-sm font-semibold wrap-break-word text-neutral-800 dark:text-neutral-200"
-                    >
-                      {issue.issue_title}
-                    </p>
-                    {issue.issue_description && (
-                      <p
-                        title={titleHelper(issue.issue_description)}
-                        className="mt-0.5 line-clamp-1 text-xs wrap-break-word text-neutral-500 dark:text-neutral-400"
-                      >
-                        {issue.issue_description}
-                      </p>
-                    )}
-                  </div>
-                  <button
-                    onClick={(e) => handleUnpin(e, issue.issue_uuid)}
-                    title="Unpin issue"
-                    className="shrink-0 rounded-full p-1.5 text-neutral-400 hover:bg-neutral-100 hover:text-red-600 dark:text-neutral-500 dark:hover:bg-neutral-800 dark:hover:text-red-400"
-                  >
-                    <PinOff className="h-4 w-4" />
-                  </button>
-                </li>
+                  issue={issue}
+                  onBeforeNavigate={() => setIsModalOpen(false)}
+                />
               ))}
             </ul>
           )}
