@@ -10,6 +10,12 @@ type PinButtonProps = {
   size?: number;
   className?: string;
   showLabel?: boolean;
+  /**
+   * Hide the button until the closest `group` ancestor is hovered (or the
+   * button is focused). Pinned issues always stay visible so the pin state is
+   * never hidden. Ignored when `showLabel` is set.
+   */
+  revealOnHover?: boolean;
 };
 
 const PinButton = ({
@@ -17,6 +23,7 @@ const PinButton = ({
   size = 16,
   className = "",
   showLabel = false,
+  revealOnHover = false,
 }: PinButtonProps) => {
   const isPinned = usePinnedIssuesStore((state) =>
     state.pinnedIssues.some((p) => p.issue_uuid === issue.issue_uuid),
@@ -72,6 +79,10 @@ const PinButton = ({
         isPinned
           ? "text-amber-500 hover:text-amber-600 dark:text-amber-400"
           : "text-neutral-400 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-200"
+      } ${
+        revealOnHover && !isPinned
+          ? "opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100"
+          : ""
       } ${className}`}
     >
       <Pin size={size} fill={isPinned ? "currentColor" : "none"} />

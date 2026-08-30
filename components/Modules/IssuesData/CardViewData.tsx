@@ -73,8 +73,8 @@ const CardViewData = ({ currentIssues }: CardViewDataProps) => {
               />
             </div>
             <div className="flex items-center gap-1">
-              <IssueStatusFormatter status={issueData.issue_status} />
               <PinButton
+                revealOnHover
                 issue={{
                   issue_uuid: String(issueData.issue_uuid),
                   issue_reference_id: String(issueData.issue_reference_id),
@@ -84,6 +84,7 @@ const CardViewData = ({ currentIssues }: CardViewDataProps) => {
                   issue_description: String(issueData.issue_description),
                 }}
               />
+              <IssueStatusFormatter status={issueData.issue_status} />
             </div>
           </div>
 
