@@ -159,6 +159,7 @@ const TableViewData = ({ currentIssues }: TableViewDataProps) => {
                       )}
                       <PinButton
                         size={14}
+                        revealOnHover
                         issue={{
                           issue_uuid: String(issueData.issue_uuid),
                           issue_reference_id: String(
