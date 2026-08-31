@@ -12,6 +12,7 @@ import IssuePriorityFormatter from "./IssuePriorityFormatter";
 import RelativeTimeBadge from "./RelativeTimeBadge";
 import { GitMerge, Paperclip, UndoDot, UsersRound } from "lucide-react";
 import { ResolutionTimePill } from "./ResolutionTimePill";
+import PinButton from "../PinnedIssues/PinButton";
 
 type TableViewDataProps = {
   currentIssues: Record<string, string | number>[];
@@ -156,6 +157,22 @@ const TableViewData = ({ currentIssues }: TableViewDataProps) => {
                           className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400"
                         />
                       )}
+                      <PinButton
+                        size={14}
+                        revealOnHover
+                        issue={{
+                          issue_uuid: String(issueData.issue_uuid),
+                          issue_reference_id: String(
+                            issueData.issue_reference_id,
+                          ),
+                          issue_status: String(issueData.issue_status),
+                          issue_priority: String(issueData.issue_priority),
+                          issue_title: String(issueData.issue_title),
+                          issue_description: String(
+                            issueData.issue_description,
+                          ),
+                        }}
+                      />
                     </div>
                   </td>
                 )}

@@ -36,13 +36,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      data-scroll-behavior="smooth"
+      data-font="geist"
+      className={`${geistSans.variable} ${geistMono.variable}`}
+    >
       <head>
         <meta name="apple-mobile-web-app-title" content="HelpDesk" />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-gray-50 antialiased dark:bg-neutral-950`}
-      >
+      <body className="bg-gray-50 antialiased dark:bg-neutral-950">
         <Provider>
           <DbRecoveryManager />
           <LoadingLine />
