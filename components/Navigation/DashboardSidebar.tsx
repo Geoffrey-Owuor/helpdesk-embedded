@@ -26,6 +26,7 @@ import { useLoadingStore } from "@/store/useLoadingStore";
 import AdminPanel from "./AdminFunctions/AdminPanel";
 import UserSettings from "./UserSettings/UserSettings";
 import Notifications from "./Notifications/Notifications";
+import PinnedIssuesButton from "../Modules/PinnedIssues/PinnedIssuesButton";
 import ClientPortal from "../Modules/ClientPortal";
 import { useSidebarToggleStore } from "@/store/useSidebarToggleStore";
 import NewsButton from "../Modules/News/NewsButton";
@@ -128,6 +129,9 @@ const DashboardSidebar = () => {
 
           {/* Theme toggle */}
           <ThemeToggle />
+
+          {/* Pinned issues */}
+          <PinnedIssuesButton />
 
           {/* Notifications */}
           <Notifications />
