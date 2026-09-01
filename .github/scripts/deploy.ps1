@@ -20,7 +20,7 @@ param (
     [string]$SourceDir = $env:GITHUB_WORKSPACE,
 
     [Parameter(Mandatory=$false)]
-    [string]$AppName = "helpdesk-test"
+    [string]$AppName = "helpdesk-embedded"
 )
 
 # Stop execution immediately if any command encounters an error
@@ -29,7 +29,7 @@ $ErrorActionPreference = "Stop"
 # ==============================================================================
 # BLOCK 1: PATH DEFINITIONS & 7-ZIP DETECTION
 # ==============================================================================
-$AppRootDir     = "C:\helpdesk-test"                      # App root directory on Windows host
+$AppRootDir     = "C:\helpdesk-embedded"                      # App root directory on Windows host
 $ReleasesDir    = "$AppRootDir\releases"                  # Parent releases folder
 $NewReleaseDir  = "$ReleasesDir\release-$ReleaseId"       # Destination path for this release
 $JunctionLink   = "$AppRootDir\current"                   # Active junction link consumed by PM2
