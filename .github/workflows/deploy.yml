@@ -35,18 +35,6 @@ jobs:
             Write-Warning "C:\helpdesk-embedded\.env.production not found! NEXT_PUBLIC_ variables may be missing."
           }
 
-        # NEW STEP: Restore Next.js Cache
-      - name: Restore Next.js Build Cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            .next/cache
-          # Generate a new cache whenever packages or source files change
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.[jt]s', '**/*.[jt]sx') }}
-          # Fallback to the most recent cache if source files changed but packages didn't
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
-
       - name: Build Next.js Application
         run: npm run build
         env:
