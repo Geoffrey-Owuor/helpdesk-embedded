@@ -7,8 +7,8 @@ import {
   Bot,
   LayoutDashboard,
   Mail,
+  MopSparkles,
   ShieldCheck,
-  Sparkles,
 } from "lucide-react";
 import { useLoadingStore } from "@/store/useLoadingStore";
 import IssuePriorityFormatter from "../Modules/IssuesData/IssuePriorityFormatter";
@@ -54,7 +54,7 @@ const Features = () => {
       {/* Header */}
       <div className="mb-12 flex flex-col items-center text-center">
         <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-semibold tracking-widest text-neutral-500 uppercase dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400">
-          <Sparkles className="h-3.5 w-3.5" />
+          <MopSparkles className="h-3.5 w-3.5" />
           What you get
         </div>
         <h2 className="mb-3 text-3xl font-semibold tracking-tight text-balance text-neutral-900 sm:text-4xl dark:text-white">

@@ -134,7 +134,7 @@ const Hero = () => {
               className="animate-fadeUp mt-4 text-xs text-neutral-500 dark:text-neutral-500"
               style={{ animationDelay: "240ms" }}
             >
-              No account needed - or press{" "}
+              No account needed - just press{" "}
               <kbd className="rounded-md border border-neutral-200 bg-neutral-50 px-1.5 py-0.5 font-mono text-[11px] text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400">
                 Ctrl
               </kbd>{" "}
@@ -142,7 +142,7 @@ const Hero = () => {
               <kbd className="rounded-md border border-neutral-200 bg-neutral-50 px-1.5 py-0.5 font-mono text-[11px] text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400">
                 Q
               </kbd>{" "}
-              anywhere
+              to start
             </p>
           )}
 
