@@ -1,0 +1,56 @@
+name: Production CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    # This ensures the job only runs in the organization fork, preventing hanging workflows in your personal repo
+    if: github.repository == 'Hotpoint-Appliances/hotpoint-helpdesk'
+    runs-on: [self-hosted, windows]
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Context
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "npm"
+
+      - name: Install All Dependencies
+        run: npm ci
+
+      # COPY SERVER-LOCAL ENV FILE FOR BUILD TIME
+      - name: Inject Production Environment Variables
+        shell: powershell
+        run: |
+          if (Test-Path "C:\helpdesk-test\.env.production") {
+            Write-Host "Copying .env.production from server host into build workspace..."
+            Copy-Item "C:\helpdesk-test\.env.production" -Destination ".env.production" -Force
+          } else {
+            Write-Warning "C:\helpdesk-test\.env.production not found! NEXT_PUBLIC_ variables may be missing."
+          }
+
+      - name: Build Next.js Application
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+
+      - name: Execute Deployment Script
+        shell: powershell
+        run: |
+          $ReleaseId = Get-Date -Format "yyyyMMdd-HHmmss"
+          powershell -ExecutionPolicy Bypass -File .\.github\scripts\deploy.ps1 -ReleaseId $ReleaseId -SourceDir "${{ github.workspace }}" -AppName "helpdesk-test"
+
+      # WORKSPACE CLEANUP STEP: Runs whether deployment succeeded or failed
+      - name: Post-Deployment Workspace Cleanup
+        if: always()
+        shell: powershell
+        run: |
+          Write-Host "Cleaning up runner workspace build artifacts..."
+          Remove-Item -Recurse -Force .next -ErrorAction SilentlyContinue
+          git clean -ffdx -e node_modules
