@@ -48,21 +48,23 @@ const Hero = () => {
     <section className="relative overflow-hidden pt-10 pb-16">
       {/* ── Ambient backdrop ── */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        {/* Grid lines, faded out towards the edges */}
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, var(--home-grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--home-grid-line) 1px, transparent 1px)",
-            backgroundSize: "56px 56px",
-            maskImage:
-              "radial-gradient(ellipse 75% 60% at 50% 0%, #000 40%, transparent 100%)",
-            WebkitMaskImage:
-              "radial-gradient(ellipse 75% 60% at 50% 0%, #000 40%, transparent 100%)",
-          }}
-        />
-        {/* Soft blue glow behind the headline */}
-        <div className="animate-ambientDrift absolute -top-40 left-1/2 h-120 w-180 -translate-x-1/2 rounded-full bg-blue-500/10 blur-[110px] dark:bg-blue-500/15" />
+        <div className="custom:px-8 relative h-full px-4">
+          {/* Grid lines, faded out towards the edges */}
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "linear-gradient(to right, var(--home-grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--home-grid-line) 1px, transparent 1px)",
+              backgroundSize: "56px 56px",
+              maskImage:
+                "radial-gradient(ellipse 75% 60% at 50% 0%, #000 40%, transparent 100%)",
+              WebkitMaskImage:
+                "radial-gradient(ellipse 75% 60% at 50% 0%, #000 40%, transparent 100%)",
+            }}
+          />
+          {/* Soft blue glow behind the headline */}
+          <div className="animate-ambientDrift absolute -top-40 left-1/2 h-120 w-180 -translate-x-1/2 rounded-full bg-blue-500/10 blur-[110px] dark:bg-blue-500/15" />
+        </div>
       </div>
 
       <div className="custom:px-8 relative w-full px-4">
