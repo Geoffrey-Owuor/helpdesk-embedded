@@ -19,10 +19,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: "npm"
 
       - name: Install All Dependencies
-        run: npm ci
+        run: npm ci --prefer-offline --no-audit --no-fund
 
       # COPY SERVER-LOCAL ENV FILE FOR BUILD TIME
       - name: Inject Production Environment Variables
@@ -52,5 +51,5 @@ jobs:
         shell: powershell
         run: |
           Write-Host "Cleaning up runner workspace build artifacts..."
-          Remove-Item -Recurse -Force .next -ErrorAction SilentlyContinue
+          # -x already removes gitignored build output (.next, .env.production copy)
           git clean -ffdx -e node_modules
