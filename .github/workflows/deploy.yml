@@ -28,12 +28,24 @@ jobs:
       - name: Inject Production Environment Variables
         shell: powershell
         run: |
-          if (Test-Path "C:\helpdesk-test\.env.production") {
+          if (Test-Path "C:\helpdesk-embedded\.env.production") {
             Write-Host "Copying .env.production from server host into build workspace..."
-            Copy-Item "C:\helpdesk-test\.env.production" -Destination ".env.production" -Force
+            Copy-Item "C:\helpdesk-embedded\.env.production" -Destination ".env.production" -Force
           } else {
-            Write-Warning "C:\helpdesk-test\.env.production not found! NEXT_PUBLIC_ variables may be missing."
+            Write-Warning "C:\helpdesk-embedded\.env.production not found! NEXT_PUBLIC_ variables may be missing."
           }
+
+        # NEW STEP: Restore Next.js Cache
+      - name: Restore Next.js Build Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .next/cache
+          # Generate a new cache whenever packages or source files change
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.[jt]s', '**/*.[jt]sx') }}
+          # Fallback to the most recent cache if source files changed but packages didn't
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
       - name: Build Next.js Application
         run: npm run build
@@ -44,7 +56,7 @@ jobs:
         shell: powershell
         run: |
           $ReleaseId = Get-Date -Format "yyyyMMdd-HHmmss"
-          powershell -ExecutionPolicy Bypass -File .\.github\scripts\deploy.ps1 -ReleaseId $ReleaseId -SourceDir "${{ github.workspace }}" -AppName "helpdesk-test"
+          powershell -ExecutionPolicy Bypass -File .\.github\scripts\deploy.ps1 -ReleaseId $ReleaseId -SourceDir "${{ github.workspace }}" -AppName "helpdesk-embedded"
 
       # WORKSPACE CLEANUP STEP: Runs whether deployment succeeded or failed
       - name: Post-Deployment Workspace Cleanup
