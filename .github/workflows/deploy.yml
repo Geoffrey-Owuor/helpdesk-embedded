@@ -9,7 +9,7 @@ jobs:
   build-and-deploy:
     # This ensures the job only runs in the organization fork, preventing hanging workflows in your personal repo
     if: github.repository == 'Hotpoint-Appliances/hotpoint-helpdesk'
-    runs-on: [self-hosted, windows]
+    runs-on: [self-hosted, windows, x64]
 
     steps:
       - name: Checkout Source Code
