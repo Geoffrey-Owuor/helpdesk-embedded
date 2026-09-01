@@ -1,0 +1,112 @@
+name: Test Environment CI/CD Pipeline
+
+# Manual only. This pipeline builds the Next.js standalone output and deploys it
+# to the helpdesk-test environment (port 5005), so the standalone bundle can be
+# validated without touching production.
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    # This ensures the job only runs in the organization fork, preventing hanging workflows in your personal repo
+    if: github.repository == 'Hotpoint-Appliances/hotpoint-helpdesk'
+    runs-on: [self-hosted, windows, x64]
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Context
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install All Dependencies
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      # COPY SERVER-LOCAL ENV FILE FOR BUILD TIME
+      - name: Inject Test Environment Variables
+        shell: powershell
+        run: |
+          if (Test-Path "C:\helpdesk-test\.env.production") {
+            Write-Host "Copying .env.production from helpdesk-test into build workspace..."
+            Copy-Item "C:\helpdesk-test\.env.production" -Destination ".env.production" -Force
+          } else {
+            Write-Warning "C:\helpdesk-test\.env.production not found! NEXT_PUBLIC_ variables may be missing."
+          }
+
+      - name: Build Next.js Application (Standalone Output)
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          NEXT_OUTPUT_STANDALONE: 1
+
+      # Next.js deliberately leaves public/ and .next/static out of the standalone
+      # folder, on the assumption a CDN serves them. Without this step the app boots
+      # and then 404s on every asset, which looks like a broken build.
+      - name: Assemble Standalone Bundle
+        shell: powershell
+        run: |
+          if (-not (Test-Path ".next\standalone\server.js")) {
+            throw "No standalone output produced. Check that next.config.ts honours NEXT_OUTPUT_STANDALONE."
+          }
+
+          robocopy "public" ".next\standalone\public" /E /MT:16 /NFL /NDL /NJH /NJS /NP | Out-Null
+          if ($LASTEXITCODE -ge 8) { throw "Failed to copy public into the standalone bundle ($LASTEXITCODE)" }
+
+          robocopy ".next\static" ".next\standalone\.next\static" /E /MT:16 /NFL /NDL /NJH /NJS /NP | Out-Null
+          if ($LASTEXITCODE -ge 8) { throw "Failed to copy .next\static into the standalone bundle ($LASTEXITCODE)" }
+
+          $global:LASTEXITCODE = 0
+
+          # Fail here rather than after a half-broken deploy reaches the server
+          foreach ($Required in @(".next\standalone\server.js", ".next\standalone\.next\static", ".next\standalone\public")) {
+            if (-not (Test-Path $Required)) { throw "Standalone bundle is missing '$Required'" }
+          }
+
+          $Size = "{0:N0}" -f ((Get-ChildItem ".next\standalone" -Recurse -File | Measure-Object Length -Sum).Sum / 1MB)
+          Write-Host "Standalone bundle assembled: $Size MB"
+          exit 0
+
+      - name: Execute Deployment Script
+        shell: powershell
+        run: |
+          $ReleaseId = Get-Date -Format "yyyyMMdd-HHmmss"
+          powershell -ExecutionPolicy Bypass -File .\.github\scripts\deploy.ps1 -ReleaseId $ReleaseId -SourceDir "${{ github.workspace }}" -AppName "helpdesk-test" -AppRootDir "C:\helpdesk-test" -Standalone
+
+      # A standalone tracing gap surfaces as MODULE_NOT_FOUND on first request, not
+      # at boot, so confirm the process actually answers before calling this a pass.
+      - name: Smoke Test
+        shell: powershell
+        run: |
+          $Deadline = (Get-Date).AddSeconds(60)
+          $Status = $null
+
+          while ((Get-Date) -lt $Deadline -and -not $Status) {
+            try {
+              $Response = Invoke-WebRequest -Uri "http://localhost:5005" -UseBasicParsing -TimeoutSec 10
+              $Status = $Response.StatusCode
+            } catch [System.Net.WebException] {
+              # An HTTP error response still proves the server is listening
+              if ($_.Exception.Response) {
+                $Status = [int]$_.Exception.Response.StatusCode
+              } else {
+                Start-Sleep -Seconds 3
+              }
+            }
+          }
+
+          if (-not $Status) {
+            throw "helpdesk-test did not respond on port 5005 within 60s. Check: pm2 logs helpdesk-test"
+          }
+
+          Write-Host "helpdesk-test responded on port 5005 with HTTP $Status"
+
+      # WORKSPACE CLEANUP STEP: Runs whether deployment succeeded or failed
+      - name: Post-Deployment Workspace Cleanup
+        if: always()
+        shell: powershell
+        run: |
+          Write-Host "Cleaning up runner workspace build artifacts..."
+          # -x already removes gitignored build output (.next, .env.production copy)
+          git clean -ffdx -e node_modules
