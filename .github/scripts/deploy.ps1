@@ -10,6 +10,16 @@
 
 .PARAMETER AppName
     The application process name defined in ecosystem.config.js.
+
+.PARAMETER AppRootDir
+    Root directory of the target environment on the Windows host. Defaults to
+    the production root; the test environment passes C:\helpdesk-test.
+
+.PARAMETER Standalone
+    Deploy a Next.js standalone build (.next\standalone) instead of the full
+    .next + node_modules tree. The standalone folder already carries its own
+    traced node_modules and a server.js entry point, so PM2 must be configured
+    to run "server.js" rather than "next start" for that environment.
 #>
 
 param (
@@ -20,7 +30,13 @@ param (
     [string]$SourceDir = $env:GITHUB_WORKSPACE,
 
     [Parameter(Mandatory=$false)]
-    [string]$AppName = "helpdesk-embedded"
+    [string]$AppName = "helpdesk-embedded",
+
+    [Parameter(Mandatory=$false)]
+    [string]$AppRootDir = "C:\helpdesk-embedded",
+
+    [Parameter(Mandatory=$false)]
+    [switch]$Standalone
 )
 
 # Stop execution immediately if any command encounters an error
@@ -29,13 +45,15 @@ $ErrorActionPreference = "Stop"
 # ==============================================================================
 # BLOCK 1: PATH DEFINITIONS
 # ==============================================================================
-$AppRootDir     = "C:\helpdesk-embedded"                 # App root directory on Windows host
 $ReleasesDir    = "$AppRootDir\releases"                 # Parent releases folder
 $NewReleaseDir  = "$ReleasesDir\release-$ReleaseId"      # Destination path for this release
 $JunctionLink   = "$AppRootDir\current"                  # Active junction link consumed by PM2
 
+$DeployMode = if ($Standalone) { "standalone" } else { "full" }
+
 Write-Host "==================================================" -ForegroundColor Cyan
 Write-Host " Starting Fast Robocopy Deployment: Release $ReleaseId" -ForegroundColor Cyan
+Write-Host " Target: $AppName at $AppRootDir ($DeployMode output)" -ForegroundColor Cyan
 Write-Host "==================================================" -ForegroundColor Cyan
 
 # Ensure master releases directory exists
@@ -60,27 +78,49 @@ New-Item -ItemType Directory -Path $NewReleaseDir -Force | Out-Null
 # no-op for the other copied directories.
 Write-Host "[2/5] Copying build artifacts and node_modules into $NewReleaseDir..." -ForegroundColor Green
 
-# Include TypeScript Next.js artifacts
-$DirsToCopy  = @(".next", "node_modules")
-$FilesToCopy = @("package.json", "package-lock.json")
+if ($Standalone) {
+    # .next\standalone already holds server.js, a traced node_modules and the
+    # server half of .next. The workflow copies public and .next\static into it
+    # beforehand, because Next.js deliberately leaves those out.
+    $StandaloneDir = "$SourceDir\.next\standalone"
 
-if (Test-Path "$SourceDir\public")         { $DirsToCopy  += "public" }
-if (Test-Path "$SourceDir\next.config.ts") { $FilesToCopy += "next.config.ts" }
+    if (-not (Test-Path "$StandaloneDir\server.js")) {
+        throw "Standalone build not found at '$StandaloneDir\server.js'. Was the app built with NEXT_OUTPUT_STANDALONE=1?"
+    }
 
-foreach ($Dir in $DirsToCopy) {
-    robocopy "$SourceDir\$Dir" "$NewReleaseDir\$Dir" /E /MT:16 /XD "$SourceDir\.next\cache\turbopack" /NFL /NDL /NJH /NJS /NP | Out-Null
+    robocopy "$StandaloneDir" "$NewReleaseDir" /E /MT:16 /NFL /NDL /NJH /NJS /NP | Out-Null
 
     # Robocopy reports success as exit codes 0-7 (1 = files copied); 8 and above is a real failure
     if ($LASTEXITCODE -ge 8) {
-        throw "Robocopy failed to copy '$Dir' into '$NewReleaseDir' with exit code $LASTEXITCODE"
+        throw "Robocopy failed to copy the standalone bundle into '$NewReleaseDir' with exit code $LASTEXITCODE"
     }
+
+    # Reset so a benign robocopy code (e.g. 1) is not mistaken for a script failure
+    $global:LASTEXITCODE = 0
 }
+else {
+    # Include TypeScript Next.js artifacts
+    $DirsToCopy  = @(".next", "node_modules")
+    $FilesToCopy = @("package.json", "package-lock.json")
 
-# Reset so a benign robocopy code (e.g. 1) is not mistaken for a script failure
-$global:LASTEXITCODE = 0
+    if (Test-Path "$SourceDir\public")         { $DirsToCopy  += "public" }
+    if (Test-Path "$SourceDir\next.config.ts") { $FilesToCopy += "next.config.ts" }
 
-foreach ($File in $FilesToCopy) {
-    Copy-Item "$SourceDir\$File" "$NewReleaseDir\$File" -Force
+    foreach ($Dir in $DirsToCopy) {
+        robocopy "$SourceDir\$Dir" "$NewReleaseDir\$Dir" /E /MT:16 /XD "$SourceDir\.next\cache\turbopack" /NFL /NDL /NJH /NJS /NP | Out-Null
+
+        # Robocopy reports success as exit codes 0-7 (1 = files copied); 8 and above is a real failure
+        if ($LASTEXITCODE -ge 8) {
+            throw "Robocopy failed to copy '$Dir' into '$NewReleaseDir' with exit code $LASTEXITCODE"
+        }
+    }
+
+    # Reset so a benign robocopy code (e.g. 1) is not mistaken for a script failure
+    $global:LASTEXITCODE = 0
+
+    foreach ($File in $FilesToCopy) {
+        Copy-Item "$SourceDir\$File" "$NewReleaseDir\$File" -Force
+    }
 }
 
 # ==============================================================================
