@@ -242,9 +242,9 @@ const ChangeLog = async () => {
   const changelogs = await fetchedChangelogData();
 
   return (
-    <main className="layout-scrollbar home-container h-screen overflow-y-auto bg-white dark:bg-neutral-950">
+    <main className="layout-scrollbar home-container flex h-screen flex-col overflow-y-auto bg-white dark:bg-neutral-950">
       <HomeNavBar />
-      <div className="custom:px-8 mx-auto mb-8 max-w-6xl px-4 py-6 2xl:max-w-7xl">
+      <div className="custom:px-8 mx-auto mb-8 max-w-6xl flex-1 px-4 py-6 2xl:max-w-7xl">
         <div className="flex flex-col gap-12 lg:flex-row lg:gap-16">
           {/* Sidebar TOC */}
           <TableOfContents items={changelogs} />
