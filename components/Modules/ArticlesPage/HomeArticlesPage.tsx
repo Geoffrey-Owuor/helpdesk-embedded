@@ -48,9 +48,9 @@ const HomeArticlesPage = () => {
 
   return (
     <div className="layout-scrollbar home-container h-screen overflow-y-auto bg-white dark:bg-neutral-950">
-      <div className="mx-auto max-w-6xl 2xl:max-w-7xl">
+      <div className="mx-auto flex min-h-full max-w-6xl flex-col 2xl:max-w-7xl">
         <HomeNavBar />
-        <div className="custom:px-8 px-4 py-6 md:py-3.5">
+        <div className="custom:px-8 flex-1 px-4 py-6 md:py-3.5">
           <div className="mb-6">
             <span className="inline-flex items-center gap-1.5 text-2xl font-semibold text-neutral-900 dark:text-white">
               <BookOpen className="mt-1 h-6 w-6" />
