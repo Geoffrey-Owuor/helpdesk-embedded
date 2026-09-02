@@ -33,29 +33,31 @@ const HomePage = () => {
 
   return (
     <div className="layout-scrollbar home-container h-screen overflow-y-auto scroll-smooth bg-white dark:bg-neutral-950">
-      <div className="mx-auto max-w-6xl 2xl:max-w-7xl">
+      <div className="mx-auto flex min-h-full max-w-6xl flex-col 2xl:max-w-7xl">
         <HomeNavBar />
 
-        {/* Headline, CTAs and the dashboard preview */}
-        <Hero />
+        <div className="flex-1">
+          {/* Headline, CTAs and the dashboard preview */}
+          <Hero />
 
-        {/* The three-step submission journey */}
-        <HowItWorks />
+          {/* The three-step submission journey */}
+          <HowItWorks />
 
-        {/* Capability highlights */}
-        <Features />
+          {/* Capability highlights */}
+          <Features />
 
-        {/* The homepage news component here */}
-        <HomeNews />
+          {/* The homepage news component here */}
+          <HomeNews />
 
-        {/* Closing call to action */}
-        <ExploreCta />
+          {/* Closing call to action */}
+          <ExploreCta />
 
-        {/* The quick create button */}
-        <QuickCreateButton />
+          {/* The quick create button */}
+          <QuickCreateButton />
 
-        {/* The manual alert */}
-        <HomePageAlert isOpen={showManualAlert} onClose={handleCloseAlert} />
+          {/* The manual alert */}
+          <HomePageAlert isOpen={showManualAlert} onClose={handleCloseAlert} />
+        </div>
         <Footer />
       </div>
     </div>
