@@ -43,7 +43,7 @@ jobs:
         shell: powershell
         run: |
           $ReleaseId = Get-Date -Format "yyyyMMdd-HHmmss"
-          powershell -ExecutionPolicy Bypass -File .\.github\scripts\deploy.ps1 -ReleaseId $ReleaseId -SourceDir "${{ github.workspace }}" -AppName "helpdesk-test"
+          powershell -ExecutionPolicy Bypass -File .\.github\scripts\deploy.ps1 -ReleaseId $ReleaseId -SourceDir "${{ github.workspace }}" -AppName "helpdesk-test" -AppRootDir "C:\helpdesk-test"
 
       # WORKSPACE CLEANUP STEP: Runs whether deployment succeeded or failed
       - name: Post-Deployment Workspace Cleanup
