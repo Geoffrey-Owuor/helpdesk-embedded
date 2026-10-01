@@ -252,156 +252,161 @@ const Users = () => {
       </div>
 
       {/* Table card */}
-      <div className="layout-scrollbar w-full overflow-x-auto rounded-xl border border-neutral-200 bg-gray-100/50 px-4 py-2 dark:border-neutral-800 dark:bg-neutral-950">
-        <table className="min-w-full border-separate border-spacing-y-3 text-left">
-          {/* Head */}
-          <thead>
-            <tr>
-              {[
-                "User",
-                "Email",
-                "Department",
-                "Role",
-                "Status",
-                "Joined",
-                "Actions",
-              ].map((col) => (
-                <th
-                  key={col}
-                  className={`px-4 pb-2 text-xs font-semibold tracking-wider whitespace-nowrap text-gray-500 uppercase dark:text-gray-400 ${
-                    col === "Actions" ? "text-right" : ""
-                  }`}
-                >
-                  {col}
-                </th>
-              ))}
-            </tr>
-          </thead>
-
-          {/* Body */}
-          <tbody>
-            {loading ? (
-              Array.from({ length: 10 }).map((_, i) => <SkeletonRow key={i} />)
-            ) : !filteredUsers || filteredUsers.length === 0 ? (
+      {/* Rounded card that doesn't clip: the horizontal scroller sits inside its padding. A rounded scroller forces a clip mask that is recomposited on every page scroll. */}
+      <div className="w-full rounded-xl border border-neutral-200 bg-gray-50 px-4 py-2 dark:border-neutral-800 dark:bg-neutral-950">
+        <div className="layout-scrollbar overflow-x-auto bg-gray-50 dark:bg-neutral-950">
+          <table className="min-w-full border-separate border-spacing-y-3 text-left">
+            {/* Head */}
+            <thead>
               <tr>
-                <td
-                  colSpan={7}
-                  className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50 py-12 text-center text-neutral-500 shadow-sm dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-400"
-                >
-                  No users found.
-                </td>
-              </tr>
-            ) : (
-              currentUsers.map((user) => {
-                const role = ROLES[user.role] ?? ROLES.user;
-                const active =
-                  ACTIVE_STATES[String(user.is_user_active)] ??
-                  ACTIVE_STATES.false;
-
-                return (
-                  <tr
-                    key={user.user_id}
-                    className="group cursor-default rounded-xl text-sm shadow-sm transition-transform duration-200"
+                {[
+                  "User",
+                  "Email",
+                  "Department",
+                  "Role",
+                  "Status",
+                  "Joined",
+                  "Actions",
+                ].map((col) => (
+                  <th
+                    key={col}
+                    className={`px-4 pb-2 text-xs font-semibold tracking-wider whitespace-nowrap text-gray-500 uppercase dark:text-gray-400 ${
+                      col === "Actions" ? "text-right" : ""
+                    }`}
                   >
-                    {/* User */}
-                    <td className="bg-white px-4 py-3.5 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-200 text-xs font-semibold text-neutral-700 dark:bg-neutral-700 dark:text-neutral-200">
-                          {user.username.slice(0, 2).toUpperCase()}
-                        </div>
-                        <span className="font-medium text-neutral-900 dark:text-neutral-100">
-                          {user.username}
-                        </span>
-                      </div>
-                    </td>
+                    {col}
+                  </th>
+                ))}
+              </tr>
+            </thead>
 
-                    {/* Email */}
-                    <td
-                      title={user.email}
-                      className="max-w-37.5 truncate bg-white px-4 py-3.5 text-neutral-600 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:text-neutral-400 dark:group-hover:bg-neutral-800/50"
+            {/* Body */}
+            <tbody>
+              {loading ? (
+                Array.from({ length: 10 }).map((_, i) => (
+                  <SkeletonRow key={i} />
+                ))
+              ) : !filteredUsers || filteredUsers.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={7}
+                    className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50 py-12 text-center text-neutral-500 shadow-sm dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-400"
+                  >
+                    No users found.
+                  </td>
+                </tr>
+              ) : (
+                currentUsers.map((user) => {
+                  const role = ROLES[user.role] ?? ROLES.user;
+                  const active =
+                    ACTIVE_STATES[String(user.is_user_active)] ??
+                    ACTIVE_STATES.false;
+
+                  return (
+                    <tr
+                      key={user.user_id}
+                      className="group cursor-default rounded-xl text-sm shadow-sm transition-transform duration-200"
                     >
-                      {user.email}
-                    </td>
+                      {/* User */}
+                      <td className="bg-white px-4 py-3.5 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-200 text-xs font-semibold text-neutral-700 dark:bg-neutral-700 dark:text-neutral-200">
+                            {user.username.slice(0, 2).toUpperCase()}
+                          </div>
+                          <span className="font-medium text-neutral-900 dark:text-neutral-100">
+                            {user.username}
+                          </span>
+                        </div>
+                      </td>
 
-                    {/* Department */}
-                    <td className="bg-white px-4 py-3.5 text-neutral-600 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:text-neutral-400 dark:group-hover:bg-neutral-800/50">
-                      {user.department || (
-                        <span className="text-neutral-400 dark:text-neutral-600">
-                          —
-                        </span>
-                      )}
-                    </td>
+                      {/* Email */}
+                      <td
+                        title={user.email}
+                        className="max-w-37.5 truncate bg-white px-4 py-3.5 text-neutral-600 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:text-neutral-400 dark:group-hover:bg-neutral-800/50"
+                      >
+                        {user.email}
+                      </td>
 
-                    {/* Role */}
-                    <td className="bg-white px-4 py-3.5 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
-                      <Badge
-                        icon={role.icon}
-                        label={role.label}
-                        styles={role.styles}
-                      />
-                    </td>
-
-                    {/* Status */}
-                    <td className="bg-white px-4 py-3.5 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
-                      <Badge
-                        icon={active.icon}
-                        label={active.label}
-                        styles={active.styles}
-                      />
-                    </td>
-
-                    {/* Joined */}
-                    <td className="bg-white px-4 py-3.5 text-neutral-500 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:text-neutral-400 dark:group-hover:bg-neutral-800/50">
-                      {dateFormatter(user.created_at)}
-                    </td>
-
-                    {/* Actions */}
-                    <td className="bg-white px-4 py-3.5 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          onClick={() => setActiveEditId(user.user_id)}
-                          disabled={userId === user.user_id}
-                          className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-neutral-200 hover:text-neutral-700 disabled:opacity-50 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
-                        >
-                          <UserRoundPen size={15} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(user.user_id)}
-                          disabled={
-                            userId === user.user_id ||
-                            !user.is_user_active ||
-                            deleting
-                          }
-                          className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-red-100 hover:text-red-600 disabled:opacity-50 dark:hover:bg-red-900/30 dark:hover:text-red-400"
-                        >
-                          <Trash2 size={15} />
-                        </button>
-
-                        {/* The edit modal */}
-                        {activeEditId === user.user_id && (
-                          <EditUserModal
-                            isModalOpen={activeEditId === user.user_id}
-                            hideModal={() => setActiveEditId(null)}
-                            userId={user.user_id}
-                            userInfo={{
-                              name: user.username,
-                              email: user.email,
-                              department: user.department,
-                              role: user.role,
-                              status: String(user.is_user_active),
-                              password: "",
-                              confirmPassword: "",
-                            }}
-                          />
+                      {/* Department */}
+                      <td className="bg-white px-4 py-3.5 text-neutral-600 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:text-neutral-400 dark:group-hover:bg-neutral-800/50">
+                        {user.department || (
+                          <span className="text-neutral-400 dark:text-neutral-600">
+                            —
+                          </span>
                         )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+                      </td>
+
+                      {/* Role */}
+                      <td className="bg-white px-4 py-3.5 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
+                        <Badge
+                          icon={role.icon}
+                          label={role.label}
+                          styles={role.styles}
+                        />
+                      </td>
+
+                      {/* Status */}
+                      <td className="bg-white px-4 py-3.5 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
+                        <Badge
+                          icon={active.icon}
+                          label={active.label}
+                          styles={active.styles}
+                        />
+                      </td>
+
+                      {/* Joined */}
+                      <td className="bg-white px-4 py-3.5 text-neutral-500 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:text-neutral-400 dark:group-hover:bg-neutral-800/50">
+                        {dateFormatter(user.created_at)}
+                      </td>
+
+                      {/* Actions */}
+                      <td className="bg-white px-4 py-3.5 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => setActiveEditId(user.user_id)}
+                            disabled={userId === user.user_id}
+                            className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-neutral-200 hover:text-neutral-700 disabled:opacity-50 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
+                          >
+                            <UserRoundPen size={15} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(user.user_id)}
+                            disabled={
+                              userId === user.user_id ||
+                              !user.is_user_active ||
+                              deleting
+                            }
+                            className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-red-100 hover:text-red-600 disabled:opacity-50 dark:hover:bg-red-900/30 dark:hover:text-red-400"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+
+                          {/* The edit modal */}
+                          {activeEditId === user.user_id && (
+                            <EditUserModal
+                              isModalOpen={activeEditId === user.user_id}
+                              hideModal={() => setActiveEditId(null)}
+                              userId={user.user_id}
+                              userInfo={{
+                                name: user.username,
+                                email: user.email,
+                                department: user.department,
+                                role: user.role,
+                                status: String(user.is_user_active),
+                                password: "",
+                                confirmPassword: "",
+                              }}
+                            />
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {!loading && filteredUsers && filteredUsers.length > 0 && (

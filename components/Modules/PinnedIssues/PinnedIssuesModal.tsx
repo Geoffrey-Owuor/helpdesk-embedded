@@ -40,7 +40,7 @@ const PinnedIssuesModal = ({
         </div>
 
         {/* Body */}
-        <div className="layout-scrollbar flex-1 overflow-y-auto">
+        <div className="layout-scrollbar flex-1 overflow-y-auto bg-white dark:bg-neutral-950">
           {pinnedIssues.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-3 px-6 py-16 text-neutral-500">
               <div className="rounded-full bg-blue-500/10 p-4">
@@ -51,8 +51,8 @@ const PinnedIssuesModal = ({
               </div>
               <p className="text-sm font-semibold">No pinned issues yet</p>
               <p className="max-w-xs text-center text-xs">
-                Pin an issue from its card, table row, or details page to
-                check on it later
+                Pin an issue from its card, table row, or details page to check
+                on it later
               </p>
             </div>
           ) : (

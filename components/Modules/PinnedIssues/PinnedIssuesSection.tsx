@@ -22,11 +22,14 @@ const PinnedIssuesSection = () => {
           ({pinnedIssues.length})
         </span>
       </div>
-      <ul className="layout-scrollbar max-h-96 divide-y divide-neutral-100 overflow-y-auto rounded-xl border border-neutral-200 bg-white dark:divide-neutral-800/60 dark:border-neutral-800 dark:bg-neutral-950">
-        {pinnedIssues.map((issue) => (
-          <PinnedIssueListItem key={issue.issue_uuid} issue={issue} />
-        ))}
-      </ul>
+      {/* Rounded card that doesn't clip: the list scrolls inside its padding. A rounded scroller forces a clip mask that is recomposited on every page scroll. */}
+      <div className="rounded-xl border border-neutral-200 bg-white p-1 dark:border-neutral-800 dark:bg-neutral-950">
+        <ul className="layout-scrollbar max-h-[calc(24rem-0.5rem-2px)] divide-y divide-neutral-100 overflow-y-auto bg-white *:rounded-lg dark:divide-neutral-800/60 dark:bg-neutral-950">
+          {pinnedIssues.map((issue) => (
+            <PinnedIssueListItem key={issue.issue_uuid} issue={issue} />
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

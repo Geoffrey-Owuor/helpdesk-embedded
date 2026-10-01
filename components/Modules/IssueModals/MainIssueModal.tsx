@@ -299,7 +299,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
           </div>
 
           {/* Issue Form */}
-          <div className="layout-scrollbar flex-1 overflow-y-auto p-6">
+          <div className="layout-scrollbar flex-1 overflow-y-auto bg-neutral-50 p-6 dark:bg-neutral-950">
             <form
               onSubmit={handleConfirmSubmit}
               autoComplete="off"

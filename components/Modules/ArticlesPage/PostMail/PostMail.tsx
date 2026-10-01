@@ -187,7 +187,7 @@ const PostMail = ({ closeModal, isOpen }: PostMailProps) => {
           </div>
 
           {/* Form Body */}
-          <div className="layout-scrollbar flex-1 overflow-y-auto p-6">
+          <div className="layout-scrollbar flex-1 overflow-y-auto bg-neutral-50 p-6 dark:bg-neutral-950">
             {/* Email Accuracy Disclaimer */}
             <div className="mb-4 flex items-start gap-2.5 rounded-xl border border-amber-200/60 bg-amber-50/50 p-3 dark:border-amber-900/30 dark:bg-amber-900/10">
               <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
