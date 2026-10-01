@@ -73,7 +73,7 @@ const EscalationHistoryModal = ({
           </div>
 
           {/* Scrollable Timeline Body */}
-          <div className="layout-scrollbar flex-1 overflow-y-auto p-6">
+          <div className="layout-scrollbar flex-1 overflow-y-auto bg-neutral-50 p-6 dark:bg-neutral-950">
             {isLoading ? (
               // Loading Skeleton
               <div className="flex flex-col gap-6 p-4">

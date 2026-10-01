@@ -86,7 +86,7 @@ export default function UserEmailAutocomplete({
 
       {/* Dropdown Results */}
       {!loading && value && showDropdown && (
-        <div className="default-scrollbar custom-blur absolute top-[calc(100%+8px)] z-50 max-h-64 w-full overflow-y-auto rounded-xl border border-neutral-200 bg-white/95 p-1 shadow-xl dark:border-neutral-800 dark:bg-neutral-950/95">
+        <div className="default-scrollbar absolute top-[calc(100%+8px)] z-50 max-h-64 w-full overflow-y-auto rounded-xl border border-neutral-200 bg-white p-1 shadow-xl dark:border-neutral-800 dark:bg-neutral-950">
           {filteredUsers.length === 0 && (
             <div className="flex flex-col items-center justify-center gap-2 px-4 py-3 text-neutral-500 dark:text-neutral-400">
               <UserRoundSearch className="h-7 w-7" />

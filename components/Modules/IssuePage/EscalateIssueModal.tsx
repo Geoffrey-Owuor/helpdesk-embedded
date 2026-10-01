@@ -81,15 +81,17 @@ const EscalateIssueModal = ({
     // TODO: Confirm this is the correct endpoint for your escalation route
     mutationFn: (payload: Payload) => apiClient.put("/escalate-issue", payload),
     onSuccess: (response, payload) => {
-      queryClient.setQueryData(["issue", uuid], (old: IssueDetail | undefined) =>
-        old
-          ? {
-              ...old,
-              issue_agent_name: payload.agentName,
-              issue_agent_email: payload.agentEmail,
-              issue_updated_at: new Date().toISOString(),
-            }
-          : old,
+      queryClient.setQueryData(
+        ["issue", uuid],
+        (old: IssueDetail | undefined) =>
+          old
+            ? {
+                ...old,
+                issue_agent_name: payload.agentName,
+                issue_agent_email: payload.agentEmail,
+                issue_updated_at: new Date().toISOString(),
+              }
+            : old,
       );
 
       hideOverlay();
@@ -152,7 +154,7 @@ const EscalateIssueModal = ({
             </button>
           </div>
 
-          <div className="layout-scrollbar flex flex-col gap-6 overflow-y-auto pr-1">
+          <div className="layout-scrollbar flex flex-col gap-6 overflow-y-auto bg-neutral-50 pr-1 dark:bg-neutral-950">
             <div>
               <h3 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-300">
                 Select Agent to Escalate To

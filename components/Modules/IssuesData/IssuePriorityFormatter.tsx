@@ -69,7 +69,7 @@ const IssuePriorityFormatter = ({
     >
       <Icon
         size={12}
-        className={`${showText ? "mr-1.5" : ""} shrink-0 ${config.text} animate-pulse`}
+        className={`${showText ? "mr-1.5" : ""} shrink-0 ${config.text}`}
       />
 
       <span className={`truncate ${!showText ? "hidden" : ""}`}>
