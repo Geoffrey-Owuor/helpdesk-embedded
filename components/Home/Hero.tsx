@@ -63,7 +63,7 @@ const Hero = () => {
             }}
           />
           {/* Soft blue glow behind the headline */}
-          <div className="animate-ambientDrift absolute -top-40 left-1/2 h-120 w-180 -translate-x-1/2 rounded-full bg-blue-500/10 blur-[110px] dark:bg-blue-500/15" />
+          <div className="absolute -top-40 left-1/2 h-120 w-180 -translate-x-1/2 rounded-full bg-blue-500/10 blur-[110px] dark:bg-blue-500/15" />
         </div>
       </div>
 

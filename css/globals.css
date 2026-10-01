@@ -48,12 +48,57 @@ html[data-theme="dark"] {
   );
 }
 
-@layer base {
-  .custom-blur {
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-    will-change: backdrop-filter;
-  }
+/*
+  Dashboard shell corners. #main-content is a square scroller (a rounded scroller
+  costs ~50% of the frame rate on 4K screens), so each corner is painted by a
+  small overlay: transparent inside the arc, the border colour on the arc, and the
+  page background outside it.
+*/
+.shell-ear {
+  --ear-r: 1rem;
+  --ear-border: #eceef1;
+  --ear-page: var(--color-gray-50);
+  position: absolute;
+  z-index: 1;
+  width: var(--ear-r);
+  height: var(--ear-r);
+  pointer-events: none;
+  background: radial-gradient(
+    circle at var(--ear-at),
+    transparent calc(var(--ear-r) - 1.25px),
+    var(--ear-border) calc(var(--ear-r) - 1px),
+    var(--ear-border) calc(var(--ear-r) - 0.25px),
+    var(--ear-page) var(--ear-r)
+  );
+}
+
+html[data-theme="dark"] .shell-ear {
+  --ear-border: var(--color-neutral-900);
+  --ear-page: var(--color-neutral-950);
+}
+
+.shell-ear-tl {
+  top: 0;
+  left: 0;
+  --ear-at: 100% 100%;
+}
+
+.shell-ear-tr {
+  top: 0;
+  right: 0;
+  --ear-at: 0% 100%;
+}
+
+.shell-ear-bl {
+  bottom: 0;
+  left: 0;
+  --ear-at: 100% 0%;
+}
+
+.shell-ear-br {
+  bottom: 0;
+  right: 0;
+  --ear-at: 0% 0%;
 }
 
 @keyframes slideDown {
@@ -98,26 +143,19 @@ html[data-theme="dark"] {
   }
 }
 
+/*
+  "backwards" (not "forwards"): the end state equals the element's natural style,
+  so nothing changes visually, but the finished animation no longer pins each
+  element to its own GPU layer. The delay period still uses the "from" frame.
+*/
 .animate-fadeUp {
-  opacity: 0;
-  animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
-@keyframes ambientDrift {
-  0%,
-  100% {
-    transform: translate3d(-50%, 0, 0) scale(1);
-    opacity: 0.9;
-  }
-  50% {
-    transform: translate3d(-50%, 2.5rem, 0) scale(1.08);
-    opacity: 1;
-  }
-}
-
-.animate-ambientDrift {
-  animation: ambientDrift 14s ease-in-out infinite;
-}
+/*
+  No infinite ambient drift on the hero glow: animating a 110px-blurred layer
+  forever keeps the GPU busy and cost the homepage ~10fps while scrolling on 4K.
+*/
 
 @keyframes flowRight {
   from {
@@ -135,11 +173,9 @@ html[data-theme="dark"] {
 /* Respect users who ask for less motion */
 @media (prefers-reduced-motion: reduce) {
   .animate-fadeUp {
-    opacity: 1;
     animation: none;
   }
 
-  .animate-ambientDrift,
   .animate-flowRight {
     animation: none;
   }

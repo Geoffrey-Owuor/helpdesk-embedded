@@ -220,7 +220,7 @@ const SpecialAccessModal = ({
   return (
     <ClientPortal>
       {/* Backdrop */}
-      <div className="custom-blur fixed inset-0 z-50 bg-black/50 transition-opacity dark:bg-black/60" />
+      <div className="fixed inset-0 z-50 bg-black/60 transition-opacity dark:bg-black/80" />
 
       {/* Modal */}
       <div
@@ -256,7 +256,7 @@ const SpecialAccessModal = ({
           </div>
 
           {/* Body */}
-          <div className="layout-scrollbar flex flex-col gap-4 overflow-y-auto px-6 py-5">
+          <div className="layout-scrollbar flex flex-col gap-4 overflow-y-auto bg-white px-6 py-5 dark:bg-neutral-950">
             {/* Add form */}
             {showAddForm && (
               <GrantForm

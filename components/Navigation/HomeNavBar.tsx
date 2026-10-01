@@ -57,7 +57,7 @@ const HomeNavBar = () => {
 
   return (
     <div
-      className={`sticky top-0 right-0 left-0 z-50 ${isScrolled ? "custom-blur bg-white/70 dark:bg-neutral-950/70" : "bg-transparent"}`}
+      className={`sticky top-0 right-0 left-0 z-50 ${isScrolled ? "bg-white dark:bg-neutral-950" : "bg-transparent"}`}
     >
       <nav className="custom:px-8 mx-auto flex h-16 max-w-6xl items-center justify-between px-4 2xl:max-w-7xl">
         {/* App Logo */}

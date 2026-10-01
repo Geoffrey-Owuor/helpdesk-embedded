@@ -66,7 +66,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   return (
     <ClientPortal>
       {/* The Backdrop */}
-      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 dark:bg-black/60">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 dark:bg-black/80">
         {/* Modal Container */}
         <div
           ref={modalRef}
@@ -155,7 +155,7 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
             </div>
 
             {/* Tab Content Rendering */}
-            <main className="layout-scrollbar flex-1 overflow-y-auto p-6">
+            <main className="layout-scrollbar flex-1 overflow-y-auto bg-white p-6 dark:bg-neutral-950">
               {activeTab === "agent-info" && (
                 <AgentsInfo
                   loading={loading}

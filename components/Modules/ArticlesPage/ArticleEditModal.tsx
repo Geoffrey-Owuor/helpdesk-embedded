@@ -120,7 +120,7 @@ const ArticleEditModal = ({
   return (
     <ClientPortal>
       {/* The Backdrop */}
-      <div className="custom-blur fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 transition-all dark:bg-black/60">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 transition-all dark:bg-black/80">
         <div
           ref={modalRef}
           className="flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
@@ -145,7 +145,7 @@ const ArticleEditModal = ({
           </div>
 
           {/* Content Area */}
-          <div className="layout-scrollbar overflow-y-auto px-6 py-4">
+          <div className="layout-scrollbar overflow-y-auto bg-white px-6 py-4 dark:bg-neutral-950">
             <form autoComplete="off" onSubmit={handleConfirmSubmit}>
               {/* Article form wrapper */}
               <ArticleFormWrapper

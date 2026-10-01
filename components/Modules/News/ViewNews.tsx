@@ -61,7 +61,7 @@ const ViewNews = ({ newsList, refetch }: ViewNewsProps) => {
         </div>
 
         {/* Body Content */}
-        <div className="layout-scrollbar flex-1 overflow-y-auto p-6">
+        <div className="layout-scrollbar flex-1 overflow-y-auto bg-neutral-50 p-6 dark:bg-neutral-950">
           {newsList.length === 0 ? (
             <div className="flex h-48 flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-neutral-300 bg-neutral-100/50 text-neutral-500 dark:border-neutral-800 dark:bg-neutral-900/30 dark:text-neutral-400">
               <Megaphone className="h-8 w-8 text-neutral-400 dark:text-neutral-600" />

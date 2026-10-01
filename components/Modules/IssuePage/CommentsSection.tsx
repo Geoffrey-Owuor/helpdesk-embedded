@@ -110,7 +110,7 @@ const CommentsSection = ({
   });
 
   return (
-    <div className="layout-scrollbar max-h-150 overflow-y-auto rounded-xl border border-neutral-200 p-6 shadow-xs dark:border-neutral-800">
+    <div className="layout-scrollbar max-h-150 overflow-y-auto rounded-xl border border-neutral-200 bg-white p-6 shadow-xs dark:border-neutral-800 dark:bg-black">
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         {/* The title and total comments */}
         <div className="flex flex-col gap-2">

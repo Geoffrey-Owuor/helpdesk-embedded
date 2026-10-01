@@ -194,7 +194,7 @@ const PostNews = ({ closeModal, isOpen }: PostNewsProps) => {
           </div>
 
           {/* Body Content */}
-          <div className="layout-scrollbar flex-1 overflow-y-auto p-6">
+          <div className="layout-scrollbar flex-1 overflow-y-auto bg-neutral-50 p-6 dark:bg-neutral-950">
             {/* ---- CREATE TAB ---- */}
             {activeTab === "create" && (
               <form

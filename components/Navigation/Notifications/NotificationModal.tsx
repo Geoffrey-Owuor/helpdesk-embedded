@@ -82,7 +82,7 @@ const NotificationModal = ({
         </div>
 
         {/* Body */}
-        <div className="layout-scrollbar flex-1 overflow-y-auto">
+        <div className="layout-scrollbar flex-1 overflow-y-auto bg-white dark:bg-neutral-950">
           {isEmpty && (
             <div className="flex flex-col items-center justify-center gap-3 px-6 py-16 text-neutral-500">
               <div className="rounded-full bg-blue-500/10 p-4">
