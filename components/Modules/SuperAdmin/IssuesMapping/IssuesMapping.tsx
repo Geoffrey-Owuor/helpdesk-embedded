@@ -207,122 +207,127 @@ const IssuesMapping = () => {
       </div>
 
       {/* Table Section */}
-      <div className="layout-scrollbar w-full overflow-x-auto rounded-xl border border-neutral-200 bg-gray-100/50 px-4 py-2 dark:border-neutral-800 dark:bg-neutral-950">
-        <table className="min-w-full border-separate border-spacing-y-3 text-left">
-          <thead>
-            <tr>
-              {[
-                "Assigned Agent",
-                "Supervising Admin",
-                "Issue Type",
-                "Default Priority",
-                "Actions",
-              ].map((col) => (
-                <th
-                  key={col}
-                  className={`px-4 pb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400 ${col === "Actions" ? "text-right" : ""}`}
-                >
-                  {col}
-                </th>
-              ))}
-            </tr>
-          </thead>
-
-          <tbody>
-            {loading ? (
-              Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} />)
-            ) : filteredMapping.length === 0 ? (
+      {/* Rounded card that doesn't clip: the horizontal scroller sits inside its padding. A rounded scroller forces a clip mask that is recomposited on every page scroll. */}
+      <div className="w-full rounded-xl border border-neutral-200 bg-gray-50 px-4 py-2 dark:border-neutral-800 dark:bg-neutral-950">
+        <div className="layout-scrollbar overflow-x-auto bg-gray-50 dark:bg-neutral-950">
+          <table className="min-w-full border-separate border-spacing-y-3 text-left">
+            <thead>
               <tr>
-                <td
-                  colSpan={5}
-                  className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50 py-12 text-center text-neutral-500 dark:border-neutral-700 dark:bg-neutral-950"
-                >
-                  No mappings found.
-                </td>
+                {[
+                  "Assigned Agent",
+                  "Supervising Admin",
+                  "Issue Type",
+                  "Default Priority",
+                  "Actions",
+                ].map((col) => (
+                  <th
+                    key={col}
+                    className={`px-4 pb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400 ${col === "Actions" ? "text-right" : ""}`}
+                  >
+                    {col}
+                  </th>
+                ))}
               </tr>
-            ) : (
-              currentItems.map((item) => (
-                <tr
-                  key={item.issue_id}
-                  className="group rounded-xl text-sm shadow-sm transition-transform duration-200"
-                >
-                  {/* Agent */}
-                  <td className="bg-white px-4 py-3 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
-                    <UserCell
-                      name={item.agent_name}
-                      email={item.agent_email}
-                      role="agent"
-                    />
-                  </td>
+            </thead>
 
-                  {/* Admin */}
-                  <td className="bg-white px-4 py-3 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
-                    <UserCell
-                      name={item.admin_name}
-                      email={item.admin_email}
-                      role="admin"
-                    />
-                  </td>
-
-                  {/* Issue Type */}
-                  <td className="bg-white px-4 py-3 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
-                    <div className="flex flex-col">
-                      <span className="font-medium text-neutral-700 dark:text-neutral-300">
-                        {item.long_name}
-                      </span>
-                      <span className="text-[11px] text-neutral-500">
-                        {item.issue_type}
-                      </span>
-                    </div>
-                  </td>
-
-                  {/* Priority */}
-                  <td className="bg-white px-4 py-3 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
-                    <IssuePriorityFormatter priority={item.issue_priority} />
-                  </td>
-
-                  {/* Actions */}
-                  <td className="bg-white px-4 py-3 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
-                    <div className="flex items-center justify-end gap-1">
-                      <button
-                        onClick={() => setActiveEditId(item.issue_id)}
-                        disabled={item.admin_email === "Unassigned"}
-                        className="rounded-lg p-2 text-neutral-400 hover:bg-neutral-200 hover:text-neutral-700 disabled:opacity-50 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
-                      >
-                        <Pencil size={15} />
-                      </button>
-                      <button
-                        onClick={() => handleConfirmDelete(item.issue_id)}
-                        disabled={item.admin_email === "Unassigned" || deleting}
-                        className="rounded-lg p-2 text-neutral-400 hover:bg-red-100 hover:text-red-600 disabled:opacity-50 dark:hover:bg-red-900/30 dark:hover:text-red-400"
-                      >
-                        <Trash2 size={15} />
-                      </button>
-
-                      {/* The edit modal */}
-                      {activeEditId === item.issue_id && (
-                        <EditIssueTypeModal
-                          isModalOpen={activeEditId === item.issue_id}
-                          hideModal={() => setActiveEditId(null)}
-                          agentsInfo={agentsInformation}
-                          adminsInfo={agentsInformation}
-                          issueId={item.issue_id}
-                          issueInfo={{
-                            issueType: item.issue_type,
-                            longName: item.long_name,
-                            issuePriority: item.issue_priority,
-                            adminEmail: item.admin_email,
-                            agentEmail: item.agent_email,
-                          }}
-                        />
-                      )}
-                    </div>
+            <tbody>
+              {loading ? (
+                Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} />)
+              ) : filteredMapping.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50 py-12 text-center text-neutral-500 dark:border-neutral-700 dark:bg-neutral-950"
+                  >
+                    No mappings found.
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                currentItems.map((item) => (
+                  <tr
+                    key={item.issue_id}
+                    className="group rounded-xl text-sm shadow-sm transition-transform duration-200"
+                  >
+                    {/* Agent */}
+                    <td className="bg-white px-4 py-3 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
+                      <UserCell
+                        name={item.agent_name}
+                        email={item.agent_email}
+                        role="agent"
+                      />
+                    </td>
+
+                    {/* Admin */}
+                    <td className="bg-white px-4 py-3 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
+                      <UserCell
+                        name={item.admin_name}
+                        email={item.admin_email}
+                        role="admin"
+                      />
+                    </td>
+
+                    {/* Issue Type */}
+                    <td className="bg-white px-4 py-3 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
+                      <div className="flex flex-col">
+                        <span className="font-medium text-neutral-700 dark:text-neutral-300">
+                          {item.long_name}
+                        </span>
+                        <span className="text-[11px] text-neutral-500">
+                          {item.issue_type}
+                        </span>
+                      </div>
+                    </td>
+
+                    {/* Priority */}
+                    <td className="bg-white px-4 py-3 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
+                      <IssuePriorityFormatter priority={item.issue_priority} />
+                    </td>
+
+                    {/* Actions */}
+                    <td className="bg-white px-4 py-3 group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => setActiveEditId(item.issue_id)}
+                          disabled={item.admin_email === "Unassigned"}
+                          className="rounded-lg p-2 text-neutral-400 hover:bg-neutral-200 hover:text-neutral-700 disabled:opacity-50 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
+                        >
+                          <Pencil size={15} />
+                        </button>
+                        <button
+                          onClick={() => handleConfirmDelete(item.issue_id)}
+                          disabled={
+                            item.admin_email === "Unassigned" || deleting
+                          }
+                          className="rounded-lg p-2 text-neutral-400 hover:bg-red-100 hover:text-red-600 disabled:opacity-50 dark:hover:bg-red-900/30 dark:hover:text-red-400"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+
+                        {/* The edit modal */}
+                        {activeEditId === item.issue_id && (
+                          <EditIssueTypeModal
+                            isModalOpen={activeEditId === item.issue_id}
+                            hideModal={() => setActiveEditId(null)}
+                            agentsInfo={agentsInformation}
+                            adminsInfo={agentsInformation}
+                            issueId={item.issue_id}
+                            issueInfo={{
+                              issueType: item.issue_type,
+                              longName: item.long_name,
+                              issuePriority: item.issue_priority,
+                              adminEmail: item.admin_email,
+                              agentEmail: item.agent_email,
+                            }}
+                          />
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Pagination */}

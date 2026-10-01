@@ -212,7 +212,7 @@ const EditUserModal = ({
           {/* Form */}
           <form
             onSubmit={handleConfirmSubmit}
-            className="layout-scrollbar flex flex-col gap-4 overflow-y-auto px-6 py-5"
+            className="layout-scrollbar flex flex-col gap-4 overflow-y-auto bg-white px-6 py-5 dark:bg-neutral-950"
           >
             {/* Name */}
             <div className="relative space-y-1.5">
