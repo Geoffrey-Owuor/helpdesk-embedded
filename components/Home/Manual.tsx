@@ -82,7 +82,7 @@ const Manual = () => {
               <p className="mb-2 px-1 text-xs font-semibold tracking-widest text-neutral-400 uppercase dark:text-neutral-600">
                 Sections
               </p>
-              <nav className="scrollbar-hide flex flex-row gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
+              <nav className="flex scrollbar-none flex-row gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
                 {navItems.map((item) => (
                   <a
                     key={item.id}
