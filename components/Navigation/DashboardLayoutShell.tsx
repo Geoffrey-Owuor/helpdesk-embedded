@@ -26,7 +26,7 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
             comes from the corner "ears" below instead. */}
         <div
           id="main-content"
-          className="layout-scrollbar absolute inset-0 scrollbar-gutter-stable overflow-y-auto border border-[#eceef1] bg-white dark:border-neutral-900 dark:bg-black"
+          className="layout-scrollbar absolute inset-0 overflow-y-auto border border-[#eceef1] bg-white dark:border-neutral-900 dark:bg-black"
         >
           <div className="flex h-full flex-col">
             {/* Content */}
