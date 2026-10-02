@@ -175,7 +175,7 @@ const DashboardSidebar = () => {
         </div>
 
         {/* Nav items — grow to fill space */}
-        <nav className="mb-2 flex w-full flex-1 scrollbar-none flex-col items-center gap-1.5 overflow-y-auto mask-[linear-gradient(to_bottom,transparent_0%,black_24px,black_calc(100%-24px),transparent_100%)] px-2">
+        <nav className="sidebar-nav mb-2 flex w-full flex-1 flex-col items-center gap-1.5 overflow-y-auto mask-[linear-gradient(to_bottom,transparent_0%,black_24px,black_calc(100%-24px),transparent_100%)] px-2">
           {/* New Issue */}
           <SidebarButton
             onClick={() => setIsIssueModalOpen(true)}

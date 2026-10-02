@@ -291,7 +291,16 @@ html[data-theme="dark"] .sidebar-nav::-webkit-scrollbar-thumb {
   background-color: rgb(115 115 115 / 0.4); /* neutral-500 at 40% */
 }
 
-/* Hide scrollbar */
-.scrollbar-hide {
-  scrollbar-width: none;
+/* Firefox: standard scrollbar properties. Scoped to browsers without
+   ::-webkit-scrollbar support, since Chromium 121+ ignores the webkit
+   pseudo-elements above whenever scrollbar-width/scrollbar-color are set. */
+@supports not selector(::-webkit-scrollbar) {
+  .sidebar-nav {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(163 163 163 / 0.4) transparent; /* neutral-400 at 40% */
+  }
+
+  html[data-theme="dark"] .sidebar-nav {
+    scrollbar-color: rgb(115 115 115 / 0.4) transparent; /* neutral-500 at 40% */
+  }
 }
