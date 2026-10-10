@@ -120,7 +120,7 @@ const CardViewData = ({ currentIssues }: CardViewDataProps) => {
             {/* Dept/Type Row */}
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-2 text-[11px] font-medium text-neutral-500">
+                <div className="flex items-center gap-2 text-xs font-medium text-neutral-500 sm:text-[11px]">
                   <Tag size={12} className="opacity-70" />
                   <span className="truncate">{issueData.issue_type}</span>
                 </div>
@@ -135,7 +135,7 @@ const CardViewData = ({ currentIssues }: CardViewDataProps) => {
                     />
                   )}
               </div>
-              <div className="flex items-center gap-2 text-[11px] font-medium text-neutral-500">
+              <div className="flex items-center gap-2 text-xs font-medium text-neutral-500 sm:text-[11px]">
                 <Calendar size={12} className="opacity-70" />
                 <span>{dateFormatter(issueData.issue_created_at)}</span>
               </div>
@@ -143,7 +143,7 @@ const CardViewData = ({ currentIssues }: CardViewDataProps) => {
 
             {/* Submitter & Agent Row */}
             <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2 text-[11px] text-neutral-600 dark:text-neutral-400">
+              <div className="flex items-center gap-2 text-xs text-neutral-600 sm:text-[11px] dark:text-neutral-400">
                 <UserRound size={13} className="opacity-70" />
                 <div className="truncate">
                   <span className="font-semibold">
