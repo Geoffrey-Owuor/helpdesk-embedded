@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { DashBoardLogo } from "../Modules/DashBoardLogo";
 import { Dispatch, SetStateAction } from "react";
-import { useState, useCallback, useRef } from "react";
+import { useCallback, useRef } from "react";
 import {
   CirclePlus,
   X,
@@ -15,27 +15,42 @@ import {
   HousePlug,
   ChartColumnBig,
 } from "lucide-react";
-import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
 import { useUser } from "@/contexts/UserContext";
 import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
-import AdminPanel from "./AdminFunctions/AdminPanel";
+import { useDashboardModalsStore } from "@/store/useDashboardModalsStore";
 import { useIsEmbedd } from "@/hooks/useIsEmbedd";
+
+const BASE_ITEM_CLASSES =
+  "flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium";
+const INACTIVE_ITEM_CLASSES = `${BASE_ITEM_CLASSES} hover:bg-neutral-200 dark:hover:bg-neutral-800`;
+
+// Active styling matches the desktop rail's highlighted link
+const linkClasses = (isActive: boolean) =>
+  isActive
+    ? `${BASE_ITEM_CLASSES} bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200`
+    : INACTIVE_ITEM_CLASSES;
 
 type MobileSideBarProps = {
   sideBarOpen: boolean;
   handleRouteChange: (val: string) => void;
+  highlightLink: (path: string) => boolean;
   setSideBarOpen: Dispatch<SetStateAction<boolean>> | ((open: boolean) => void);
 };
 
 const MobileSideBar = ({
   sideBarOpen,
   handleRouteChange,
+  highlightLink,
   setSideBarOpen,
 }: MobileSideBarProps) => {
-  const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
   const { role, isSuper, specialAccess } = useUser();
-  const [showAdminOptions, setShowAdminOptions] = useState(false);
+  const setIsIssueModalOpen = useDashboardModalsStore(
+    (state) => state.setIsIssueModalOpen,
+  );
+  const setIsAdminPanelOpen = useDashboardModalsStore(
+    (state) => state.setIsAdminPanelOpen,
+  );
 
   const isEmbedded = useIsEmbedd();
 
@@ -60,23 +75,11 @@ const MobileSideBar = ({
 
   const handleAdminPanelOpening = () => {
     setSideBarOpen(false);
-    setShowAdminOptions((prev) => !prev);
+    setIsAdminPanelOpen(true);
   };
 
   return (
     <>
-      {isIssueModalOpen && (
-        <MainIssueModal
-          isOpen={isIssueModalOpen}
-          setIsOpen={setIsIssueModalOpen}
-        />
-      )}
-
-      <AdminPanel
-        showAdminPanel={showAdminOptions}
-        setShowAdminPanel={setShowAdminOptions}
-      />
-
       <div
         className={`fixed inset-0 z-70 flex ${
           sideBarOpen ? "pointer-events-auto" : "pointer-events-none"
@@ -93,7 +96,7 @@ const MobileSideBar = ({
         {/* Sidebar panel */}
         <aside
           ref={menuRef}
-          className={`relative z-10 flex w-64 flex-col gap-6 border-r border-neutral-300 bg-white px-6 py-4 shadow-sm transition-transform duration-200 dark:border-neutral-900 dark:bg-neutral-950 ${
+          className={`relative z-10 flex w-64 flex-col gap-6 border-r border-neutral-300 bg-white px-6 py-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] pl-[max(1.5rem,env(safe-area-inset-left))] shadow-sm transition-transform duration-200 dark:border-neutral-900 dark:bg-neutral-950 ${
             sideBarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
@@ -101,8 +104,9 @@ const MobileSideBar = ({
           <div className="flex items-center justify-between">
             <DashBoardLogo isSideBarOpen={true} />
             <button
-              className="rounded-full p-1.5 hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              className="rounded-full p-2.5 hover:bg-neutral-200 sm:p-1.5 dark:hover:bg-neutral-800"
               onClick={() => setSideBarOpen(false)}
+              aria-label="Close navigation menu"
             >
               <X className="h-5 w-5" />
             </button>
@@ -114,7 +118,8 @@ const MobileSideBar = ({
             <Link
               href="/dashboard"
               onClick={() => handleMobileRouteChange("/dashboard")}
-              className="flex w-full items-center gap-2 rounded-xl bg-neutral-900 p-3 text-sm font-medium text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+              aria-current={highlightLink("/dashboard") ? "page" : undefined}
+              className={linkClasses(highlightLink("/dashboard"))}
             >
               <LayoutDashboard className="h-5 w-5" />
               <span>Dashboard</span>
@@ -123,7 +128,7 @@ const MobileSideBar = ({
             {/* Button: New Issue */}
             <button
               onClick={handleNewIssueOpening}
-              className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              className={INACTIVE_ITEM_CLASSES}
             >
               <CirclePlus className="h-5 w-5" />
               <span>New Issue</span>
@@ -134,7 +139,10 @@ const MobileSideBar = ({
               <Link
                 href="/dashboard/superadmin"
                 onClick={() => handleMobileRouteChange("/dashboard/superadmin")}
-                className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                aria-current={
+                  highlightLink("/dashboard/superadmin") ? "page" : undefined
+                }
+                className={linkClasses(highlightLink("/dashboard/superadmin"))}
               >
                 <ShieldPlus className="h-5 w-5" />
                 <span>Super Admin</span>
@@ -146,7 +154,10 @@ const MobileSideBar = ({
               <Link
                 href="/dashboard/analytics"
                 onClick={() => handleMobileRouteChange("/dashboard/analytics")}
-                className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                aria-current={
+                  highlightLink("/dashboard/analytics") ? "page" : undefined
+                }
+                className={linkClasses(highlightLink("/dashboard/analytics"))}
               >
                 <ChartColumnBig className="h-5 w-5" />
                 <span>Analytics</span>
@@ -157,7 +168,7 @@ const MobileSideBar = ({
             {role === "admin" && (
               <button
                 onClick={handleAdminPanelOpening}
-                className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                className={INACTIVE_ITEM_CLASSES}
               >
                 <ShieldUser className="h-5 w-5" />
                 <span>Admin Panel</span>
@@ -168,7 +179,10 @@ const MobileSideBar = ({
             <Link
               href="/dashboard/articles"
               onClick={() => handleMobileRouteChange("/dashboard/articles")}
-              className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              aria-current={
+                highlightLink("/dashboard/articles") ? "page" : undefined
+              }
+              className={linkClasses(highlightLink("/dashboard/articles"))}
             >
               <NotebookPen className="h-5 w-5" />
               <span>Articles Hub</span>
@@ -177,7 +191,7 @@ const MobileSideBar = ({
               <a
                 href="/dashboard"
                 onClick={() => setSideBarOpen(false)}
-                className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                className={INACTIVE_ITEM_CLASSES}
               >
                 <HousePlug className="h-5 w-5" />
                 <span>Apps Hub</span>

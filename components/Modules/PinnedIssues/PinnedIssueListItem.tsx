@@ -31,9 +31,7 @@ const PinnedIssueListItem = ({
   const handleNavigate = () => {
     onBeforeNavigate?.();
     setLoadingLine(true);
-    router.push(
-      `/dashboard/${issue.issue_uuid}?title=${encodeURIComponent(issue.issue_title)}&description=${encodeURIComponent(issue.issue_description)}`,
-    );
+    router.push(`/dashboard/${issue.issue_uuid}`);
   };
 
   const handleUnpin = (e: MouseEvent<HTMLButtonElement>) => {

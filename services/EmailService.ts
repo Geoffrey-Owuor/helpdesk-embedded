@@ -66,6 +66,10 @@
 // NEW EMAILING IMPLEMENTATION - USING THE MICROSOFT GRAPH API
 
 import { ConfidentialClientApplication, Configuration } from "@azure/msal-node";
+import {
+  logSkippedEmail,
+  notificationEmailsEnabled,
+} from "./NotificationEmailSwitch";
 
 const msalConfig: Configuration = {
   auth: {
@@ -80,6 +84,10 @@ interface EmailOptions {
   cc?: string | string[];
   subject: string;
   html: string;
+  // Account and support emails (verification codes, password resets,
+  // first-login links, bug reports) - sent even when notification emails are
+  // switched off. Everything else is a notification.
+  essential?: boolean;
   attachments?: {
     filename: string;
     content: string; //We'll already have converted the attachments to base64 string at this point
@@ -103,7 +111,19 @@ export const sendEmail = async ({
   subject,
   html,
   attachments,
-}: EmailOptions) => {
+  essential = false,
+}: EmailOptions): Promise<{
+  success: boolean;
+  skipped?: boolean;
+  error?: string;
+}> => {
+  // Notification emails can be switched off (e.g. in dev) - see
+  // NotificationEmailSwitch.ts. Reported as success so callers carry on.
+  if (!essential && !notificationEmailsEnabled()) {
+    logSkippedEmail({ subject, to, cc });
+    return { success: true, skipped: true };
+  }
+
   try {
     const accessToken = await getAccessToken();
     if (!accessToken) throw new Error("Failed to retrieve access token");

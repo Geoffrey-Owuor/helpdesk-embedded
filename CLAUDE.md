@@ -57,7 +57,12 @@ Client HTTP calls go through the shared `lib/AxiosClient.ts` instance; `utils/Ax
 
 ### Email
 
-`services/EmailSender.ts` / `services/CustomEmailSender.ts` send mail via Nodemailer using HTML built from `templates/*.ts` (verification code, password reset, first-login, bug report, issue notifications). `services/SendBugReport.ts` powers the in-app bug-report form. The Super Admin "PostMail" feature (`components/Modules/ArticlesPage/PostMail/PostMail.tsx`) lets admins compose and send ad-hoc HTML emails with retry logic.
+All mail goes through the Microsoft Graph `sendMail` API (app-only token via `@azure/msal-node`; the old Nodemailer code in `services/EmailService.ts` is commented out) using HTML built from `templates/*.ts`. There are two send functions, both with 429 retry logic and both returning `{ success, error? }` instead of throwing:
+
+- `sendEmail` (`services/EmailService.ts`) — sends as `EMAIL_SENDER`. Issue notifications go through the `emailSender` wrapper in `services/EmailSender.ts`, which looks up recipients and builds the issue template. Reminders (`app/api/triggers/*`), verification codes, password resets, first-login links and `services/SendBugReport.ts` call it directly.
+- `sendCustomGraphEmail` (`services/CustomEmailSender.ts`) — sends from a caller-chosen address; used only by the Super Admin "PostMail" feature (`components/Modules/ArticlesPage/PostMail/PostMail.tsx`).
+
+`NOTIFICATION_EMAILS_ENABLED=false` (see `services/NotificationEmailSwitch.ts`) makes `sendEmail` skip notification emails, logging the subject and recipients and returning `{ success: true, skipped: true }`. Unset or `true` sends normally. Emails passed `essential: true` (verification codes, password resets, first-login links, bug reports) always send, as does PostMail. A new `sendEmail` call is a notification unless marked essential.
 
 ### Scheduled automation
 

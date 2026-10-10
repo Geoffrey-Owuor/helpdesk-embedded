@@ -1,24 +1,26 @@
 import ViewArticle from "@/components/Modules/ArticlesPage/ViewArticle";
 import { Metadata } from "next";
+import { getArticleMeta } from "@/lib/articles/getArticleMeta";
+import { metaDescription } from "@/lib/metadata";
 import HomeNavBar from "@/components/Navigation/HomeNavBar";
 import Footer from "@/components/Home/Footer";
 
 type ArticlePageProps = {
   params: Promise<{ uuid: string }>;
-  searchParams: Promise<{ title: string; subtitle: string }>;
 };
 
-// Generate the page metadata
+// Generate the page metadata from the article itself
 export const generateMetadata = async ({
-  searchParams,
+  params,
 }: ArticlePageProps): Promise<Metadata> => {
-  //Getting the searchParams values
-  const { title, subtitle } = await searchParams;
+  const { uuid } = await params;
+  const article = await getArticleMeta(uuid);
 
-  //   Return the constructed metadata
+  if (!article) return { title: "Article not found" };
+
   return {
-    title: title || "Article Title",
-    description: subtitle || "Artcile Subtitle",
+    title: article.article_title,
+    description: metaDescription(article.article_subtitle),
   };
 };
 
@@ -28,7 +30,7 @@ const page = async ({ params }: ArticlePageProps) => {
   return (
     <div
       id="article-content"
-      className="layout-scrollbar home-container h-screen overflow-y-auto bg-white dark:bg-neutral-950"
+      className="layout-scrollbar home-container h-dvh overflow-y-auto bg-white dark:bg-neutral-950"
     >
       <div className="mx-auto flex min-h-full max-w-6xl flex-col 2xl:max-w-7xl">
         <HomeNavBar />

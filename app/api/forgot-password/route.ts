@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
     await sendEmail({
       to: email,
       subject: "Password Reset Request",
+      essential: true,
       html: emailHtml,
     });
 

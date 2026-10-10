@@ -51,7 +51,7 @@ const Alert = () => {
   return (
     // Container: Floating bottom right with responsive widths
     <div
-      className={`fixed right-4 bottom-4 left-4 z-9999 transition-all duration-200 sm:right-6 sm:bottom-6 sm:left-auto sm:w-auto sm:max-w-md sm:min-w-[320px] ${
+      className={`fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] left-4 z-9999 transition-all duration-200 sm:right-6 sm:bottom-6 sm:left-auto sm:w-auto sm:max-w-md sm:min-w-[320px] ${
         isClosing
           ? "animate-slideDown opacity-0"
           : "animate-slideUp opacity-100"

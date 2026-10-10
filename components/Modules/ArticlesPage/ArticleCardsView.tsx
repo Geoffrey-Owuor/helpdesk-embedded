@@ -125,7 +125,7 @@ const ArticleCardsView = ({
             <div className="flex items-center justify-between">
               <ArticleTypeFormatter type={article.article_type} />
               <Link
-                href={`${baseLink}/${article.article_id}?title=${encodeURIComponent(article.article_title)}&subtitle=${encodeURIComponent(article.article_subtitle)}`}
+                href={`${baseLink}/${article.article_id}`}
                 onClick={() => setLoadingLine(true)}
                 className="w-fit text-sm text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
               >

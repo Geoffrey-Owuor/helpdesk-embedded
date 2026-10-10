@@ -2,6 +2,7 @@ import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { NextResponse } from "next/server";
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
+import { canViewIssue } from "@/lib/IssueAccess";
 import { emailSender } from "@/services/EmailSender";
 
 export const PUT = withAuth(async ({ request, user }) => {
@@ -16,6 +17,12 @@ export const PUT = withAuth(async ({ request, user }) => {
         { message: "UUID and Reason are required" },
         { status: 400 },
       );
+    }
+
+    // Only those who can see the issue may reopen it - a 404 either way so we
+    // don't leak which uuids exist
+    if (!(await canViewIssue(uuid, user))) {
+      return NextResponse.json({ message: "Issue not found" }, { status: 404 });
     }
 
     // get a pool client

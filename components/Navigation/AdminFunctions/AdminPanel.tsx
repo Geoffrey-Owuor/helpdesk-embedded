@@ -1,20 +1,24 @@
 "use client";
 
-import { X, Bug, ShieldCheck, UsersRound, RotateCcw } from "lucide-react";
-import { Dispatch, SetStateAction, useState, useRef, useCallback } from "react";
-import { useFocusTrapping } from "@/hooks/useFocusTrapping";
+import { Bug, ShieldCheck, UsersRound, RotateCcw } from "lucide-react";
+import { useState, useCallback } from "react";
 import AgentsInfo from "./AgentsInfo";
 import IssueTypesInfo from "./IssueTypesInfo";
-import ClientPortal from "@/components/Modules/ClientPortal";
 import { useUser } from "@/contexts/UserContext";
 import { useQuery } from "@tanstack/react-query";
 import { handleRefetchIssueAgentsData } from "@/serverActions/refetchIssueAgentsData";
 import { fetchedIssueAgents } from "@/serverActions/GetIssueAgents";
 import { AppVersion } from "@/public/assets";
+import {
+  Modal,
+  ModalBody,
+  ModalHeader,
+  ModalIconButton,
+} from "@/components/Modules/Modal/Modal";
 
 type AdminPanelProps = {
   showAdminPanel: boolean;
-  setShowAdminPanel: Dispatch<SetStateAction<boolean>>;
+  setShowAdminPanel: (open: boolean) => void;
 };
 
 type TabId = "agent-info" | "issue-info";
@@ -24,14 +28,10 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
 
   const { department } = useUser();
 
-  // Tab focus trapping
   const closeModal = useCallback(
     () => setShowAdminPanel(false),
     [setShowAdminPanel],
   );
-  const modalRef = useRef<HTMLDivElement | null>(null);
-  useFocusTrapping(modalRef, showAdminPanel, closeModal);
-
   const {
     data: agentsInfo = [],
     isLoading: loading,
@@ -39,7 +39,8 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   } = useQuery({
     queryKey: ["AgentInfo", department],
     queryFn: () => fetchedIssueAgents(department),
-    enabled: !!department,
+    // The panel is mounted for the whole dashboard; only fetch once it's opened
+    enabled: !!department && showAdminPanel,
   });
 
   // Refetch agents and issue types data
@@ -48,8 +49,6 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
     await handleRefetchIssueAgentsData();
     refetch();
   };
-
-  if (!showAdminPanel) return null;
 
   // Shared button styles
   const baseTabStyles =
@@ -64,118 +63,99 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
     "flex items-center gap-2 px-3 py-2 font-semibold text-sm transition-all duration-200 rounded-xl";
 
   return (
-    <ClientPortal>
-      {/* The Backdrop */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 dark:bg-black/80">
-        {/* Modal Container */}
-        <div
-          ref={modalRef}
-          className="flex h-[90vh] w-full max-w-4xl overflow-hidden rounded-2xl border border-neutral-300 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
-        >
-          {/* --- LEFT SIDEBAR --- */}
-          <aside className="hidden w-54 flex-col border-r border-neutral-200 bg-neutral-50/50 p-4 md:flex dark:border-neutral-800 dark:bg-neutral-900/30">
-            <div className="mb-8 flex items-center gap-2 px-2">
-              <ShieldCheck
-                className="text-blue-600 dark:text-blue-500"
-                size={22}
-              />
-              <h2 className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
-                Admin Panel
-              </h2>
-            </div>
-
-            <nav className="flex-1 space-y-1">
-              <button
-                onClick={() => setActiveTab("agent-info")}
-                className={`${baseTabStyles} ${activeTab === "agent-info" ? activeTabStyles : inactiveTabStyles}`}
-              >
-                <UsersRound size={18} />
-                Agents
-              </button>
-
-              <button
-                onClick={() => setActiveTab("issue-info")}
-                className={`${baseTabStyles} ${activeTab === "issue-info" ? activeTabStyles : inactiveTabStyles}`}
-              >
-                <Bug size={18} />
-                Issue Types
-              </button>
-            </nav>
-
-            <div className="mt-auto border-t border-neutral-200 pt-4 dark:border-neutral-800">
-              <p className="px-2 text-[10px] tracking-widest text-neutral-400 uppercase">
-                HelpDesk {AppVersion}
-              </p>
-            </div>
-          </aside>
-
-          {/* --- MAIN CONTENT AREA --- */}
-          <div className="flex flex-1 flex-col overflow-hidden bg-white dark:bg-neutral-950">
-            {/* Header and mobile buttons navigation */}
-            <div className="flex flex-col gap-3 border-b border-neutral-100 pb-4 dark:border-neutral-900">
-              <header className="flex items-center justify-between px-4 pt-4">
-                <h3 className="text-sm font-semibold text-neutral-500 capitalize dark:text-neutral-400">
-                  {activeTab.replace("-", " ")}
-                </h3>
-                <div className="flex items-center gap-6">
-                  <button
-                    onClick={handleRefetchIssueAgents}
-                    title="Refresh"
-                    className="rounded-full p-2 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
-                  >
-                    <RotateCcw size={20} />
-                  </button>
-                  <button
-                    onClick={() => setShowAdminPanel(false)}
-                    className="rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
-              </header>
-              {/* Mobile Admin Navigation - Hidden on laptops */}
-              <div className="flex items-center justify-center gap-2 md:hidden">
-                {/* Agents Info */}
-                <button
-                  onClick={() => setActiveTab("agent-info")}
-                  className={`${baseMobileTabStyles} ${activeTab === "agent-info" ? activeTabStyles : inactiveTabStyles}`}
-                >
-                  <UsersRound className="h-4 w-4" />
-                  Agents Info
-                </button>
-                {/* Issue Types Info */}
-                <button
-                  onClick={() => setActiveTab("issue-info")}
-                  className={`${baseMobileTabStyles} ${activeTab === "issue-info" ? activeTabStyles : inactiveTabStyles}`}
-                >
-                  <Bug className="h-4 w-4" />
-                  Issue Types Info
-                </button>
-              </div>
-            </div>
-
-            {/* Tab Content Rendering */}
-            <main className="layout-scrollbar flex-1 overflow-y-auto bg-white p-6 dark:bg-neutral-950">
-              {activeTab === "agent-info" && (
-                <AgentsInfo
-                  loading={loading}
-                  refetchAgentsInfo={handleRefetchIssueAgents}
-                  agentsFlatInfo={agentsInfo}
-                />
-              )}
-
-              {activeTab === "issue-info" && (
-                <IssueTypesInfo
-                  loading={loading}
-                  refetchAgentsInfo={handleRefetchIssueAgents}
-                  agentsFlatInfo={agentsInfo}
-                />
-              )}
-            </main>
-          </div>
+    <Modal
+      open={showAdminPanel}
+      onClose={closeModal}
+      size="4xl"
+      fixedHeight
+      className="md:flex-row"
+    >
+      {/* --- LEFT SIDEBAR --- */}
+      <aside className="hidden w-54 shrink-0 flex-col border-r border-neutral-200 bg-neutral-50/50 p-4 md:flex dark:border-neutral-800 dark:bg-neutral-900/30">
+        <div className="mb-8 flex items-center gap-2 px-2">
+          <ShieldCheck className="text-blue-600 dark:text-blue-500" size={22} />
+          <span className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
+            Admin Panel
+          </span>
         </div>
+
+        <nav className="flex-1 space-y-1">
+          <button
+            onClick={() => setActiveTab("agent-info")}
+            className={`${baseTabStyles} ${activeTab === "agent-info" ? activeTabStyles : inactiveTabStyles}`}
+          >
+            <UsersRound size={18} />
+            Agents
+          </button>
+
+          <button
+            onClick={() => setActiveTab("issue-info")}
+            className={`${baseTabStyles} ${activeTab === "issue-info" ? activeTabStyles : inactiveTabStyles}`}
+          >
+            <Bug size={18} />
+            Issue Types
+          </button>
+        </nav>
+
+        <div className="mt-auto border-t border-neutral-200 pt-4 dark:border-neutral-800">
+          <p className="px-2 text-xs tracking-widest text-neutral-400 uppercase">
+            HelpDesk {AppVersion}
+          </p>
+        </div>
+      </aside>
+
+      {/* --- MAIN CONTENT AREA --- */}
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <ModalHeader
+          title={activeTab === "agent-info" ? "Agents" : "Issue Types"}
+          description={<span className="md:hidden">Admin Panel</span>}
+          actions={
+            <ModalIconButton
+              label="Refresh"
+              icon={RotateCcw}
+              onClick={handleRefetchIssueAgents}
+            />
+          }
+        />
+
+        {/* Mobile Admin Navigation - Hidden on laptops */}
+        <div className="flex shrink-0 items-center gap-2 border-b border-neutral-200 px-4 py-2 md:hidden dark:border-neutral-800">
+          <button
+            onClick={() => setActiveTab("agent-info")}
+            className={`${baseMobileTabStyles} flex-1 justify-center ${activeTab === "agent-info" ? activeTabStyles : inactiveTabStyles}`}
+          >
+            <UsersRound className="h-4 w-4" />
+            Agents Info
+          </button>
+          <button
+            onClick={() => setActiveTab("issue-info")}
+            className={`${baseMobileTabStyles} flex-1 justify-center ${activeTab === "issue-info" ? activeTabStyles : inactiveTabStyles}`}
+          >
+            <Bug className="h-4 w-4" />
+            Issue Types Info
+          </button>
+        </div>
+
+        {/* Tab Content Rendering */}
+        <ModalBody>
+          {activeTab === "agent-info" && (
+            <AgentsInfo
+              loading={loading}
+              refetchAgentsInfo={handleRefetchIssueAgents}
+              agentsFlatInfo={agentsInfo}
+            />
+          )}
+
+          {activeTab === "issue-info" && (
+            <IssueTypesInfo
+              loading={loading}
+              refetchAgentsInfo={handleRefetchIssueAgents}
+              agentsFlatInfo={agentsInfo}
+            />
+          )}
+        </ModalBody>
       </div>
-    </ClientPortal>
+    </Modal>
   );
 };
 

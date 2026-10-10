@@ -91,6 +91,7 @@ export const CheckBehalfUser = async ({
       sendEmail({
         to: email,
         subject: `Welcome ${name}!`,
+        essential: true,
         html: emailTemplate,
       });
 
