@@ -1,6 +1,5 @@
 "use client";
-import ClientPortal from "../ClientPortal";
-import { useRef, useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
@@ -8,10 +7,16 @@ import { ArticlesCardValues } from "@/serverActions/GetUserArticles";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useConfirmStore } from "@/store/useConfirmStore";
-import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import ArticleFormWrapper from "./ArticleFormWrapper";
-import { PenTool, X } from "lucide-react";
+import { PenTool } from "lucide-react";
 import { FormData } from "./PostArticle";
+import {
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalForm,
+  ModalHeader,
+} from "../Modal/Modal";
 
 type ArticleEditModalProps = {
   closeModal: () => void;
@@ -28,11 +33,6 @@ const ArticleEditModal = ({
 
   // Set the received formData
   const [formData, setFormData] = useState<FormData>(articleData);
-
-  const modalRef = useRef<HTMLDivElement | null>(null);
-
-  useFocusTrapping(modalRef, isModalOpen, closeModal);
-
   // Zustand States
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
@@ -118,61 +118,38 @@ const ArticleEditModal = ({
   });
 
   return (
-    <ClientPortal>
-      {/* The Backdrop */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 transition-all dark:bg-black/80">
-        <div
-          ref={modalRef}
-          className="flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between border-b border-neutral-200 bg-neutral-50 px-6 py-4 dark:border-neutral-800 dark:bg-neutral-900/50">
-            <div>
-              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-                Manage Your Article
-              </h2>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                Edit your article title, subtitle & content
-              </p>
-            </div>
-            <button
-              onClick={closeModal}
-              className="rounded-full p-2 text-neutral-500 transition-colors hover:bg-neutral-200 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
-              aria-label="Close"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
+    <Modal open={isModalOpen} onClose={closeModal} size="4xl">
+      <ModalHeader
+        title="Manage Your Article"
+        description="Edit your article title, subtitle & content"
+        className="bg-neutral-50 dark:bg-neutral-900/50"
+      />
 
-          {/* Content Area */}
-          <div className="layout-scrollbar overflow-y-auto bg-white px-6 py-4 dark:bg-neutral-950">
-            <form autoComplete="off" onSubmit={handleConfirmSubmit}>
-              {/* Article form wrapper */}
-              <ArticleFormWrapper
-                formData={formData}
-                handleChange={handleChange}
-                handleTypeSelect={handleTypeSelect}
-              />
+      {/* Content Area */}
+      <ModalForm autoComplete="off" onSubmit={handleConfirmSubmit}>
+        <ModalBody>
+          {/* Article form wrapper */}
+          <ArticleFormWrapper
+            formData={formData}
+            handleChange={handleChange}
+            handleTypeSelect={handleTypeSelect}
+          />
+        </ModalBody>
 
-              {/* Footer/Submit */}
-              <div className="flex items-center justify-between py-2">
-                <p className="text-xs text-red-500">
-                  **All fields are required**
-                </p>
-                <button
-                  type="submit"
-                  disabled={updating}
-                  className="flex items-center gap-2 rounded-xl bg-neutral-900 px-5 py-2.5 text-sm font-medium text-neutral-100 transition-all duration-150 hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900"
-                >
-                  <PenTool className="h-4 w-4" />
-                  Update Article
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </ClientPortal>
+        {/* Footer/Submit */}
+        <ModalFooter stretch={false} className="justify-between gap-4">
+          <p className="text-xs text-red-500">**All fields are required**</p>
+          <button
+            type="submit"
+            disabled={updating}
+            className="flex items-center gap-2 rounded-xl bg-neutral-900 px-5 py-2.5 text-sm font-medium text-neutral-100 transition-all duration-150 hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900"
+          >
+            <PenTool className="h-4 w-4" />
+            Update Article
+          </button>
+        </ModalFooter>
+      </ModalForm>
+    </Modal>
   );
 };
 

@@ -1,9 +1,7 @@
 "use client";
-import ClientPortal from "../../ClientPortal";
-import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState, useRef, FocusEvent } from "react";
-import { X, Mail, Plus, Building2, Trash2, Pencil } from "lucide-react";
+import { useState, FocusEvent } from "react";
+import { Mail, Plus, Building2, Trash2, Pencil } from "lucide-react";
 import FormAsterisk from "../../FormAsterisk";
 import apiClient from "@/lib/AxiosClient";
 import { useAlertStore } from "@/store/useAlertStore";
@@ -11,6 +9,7 @@ import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
+import { Modal, ModalBody, ModalFooter, ModalHeader } from "../../Modal/Modal";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -135,7 +134,7 @@ const RecordForm = ({
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-xl px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 focus:ring-2 focus:ring-neutral-300 focus:outline-none dark:text-neutral-400 dark:hover:bg-neutral-800 dark:focus:ring-neutral-700"
+          className="rounded-xl px-4 py-2.5 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 focus:ring-2 focus:ring-neutral-300 focus:outline-none sm:py-2 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:focus:ring-neutral-700"
         >
           Cancel
         </button>
@@ -158,8 +157,6 @@ const GroupEmailsModal = ({
   closeModal,
 }: GroupEmailsModalProps) => {
   const queryClient = useQueryClient();
-  const modalRef = useRef<HTMLDivElement | null>(null);
-
   // UI state
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -170,9 +167,6 @@ const GroupEmailsModal = ({
   const hideDialog = useConfirmStore((state) => state.hideDialog);
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
-
-  useFocusTrapping(modalRef, isModalOpen, closeModal);
-
   // ── Fetch ──────────────────────────────────────────────────────────────────
 
   const { data: groupEmails = [], isLoading } = useQuery<GroupEmail[]>({
@@ -264,147 +258,122 @@ const GroupEmailsModal = ({
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <ClientPortal>
-      {/* Backdrop */}
-      <div className="fixed inset-0 z-50 bg-black/60 transition-opacity dark:bg-black/80" />
+    <Modal open={isModalOpen} onClose={closeModal} size="lg">
+      <ModalHeader
+        title="Departments"
+        description="Manage departments info"
+        actions={
+          <button
+            onClick={() => {
+              setShowAddForm((v) => !v);
+              setEditingId(null);
+            }}
+            className="flex items-center gap-1.5 rounded-xl bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-neutral-700 focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 focus:outline-none dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Add New
+          </button>
+        }
+      />
 
-      {/* Modal */}
-      <div
-        ref={modalRef}
-        className="fixed top-1/2 left-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 p-4"
-      >
-        <div className="flex max-h-[85vh] w-full flex-col rounded-2xl border border-neutral-200 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
-          {/* Header */}
-          <div className="flex items-center justify-between border-b border-neutral-100 px-6 py-4 dark:border-neutral-800">
-            <div>
-              <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
-                Departments
-              </h2>
-              <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
-                Manage departments info
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => {
-                  setShowAddForm((v) => !v);
-                  setEditingId(null);
-                }}
-                className="flex items-center gap-1.5 rounded-xl bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-neutral-700 focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 focus:outline-none dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
-              >
-                <Plus className="h-3.5 w-3.5" />
-                Add New
-              </button>
-              <button
-                onClick={closeModal}
-                className="rounded-full p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 dark:text-neutral-500 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
-              >
-                <X className="h-4.5 w-4.5" />
-              </button>
-            </div>
+      {/* Body */}
+      <ModalBody className="flex flex-col gap-4">
+        {/* Add form */}
+        {showAddForm && (
+          <RecordForm
+            onCancel={() => setShowAddForm(false)}
+            onSave={(data) => addRecord(data)}
+            isSaving={isAdding}
+          />
+        )}
+
+        {/* Records list */}
+        {isLoading ? (
+          <div className="flex flex-col gap-3">
+            {[...Array(3)].map((_, i) => (
+              <SkeletonBox key={i} className="h-16 rounded-xl" />
+            ))}
           </div>
-
-          {/* Body */}
-          <div className="layout-scrollbar flex flex-col gap-4 overflow-y-auto bg-white px-6 py-5 dark:bg-neutral-950">
-            {/* Add form */}
-            {showAddForm && (
-              <RecordForm
-                onCancel={() => setShowAddForm(false)}
-                onSave={(data) => addRecord(data)}
-                isSaving={isAdding}
-              />
-            )}
-
-            {/* Records list */}
-            {isLoading ? (
-              <div className="flex flex-col gap-3">
-                {[...Array(3)].map((_, i) => (
-                  <SkeletonBox key={i} className="h-16 rounded-xl" />
-                ))}
-              </div>
-            ) : groupEmails.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
-                <Mail className="h-8 w-8 text-neutral-300 dark:text-neutral-600" />
-                <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                  No group emails found.
-                </p>
-                <p className="text-xs text-neutral-400 dark:text-neutral-500">
-                  Click <span className="font-medium">Add New</span> to get
-                  started.
-                </p>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-3">
-                {groupEmails.map((record) =>
-                  editingId === record.id ? (
-                    <RecordForm
-                      key={record.id}
-                      initial={{
-                        emails: record.emails,
-                        department: record.department,
-                      }}
-                      onCancel={() => setEditingId(null)}
-                      onSave={(data) => editRecord({ id: record.id, data })}
-                      isSaving={isEditing}
-                    />
-                  ) : (
-                    <div
-                      key={record.id}
-                      className="flex items-start justify-between gap-3 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 dark:border-neutral-800 dark:bg-neutral-900"
-                    >
-                      <div className="flex min-w-0 flex-col gap-1">
-                        <div className="flex items-center gap-1.5">
-                          <Building2 className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
-                          <span className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
-                            {record.department}
-                          </span>
-                        </div>
-                        <div className="flex items-start gap-1.5">
-                          <Mail className="mt-0.5 h-3.5 w-3.5 shrink-0 text-neutral-400" />
-                          <span className="text-xs break-all text-neutral-500 dark:text-neutral-400">
-                            {record.emails}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex shrink-0 items-center gap-1">
-                        <button
-                          onClick={() => {
-                            setEditingId(record.id);
-                            setShowAddForm(false);
-                          }}
-                          className="rounded-lg p-1.5 text-neutral-400 transition-colors hover:bg-neutral-200 hover:text-neutral-700 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
-                          title="Edit"
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(record.id)}
-                          className="rounded-lg p-1.5 text-neutral-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40 dark:hover:text-red-400"
-                          title="Delete"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
+        ) : groupEmails.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
+            <Mail className="h-8 w-8 text-neutral-300 dark:text-neutral-600" />
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+              No group emails found.
+            </p>
+            <p className="text-xs text-neutral-400 dark:text-neutral-500">
+              Click <span className="font-medium">Add New</span> to get started.
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {groupEmails.map((record) =>
+              editingId === record.id ? (
+                <RecordForm
+                  key={record.id}
+                  initial={{
+                    emails: record.emails,
+                    department: record.department,
+                  }}
+                  onCancel={() => setEditingId(null)}
+                  onSave={(data) => editRecord({ id: record.id, data })}
+                  isSaving={isEditing}
+                />
+              ) : (
+                <div
+                  key={record.id}
+                  className="flex items-start justify-between gap-3 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 dark:border-neutral-800 dark:bg-neutral-900"
+                >
+                  <div className="flex min-w-0 flex-col gap-1">
+                    <div className="flex items-center gap-1.5">
+                      <Building2 className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
+                      <span className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
+                        {record.department}
+                      </span>
                     </div>
-                  ),
-                )}
-              </div>
+                    <div className="flex items-start gap-1.5">
+                      <Mail className="mt-0.5 h-3.5 w-3.5 shrink-0 text-neutral-400" />
+                      <span className="text-xs break-all text-neutral-500 dark:text-neutral-400">
+                        {record.emails}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex shrink-0 items-center gap-1">
+                    <button
+                      onClick={() => {
+                        setEditingId(record.id);
+                        setShowAddForm(false);
+                      }}
+                      className="rounded-lg p-2.5 text-neutral-400 transition-colors hover:bg-neutral-200 hover:text-neutral-700 sm:p-1.5 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
+                      title="Edit"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteClick(record.id)}
+                      className="rounded-lg p-2.5 text-neutral-400 transition-colors hover:bg-red-50 hover:text-red-600 sm:p-1.5 dark:hover:bg-red-950/40 dark:hover:text-red-400"
+                      title="Delete"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ),
             )}
           </div>
+        )}
+      </ModalBody>
 
-          {/* Footer */}
-          <div className="flex items-center justify-end border-t border-neutral-100 px-6 py-4 dark:border-neutral-800">
-            <button
-              onClick={closeModal}
-              className="rounded-xl px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 focus:ring-2 focus:ring-neutral-300 focus:outline-none dark:text-neutral-400 dark:hover:bg-neutral-800 dark:focus:ring-neutral-700"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    </ClientPortal>
+      {/* Footer */}
+      <ModalFooter>
+        <button
+          onClick={closeModal}
+          className="rounded-xl px-4 py-2.5 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 focus:ring-2 focus:ring-neutral-300 focus:outline-none sm:py-2 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:focus:ring-neutral-700"
+        >
+          Close
+        </button>
+      </ModalFooter>
+    </Modal>
   );
 };
 
