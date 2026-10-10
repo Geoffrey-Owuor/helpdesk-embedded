@@ -83,12 +83,15 @@ type QuickCreateModalProps = {
 
 const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
   // Fetch departments
-  const { data: fetchedDepartments = [], isPending: loadingDepartments } =
-    useQuery({
-      queryKey: ["BaseDepartmentsData"],
-      queryFn: fetchedBaseDepartments,
-      enabled: isOpen,
-    });
+  const {
+    data: fetchedDepartments = [],
+    isPending: loadingDepartments,
+    isError: departmentsError,
+  } = useQuery({
+    queryKey: ["BaseDepartmentsData"],
+    queryFn: fetchedBaseDepartments,
+    enabled: isOpen,
+  });
 
   // --- UNIFIED FORM STATE ---
   const [formData, setFormData] = useState({
@@ -124,13 +127,10 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
 
   // Global Stores
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
-  const alertType = useAlertStore((state) => state.alertType);
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
-
-  const optionsError = alertType === "error";
 
   const closeModal = useCallback(() => setIsOpen(false), [setIsOpen]);
 
@@ -388,7 +388,8 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
                   loading={loadingDepartments}
                   options={fetchedDepartments}
                   dropDownType="department"
-                  error={optionsError}
+                  // Red only when the departments failed to load
+                  error={departmentsError}
                 />
               </div>
 
@@ -397,7 +398,8 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
                 value={formData.issue_type}
                 onChange={handleIssueChange}
                 department={formData.target_department}
-                error={optionsError}
+                // Turns red by itself if its issue types fail to load
+                error={false}
               />
             </div>
 
