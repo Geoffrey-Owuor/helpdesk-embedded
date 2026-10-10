@@ -2,6 +2,7 @@
 
 import { query } from "@/lib/Db";
 import { requireSession } from "@/lib/Auth";
+import { canViewIssue } from "@/lib/IssueAccess";
 
 export interface ReopenRow {
   id: number;
@@ -15,7 +16,11 @@ export async function getReopenHistory(
 ): Promise<ReopenRow[] | []> {
   const session = await requireSession();
 
-  if (!session) {
+  // Only for those who can see the issue (analytics viewers included)
+  if (
+    !session ||
+    !(await canViewIssue(uuid, session, { allowAnalytics: true }))
+  ) {
     return [];
   }
   const baseQuery = `

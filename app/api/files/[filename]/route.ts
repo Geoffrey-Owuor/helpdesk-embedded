@@ -1,20 +1,28 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { query } from "@/lib/Db";
+import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
+import { canViewIssue } from "@/lib/IssueAccess";
 
-// Define the shape of the dynamic route parameters
-type RouteParams = {
-  params: Promise<{
-    filename: string;
-  }>;
-};
+export const GET = withAuth<{ filename: string }>(async ({ params, user }) => {
+  const { filename } = params;
 
-export async function GET(
-  _req: NextRequest,
-  { params }: RouteParams,
-): Promise<NextResponse> {
-  // Await the params object (required in newer Next.js App Router versions)
-  const { filename } = await params;
+  // Files are issue attachments - serve one only to those who can see its
+  // issue (analytics viewers included). Unknown files 404 the same way.
+  const attachment = await query<{ issue_id: string }>(
+    `SELECT issue_id FROM issue_attachments WHERE file_url = $1 LIMIT 1`,
+    [filename],
+  );
+
+  if (
+    attachment.length === 0 ||
+    !(await canViewIssue(attachment[0].issue_id, user, {
+      allowAnalytics: true,
+    }))
+  ) {
+    return new NextResponse("File Not Found", { status: 404 });
+  }
 
   // Use your private server-side environment variable
   const baseDir: string = process.env.UPLOAD_BASE_DIR!;
@@ -47,4 +55,4 @@ export async function GET(
       "Content-Disposition": `inline; filename="${filename}"`,
     },
   });
-}
+});

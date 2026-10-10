@@ -1,22 +1,24 @@
 import { IssuePage } from "@/components/Modules/IssuePage/IssuePage";
+import { requireSession } from "@/lib/Auth";
+import { getIssueMeta, metaDescription } from "@/lib/issues/getIssueMeta";
 import { Metadata } from "next";
 
 type issuePageProps = {
   params: Promise<{ uuid: string }>;
-  searchParams: Promise<{ title: string; description: string }>;
 };
 
-// Generating page metadata
+// Generating page metadata from the issue itself, for those who can see it
 export const generateMetadata = async ({
-  searchParams,
+  params,
 }: issuePageProps): Promise<Metadata> => {
-  // get the searchParams values
-  const { title, description } = await searchParams;
+  const [{ uuid }, user] = await Promise.all([params, requireSession()]);
+  const issue = user ? await getIssueMeta(uuid, user) : null;
 
-  // return the constructed metadata
+  if (!issue) return { title: "Issue not found" };
+
   return {
-    title: title || "Issue Title",
-    description: description || "Issue Description",
+    title: issue.issue_title,
+    description: metaDescription(issue.issue_description),
   };
 };
 

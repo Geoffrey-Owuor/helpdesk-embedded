@@ -20,7 +20,6 @@ import {
 
 type Payload = {
   uuid: string;
-  userId: IssueValueTypes;
   issue_title: IssueValueTypes;
   issue_description: IssueValueTypes;
 };
@@ -29,7 +28,6 @@ type TitleDescriptionModalProps = {
   title: IssueValueTypes;
   description: IssueValueTypes;
   uuid: string;
-  userId: IssueValueTypes;
   isModalOpen: boolean;
   closeModal: () => void;
 };
@@ -37,7 +35,6 @@ const TitleDescriptionModal = ({
   title,
   description,
   uuid,
-  userId,
   isModalOpen,
   closeModal,
 }: TitleDescriptionModalProps) => {
@@ -113,7 +110,7 @@ const TitleDescriptionModal = ({
 
   // Simplified handleSubmit
   const handleSubmit = async () => {
-    const payload = { ...formData, uuid, userId };
+    const payload = { ...formData, uuid };
     hideDialog();
     showOverlay("Updating");
     updateIssueMutation(payload);

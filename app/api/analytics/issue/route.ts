@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
 import { ISSUE_DETAIL_SELECT } from "@/lib/issues/issueDetailQuery";
+import { canViewIssue } from "@/lib/IssueAccess";
 
 export const GET = withAuth(async ({ user, request }) => {
   if (!hasFeatureAccess(user, FEATURES.ANALYTICS)) {
@@ -26,7 +27,14 @@ export const GET = withAuth(async ({ user, request }) => {
       return NextResponse.json({ message: "Issue not found" }, { status: 404 });
     }
 
-    return NextResponse.json(result[0], { status: 200 });
+    // Whether "Go to issue" will open for this viewer - the same check the
+    // issue page's own endpoint applies
+    const viewerCanOpen = await canViewIssue(uuid, user);
+
+    return NextResponse.json(
+      { ...result[0], viewer_can_open: viewerCanOpen },
+      { status: 200 },
+    );
   } catch (error) {
     console.error("Error retrieving analytics issue data", error);
     return NextResponse.json(

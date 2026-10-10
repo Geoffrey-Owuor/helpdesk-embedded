@@ -16,15 +16,13 @@ import {
 
 export type RouteChangeProps = {
   uuid: IssueValueTypes;
-  title: IssueValueTypes;
-  description: IssueValueTypes;
 };
 
 type NotificationModalProps = {
   closeModal: () => void;
   isModalOpen: boolean;
   isClosing: boolean;
-  handleRouteChange: ({ uuid, title, description }: RouteChangeProps) => void;
+  handleRouteChange: ({ uuid }: RouteChangeProps) => void;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
   changelogs: ChangelogItem[];
   count: number;
@@ -92,13 +90,7 @@ const NotificationModal = ({
               {issues.map((issue) => (
                 <li
                   key={issue.issue_uuid}
-                  onClick={() =>
-                    handleRouteChange({
-                      uuid: issue.issue_uuid,
-                      title: issue.issue_title,
-                      description: issue.issue_description,
-                    })
-                  }
+                  onClick={() => handleRouteChange({ uuid: issue.issue_uuid })}
                   className="flex cursor-pointer items-start gap-3 px-6 py-4 hover:bg-neutral-50 dark:hover:bg-neutral-900/50"
                 >
                   <div

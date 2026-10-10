@@ -203,7 +203,6 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           isModalOpen={isEditModalOpen}
           closeModal={() => setIsEditModalOpen(false)}
           uuid={uuid}
-          userId={issueData.issue_submitter_id}
         />
       )}
 

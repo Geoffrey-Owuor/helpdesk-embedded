@@ -1,11 +1,12 @@
-// Shared WHERE-clause builder for the main Issues Data/Cards/single-issue
-// endpoints. Combines two independent concerns into one place so the list,
-// the summary cards, and the single-issue fetch can never disagree:
+// Shared WHERE-clause builder for the main Issues Data/Cards endpoints.
+// Combines two independent concerns into one place so the list and the
+// summary cards can never disagree:
 //  - visibility: which rows this user is allowed to see at all (role-based,
 //    not user-controlled beyond the agentAdminFilter/superAdminFilter toggles)
 //  - search filters: the optional filters a user has chosen to narrow results
-// See app/api/get-issues/route.ts, app/api/issues-cards/route.ts, and
-// app/api/get-issue/route.ts for the consumers.
+// See app/api/get-issues/route.ts and app/api/issues-cards/route.ts for the
+// consumers. A single issue is gated by lib/IssueAccess.ts's
+// buildIssueAccessClause instead, which ignores the toggles.
 
 export interface IssuesVisibilityParams {
   role: string;

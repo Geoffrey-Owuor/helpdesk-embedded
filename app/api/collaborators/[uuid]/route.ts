@@ -3,7 +3,11 @@ import { NextResponse } from "next/server";
 import { query, pool } from "@/lib/Db";
 import { PoolClient } from "pg";
 import { emailSender } from "@/services/EmailSender";
-import { canActOnIssue, canManageCollaborators } from "@/lib/IssueAccess";
+import {
+  canActOnIssue,
+  canManageCollaborators,
+  canViewIssue,
+} from "@/lib/IssueAccess";
 
 // The most collaborators that can be invited or removed in one request
 const BATCH_LIMIT = 10;
@@ -14,12 +18,20 @@ type InvitedCollaborator = {
 };
 
 // GET - The collaborator list for a single issue
-export const GET = withAuth(async ({ params }) => {
+export const GET = withAuth(async ({ params, user }) => {
   if (!params.uuid) {
     return NextResponse.json(
       { message: "No issue uuid passed" },
       { status: 400 },
     );
+  }
+
+  // Only for those who can see the issue (analytics viewers included) - a 404
+  // either way so we don't leak which uuids exist
+  if (
+    !(await canViewIssue(params.uuid as string, user, { allowAnalytics: true }))
+  ) {
+    return NextResponse.json({ message: "Issue not found" }, { status: 404 });
   }
 
   try {

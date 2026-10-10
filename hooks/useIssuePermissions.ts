@@ -5,7 +5,8 @@ import { IssueDetail } from "@/queries/fetchIssue";
 
 // What the current user may do on a single issue, combining their role with
 // the issue's status. The issue page's actions all read from here so the
-// rules live in one place. The server enforces its own checks on each route.
+// rules live in one place. Mirrors lib/IssueAccess.ts, which the API routes
+// enforce.
 export const useIssuePermissions = (
   issue: IssueDetail | undefined,
   collaborators: CollaboratorRecord[],
@@ -43,8 +44,9 @@ export const useIssuePermissions = (
     canReopen: isFinished,
     // Reassigning and changing priority
     canTriage: (isDepartmentAdmin || isSuper) && !isFinished,
-    canChangeType: isDepartmentAdmin && !isClosed,
+    canChangeType: (isDepartmentAdmin || isSuper) && !isClosed,
     canEditDetails:
-      (userId === issue?.issue_submitter_id || isDepartmentAdmin) && !isClosed,
+      (userId === issue?.issue_submitter_id || isDepartmentAdmin || isSuper) &&
+      !isClosed,
   };
 };

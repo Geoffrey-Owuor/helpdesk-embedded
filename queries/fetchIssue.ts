@@ -1,5 +1,4 @@
 import apiClient from "@/lib/AxiosClient";
-import { useSearchStore } from "@/store/useSearchStore";
 
 // The single-issue shape returned by /get-issue and /analytics/issue - both
 // select lib/issues/issueDetailQuery.ts's ISSUE_DETAIL_SELECT.
@@ -32,16 +31,7 @@ export interface IssueDetail {
 }
 
 export const fetchIssue = async (uuid: string): Promise<IssueDetail> => {
-  const agentAdminFilter = useSearchStore.getState().agentAdminFilter;
-  const superAdminFilter = useSearchStore.getState().superAdminFilter;
-
-  const response = await apiClient.get("/get-issue", {
-    params: {
-      uuid,
-      ...(superAdminFilter ? { superAdminFilter: "superAdminFilter" } : {}),
-      ...(agentAdminFilter === "agentAdminFilter" ? { agentAdminFilter } : {}),
-    },
-  });
+  const response = await apiClient.get("/get-issue", { params: { uuid } });
 
   return response.data;
 };

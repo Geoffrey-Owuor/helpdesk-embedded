@@ -2,23 +2,13 @@ import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { NextResponse } from "next/server";
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
+import { canEditIssueDetails } from "@/lib/IssueAccess";
 
 export const PUT = withAuth(async ({ request, user }) => {
   let client: PoolClient | undefined;
 
-  const { userId: payloadUserId, role } = user;
-
   try {
-    const { issue_title, issue_description, uuid, userId } =
-      await request.json();
-
-    // Check if user is authorized to perform this action
-    if (userId !== payloadUserId && role !== "admin") {
-      return NextResponse.json(
-        { message: "You are not authorized to perform this action" },
-        { status: 403 },
-      );
-    }
+    const { issue_title, issue_description, uuid } = await request.json();
 
     if (!issue_title || !issue_description || !uuid) {
       return NextResponse.json(
@@ -35,13 +25,24 @@ export const PUT = withAuth(async ({ request, user }) => {
 
     //check if the issue is already marked as closed
     const { rows } = await client.query(
-      `SELECT issue_status FROM issues_table WHERE issue_uuid = $1 FOR UPDATE`,
+      `SELECT issue_status, issue_submitter_id, issue_target_department
+       FROM issues_table WHERE issue_uuid = $1 FOR UPDATE`,
       [uuid],
     );
 
     if (rows.length === 0) {
       await client.query("ROLLBACK");
       return NextResponse.json({ message: "Issue not found" }, { status: 404 });
+    }
+
+    // The submitter, a department admin or a super admin - checked against the
+    // stored issue, never against ids sent by the client
+    if (!canEditIssueDetails(user, rows[0])) {
+      await client.query("ROLLBACK");
+      return NextResponse.json(
+        { message: "You are not authorized to perform this action" },
+        { status: 403 },
+      );
     }
 
     //our current issue status

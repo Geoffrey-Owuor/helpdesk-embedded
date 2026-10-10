@@ -39,19 +39,12 @@ const Notifications = () => {
 
   const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
 
-  const handleRouteChange = ({
-    uuid,
-    title,
-    description,
-  }: RouteChangeProps) => {
+  const handleRouteChange = ({ uuid }: RouteChangeProps) => {
     setIsModalOpen(false);
 
-    const basePath = `/dashboard/${uuid}`;
+    const dashboardPath = `/dashboard/${uuid}`;
     // Return if we already on the issue's page
-    if (basePath === pathname) return;
-
-    // our dashboard path
-    const dashboardPath = `${basePath}?title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}`;
+    if (dashboardPath === pathname) return;
 
     setLoadingLine(true);
 
