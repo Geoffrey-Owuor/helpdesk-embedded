@@ -12,6 +12,7 @@ import {
 import { DatePicker } from "../DatePicker";
 import ActiveIssuesFilterPills from "./ActiveIssuesFilterPills";
 import CustomDropdown from "../CustomDropdown";
+import StickyFilterPanel from "../StickyFilterPanel";
 import MobileFilterBar, { countActiveFilters } from "../MobileFilterBar";
 
 type FilterFieldKey =
@@ -318,7 +319,7 @@ const IssuesFilterPanel = () => {
         onReset={resetFilters}
       />
 
-      <div className="sticky top-0 z-50 mb-4 hidden rounded-2xl border border-neutral-200 bg-white p-4 sm:block dark:border-neutral-800 dark:bg-neutral-950">
+      <StickyFilterPanel>
         <div className="flex flex-wrap items-center gap-3">
           <FilterFieldSelector
             activeKey={effectiveActiveField}
@@ -352,7 +353,7 @@ const IssuesFilterPanel = () => {
         </div>
         {/* Filter pills */}
         <ActiveIssuesFilterPills />
-      </div>
+      </StickyFilterPanel>
     </>
   );
 };

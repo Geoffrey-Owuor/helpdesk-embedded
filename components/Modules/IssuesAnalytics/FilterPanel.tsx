@@ -13,6 +13,7 @@ import CustomDropdown from "../CustomDropdown";
 import { fetchGlobalAgents } from "@/queries/analytics/fetchGlobalAgents";
 import { fetchGlobalIssueTypes } from "@/queries/analytics/fetchGlobalIssueTypes";
 import ActiveAnalyticsFilterPills from "./ActiveAnalyticsFilterPills";
+import StickyFilterPanel from "../StickyFilterPanel";
 import MobileFilterBar, { countActiveFilters } from "../MobileFilterBar";
 
 type FilterFieldKey =
@@ -364,7 +365,7 @@ const FilterPanel = () => {
         onReset={resetFilters}
       />
 
-      <div className="sticky top-0 z-50 mb-4 hidden rounded-2xl border border-neutral-200 bg-white p-4 sm:block dark:border-neutral-800 dark:bg-neutral-950">
+      <StickyFilterPanel>
         <div className="flex flex-wrap items-center gap-3">
           <FilterFieldSelector
             activeKey={activeField}
@@ -396,7 +397,7 @@ const FilterPanel = () => {
           </div>
         </div>
         <ActiveAnalyticsFilterPills />
-      </div>
+      </StickyFilterPanel>
     </>
   );
 };
