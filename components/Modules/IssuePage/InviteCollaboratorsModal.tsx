@@ -38,7 +38,7 @@ type InviteCollaboratorsModalProps = {
   isModalOpen: boolean;
   issueType: IssueValueTypes;
   targetDepartment: IssueValueTypes;
-  issueAgentEmail: IssueValueTypes;
+  issueAgentEmail: IssueValueTypes | null;
   canManage: boolean;
 };
 

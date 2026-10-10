@@ -1,9 +1,9 @@
 import apiClient from "@/lib/AxiosClient";
-import { AnalyticsIssueDetail } from "@/components/Modules/IssuesAnalytics/types";
+import { IssueDetail } from "@/queries/fetchIssue";
 
 export const fetchAnalyticsIssue = async (
   uuid: string,
-): Promise<AnalyticsIssueDetail> => {
+): Promise<IssueDetail> => {
   const response = await apiClient.get("/analytics/issue", {
     params: { uuid },
   });
