@@ -1,6 +1,7 @@
 import { IssuePage } from "@/components/Modules/IssuePage/IssuePage";
 import { requireSession } from "@/lib/Auth";
-import { getIssueMeta, metaDescription } from "@/lib/issues/getIssueMeta";
+import { getIssueMeta } from "@/lib/issues/getIssueMeta";
+import { metaDescription } from "@/lib/metadata";
 import { Metadata } from "next";
 
 type issuePageProps = {

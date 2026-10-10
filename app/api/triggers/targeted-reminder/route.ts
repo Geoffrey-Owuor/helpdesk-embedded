@@ -54,8 +54,8 @@ export async function GET(request: NextRequest) {
       issuesResult,
     );
 
-    //  Send the email
-    await sendEmail({
+    //  Send the email - sendEmail reports failure in its result, not a throw
+    const result = await sendEmail({
       to: email,
       subject: `[HelpDesk] ${issuesResult.length} Unresolved Issue${issuesResult.length !== 1 ? "s" : ""} - Action Required`,
       html: html,
@@ -65,7 +65,9 @@ export async function GET(request: NextRequest) {
     const summary = {
       recipient: email,
       type: "Single agent reminder",
-      sent: true,
+      sent: result.success && !result.skipped,
+      ...(result.skipped ? { skipped: true } : {}),
+      ...(result.error ? { error: result.error } : {}),
       count: issuesResult.length,
     };
 

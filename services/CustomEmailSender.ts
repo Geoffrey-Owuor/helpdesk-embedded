@@ -31,6 +31,8 @@ async function getAccessToken() {
   return result?.accessToken;
 }
 
+// PostMail's sender - an explicit admin action, so it ignores
+// NOTIFICATION_EMAILS_ENABLED and always sends
 export const sendCustomGraphEmail = async ({
   from,
   to,

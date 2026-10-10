@@ -5,6 +5,7 @@ import { query } from "@/lib/Db";
 import { AuthJWTPayload } from "@/lib/Auth";
 import { PoolClient } from "pg";
 import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
+import { isUuid } from "@/lib/isUuid";
 
 // The subset of an issue row the checks below need. Routes already read these
 // columns when they lock the row, so they can pass what they have.
@@ -130,13 +131,6 @@ export const buildIssueAccessClause = (
 
   return { clause: submitter, params: [userId] };
 };
-
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-// A malformed uuid can't match an issue (and would make postgres throw)
-export const isUuid = (value: unknown): value is string =>
-  typeof value === "string" && UUID_PATTERN.test(value);
 
 // Can this user see this issue? Analytics viewers can read any issue through
 // the analytics pages, so read-only routes those pages use pass

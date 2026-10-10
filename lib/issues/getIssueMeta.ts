@@ -1,6 +1,7 @@
 import { query } from "@/lib/Db";
 import { AuthJWTPayload } from "@/lib/Auth";
-import { buildIssueAccessClause, isUuid } from "@/lib/IssueAccess";
+import { buildIssueAccessClause } from "@/lib/IssueAccess";
+import { isUuid } from "@/lib/isUuid";
 
 // The title and description an issue page uses for its <title>/description
 // metadata - fetched server-side rather than passed in the URL. Gated like
@@ -25,11 +26,3 @@ export const getIssueMeta = async (
 
   return rows[0] ?? null;
 };
-
-// Search-result style description length
-const DESCRIPTION_LIMIT = 160;
-
-export const metaDescription = (description: string) =>
-  description.length > DESCRIPTION_LIMIT
-    ? `${description.slice(0, DESCRIPTION_LIMIT - 1).trimEnd()}…`
-    : description;

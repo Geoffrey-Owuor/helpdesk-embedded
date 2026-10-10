@@ -15,6 +15,7 @@ export const SendBugReport = async (bugReportInfo: BugReportProps) => {
   await sendEmail({
     to: "staff@example.com",
     subject: "New Bug Report Submitted",
+    essential: true,
     html: emailTemplate,
   });
 };
