@@ -6,7 +6,6 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAnalyticsIssue } from "@/queries/analytics/fetchAnalyticsIssue";
-import { useUser } from "@/contexts/UserContext";
 import { useIssueCollaborators } from "@/hooks/useIssueCollaborators";
 import { IssueNotFound } from "../IssuePage/HelperComponents/IssueNotFound";
 import { IssueHeader } from "../IssuePage/HelperComponents/IssueHeader";
@@ -18,7 +17,6 @@ const breadcrumbClass =
 // Read-only mirror of IssuePage used by the analytics table, since analytics
 // viewers may not have permission to act on the underlying issue.
 export const AnalyticsIssuePage = ({ uuid }: { uuid: string }) => {
-  const { role, email, isSuper } = useUser();
   const {
     data: issueData,
     isLoading: loading,
@@ -36,16 +34,6 @@ export const AnalyticsIssuePage = ({ uuid }: { uuid: string }) => {
 
   // call useScrollToTop hook
   useScrollToTop();
-
-  // Who can go to a particular issue - We expose the "Go to issue" button for them (Limits a user bumping into "Issue not found" when they click on "go to issue")
-  const userCanView = issueData?.issue_submitter_email === email;
-  const agentCanView =
-    issueData?.issue_agent_email === email ||
-    !!collaborators.find(
-      (collaborator) =>
-        collaborator.collaborator_email === issueData?.issue_agent_email,
-    );
-  const adminsCanView = role === "admin" || isSuper;
 
   if (loading) return <IssueDetailsSkeleton />;
 
@@ -67,9 +55,9 @@ export const AnalyticsIssuePage = ({ uuid }: { uuid: string }) => {
               <ArrowLeft className="h-3 w-3" />
               Back to analytics
             </Link>
-            {(userCanView || agentCanView || adminsCanView) && (
+            {issueData.viewer_can_open && (
               <Link
-                href={`/dashboard/${issueData.issue_uuid}?title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`}
+                href={`/dashboard/${issueData.issue_uuid}`}
                 className={breadcrumbClass}
               >
                 Go to issue

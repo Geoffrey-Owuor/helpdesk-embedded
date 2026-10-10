@@ -72,13 +72,9 @@ const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
   const handleIssueRoute = (record: Record<string, IssueValueTypes>) => {
     closeBar();
 
-    const basePath = `/dashboard/${record.issue_uuid}`;
+    const route = `/dashboard/${record.issue_uuid}`;
 
-    const route = `${basePath}?title=${encodeURIComponent(
-      record.issue_title || "",
-    )}&description=${encodeURIComponent(record.issue_description || "")}`;
-
-    if (pathname === basePath) return;
+    if (pathname === route) return;
 
     setLoadingLine(true);
 

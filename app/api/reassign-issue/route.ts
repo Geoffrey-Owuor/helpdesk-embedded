@@ -3,19 +3,12 @@ import { NextResponse } from "next/server";
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
 import { emailSender } from "@/services/EmailSender";
+import { canTriageIssue } from "@/lib/IssueAccess";
 
 export const PUT = withAuth(async ({ request, user }) => {
   let client: PoolClient | undefined;
 
-  const { username, role, email, userId, isSuper } = user;
-
-  //Check if user is authorized to perform this operation
-  if (role !== "admin" && !isSuper) {
-    return NextResponse.json(
-      { message: "You are not authorized to perform this action" },
-      { status: 403 },
-    );
-  }
+  const { username, email, userId } = user;
 
   try {
     const { uuid, agentName, agentEmail } = await request.json();
@@ -35,7 +28,8 @@ export const PUT = withAuth(async ({ request, user }) => {
 
     // Check if issue is already marked as closed
     const { rows } = await client.query(
-      `SELECT issue_status, issue_reference_id, issue_agent_email FROM issues_table WHERE issue_uuid = $1 FOR UPDATE`,
+      `SELECT issue_status, issue_reference_id, issue_agent_email, issue_target_department
+       FROM issues_table WHERE issue_uuid = $1 FOR UPDATE`,
       [uuid],
     );
 
@@ -43,6 +37,15 @@ export const PUT = withAuth(async ({ request, user }) => {
     if (rows.length === 0) {
       await client.query("ROLLBACK");
       return NextResponse.json({ message: "Issue not found" }, { status: 404 });
+    }
+
+    // Admins of the issue's department and super admins only
+    if (!canTriageIssue(user, rows[0])) {
+      await client.query("ROLLBACK");
+      return NextResponse.json(
+        { message: "You are not authorized to perform this action" },
+        { status: 403 },
+      );
     }
 
     // Our current issues status and current agent email

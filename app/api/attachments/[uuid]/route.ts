@@ -5,13 +5,22 @@ import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import type { AllowedFileType } from "@/components/Modules/IssueModals/DocumentUpload";
+import { canViewIssue } from "@/lib/IssueAccess";
 
-export const GET = withAuth(async ({ params }) => {
+export const GET = withAuth(async ({ params, user }) => {
   if (!params.uuid) {
     return NextResponse.json(
       { message: "No issue uuid passed" },
       { status: 400 },
     );
+  }
+
+  // Only for those who can see the issue (analytics viewers included) - a 404
+  // either way so we don't leak which uuids exist
+  if (
+    !(await canViewIssue(params.uuid as string, user, { allowAnalytics: true }))
+  ) {
+    return NextResponse.json({ message: "Issue not found" }, { status: 404 });
   }
 
   try {
@@ -44,7 +53,7 @@ const ALLOWED_TYPES: AllowedFileType[] = [
 
 // POST - Add one or more attachments to an existing issue. Anyone who can
 // view the issue can attach files to it - no email is sent for this action.
-export const POST = withAuth(async ({ request, params }) => {
+export const POST = withAuth(async ({ request, params, user }) => {
   let client: PoolClient | undefined;
 
   const uuid = params.uuid as string;
@@ -54,6 +63,12 @@ export const POST = withAuth(async ({ request, params }) => {
       { message: "No issue uuid passed" },
       { status: 400 },
     );
+  }
+
+  // Only those who can see the issue may attach files to it - a 404 either way so we
+  // don't leak which uuids exist
+  if (!(await canViewIssue(uuid, user))) {
+    return NextResponse.json({ message: "Issue not found" }, { status: 404 });
   }
 
   try {

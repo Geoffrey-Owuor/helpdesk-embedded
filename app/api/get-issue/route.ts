@@ -1,36 +1,31 @@
 import { query } from "@/lib/Db";
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
-import { buildIssuesVisibilityClause } from "@/lib/issues/buildIssuesFilter";
+import { buildIssueAccessClause } from "@/lib/IssueAccess";
 import { ISSUE_DETAIL_SELECT } from "@/lib/issues/issueDetailQuery";
 
 export const GET = withAuth(async ({ user, request }) => {
-  const { userId, email, role, department, isSuper } = user;
-
-  const searchParams = request.nextUrl.searchParams;
-  const uuid = searchParams.get("uuid");
-  const agentAdminFilter = searchParams.get("agentAdminFilter");
-  const superAdminFilter = searchParams.get("superAdminFilter");
+  const uuid = request.nextUrl.searchParams.get("uuid");
 
   if (!uuid) {
     return NextResponse.json({ message: "Missing uuid" }, { status: 400 });
   }
 
   try {
-    // uuid is always $1; visibility params (if any) continue from $2
-    const { clause: visibilityClause, params: visibilityParams } =
-      buildIssuesVisibilityClause(
-        { role, userId, email, department, isSuper, agentAdminFilter, superAdminFilter },
-        "a",
-        2,
-      );
+    // uuid is always $1; access params (if any) continue from $2. Access is
+    // everything the user can open - the issue lists' toggles don't apply here,
+    // so links from notifications, search and pins always resolve.
+    const { clause: accessClause, params: accessParams } =
+      buildIssueAccessClause(user, "a", 2);
 
-    const whereParts = ["a.issue_uuid = $1", ...(visibilityClause ? [visibilityClause] : [])];
-    const params = [uuid, ...visibilityParams];
+    const whereParts = [
+      "a.issue_uuid = $1",
+      ...(accessClause ? [accessClause] : []),
+    ];
 
     const result = await query(
       `${ISSUE_DETAIL_SELECT} WHERE ${whereParts.join(" AND ")}`,
-      params,
+      [uuid, ...accessParams],
     );
 
     if (result.length === 0) {
