@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 import { RotateCcw, Search, SlidersHorizontal } from "lucide-react";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "./Modal/Modal";
+import { useIsStuck } from "@/hooks/useIsStuck";
 
 // Counts committed filters for the "Filters (n)" badge; a from/to date pair
 // counts once, matching how the filter pills display it
@@ -31,7 +32,8 @@ type MobileFilterBarProps = {
 };
 
 // Phone replacement for the sticky desktop filter panels: a single compact row
-// that opens all filters in a full-screen sheet
+// that opens all filters in a full-screen sheet. Once pinned, a ::before band
+// stretches its background and bottom border over the main column's px-4.
 const MobileFilterBar = ({
   title,
   activeCount,
@@ -42,10 +44,18 @@ const MobileFilterBar = ({
   onReset,
 }: MobileFilterBarProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { sentinelRef, isStuck } = useIsStuck();
 
+  // No wrapper around the bar: a sticky element only sticks within its parent,
+  // so it must sit directly in the page container to stay pinned while scrolling
   return (
-    <div className="mb-4 sm:hidden">
-      <div className="sticky top-0 z-50 flex items-center gap-2 bg-white py-2 dark:bg-black">
+    <>
+      <div ref={sentinelRef} aria-hidden className="sm:hidden" />
+      <div
+        className={`sticky top-0 z-50 flex items-center gap-2 bg-white py-2 before:absolute before:inset-y-0 before:-inset-x-4 before:-z-10 before:border-b before:border-neutral-200 before:bg-white before:transition-opacity before:duration-150 sm:hidden motion-reduce:before:transition-none dark:bg-black dark:before:border-neutral-800 dark:before:bg-black ${
+          isStuck ? "before:opacity-100" : "before:opacity-0"
+        }`}
+      >
         <button
           type="button"
           onClick={() => setIsOpen(true)}
@@ -72,7 +82,7 @@ const MobileFilterBar = ({
         )}
       </div>
 
-      {pills}
+      <div className="mb-4 sm:hidden">{pills}</div>
 
       <Modal open={isOpen} onClose={() => setIsOpen(false)} size="md">
         <ModalHeader title={title} />
@@ -111,7 +121,7 @@ const MobileFilterBar = ({
           </button>
         </ModalFooter>
       </Modal>
-    </div>
+    </>
   );
 };
 
