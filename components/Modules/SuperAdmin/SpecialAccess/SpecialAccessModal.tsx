@@ -1,9 +1,7 @@
 "use client";
-import ClientPortal from "../../ClientPortal";
-import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState, useRef } from "react";
-import { X, KeyRound, Plus, Trash2, UserRound } from "lucide-react";
+import { useState } from "react";
+import { KeyRound, Plus, Trash2, UserRound } from "lucide-react";
 import apiClient from "@/lib/AxiosClient";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useConfirmStore } from "@/store/useConfirmStore";
@@ -14,6 +12,7 @@ import { FEATURES, FeatureKey } from "@/lib/FeatureAccess";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import { UserRecord } from "../Users";
 import CustomDropdown from "../EditModals/CustomDropDown";
+import { Modal, ModalBody, ModalFooter, ModalHeader } from "../../Modal/Modal";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -102,7 +101,7 @@ const GrantForm = ({ users, onCancel, onSave, isSaving }: GrantFormProps) => {
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-xl px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 focus:ring-2 focus:ring-neutral-300 focus:outline-none dark:text-neutral-400 dark:hover:bg-neutral-800 dark:focus:ring-neutral-700"
+          className="rounded-xl px-4 py-2.5 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 focus:ring-2 focus:ring-neutral-300 focus:outline-none sm:py-2 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:focus:ring-neutral-700"
         >
           Cancel
         </button>
@@ -125,8 +124,6 @@ const SpecialAccessModal = ({
   closeModal,
 }: SpecialAccessModalProps) => {
   const queryClient = useQueryClient();
-  const modalRef = useRef<HTMLDivElement | null>(null);
-
   // UI state
   const [showAddForm, setShowAddForm] = useState(false);
 
@@ -136,9 +133,6 @@ const SpecialAccessModal = ({
   const hideDialog = useConfirmStore((state) => state.hideDialog);
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
-
-  useFocusTrapping(modalRef, isModalOpen, closeModal);
-
   // ── Fetch ──────────────────────────────────────────────────────────────────
 
   const { data: grants = [], isLoading } = useQuery<SpecialAccessGrant[]>({
@@ -218,128 +212,104 @@ const SpecialAccessModal = ({
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <ClientPortal>
-      {/* Backdrop */}
-      <div className="fixed inset-0 z-50 bg-black/60 transition-opacity dark:bg-black/80" />
+    <Modal open={isModalOpen} onClose={closeModal} size="lg">
+      <ModalHeader
+        title="Special Access"
+        description="Grant individual features to specific users"
+        actions={
+          <button
+            onClick={() => setShowAddForm((v) => !v)}
+            className="flex items-center gap-1.5 rounded-xl bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-neutral-700 focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 focus:outline-none dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Grant Access
+          </button>
+        }
+      />
 
-      {/* Modal */}
-      <div
-        ref={modalRef}
-        className="fixed top-1/2 left-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 p-4"
-      >
-        <div className="flex max-h-[85vh] w-full flex-col rounded-2xl border border-neutral-200 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
-          {/* Header */}
-          <div className="flex items-center justify-between border-b border-neutral-100 px-6 py-4 dark:border-neutral-800">
-            <div>
-              <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
-                Special Access
-              </h2>
-              <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
-                Grant individual features to specific users
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowAddForm((v) => !v)}
-                className="flex items-center gap-1.5 rounded-xl bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-neutral-700 focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 focus:outline-none dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
-              >
-                <Plus className="h-3.5 w-3.5" />
-                Grant Access
-              </button>
-              <button
-                onClick={closeModal}
-                className="rounded-full p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 dark:text-neutral-500 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
-              >
-                <X className="h-4.5 w-4.5" />
-              </button>
-            </div>
+      {/* Body */}
+      <ModalBody className="flex flex-col gap-4">
+        {/* Add form */}
+        {showAddForm && (
+          <GrantForm
+            users={users}
+            onCancel={() => setShowAddForm(false)}
+            onSave={(data) => addRecord(data)}
+            isSaving={isAdding}
+          />
+        )}
+
+        {/* Records list */}
+        {isLoading ? (
+          <div className="flex flex-col gap-3">
+            {[...Array(3)].map((_, i) => (
+              <SkeletonBox key={i} className="h-16 rounded-xl" />
+            ))}
           </div>
-
-          {/* Body */}
-          <div className="layout-scrollbar flex flex-col gap-4 overflow-y-auto bg-white px-6 py-5 dark:bg-neutral-950">
-            {/* Add form */}
-            {showAddForm && (
-              <GrantForm
-                users={users}
-                onCancel={() => setShowAddForm(false)}
-                onSave={(data) => addRecord(data)}
-                isSaving={isAdding}
-              />
-            )}
-
-            {/* Records list */}
-            {isLoading ? (
-              <div className="flex flex-col gap-3">
-                {[...Array(3)].map((_, i) => (
-                  <SkeletonBox key={i} className="h-16 rounded-xl" />
-                ))}
-              </div>
-            ) : grants.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
-                <KeyRound className="h-8 w-8 text-neutral-300 dark:text-neutral-600" />
-                <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                  No special access grants found.
-                </p>
-                <p className="text-xs text-neutral-400 dark:text-neutral-500">
-                  Click <span className="font-medium">Grant Access</span> to get
-                  started.
-                </p>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-3">
-                {grants.map((grant) => (
-                  <div
-                    key={grant.id}
-                    className="flex items-start justify-between gap-3 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 dark:border-neutral-800 dark:bg-neutral-900"
-                  >
-                    <div className="flex min-w-0 flex-col gap-1">
-                      <div className="flex items-center gap-1.5">
-                        <UserRound className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
-                        <span className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
-                          {grant.username}
-                        </span>
-                        <span className="truncate text-xs text-neutral-500 dark:text-neutral-400">
-                          ({grant.email})
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="inline-flex w-fit items-center gap-1 rounded-full bg-neutral-200 px-2 py-0.5 text-[11px] font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
-                          <KeyRound className="h-3 w-3" />
-                          {featureLabel(grant.feature)}
-                        </span>
-                        <span className="text-[11px] text-neutral-400 dark:text-neutral-500">
-                          Granted {dateFormatter(grant.granted_at)}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex shrink-0 items-center gap-1">
-                      <button
-                        onClick={() => handleRevokeClick(grant)}
-                        className="rounded-lg p-1.5 text-neutral-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40 dark:hover:text-red-400"
-                        title="Revoke"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
+        ) : grants.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
+            <KeyRound className="h-8 w-8 text-neutral-300 dark:text-neutral-600" />
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+              No special access grants found.
+            </p>
+            <p className="text-xs text-neutral-400 dark:text-neutral-500">
+              Click <span className="font-medium">Grant Access</span> to get
+              started.
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {grants.map((grant) => (
+              <div
+                key={grant.id}
+                className="flex items-start justify-between gap-3 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 dark:border-neutral-800 dark:bg-neutral-900"
+              >
+                <div className="flex min-w-0 flex-col gap-1">
+                  <div className="flex items-center gap-1.5">
+                    <UserRound className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
+                    <span className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
+                      {grant.username}
+                    </span>
+                    <span className="truncate text-xs text-neutral-500 dark:text-neutral-400">
+                      ({grant.email})
+                    </span>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="inline-flex w-fit items-center gap-1 rounded-full bg-neutral-200 px-2 py-0.5 text-xs font-medium text-neutral-700 sm:text-[11px] dark:bg-neutral-800 dark:text-neutral-300">
+                      <KeyRound className="h-3 w-3" />
+                      {featureLabel(grant.feature)}
+                    </span>
+                    <span className="text-xs text-neutral-400 sm:text-[11px] dark:text-neutral-500">
+                      Granted {dateFormatter(grant.granted_at)}
+                    </span>
+                  </div>
+                </div>
 
-          {/* Footer */}
-          <div className="flex items-center justify-end border-t border-neutral-100 px-6 py-4 dark:border-neutral-800">
-            <button
-              onClick={closeModal}
-              className="rounded-xl px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 focus:ring-2 focus:ring-neutral-300 focus:outline-none dark:text-neutral-400 dark:hover:bg-neutral-800 dark:focus:ring-neutral-700"
-            >
-              Close
-            </button>
+                <div className="flex shrink-0 items-center gap-1">
+                  <button
+                    onClick={() => handleRevokeClick(grant)}
+                    className="rounded-lg p-2.5 text-neutral-400 transition-colors hover:bg-red-50 hover:text-red-600 sm:p-1.5 dark:hover:bg-red-950/40 dark:hover:text-red-400"
+                    title="Revoke"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
-      </div>
-    </ClientPortal>
+        )}
+      </ModalBody>
+
+      {/* Footer */}
+      <ModalFooter>
+        <button
+          onClick={closeModal}
+          className="rounded-xl px-4 py-2.5 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 focus:ring-2 focus:ring-neutral-300 focus:outline-none sm:py-2 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:focus:ring-neutral-700"
+        >
+          Close
+        </button>
+      </ModalFooter>
+    </Modal>
   );
 };
 
