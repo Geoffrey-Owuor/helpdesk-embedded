@@ -1,7 +1,7 @@
 "use client";
 
 import { X, Bug, ShieldCheck, UsersRound, RotateCcw } from "lucide-react";
-import { Dispatch, SetStateAction, useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import AgentsInfo from "./AgentsInfo";
 import IssueTypesInfo from "./IssueTypesInfo";
@@ -14,7 +14,7 @@ import { AppVersion } from "@/public/assets";
 
 type AdminPanelProps = {
   showAdminPanel: boolean;
-  setShowAdminPanel: Dispatch<SetStateAction<boolean>>;
+  setShowAdminPanel: (open: boolean) => void;
 };
 
 type TabId = "agent-info" | "issue-info";

@@ -1,6 +1,7 @@
 "use client";
 
-import { Settings, LogOut, Shield } from "lucide-react";
+import { Settings, LogOut, Shield, Sun, Moon } from "lucide-react";
+import { useTheme } from "next-themes";
 import apiClient from "@/lib/AxiosClient";
 import { useUser } from "@/contexts/UserContext";
 import { useOverlayStore } from "@/store/useOverlayStore";
@@ -26,6 +27,8 @@ const UserInfoCard = ({
   const { role, username, email } = useUser();
 
   const isEmbedded = useIsEmbedd();
+  const { setTheme, resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
@@ -98,6 +101,15 @@ const UserInfoCard = ({
         >
           <Settings size={16} />
           Settings
+        </button>
+
+        {/* Theme switch — mobile only; desktop has the topbar toggle */}
+        <button
+          onClick={() => setTheme(isDark ? "light" : "dark")}
+          className="custom:hidden flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-900"
+        >
+          {isDark ? <Sun size={16} /> : <Moon size={16} />}
+          {isDark ? "Light mode" : "Dark mode"}
         </button>
 
         {!isEmbedded && (

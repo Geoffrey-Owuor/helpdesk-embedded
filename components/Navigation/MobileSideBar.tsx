@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { DashBoardLogo } from "../Modules/DashBoardLogo";
 import { Dispatch, SetStateAction } from "react";
-import { useState, useCallback, useRef } from "react";
+import { useCallback, useRef } from "react";
 import {
   CirclePlus,
   X,
@@ -15,11 +15,10 @@ import {
   HousePlug,
   ChartColumnBig,
 } from "lucide-react";
-import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
 import { useUser } from "@/contexts/UserContext";
 import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
-import AdminPanel from "./AdminFunctions/AdminPanel";
+import { useDashboardModalsStore } from "@/store/useDashboardModalsStore";
 import { useIsEmbedd } from "@/hooks/useIsEmbedd";
 
 type MobileSideBarProps = {
@@ -33,9 +32,13 @@ const MobileSideBar = ({
   handleRouteChange,
   setSideBarOpen,
 }: MobileSideBarProps) => {
-  const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
   const { role, isSuper, specialAccess } = useUser();
-  const [showAdminOptions, setShowAdminOptions] = useState(false);
+  const setIsIssueModalOpen = useDashboardModalsStore(
+    (state) => state.setIsIssueModalOpen,
+  );
+  const setIsAdminPanelOpen = useDashboardModalsStore(
+    (state) => state.setIsAdminPanelOpen,
+  );
 
   const isEmbedded = useIsEmbedd();
 
@@ -60,23 +63,11 @@ const MobileSideBar = ({
 
   const handleAdminPanelOpening = () => {
     setSideBarOpen(false);
-    setShowAdminOptions((prev) => !prev);
+    setIsAdminPanelOpen(true);
   };
 
   return (
     <>
-      {isIssueModalOpen && (
-        <MainIssueModal
-          isOpen={isIssueModalOpen}
-          setIsOpen={setIsIssueModalOpen}
-        />
-      )}
-
-      <AdminPanel
-        showAdminPanel={showAdminOptions}
-        setShowAdminPanel={setShowAdminOptions}
-      />
-
       <div
         className={`fixed inset-0 z-70 flex ${
           sideBarOpen ? "pointer-events-auto" : "pointer-events-none"
@@ -103,6 +94,7 @@ const MobileSideBar = ({
             <button
               className="rounded-full p-1.5 hover:bg-neutral-200 dark:hover:bg-neutral-800"
               onClick={() => setSideBarOpen(false)}
+              aria-label="Close navigation menu"
             >
               <X className="h-5 w-5" />
             </button>

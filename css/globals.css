@@ -101,6 +101,16 @@ html[data-theme="dark"] .shell-ear {
   --ear-at: 0% 0%;
 }
 
+/* Mobile ears sit inside the panel, under the topbar, so the area outside
+   the curve is the topbar's background rather than the page background */
+.shell-ear-inner {
+  --ear-page: var(--color-white);
+}
+
+html[data-theme="dark"] .shell-ear-inner {
+  --ear-page: var(--color-black);
+}
+
 @keyframes slideDown {
   from {
     transform: translateY(0);

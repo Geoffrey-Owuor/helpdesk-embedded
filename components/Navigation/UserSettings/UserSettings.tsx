@@ -2,14 +2,7 @@
 
 import { useUser } from "@/contexts/UserContext";
 import ClientPortal from "@/components/Modules/ClientPortal";
-import {
-  ChangeEvent,
-  Dispatch,
-  FormEvent,
-  SetStateAction,
-  useState,
-  useRef,
-} from "react";
+import { ChangeEvent, FormEvent, useState, useRef } from "react";
 import {
   X,
   Mail,
@@ -35,7 +28,7 @@ import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 
 type UserSettingsProps = {
   isUserSettingsOpen: boolean;
-  setIsUserSettingsOpen: Dispatch<SetStateAction<boolean>>;
+  setIsUserSettingsOpen: (open: boolean) => void;
 };
 
 const UserSettings = ({
