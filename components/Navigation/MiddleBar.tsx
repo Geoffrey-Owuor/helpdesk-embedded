@@ -3,8 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useUser } from "@/contexts/UserContext";
-import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
-import AdminPanel from "./AdminFunctions/AdminPanel";
 import {
   Search,
   LayoutDashboard,
@@ -18,14 +16,20 @@ import {
 } from "lucide-react";
 import { useLoadingStore } from "@/store/useLoadingStore";
 import SearchArea from "./SearchArea";
+import ClientPortal from "../Modules/ClientPortal";
 import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
+import { useDashboardModalsStore } from "@/store/useDashboardModalsStore";
 
 const MiddleBar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  //   States for opening the admin panel and new issue
-  const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
-  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
+  // Openers for the dashboard-wide new issue modal and admin panel
+  const setIsIssueModalOpen = useDashboardModalsStore(
+    (state) => state.setIsIssueModalOpen,
+  );
+  const setIsAdminPanelOpen = useDashboardModalsStore(
+    (state) => state.setIsAdminPanelOpen,
+  );
 
   const router = useRouter();
   const pathname = usePathname();
@@ -80,20 +84,6 @@ const MiddleBar = () => {
 
   return (
     <>
-      {/* Main Issue Modal */}
-      {isIssueModalOpen && (
-        <MainIssueModal
-          isOpen={isIssueModalOpen}
-          setIsOpen={setIsIssueModalOpen}
-        />
-      )}
-
-      {/* Admin Panel */}
-      <AdminPanel
-        showAdminPanel={isAdminPanelOpen}
-        setShowAdminPanel={setIsAdminPanelOpen}
-      />
-
       <div className="w-full max-w-md px-8">
         {/* Changed from div to button to be semantically correct and focusable */}
         <button
@@ -116,92 +106,93 @@ const MiddleBar = () => {
         </button>
       </div>
 
-      {/* ── DROPDOWN PANEL ── */}
+      {/* ── DROPDOWN PANEL ── (portaled so it covers the whole viewport, panel corners included) */}
       {isOpen && (
-        <div
-          onClick={() => setIsOpen(false)}
-          className="fixed inset-0 z-100 hidden items-start justify-center bg-black/60 pt-2 md:flex dark:bg-black/80"
-        >
+        <ClientPortal>
           <div
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-lg overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-[0_16px_40px_-12px_rgba(0,0,0,0.15)] dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]"
+            onClick={() => setIsOpen(false)}
+            className="fixed inset-0 z-100 hidden items-start justify-center bg-black/60 pt-2 md:flex dark:bg-black/80"
           >
-            {/* Section 1: Quick Links (Rounded Pills) */}
-            <div className="p-4">
-              <h3 className="mb-3 text-xs font-semibold tracking-wider text-neutral-400 uppercase">
-                Quick Navigation
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                <PillButton
-                  icon={<LayoutDashboard size={14} />}
-                  label="Home"
-                  onClick={() => handleNavigation("/dashboard")}
-                />
-
-                {/* TODO: To trigger this modal from here, you either need to pass `setIsIssueModalOpen` as a prop down to this header, OR move `isIssueModalOpen` to a global Zustand store. */}
-                <PillButton
-                  icon={<CirclePlus size={14} />}
-                  label="New Issue"
-                  onClick={() => {
-                    setIsIssueModalOpen(true);
-                    setIsOpen(false);
-                  }}
-                  accent
-                />
-
-                <PillButton
-                  icon={<NotebookPen size={14} />}
-                  label="Articles"
-                  onClick={() => handleNavigation("/dashboard/articles")}
-                />
-
-                {isSuper && (
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-lg overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-[0_16px_40px_-12px_rgba(0,0,0,0.15)] dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]"
+            >
+              {/* Section 1: Quick Links (Rounded Pills) */}
+              <div className="p-4">
+                <h3 className="mb-3 text-xs font-semibold tracking-wider text-neutral-400 uppercase">
+                  Quick Navigation
+                </h3>
+                <div className="flex flex-wrap gap-2">
                   <PillButton
-                    icon={<ShieldPlus size={14} />}
-                    label="Super Admin"
-                    onClick={() => handleNavigation("/dashboard/superadmin")}
+                    icon={<LayoutDashboard size={14} />}
+                    label="Home"
+                    onClick={() => handleNavigation("/dashboard")}
                   />
-                )}
 
-                {/* Issues Analytics */}
-                {hasFeatureAccess(
-                  { role, specialAccess },
-                  FEATURES.ANALYTICS,
-                ) && (
                   <PillButton
-                    icon={<ChartColumnBig size={14} />}
-                    label="Analytics"
-                    onClick={() => handleNavigation("/dashboard/analytics")}
-                  />
-                )}
-
-                {/* Trigger opening of the admin panel */}
-                {role === "admin" && (
-                  <PillButton
-                    icon={<ShieldUser size={14} />}
-                    label="Admin Panel"
+                    icon={<CirclePlus size={14} />}
+                    label="New Issue"
                     onClick={() => {
-                      setIsAdminPanelOpen(true);
+                      setIsIssueModalOpen(true);
+                      setIsOpen(false);
+                    }}
+                    accent
+                  />
+
+                  <PillButton
+                    icon={<NotebookPen size={14} />}
+                    label="Articles"
+                    onClick={() => handleNavigation("/dashboard/articles")}
+                  />
+
+                  {isSuper && (
+                    <PillButton
+                      icon={<ShieldPlus size={14} />}
+                      label="Super Admin"
+                      onClick={() => handleNavigation("/dashboard/superadmin")}
+                    />
+                  )}
+
+                  {/* Issues Analytics */}
+                  {hasFeatureAccess(
+                    { role, specialAccess },
+                    FEATURES.ANALYTICS,
+                  ) && (
+                    <PillButton
+                      icon={<ChartColumnBig size={14} />}
+                      label="Analytics"
+                      onClick={() => handleNavigation("/dashboard/analytics")}
+                    />
+                  )}
+
+                  {/* Trigger opening of the admin panel */}
+                  {role === "admin" && (
+                    <PillButton
+                      icon={<ShieldUser size={14} />}
+                      label="Admin Panel"
+                      onClick={() => {
+                        setIsAdminPanelOpen(true);
+                        setIsOpen(false);
+                      }}
+                    />
+                  )}
+
+                  <PillButton
+                    icon={<ChevronLeft size={14} />}
+                    label="Back"
+                    onClick={() => {
+                      router.back();
                       setIsOpen(false);
                     }}
                   />
-                )}
-
-                <PillButton
-                  icon={<ChevronLeft size={14} />}
-                  label="Back"
-                  onClick={() => {
-                    router.back();
-                    setIsOpen(false);
-                  }}
-                />
+                </div>
               </div>
-            </div>
 
-            {/* Section 2: Search Area */}
-            <SearchArea closeBar={() => setIsOpen(false)} />
+              {/* Section 2: Search Area */}
+              <SearchArea closeBar={() => setIsOpen(false)} />
+            </div>
           </div>
-        </div>
+        </ClientPortal>
       )}
     </>
   );
