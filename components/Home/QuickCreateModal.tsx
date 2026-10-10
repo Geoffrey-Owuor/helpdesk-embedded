@@ -270,7 +270,7 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 dark:bg-black/80">
         <div
           ref={modalRef}
-          className="flex max-h-[90vh] w-full max-w-3xl flex-col rounded-2xl border border-neutral-300 bg-neutral-50 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
+          className="flex max-h-[90vh] w-full max-w-3xl flex-col rounded-2xl border border-neutral-300 bg-neutral-50 pb-4 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
         >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-neutral-200/50 p-4 dark:border-neutral-900">
@@ -291,7 +291,7 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
           </div>
 
           {/* Form Body */}
-          <div className="layout-scrollbar flex-1 overflow-y-auto bg-neutral-50 p-6 dark:bg-neutral-950">
+          <div className="layout-scrollbar flex-1 overflow-y-auto bg-neutral-50 p-6 pb-2 dark:bg-neutral-950">
             <form
               onSubmit={handleConfirmSubmit}
               autoComplete="off"

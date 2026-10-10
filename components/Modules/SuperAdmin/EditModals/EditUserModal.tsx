@@ -190,7 +190,7 @@ const EditUserModal = ({
         ref={modalRef}
         className="fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 p-4"
       >
-        <div className="flex max-h-[80vh] w-full flex-col rounded-2xl border border-neutral-200 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
+        <div className="flex max-h-[80vh] w-full flex-col rounded-2xl border border-neutral-200 bg-white pb-4 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-neutral-100 px-6 py-4 dark:border-neutral-800">
             <div>
@@ -212,7 +212,7 @@ const EditUserModal = ({
           {/* Form */}
           <form
             onSubmit={handleConfirmSubmit}
-            className="layout-scrollbar flex flex-col gap-4 overflow-y-auto bg-white px-6 py-5 dark:bg-neutral-950"
+            className="layout-scrollbar flex flex-col gap-4 overflow-y-auto bg-white px-6 py-5 pb-1 dark:bg-neutral-950"
           >
             {/* Name */}
             <div className="relative space-y-1.5">
