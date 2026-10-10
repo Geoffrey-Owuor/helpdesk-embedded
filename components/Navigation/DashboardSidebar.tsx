@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-html-link-for-pages */
 "use client";
 import {
   CirclePlus,
@@ -292,15 +291,16 @@ const SidebarButton = ({
   showToolTip = false,
   ToolTipMessage,
 }: SidebarButtonProps) => {
-  const tooltip = useRailTooltip<HTMLButtonElement>(showToolTip);
+  const { ref, isHovered, coords, onMouseEnter, onMouseLeave } =
+    useRailTooltip<HTMLButtonElement>(showToolTip);
 
   return (
     <>
       <button
-        ref={tooltip.ref}
+        ref={ref}
         onClick={onClick}
-        onMouseEnter={tooltip.onMouseEnter}
-        onMouseLeave={tooltip.onMouseLeave}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
         aria-label={label}
         className={
           iconOnly
@@ -312,9 +312,9 @@ const SidebarButton = ({
         {!iconOnly && <span>{label}</span>}
       </button>
 
-      {showToolTip && ToolTipMessage && tooltip.isHovered && (
+      {showToolTip && ToolTipMessage && isHovered && (
         <RailTooltip
-          coords={tooltip.coords}
+          coords={coords}
           message={ToolTipMessage}
           showKeyboardIcon={showTooltipIcon}
         />
@@ -342,24 +342,25 @@ const SidebarLink = ({
   showToolTip = false,
   ToolTipMessage,
 }: SidebarLinkProps) => {
-  const tooltip = useRailTooltip<HTMLAnchorElement>(showToolTip);
+  const { ref, isHovered, coords, onMouseEnter, onMouseLeave } =
+    useRailTooltip<HTMLAnchorElement>(showToolTip);
 
   return (
     <>
       <Link
-        ref={tooltip.ref}
+        ref={ref}
         href={href}
         onClick={onClick}
-        onMouseEnter={tooltip.onMouseEnter}
-        onMouseLeave={tooltip.onMouseLeave}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
         className={`flex w-full flex-col items-center gap-1 ${isActive ? "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200" : "text-neutral-600 hover:bg-neutral-200 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"} rounded-2xl py-2.5 text-[11px] font-semibold`}
       >
         {icon}
         <span>{label}</span>
       </Link>
 
-      {showToolTip && ToolTipMessage && tooltip.isHovered && (
-        <RailTooltip coords={tooltip.coords} message={ToolTipMessage} />
+      {showToolTip && ToolTipMessage && isHovered && (
+        <RailTooltip coords={coords} message={ToolTipMessage} />
       )}
     </>
   );
@@ -382,13 +383,14 @@ const SidebarIconLink = ({
   nativeAnchor = false,
   openInNewTab = false,
 }: SidebarIconLinkProps) => {
-  const tooltip = useRailTooltip<HTMLAnchorElement>(true);
+  const { ref, isHovered, coords, onMouseEnter, onMouseLeave } =
+    useRailTooltip<HTMLAnchorElement>(true);
 
   const linkProps = {
-    ref: tooltip.ref,
+    ref,
     href,
-    onMouseEnter: tooltip.onMouseEnter,
-    onMouseLeave: tooltip.onMouseLeave,
+    onMouseEnter,
+    onMouseLeave,
     "aria-label": label,
     className: ICON_BUTTON_CLASSES,
     ...(openInNewTab && { target: "_blank", rel: "noopener noreferrer" }),
@@ -402,9 +404,7 @@ const SidebarIconLink = ({
         <Link {...linkProps}>{icon}</Link>
       )}
 
-      {tooltip.isHovered && (
-        <RailTooltip coords={tooltip.coords} message={label} />
-      )}
+      {isHovered && <RailTooltip coords={coords} message={label} />}
     </>
   );
 };
