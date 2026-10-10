@@ -31,7 +31,7 @@ const NewsDetailModal = ({ news, onClose }: NewsDetailModalProps) => {
         <div
           onClick={(e) => e.stopPropagation()}
           ref={modalRef}
-          className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-2xl border border-neutral-300 bg-neutral-50 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
+          className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-2xl border border-neutral-300 bg-neutral-50 pb-4 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
         >
           {/* Header */}
           <div className="flex items-start justify-between border-b border-neutral-200/50 p-5 dark:border-neutral-900">
@@ -52,7 +52,7 @@ const NewsDetailModal = ({ news, onClose }: NewsDetailModalProps) => {
           </div>
 
           {/* Body Content */}
-          <div className="layout-scrollbar flex-1 overflow-y-auto bg-neutral-50 p-6 sm:p-8 dark:bg-neutral-950">
+          <div className="layout-scrollbar flex-1 overflow-y-auto bg-neutral-50 p-6 pb-2 sm:p-8 sm:pb-4 dark:bg-neutral-950">
             {/* Meta Info (Author) */}
             <div className="mb-6 flex items-center gap-3 rounded-xl border border-neutral-200/60 bg-white p-3 dark:border-neutral-800/60 dark:bg-neutral-900/50">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
