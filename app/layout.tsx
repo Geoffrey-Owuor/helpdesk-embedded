@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../css/globals.css";
 import Alert from "@/components/Modules/Alert";
@@ -28,6 +28,12 @@ export const metadata: Metadata = {
   },
   description:
     "A centralized internal issue tracking tool that enables teams to manage user-reported issues with clear ownership and status updates.",
+};
+
+// "cover" lets the page reach under the notch / home indicator, so env(safe-area-inset-*)
+// reports real values; fixed elements pad themselves with those insets
+export const viewport: Viewport = {
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
