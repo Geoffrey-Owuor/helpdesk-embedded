@@ -20,6 +20,10 @@ import ClientPortal from "../Modules/ClientPortal";
 import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
 import { useDashboardModalsStore } from "@/store/useDashboardModalsStore";
 
+// The search bar is only rendered in the header from the "custom" breakpoint
+// up (--breakpoint-custom in css/globals.css), so search is desktop-only
+const DESKTOP_QUERY = "(min-width: 1200px)";
+
 const MiddleBar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -55,7 +59,7 @@ const MiddleBar = () => {
         return;
       }
 
-      if (e.key === "/") {
+      if (e.key === "/" && window.matchMedia(DESKTOP_QUERY).matches) {
         e.preventDefault(); // Prevent typing the '/' character
         setIsOpen((prev) => !prev);
       }
@@ -73,6 +77,17 @@ const MiddleBar = () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen, router]);
+
+  // Close when the window shrinks below the breakpoint and the bar disappears,
+  // so the overlay doesn't stay open with nothing on screen to close it
+  useEffect(() => {
+    const mql = window.matchMedia(DESKTOP_QUERY);
+    const handleChange = (e: MediaQueryListEvent) => {
+      if (!e.matches) setIsOpen(false);
+    };
+    mql.addEventListener("change", handleChange);
+    return () => mql.removeEventListener("change", handleChange);
+  }, []);
 
   // --- Navigation Helper ---
   const handleNavigation = (path: string) => {
@@ -111,7 +126,7 @@ const MiddleBar = () => {
         <ClientPortal>
           <div
             onClick={() => setIsOpen(false)}
-            className="fixed inset-0 z-100 hidden items-start justify-center bg-black/60 pt-2 md:flex dark:bg-black/80"
+            className="fixed inset-0 z-100 flex items-start justify-center bg-black/60 pt-2 dark:bg-black/80"
           >
             <div
               onClick={(e) => e.stopPropagation()}
