@@ -192,7 +192,7 @@ export const AnalyticsIssuePage = ({ uuid }: { uuid: string }) => {
               {Number(issueData.reopened_count) > 0 && (
                 <button
                   onClick={() => setReopenHistoryOpen(true)}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-3 py-2.5 text-xs font-semibold tracking-wide text-white transition-colors hover:bg-neutral-800 sm:px-2.5 sm:py-1 sm:text-[11px] dark:bg-white dark:text-black dark:hover:bg-neutral-200"
                 >
                   <UndoDot size={12} />
                   reopening history
@@ -203,7 +203,7 @@ export const AnalyticsIssuePage = ({ uuid }: { uuid: string }) => {
               {Number(issueData.escalated_count) > 0 && (
                 <button
                   onClick={() => setEscalationHistoryOpen(true)}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-3 py-2.5 text-xs font-semibold tracking-wide text-white transition-colors hover:bg-neutral-800 sm:px-2.5 sm:py-1 sm:text-[11px] dark:bg-white dark:text-black dark:hover:bg-neutral-200"
                 >
                   <GitMerge size={12} />
                   escalation history

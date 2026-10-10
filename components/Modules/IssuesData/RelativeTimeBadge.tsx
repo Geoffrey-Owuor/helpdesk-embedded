@@ -58,7 +58,7 @@ const RelativeTimeBadge = ({
 
   if (!mounted) {
     return (
-      <div className="inline-flex w-fit items-center gap-1.5 rounded-full bg-linear-to-br from-neutral-100 via-zinc-50 to-gray-200 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-neutral-900 transition-colors dark:from-neutral-950/50 dark:via-zinc-900/20 dark:to-gray-900/40 dark:text-neutral-200">
+      <div className="inline-flex w-fit items-center gap-1.5 rounded-full bg-linear-to-br from-neutral-100 via-zinc-50 to-gray-200 px-2.5 py-1 text-xs font-semibold tracking-wide text-neutral-900 transition-colors sm:text-[11px] dark:from-neutral-950/50 dark:via-zinc-900/20 dark:to-gray-900/40 dark:text-neutral-200">
         <Clock size={12} className="text-neutral-900 dark:text-neutral-200" />
         <span>Loading some time...</span>
       </div>
@@ -92,7 +92,7 @@ const RelativeTimeBadge = ({
 
   return (
     <div
-      className={`inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide transition-colors ${colorClasses}`}
+      className={`inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold tracking-wide transition-colors sm:text-[11px] ${colorClasses}`}
     >
       <Clock size={12} className={iconClasses} />
       Submitted {label}

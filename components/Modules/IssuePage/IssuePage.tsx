@@ -393,7 +393,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
               {Number(issueData.reopened_count) > 0 && (
                 <button
                   onClick={() => setReopenHistoryOpen(true)}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-3 py-2.5 text-xs font-semibold tracking-wide text-white transition-colors hover:bg-neutral-800 sm:px-2.5 sm:py-1 sm:text-[11px] dark:bg-white dark:text-black dark:hover:bg-neutral-200"
                 >
                   <UndoDot size={12} />
                   reopening history
@@ -404,7 +404,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
               {Number(issueData.escalated_count) > 0 && (
                 <button
                   onClick={() => setEscalationHistoryOpen(true)}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-3 py-2.5 text-xs font-semibold tracking-wide text-white transition-colors hover:bg-neutral-800 sm:px-2.5 sm:py-1 sm:text-[11px] dark:bg-white dark:text-black dark:hover:bg-neutral-200"
                 >
                   <GitMerge size={12} />
                   escalation history
@@ -415,7 +415,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                 <button
                   type="button"
                   onClick={() => setIsInviteModalOpen(true)}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-blue-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-blue-800"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-blue-900 px-3 py-2.5 text-xs font-semibold tracking-wide text-white transition-colors hover:bg-blue-800 sm:px-2.5 sm:py-1 sm:text-[11px]"
                 >
                   <UserRoundPlus size={12} />
                   Invite
@@ -427,7 +427,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                 <button
                   type="button"
                   onClick={() => setIsAddAttachmentOpen(true)}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-indigo-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-indigo-800"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-indigo-900 px-3 py-2.5 text-xs font-semibold tracking-wide text-white transition-colors hover:bg-indigo-800 sm:px-2.5 sm:py-1 sm:text-[11px]"
                 >
                   <Paperclip size={12} />
                   Add Attachment
@@ -441,7 +441,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
                   <button
                     type="button"
                     onClick={() => setEscalateModalOpen(true)}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-red-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white transition-colors hover:bg-red-800"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-red-900 px-3 py-2.5 text-xs font-semibold tracking-wide text-white transition-colors hover:bg-red-800 sm:px-2.5 sm:py-1 sm:text-[11px]"
                   >
                     <GitBranchPlus size={12} />
                     Escalate
