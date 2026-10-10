@@ -28,7 +28,7 @@ const page = async ({ params }: ArticlePageProps) => {
   return (
     <div
       id="article-content"
-      className="layout-scrollbar home-container h-screen overflow-y-auto bg-white dark:bg-neutral-950"
+      className="layout-scrollbar home-container h-dvh overflow-y-auto bg-white dark:bg-neutral-950"
     >
       <div className="mx-auto flex min-h-full max-w-6xl flex-col 2xl:max-w-7xl">
         <HomeNavBar />

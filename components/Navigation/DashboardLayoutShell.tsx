@@ -57,7 +57,7 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
       {/* Frame: positions the panel; it must not clip, so no radius/overflow here.
           Full-bleed on mobile, inset beside the rail on desktop. */}
       <div
-        className={`custom:top-2 custom:right-2 custom:bottom-2 fixed inset-0 flex flex-col ${showSidebar ? "custom:left-20" : "custom:left-2"}`}
+        className={`custom:top-2 custom:right-2 custom:bottom-2 fixed inset-0 flex flex-col pr-[env(safe-area-inset-right)] pl-[env(safe-area-inset-left)] ${showSidebar ? "custom:left-20" : "custom:left-2"}`}
       >
         {/* Topbar — a fixed row above the scroller (not sticky inside it), so the
             scrollbar starts below it and sticky page elements keep top-0 */}
@@ -72,7 +72,7 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
             id="main-content"
             className="layout-scrollbar custom:border-t-0 custom:border-b absolute inset-0 overflow-y-auto border-x border-t border-[#eceef1] bg-white dark:border-neutral-900 dark:bg-black"
           >
-            <div className="flex h-full flex-col">
+            <div className="flex h-full flex-col pb-[env(safe-area-inset-bottom)]">
               {/* Content */}
               <main className="mx-auto w-full max-w-7xl flex-1 px-4">
                 {children}

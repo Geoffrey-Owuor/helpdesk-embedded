@@ -96,7 +96,7 @@ const MobileSideBar = ({
         {/* Sidebar panel */}
         <aside
           ref={menuRef}
-          className={`relative z-10 flex w-64 flex-col gap-6 border-r border-neutral-300 bg-white px-6 py-4 shadow-sm transition-transform duration-200 dark:border-neutral-900 dark:bg-neutral-950 ${
+          className={`relative z-10 flex w-64 flex-col gap-6 border-r border-neutral-300 bg-white px-6 py-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] pl-[max(1.5rem,env(safe-area-inset-left))] shadow-sm transition-transform duration-200 dark:border-neutral-900 dark:bg-neutral-950 ${
             sideBarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
@@ -104,7 +104,7 @@ const MobileSideBar = ({
           <div className="flex items-center justify-between">
             <DashBoardLogo isSideBarOpen={true} />
             <button
-              className="rounded-full p-1.5 hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              className="rounded-full p-2.5 hover:bg-neutral-200 sm:p-1.5 dark:hover:bg-neutral-800"
               onClick={() => setSideBarOpen(false)}
               aria-label="Close navigation menu"
             >

@@ -32,7 +32,7 @@ const HomePage = () => {
   };
 
   return (
-    <div className="layout-scrollbar home-container h-screen overflow-y-auto scroll-smooth bg-white dark:bg-neutral-950">
+    <div className="layout-scrollbar home-container h-dvh overflow-y-auto scroll-smooth bg-white dark:bg-neutral-950">
       <div className="mx-auto flex min-h-full max-w-6xl flex-col 2xl:max-w-7xl">
         <HomeNavBar />
 

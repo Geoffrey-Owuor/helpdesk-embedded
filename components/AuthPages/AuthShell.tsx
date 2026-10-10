@@ -8,7 +8,7 @@ import Link from "next/link";
 
 const AuthShell = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="layout-scrollbar home-container h-screen overflow-y-auto bg-white dark:bg-neutral-950">
+    <div className="layout-scrollbar home-container h-dvh overflow-y-auto bg-white dark:bg-neutral-950">
       <div className="mx-auto flex h-full w-full max-w-6xl flex-col items-center 2xl:max-w-7xl">
         {/* Logo and Theme Toggle*/}
         <div className="sticky top-0 right-0 left-0 z-50 w-full bg-white/60 dark:bg-neutral-950/60">

@@ -392,3 +392,21 @@ html[data-theme="dark"] .sidebar-nav::-webkit-scrollbar-thumb {
   }
 }
 
+/* Safe areas (viewport-fit=cover in app/layout.tsx): keep the public/auth scroll
+   containers clear of the notch in landscape and the home indicator at the bottom */
+.home-container {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Phones: 16px form text so iOS Safari doesn't zoom the page when a field is
+   focused. Unlayered on purpose so it beats Tailwind's text-sm / text-xs.
+   The code editor is skipped: its textarea must match its highlighted <pre>. */
+@media (width < 40rem) {
+  input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"]),
+  select,
+  textarea:not(.w-tc-editor-text) {
+    font-size: 16px;
+  }
+}
