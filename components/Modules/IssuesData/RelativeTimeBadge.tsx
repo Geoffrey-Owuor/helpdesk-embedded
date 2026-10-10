@@ -101,7 +101,7 @@ const RelativeTimeBadge = ({
   return (
     <div
       title={`Submitted ${exactDate}`}
-      className={`inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold tracking-wide transition-colors sm:text-[11px] ${colorClasses}`}
+      className={`inline-flex w-fit items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold tracking-wide transition-colors ${colorClasses}`}
     >
       <Clock size={12} className={iconClasses} />
       Submitted {label}
