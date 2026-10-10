@@ -4,9 +4,7 @@ import IssueDetailsSkeleton from "@/components/Skeletons/IssueDetailsSkeleton";
 import UpdateStatusModal from "./UpdateStatusModal";
 import {
   PenLine,
-  SquareCheckBig,
   UserRoundPen,
-  ArrowUpDown,
   UndoDot,
   GitBranchPlus,
   UserRoundPlus,
@@ -36,12 +34,9 @@ import { useIssuePermissions } from "@/hooks/useIssuePermissions";
 import { IssueNotFound } from "./HelperComponents/IssueNotFound";
 import { IssueHeader } from "./HelperComponents/IssueHeader";
 import { IssueDetailBody } from "./HelperComponents/IssueDetailBody";
-import { ActionMenu } from "./HelperComponents/ActionMenu";
+import { IssueHeaderAction } from "./HelperComponents/IssueHeaderParts";
 
 const statusOptions = baseOptions.filter((option) => option.value !== "open");
-
-const actionPillClass =
-  "inline-flex items-center gap-1.5 rounded-full px-3 py-2.5 text-xs font-semibold tracking-wide text-white transition-colors sm:px-2.5 sm:py-1 sm:text-[11px]";
 
 export const IssuePage = ({ uuid }: { uuid: string }) => {
   // Initialize the query client
@@ -53,6 +48,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
     data: issueData,
     isLoading: loading,
     isError,
+    isFetching,
     refetch: refetchData,
   } = useQuery({
     queryKey: ["issue", uuid],
@@ -138,6 +134,56 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
     return <IssueNotFound backHref="/dashboard" backLabel="Dashboard" />;
   }
 
+  // The header toolbar's actions, in display order within each group
+  const headerActions = (
+    [
+      {
+        key: "reassign",
+        label: "Reassign",
+        icon: UserRoundPen,
+        onClick: () => setIsReassignModalOpen(true),
+        group: "triage",
+        allowed: can.canTriage,
+      },
+      {
+        key: "escalate",
+        label: "Escalate",
+        icon: GitBranchPlus,
+        onClick: () => setEscalateModalOpen(true),
+        group: "triage",
+        tone: "danger",
+        allowed: can.canEscalate,
+      },
+      {
+        key: "invite",
+        label: "Invite",
+        icon: UserRoundPlus,
+        onClick: () => setIsInviteModalOpen(true),
+        group: "collaborate",
+        secondary: true,
+        allowed: can.canInvite,
+      },
+      {
+        key: "attach",
+        label: "Attach file",
+        icon: Paperclip,
+        onClick: () => setIsAddAttachmentOpen(true),
+        group: "collaborate",
+        secondary: true,
+        allowed: can.canAddAttachment,
+      },
+      {
+        key: "reopen",
+        label: "Reopen",
+        icon: UndoDot,
+        onClick: () => setReopenModalOpen(true),
+        group: "lifecycle",
+        tone: "primary",
+        allowed: can.canReopen,
+      },
+    ] satisfies (IssueHeaderAction & { allowed: boolean })[]
+  ).filter((action) => action.allowed);
+
   return (
     <>
       {/* Update  Status Modal */}
@@ -220,10 +266,11 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
         <IssueHeader
           issue={issueData}
           onRefresh={() => refetchData()}
-          leadingActions={
+          isRefreshing={isFetching}
+          pinButton={
             // Only the fields the pinned list needs - pins are persisted
             <PinButton
-              showLabel
+              className="inline-flex h-9 w-9 items-center justify-center sm:h-8 sm:w-8"
               issue={{
                 issue_uuid: uuid,
                 issue_reference_id: issueData.issue_reference_id,
@@ -234,92 +281,21 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
               }}
             />
           }
-          actions={
-            <>
-              {/* Invite collaborators button */}
-              {can.canInvite && (
-                <button
-                  type="button"
-                  onClick={() => setIsInviteModalOpen(true)}
-                  className={`${actionPillClass} bg-blue-900 hover:bg-blue-800`}
-                >
-                  <UserRoundPlus size={12} />
-                  Invite
-                </button>
-              )}
-
-              {/* Add attachment button */}
-              {can.canAddAttachment && (
-                <button
-                  type="button"
-                  onClick={() => setIsAddAttachmentOpen(true)}
-                  className={`${actionPillClass} bg-indigo-900 hover:bg-indigo-800`}
-                >
-                  <Paperclip size={12} />
-                  Add Attachment
-                </button>
-              )}
-
-              {/* Escalation button */}
-              {can.canEscalate && (
-                <button
-                  type="button"
-                  onClick={() => setEscalateModalOpen(true)}
-                  className={`${actionPillClass} bg-red-900 hover:bg-red-800`}
-                >
-                  <GitBranchPlus size={12} />
-                  Escalate
-                </button>
-              )}
-            </>
+          statusPicker={
+            can.canUpdateStatus
+              ? { options: statusOptions, onSelect: handleStatusSelection }
+              : undefined
           }
-          controls={
-            <>
-              {/* Reopening an issue */}
-              {can.canReopen && (
-                <button
-                  onClick={() => setReopenModalOpen(true)}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-neutral-900 px-3.5 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
-                >
-                  <UndoDot className="h-3.5 w-3.5" />
-                  Reopen
-                </button>
-              )}
-
-              {/* Reassigning an issue and changing the issue priority */}
-              {can.canTriage && (
-                <div className="inline-flex items-center gap-2">
-                  <button
-                    onClick={() => setIsReassignModalOpen(true)}
-                    className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold transition-colors duration-200 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-transparent dark:hover:bg-neutral-900"
-                  >
-                    <UserRoundPen className="h-4 w-4" />
-                    <span>Reassign</span>
-                  </button>
-                  <ActionMenu
-                    icon={ArrowUpDown}
-                    label="Change Priority:"
-                    heading="Priority options"
-                    options={priorityOptions}
-                    currentValue={issueData.issue_priority}
-                    onSelect={handlePriorityConfirmation}
-                    disabled={updatePriorityMutation.isPending}
-                  />
-                </div>
-              )}
-
-              {can.canUpdateStatus && (
-                <ActionMenu
-                  icon={SquareCheckBig}
-                  label="Update Status:"
-                  heading="Status options"
-                  options={statusOptions}
-                  currentValue={issueData.issue_status}
-                  onSelect={handleStatusSelection}
-                />
-              )}
-            </>
+          priorityPicker={
+            can.canTriage
+              ? {
+                  options: priorityOptions,
+                  onSelect: handlePriorityConfirmation,
+                  disabled: updatePriorityMutation.isPending,
+                }
+              : undefined
           }
+          actions={headerActions}
         />
 
         <IssueDetailBody
