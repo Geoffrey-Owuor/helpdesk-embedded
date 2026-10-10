@@ -12,6 +12,7 @@ import {
 import { DatePicker } from "../DatePicker";
 import ActiveIssuesFilterPills from "./ActiveIssuesFilterPills";
 import CustomDropdown from "../CustomDropdown";
+import MobileFilterBar, { countActiveFilters } from "../MobileFilterBar";
 
 type FilterFieldKey =
   | "status"
@@ -50,13 +51,14 @@ const TextInput = ({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="h-10 w-full rounded-xl border border-neutral-300 bg-white pr-8 pl-9 text-sm transition-all outline-none placeholder:text-neutral-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-neutral-800 dark:bg-neutral-950 dark:text-white dark:focus:border-blue-500"
+      className="h-10 w-full rounded-xl border border-neutral-300 bg-white pr-10 pl-9 text-sm transition-all outline-none placeholder:text-neutral-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 sm:pr-8 dark:border-neutral-800 dark:bg-neutral-950 dark:text-white dark:focus:border-blue-500"
     />
     {value && (
       <button
         type="button"
         onClick={() => onChange("")}
-        className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1 text-neutral-400 hover:bg-neutral-200 hover:text-neutral-600 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+        aria-label="Clear"
+        className="absolute top-1/2 right-1.5 -translate-y-1/2 rounded-full p-2 text-neutral-400 hover:bg-neutral-200 hover:text-neutral-600 sm:right-2 sm:p-1 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
       >
         <X className="h-3 w-3" />
       </button>
@@ -174,6 +176,7 @@ const IssuesFilterPanel = () => {
     setToDate,
     applyFilters,
     resetFilters,
+    committedFilters,
   } = useIssuesFilterStore();
 
   const [activeField, setActiveField] = useState<FilterFieldKey>("status");
@@ -219,8 +222,8 @@ const IssuesFilterPanel = () => {
     submitter: !!submitter,
   };
 
-  const renderActiveControl = () => {
-    switch (effectiveActiveField) {
+  const renderControl = (field: FilterFieldKey) => {
+    switch (field) {
       case "status":
         return (
           <CustomDropdown
@@ -302,39 +305,55 @@ const IssuesFilterPanel = () => {
   };
 
   return (
-    <div className="sticky top-0 z-50 mb-4 rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-950">
-      <div className="flex flex-wrap items-center gap-3">
-        <FilterFieldSelector
-          activeKey={effectiveActiveField}
-          onChange={setActiveField}
-          hasValue={hasValue}
-          visibleOptions={visibleOptions}
-        />
+    <>
+      <MobileFilterBar
+        title="Filter issues"
+        activeCount={countActiveFilters(committedFilters)}
+        fields={visibleOptions.map((option) => ({
+          ...option,
+          control: renderControl(option.key),
+        }))}
+        pills={<ActiveIssuesFilterPills />}
+        onApply={applyFilters}
+        onReset={resetFilters}
+      />
 
-        <div className="min-w-55 flex-1">{renderActiveControl()}</div>
+      <div className="sticky top-0 z-50 mb-4 hidden rounded-2xl border border-neutral-200 bg-white p-4 sm:block dark:border-neutral-800 dark:bg-neutral-950">
+        <div className="flex flex-wrap items-center gap-3">
+          <FilterFieldSelector
+            activeKey={effectiveActiveField}
+            onChange={setActiveField}
+            hasValue={hasValue}
+            visibleOptions={visibleOptions}
+          />
 
-        <div className="ml-auto flex items-center gap-2">
-          <button
-            type="button"
-            onClick={resetFilters}
-            className="flex h-10 shrink-0 items-center gap-1.5 rounded-xl border border-neutral-300 bg-white px-3 text-sm text-neutral-600 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-900"
-          >
-            <RotateCcw className="h-4 w-4" />
-            Reset
-          </button>
-          <button
-            type="button"
-            onClick={applyFilters}
-            className="flex h-10 shrink-0 items-center gap-1.5 rounded-xl bg-neutral-900 px-4 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
-          >
-            <Search className="h-4 w-4" />
-            Apply Filters
-          </button>
+          <div className="min-w-55 flex-1">
+            {renderControl(effectiveActiveField)}
+          </div>
+
+          <div className="ml-auto flex items-center gap-2">
+            <button
+              type="button"
+              onClick={resetFilters}
+              className="flex h-10 shrink-0 items-center gap-1.5 rounded-xl border border-neutral-300 bg-white px-3 text-sm text-neutral-600 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-900"
+            >
+              <RotateCcw className="h-4 w-4" />
+              Reset
+            </button>
+            <button
+              type="button"
+              onClick={applyFilters}
+              className="flex h-10 shrink-0 items-center gap-1.5 rounded-xl bg-neutral-900 px-4 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+            >
+              <Search className="h-4 w-4" />
+              Apply Filters
+            </button>
+          </div>
         </div>
+        {/* Filter pills */}
+        <ActiveIssuesFilterPills />
       </div>
-      {/* Filter pills */}
-      <ActiveIssuesFilterPills />
-    </div>
+    </>
   );
 };
 
