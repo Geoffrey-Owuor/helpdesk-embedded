@@ -35,7 +35,7 @@ export const AnalyticsIssuePage = ({ uuid }: { uuid: string }) => {
   // call useScrollToTop hook
   useScrollToTop();
 
-  if (loading) return <IssueDetailsSkeleton />;
+  if (loading) return <IssueDetailsSkeleton variant="analytics" />;
 
   if (isError || !issueData) {
     return (

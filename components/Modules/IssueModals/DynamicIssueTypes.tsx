@@ -17,7 +17,11 @@ const DynamicIssueTypes = ({
   department,
   error,
 }: DynamicTypeProps) => {
-  const { data: options = [], isLoading: loading } = useQuery({
+  const {
+    data: options = [],
+    isLoading: loading,
+    isError,
+  } = useQuery({
     queryKey: ["issueTypes", department],
     queryFn: () => fetchedIssueTypes(department),
     enabled: !!department,
@@ -40,7 +44,8 @@ const DynamicIssueTypes = ({
         onChange={onChange}
         dropDownType="Issue Types"
         options={options}
-        error={error}
+        // Also red when this department's issue types failed to load
+        error={error || isError}
         loading={loading}
         disabled={isDisabled}
       />
