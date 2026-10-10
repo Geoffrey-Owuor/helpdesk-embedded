@@ -78,7 +78,11 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   const { role } = useUser();
 
   // Fetch the departments
-  const { data: baseDepartments = [], isPending: loading } = useQuery({
+  const {
+    data: baseDepartments = [],
+    isPending: loading,
+    isError: departmentsError,
+  } = useQuery({
     queryKey: ["BaseDepartmentsData"],
     queryFn: fetchedBaseDepartments,
     enabled: isOpen,
@@ -97,6 +101,9 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
 
   // State for adding files
   const [files, setFiles] = useState<File[]>([]);
+
+  // Set once a submit is tried, so empty required dropdowns can turn red
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   // Submit for user states
   const [isSubmitForUserOpen, setIsSubmitForUserOpen] = useState(false);
@@ -130,14 +137,16 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
 
   // State Data
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
-  const alertType = useAlertStore((state) => state.alertType);
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
 
-  // set options error
-  const optionsError = alertType === "error";
+  // Each dropdown is red only for its own problem - its options failed to
+  // load, or it's still empty after a submit attempt
+  const departmentError =
+    departmentsError || (submitAttempted && !formData.target_department);
+  const issueTypeError = submitAttempted && !formData.issue_type;
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -254,6 +263,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
 
       setFiles([]);
       setAssignmentInfo(null); // Clear assignment info
+      setSubmitAttempted(false);
 
       // Close issue modal
       setIsOpen(false);
@@ -272,6 +282,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   // Function to show the confirmation dialog
   const handleConfirmSubmit = (e: FormEvent) => {
     e.preventDefault();
+    setSubmitAttempted(true);
 
     if (!formData.target_department || !formData.issue_type) {
       triggerAlert("error", "Missing some required fields");
@@ -380,7 +391,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                 loading={loading}
                 options={baseDepartments}
                 dropDownType="department"
-                error={optionsError}
+                error={departmentError}
               />
             </div>
 
@@ -389,7 +400,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
               value={formData.issue_type}
               onChange={handleIssueChange}
               department={formData.target_department}
-              error={optionsError}
+              error={issueTypeError}
             />
           </div>
 
