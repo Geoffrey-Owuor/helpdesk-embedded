@@ -163,7 +163,7 @@ const UserSettings = ({
               Profile Information
             </h3>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <InfoCard Icon={UserRound} label="Username" value={username} />
             <InfoCard Icon={Mail} label="Email Address" value={email} />
             <InfoCard Icon={Briefcase} label="Department" value={department} />
@@ -259,11 +259,14 @@ const InfoCard = ({
     <div className="mt-0.5 text-neutral-400 dark:text-neutral-500">
       <Icon />
     </div>
-    <div className="flex flex-col">
+    <div className="flex min-w-0 flex-col">
       <span className="text-xs text-neutral-500 dark:text-neutral-400">
         {label}
       </span>
-      <span className="text-sm font-semibold text-neutral-900 md:max-w-30 md:truncate dark:text-neutral-100">
+      <span
+        title={value}
+        className="truncate text-sm font-semibold text-neutral-900 dark:text-neutral-100"
+      >
         {(label === "Role"
           ? `${value?.charAt(0).toUpperCase()}${value?.slice(1)}`
           : value) || "Not specified"}
