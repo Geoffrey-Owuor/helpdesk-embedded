@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { requireSession } from "@/lib/Auth";
-import { getIssueMeta, metaDescription } from "@/lib/issues/getIssueMeta";
+import { getIssueMeta } from "@/lib/issues/getIssueMeta";
+import { metaDescription } from "@/lib/metadata";
 import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
 import UnauthorizedModal from "@/components/Navigation/UnauthorizedModal";
 import AnalyticsIssuePage from "@/components/Modules/IssuesAnalytics/AnalyticsIssuePage";
