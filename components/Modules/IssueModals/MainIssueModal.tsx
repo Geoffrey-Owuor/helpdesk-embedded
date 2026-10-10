@@ -78,7 +78,11 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   const { role } = useUser();
 
   // Fetch the departments
-  const { data: baseDepartments = [], isPending: loading } = useQuery({
+  const {
+    data: baseDepartments = [],
+    isPending: loading,
+    isError: departmentsError,
+  } = useQuery({
     queryKey: ["BaseDepartmentsData"],
     queryFn: fetchedBaseDepartments,
     enabled: isOpen,
@@ -98,13 +102,30 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   // State for adding files
   const [files, setFiles] = useState<File[]>([]);
 
+  // Set once a submit is tried, so empty required dropdowns can turn red
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
   // Submit for user states
   const [isSubmitForUserOpen, setIsSubmitForUserOpen] = useState(false);
   const [submitForUserData, setSubmitForUserData] =
     useState<SubmitForUserData | null>(null);
+  // Whether any submit-for-user detail has been entered, complete or not
+  const [hasSubmitForUserInput, setHasSubmitForUserInput] = useState(false);
+  // Bumped to remount (and so empty) the submit-for-user form
+  const [submitForUserKey, setSubmitForUserKey] = useState(0);
 
-  const handleSubmitForUserConfirm = (data: SubmitForUserData) => {
+  const handleSubmitForUserChange = (
+    data: SubmitForUserData | null,
+    hasInput: boolean,
+  ) => {
     setSubmitForUserData(data);
+    setHasSubmitForUserInput(hasInput);
+  };
+
+  const clearSubmitForUser = () => {
+    setSubmitForUserData(null);
+    setHasSubmitForUserInput(false);
+    setSubmitForUserKey((key) => key + 1);
   };
 
   const closeModal = useCallback(() => setIsOpen(false), [setIsOpen]);
@@ -116,14 +137,16 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
 
   // State Data
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
-  const alertType = useAlertStore((state) => state.alertType);
   const showOverlay = useOverlayStore((state) => state.showOverlay);
   const hideOverlay = useOverlayStore((state) => state.hideOverlay);
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
   const hideDialog = useConfirmStore((state) => state.hideDialog);
 
-  // set options error
-  const optionsError = alertType === "error";
+  // Each dropdown is red only for its own problem - its options failed to
+  // load, or it's still empty after a submit attempt
+  const departmentError =
+    departmentsError || (submitAttempted && !formData.target_department);
+  const issueTypeError = submitAttempted && !formData.issue_type;
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -235,11 +258,12 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
         behalf_user_department: "",
       });
 
-      // Clear submitForUserData
-      setSubmitForUserData(null);
+      // Clear the submit-for-user details
+      clearSubmitForUser();
 
       setFiles([]);
       setAssignmentInfo(null); // Clear assignment info
+      setSubmitAttempted(false);
 
       // Close issue modal
       setIsOpen(false);
@@ -258,13 +282,23 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   // Function to show the confirmation dialog
   const handleConfirmSubmit = (e: FormEvent) => {
     e.preventDefault();
+    setSubmitAttempted(true);
 
     if (!formData.target_department || !formData.issue_type) {
       triggerAlert("error", "Missing some required fields");
+    } else if (hasSubmitForUserInput && !submitForUserData) {
+      // Half-entered user details would otherwise submit in your own name
+      setIsSubmitForUserOpen(true);
+      triggerAlert(
+        "error",
+        "Complete or clear the user details before submitting",
+      );
     } else {
       triggerDialog({
         title: "Submit Issue",
-        description: "Confirm submission of the issue.",
+        description: submitForUserData
+          ? `Confirm submitting this issue for ${submitForUserData.user_name} (${submitForUserData.user_email}).`
+          : "Confirm submission of the issue.",
         onConfirm: handleFormSubmit,
       });
     }
@@ -297,11 +331,11 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                 />
               </button>
 
-              {/* Clear button — only visible when user data has been set */}
-              {submitForUserData && !isSubmitForUserOpen && (
+              {/* Clear button — only visible once user details are entered */}
+              {hasSubmitForUserInput && (
                 <button
                   type="button"
-                  onClick={() => setSubmitForUserData(null)}
+                  onClick={clearSubmitForUser}
                   className="inline-flex items-center gap-1.5 rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-600 hover:border-red-300 hover:bg-red-50 hover:text-red-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:border-red-800 dark:hover:bg-red-950/30 dark:hover:text-red-400"
                 >
                   <X size={14} />
@@ -313,9 +347,9 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
 
           {/* Submit for user modal */}
           <SubmitForAUser
+            key={submitForUserKey}
             isOpen={isSubmitForUserOpen}
-            setIsOpen={setIsSubmitForUserOpen}
-            onConfirm={handleSubmitForUserConfirm}
+            onChange={handleSubmitForUserChange}
           />
 
           {/* A card that displays the selected user info - only displayed when all required submitForUserData is available and isSubmitForUserOpen is false */}
@@ -357,7 +391,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                 loading={loading}
                 options={baseDepartments}
                 dropDownType="department"
-                error={optionsError}
+                error={departmentError}
               />
             </div>
 
@@ -366,7 +400,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
               value={formData.issue_type}
               onChange={handleIssueChange}
               department={formData.target_department}
-              error={optionsError}
+              error={issueTypeError}
             />
           </div>
 
