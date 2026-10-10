@@ -21,15 +21,27 @@ import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import { useDashboardModalsStore } from "@/store/useDashboardModalsStore";
 import { useIsEmbedd } from "@/hooks/useIsEmbedd";
 
+const BASE_ITEM_CLASSES =
+  "flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium";
+const INACTIVE_ITEM_CLASSES = `${BASE_ITEM_CLASSES} hover:bg-neutral-200 dark:hover:bg-neutral-800`;
+
+// Active styling matches the desktop rail's highlighted link
+const linkClasses = (isActive: boolean) =>
+  isActive
+    ? `${BASE_ITEM_CLASSES} bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200`
+    : INACTIVE_ITEM_CLASSES;
+
 type MobileSideBarProps = {
   sideBarOpen: boolean;
   handleRouteChange: (val: string) => void;
+  highlightLink: (path: string) => boolean;
   setSideBarOpen: Dispatch<SetStateAction<boolean>> | ((open: boolean) => void);
 };
 
 const MobileSideBar = ({
   sideBarOpen,
   handleRouteChange,
+  highlightLink,
   setSideBarOpen,
 }: MobileSideBarProps) => {
   const { role, isSuper, specialAccess } = useUser();
@@ -106,7 +118,8 @@ const MobileSideBar = ({
             <Link
               href="/dashboard"
               onClick={() => handleMobileRouteChange("/dashboard")}
-              className="flex w-full items-center gap-2 rounded-xl bg-neutral-900 p-3 text-sm font-medium text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+              aria-current={highlightLink("/dashboard") ? "page" : undefined}
+              className={linkClasses(highlightLink("/dashboard"))}
             >
               <LayoutDashboard className="h-5 w-5" />
               <span>Dashboard</span>
@@ -115,7 +128,7 @@ const MobileSideBar = ({
             {/* Button: New Issue */}
             <button
               onClick={handleNewIssueOpening}
-              className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              className={INACTIVE_ITEM_CLASSES}
             >
               <CirclePlus className="h-5 w-5" />
               <span>New Issue</span>
@@ -126,7 +139,10 @@ const MobileSideBar = ({
               <Link
                 href="/dashboard/superadmin"
                 onClick={() => handleMobileRouteChange("/dashboard/superadmin")}
-                className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                aria-current={
+                  highlightLink("/dashboard/superadmin") ? "page" : undefined
+                }
+                className={linkClasses(highlightLink("/dashboard/superadmin"))}
               >
                 <ShieldPlus className="h-5 w-5" />
                 <span>Super Admin</span>
@@ -138,7 +154,10 @@ const MobileSideBar = ({
               <Link
                 href="/dashboard/analytics"
                 onClick={() => handleMobileRouteChange("/dashboard/analytics")}
-                className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                aria-current={
+                  highlightLink("/dashboard/analytics") ? "page" : undefined
+                }
+                className={linkClasses(highlightLink("/dashboard/analytics"))}
               >
                 <ChartColumnBig className="h-5 w-5" />
                 <span>Analytics</span>
@@ -149,7 +168,7 @@ const MobileSideBar = ({
             {role === "admin" && (
               <button
                 onClick={handleAdminPanelOpening}
-                className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                className={INACTIVE_ITEM_CLASSES}
               >
                 <ShieldUser className="h-5 w-5" />
                 <span>Admin Panel</span>
@@ -160,7 +179,10 @@ const MobileSideBar = ({
             <Link
               href="/dashboard/articles"
               onClick={() => handleMobileRouteChange("/dashboard/articles")}
-              className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+              aria-current={
+                highlightLink("/dashboard/articles") ? "page" : undefined
+              }
+              className={linkClasses(highlightLink("/dashboard/articles"))}
             >
               <NotebookPen className="h-5 w-5" />
               <span>Articles Hub</span>
@@ -169,7 +191,7 @@ const MobileSideBar = ({
               <a
                 href="/dashboard"
                 onClick={() => setSideBarOpen(false)}
-                className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                className={INACTIVE_ITEM_CLASSES}
               >
                 <HousePlug className="h-5 w-5" />
                 <span>Apps Hub</span>
