@@ -85,6 +85,7 @@ const DashboardSidebar = () => {
       {/* Mobile overlay sidebar (opened from the topbar menu button) */}
       <MobileSideBar
         handleRouteChange={handleRouteChange}
+        highlightLink={highlightLink}
         sideBarOpen={showMobileSidebar}
         setSideBarOpen={setShowMobileSidebar}
       />
