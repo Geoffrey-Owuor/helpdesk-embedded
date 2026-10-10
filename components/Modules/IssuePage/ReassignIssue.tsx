@@ -34,7 +34,7 @@ type ReassignIssueProps = {
   isModalOpen: boolean;
   issueType: IssueValueTypes;
   targetDepartment: IssueValueTypes;
-  issueAgentEmail: IssueValueTypes;
+  issueAgentEmail: IssueValueTypes | null;
 };
 
 const ReassignIssue = ({

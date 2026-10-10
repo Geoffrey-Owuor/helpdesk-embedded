@@ -30,7 +30,7 @@ type EscalateIssueProps = {
   isModalOpen: boolean;
   issueType: IssueValueTypes;
   targetDepartment: IssueValueTypes;
-  issueAgentEmail: IssueValueTypes;
+  issueAgentEmail: IssueValueTypes | null;
 };
 
 const EscalateIssueModal = ({

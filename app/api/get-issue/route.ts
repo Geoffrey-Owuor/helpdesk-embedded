@@ -2,6 +2,7 @@ import { query } from "@/lib/Db";
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { buildIssuesVisibilityClause } from "@/lib/issues/buildIssuesFilter";
+import { ISSUE_DETAIL_SELECT } from "@/lib/issues/issueDetailQuery";
 
 export const GET = withAuth(async ({ user, request }) => {
   const { userId, email, role, department, isSuper } = user;
@@ -16,21 +17,6 @@ export const GET = withAuth(async ({ user, request }) => {
   }
 
   try {
-    const baseQuery = `
-      SELECT
-        a.issue_uuid, a.issue_reference_id, a.issue_submitter_id, a.issue_submitter_name,
-        a.issue_submitter_email, a.issue_submitter_department, a.issue_target_department,
-        a.issue_type, a.issue_title, a.issue_description, a.issue_status, a.issue_priority,
-        a.issue_remarks, a.issue_agent_name, a.issue_agent_email, a.issue_assigner_name,
-        a.issue_assigner_email, a.issue_created_at, a.issue_updated_at, a.issue_date_resolved,
-        a.issue_date_closed,
-        (SELECT COUNT(*) FROM issue_attachments b WHERE b.issue_id = a.issue_uuid) AS attachments_count,
-        (SELECT COUNT(*) FROM issue_reopening c WHERE c.issue_id = a.issue_uuid) AS reopened_count,
-        (SELECT COUNT(*) FROM issue_escalation d WHERE d.issue_id = a.issue_uuid) AS escalated_count,
-        (SELECT COUNT(*) FROM issue_collaborators e WHERE e.issue_id = a.issue_uuid) AS collaborators_count
-      FROM issues_table a
-    `;
-
     // uuid is always $1; visibility params (if any) continue from $2
     const { clause: visibilityClause, params: visibilityParams } =
       buildIssuesVisibilityClause(
@@ -43,7 +29,7 @@ export const GET = withAuth(async ({ user, request }) => {
     const params = [uuid, ...visibilityParams];
 
     const result = await query(
-      `${baseQuery} WHERE ${whereParts.join(" AND ")}`,
+      `${ISSUE_DETAIL_SELECT} WHERE ${whereParts.join(" AND ")}`,
       params,
     );
 
