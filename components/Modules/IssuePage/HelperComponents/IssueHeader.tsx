@@ -1,42 +1,90 @@
 "use client";
-import { ReactNode, useState } from "react";
-import { Calendar, GitMerge, RotateCcw, UndoDot } from "lucide-react";
+import { ReactNode, useEffect, useRef, useState } from "react";
+import {
+  Calendar,
+  GitMerge,
+  LucideIcon,
+  RotateCcw,
+  UndoDot,
+} from "lucide-react";
 import { IssueDetail } from "@/queries/fetchIssue";
 import { dateFormatter, titleHelper } from "@/public/assets";
-import IssueStatusFormatter from "../../IssuesData/IssueStatusFormatter";
-import IssuePriorityFormatter from "../../IssuesData/IssuePriorityFormatter";
 import RelativeTimeBadge from "../../IssuesData/RelativeTimeBadge";
 import { ResolutionTimePill } from "../../IssuesData/ResolutionTimePill";
 import EscalationHistoryModal from "../EscalationHistoryModal";
 import ReopenHistoryModal from "../ReopenHistoryModal";
+import {
+  IssueFieldPicker,
+  IssueHeaderAction,
+  MoreActionsMenu,
+  PriorityBadge,
+  RefreshButton,
+  StatusBadge,
+  toMenuItems,
+} from "./IssueHeaderParts";
 
-const historyButtonClass =
-  "inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-3 py-2.5 text-xs font-semibold tracking-wide text-white transition-colors hover:bg-neutral-800 sm:px-2.5 sm:py-1 sm:text-[11px] dark:bg-white dark:text-black dark:hover:bg-neutral-200";
-
-// Title, reference, status/priority and timing for an issue, shared by the
-// issue page and its read-only analytics mirror. The issue page fills the
-// slots with its actions; the analytics page leaves them empty.
+// Title, state and actions for an issue, shared by the issue page and its
+// read-only analytics mirror. Grouped top to bottom as identity (reference,
+// date, title), state (status, priority, history, timing) and actions.
+// Once scrolled past, a compact sticky bar keeps the essentials in view.
 export const IssueHeader = ({
   issue,
   onRefresh,
-  leadingActions,
-  actions,
-  controls,
+  isRefreshing = false,
+  breadcrumb,
+  pinButton,
+  statusPicker,
+  priorityPicker,
+  actions = [],
 }: {
   issue: IssueDetail;
   onRefresh: () => void;
-  // Before the history buttons in the top row
-  leadingActions?: ReactNode;
-  // After the history buttons in the top row
-  actions?: ReactNode;
-  // After the refresh button in the bottom row
-  controls?: ReactNode;
+  isRefreshing?: boolean;
+  breadcrumb?: ReactNode;
+  pinButton?: ReactNode;
+  statusPicker?: IssueFieldPicker;
+  priorityPicker?: IssueFieldPicker;
+  actions?: IssueHeaderAction[];
 }) => {
   const [escalationHistoryOpen, setEscalationHistoryOpen] = useState(false);
   const [reopenHistoryOpen, setReopenHistoryOpen] = useState(false);
 
+  // Show the compact bar once the full header has scrolled out of view
+  const headerRef = useRef<HTMLDivElement>(null);
+  const [isScrolledPast, setIsScrolledPast] = useState(false);
+
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) =>
+        setIsScrolledPast(
+          !entry.isIntersecting &&
+            entry.boundingClientRect.top < (entry.rootBounds?.top ?? 0),
+        ),
+      { root: document.getElementById("main-content") },
+    );
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, []);
+
   const isFinished =
     issue.issue_status === "resolved" || issue.issue_status === "closed";
+
+  const triage = actions.filter((action) => action.group === "triage");
+  const collaborate = actions.filter(
+    (action) => action.group === "collaborate",
+  );
+  const lifecycle = actions.filter((action) => action.group === "lifecycle");
+  const secondary = actions.filter((action) => action.secondary);
+
+  const refreshItem = {
+    key: "refresh",
+    label: "Refresh",
+    icon: RotateCcw,
+    onSelect: onRefresh,
+  };
 
   return (
     <>
@@ -58,84 +106,181 @@ export const IssueHeader = ({
         />
       )}
 
-      <div className="mb-4 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
-        <div className="flex flex-col gap-3">
-          <h1
+      {/* --- COMPACT STICKY BAR ---
+          Zero-height so it never shifts the layout; the bar hangs below it
+          and stretches over the main column's side padding. */}
+      <div className="sticky top-0 z-30 h-0">
+        <div
+          inert={!isScrolledPast}
+          aria-hidden={!isScrolledPast}
+          className={`absolute inset-x-0 -mx-4 flex items-center gap-2 border-b border-neutral-200 bg-white px-4 py-2 transition-[opacity,translate] duration-150 dark:border-neutral-800 dark:bg-black ${
+            isScrolledPast
+              ? "translate-y-0 opacity-100"
+              : "pointer-events-none -translate-y-1 opacity-0"
+          }`}
+        >
+          <span className="shrink-0 font-mono text-sm font-semibold text-blue-600 dark:text-blue-400">
+            {issue.issue_reference_id}
+          </span>
+          <span
             title={titleHelper(issue.issue_title)}
-            className="line-clamp-1 max-w-100 text-xl font-semibold wrap-break-word text-neutral-900 dark:text-white"
+            className="min-w-0 flex-1 truncate text-sm font-semibold text-neutral-900 dark:text-white"
           >
             {issue.issue_title}
-          </h1>
-          <div className="flex flex-wrap items-center gap-3 text-sm">
+          </span>
+          <div className="flex shrink-0 items-center gap-1">
+            {/* Right-aligned menus - these badges sit at the bar's right edge */}
+            <StatusBadge issue={issue} picker={statusPicker} align="right" />
+            <span className="hidden sm:inline-flex">
+              <PriorityBadge
+                issue={issue}
+                picker={priorityPicker}
+                align="right"
+              />
+            </span>
+            <MoreActionsMenu items={[...toMenuItems(actions), refreshItem]} />
+          </div>
+        </div>
+      </div>
+
+      <div ref={headerRef} className="mb-6 flex flex-col gap-3">
+        {breadcrumb}
+
+        {/* --- IDENTITY --- */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-neutral-500 dark:text-neutral-400">
             <span className="font-mono text-[15px] font-semibold text-blue-600 dark:text-blue-400">
               {issue.issue_reference_id}
             </span>
             <span className="h-1 w-1 rounded-full bg-neutral-300 dark:bg-neutral-600"></span>
-            <div className="flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400">
+            <span className="inline-flex items-center gap-1.5">
               <Calendar className="h-3.5 w-3.5" />
               {dateFormatter(issue.issue_created_at)}
-            </div>
-            <span className="h-1 w-1 rounded-full bg-neutral-300 dark:bg-neutral-600"></span>
-            <IssueStatusFormatter status={issue.issue_status} />
-            <span className="h-1 w-1 rounded-full bg-neutral-300 dark:bg-neutral-600"></span>
-            <IssuePriorityFormatter priority={issue.issue_priority} />
+            </span>
+          </div>
+          <div className="flex shrink-0 items-center gap-1">
+            {pinButton}
+            <RefreshButton onRefresh={onRefresh} isRefreshing={isRefreshing} />
           </div>
         </div>
 
-        <div className="flex flex-col items-start gap-3 lg:items-end">
-          <div className="flex flex-wrap items-center gap-2">
-            {leadingActions}
+        <h1
+          title={titleHelper(issue.issue_title)}
+          className="line-clamp-2 text-xl font-semibold wrap-break-word text-neutral-900 sm:text-2xl dark:text-white"
+        >
+          {issue.issue_title}
+        </h1>
 
-            {/* Reopen history button */}
-            {Number(issue.reopened_count) > 0 && (
-              <button
-                onClick={() => setReopenHistoryOpen(true)}
-                className={historyButtonClass}
-              >
-                <UndoDot size={12} />
-                reopening history
-              </button>
-            )}
+        {/* --- STATE --- */}
+        <div className="flex flex-wrap items-center gap-2">
+          <StatusBadge issue={issue} picker={statusPicker} />
+          <PriorityBadge issue={issue} picker={priorityPicker} />
 
-            {/* Escalation history button */}
-            {Number(issue.escalated_count) > 0 && (
-              <button
-                onClick={() => setEscalationHistoryOpen(true)}
-                className={historyButtonClass}
-              >
-                <GitMerge size={12} />
-                escalation history
-              </button>
-            )}
-
-            {actions}
-
-            {/* Relative time badge */}
-            <RelativeTimeBadge
-              createdAt={issue.issue_created_at}
-              status={issue.issue_status}
+          {Number(issue.reopened_count) > 0 && (
+            <HistoryChip
+              icon={UndoDot}
+              label="Reopened"
+              count={Number(issue.reopened_count)}
+              onClick={() => setReopenHistoryOpen(true)}
             />
-          </div>
+          )}
+          {Number(issue.escalated_count) > 0 && (
+            <HistoryChip
+              icon={GitMerge}
+              label="Escalated"
+              count={Number(issue.escalated_count)}
+              onClick={() => setEscalationHistoryOpen(true)}
+            />
+          )}
 
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Resolution time */}
-            {isFinished && issue.issue_date_resolved && (
-              <ResolutionTimePill
-                dateSubmitted={issue.issue_created_at}
-                dateResolved={issue.issue_date_resolved}
+          <RelativeTimeBadge
+            createdAt={issue.issue_created_at}
+            status={issue.issue_status}
+          />
+          {isFinished && issue.issue_date_resolved && (
+            <ResolutionTimePill
+              dateSubmitted={issue.issue_created_at}
+              dateResolved={issue.issue_date_resolved}
+            />
+          )}
+        </div>
+
+        {/* --- ACTIONS --- */}
+        {actions.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 border-t border-neutral-200 pt-3 dark:border-neutral-800">
+            {triage.map((action) => (
+              <ToolbarButton key={action.key} action={action} />
+            ))}
+            {triage.length > 0 && collaborate.length > 0 && (
+              <span
+                aria-hidden
+                className="mx-1 hidden h-5 w-px bg-neutral-200 sm:block dark:bg-neutral-800"
               />
             )}
-            <button
-              onClick={onRefresh}
-              className="rounded-xl bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
-            >
-              <RotateCcw className="h-4.5 w-4.5" />
-            </button>
+            {collaborate.map((action) => (
+              <ToolbarButton key={action.key} action={action} />
+            ))}
 
-            {controls}
+            <div className="ml-auto flex items-center gap-2">
+              {lifecycle.map((action) => (
+                <ToolbarButton key={action.key} action={action} />
+              ))}
+              <MoreActionsMenu
+                items={toMenuItems(secondary)}
+                className="sm:hidden"
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </>
   );
 };
+
+const ToolbarButton = ({ action }: { action: IssueHeaderAction }) => {
+  const Icon = action.icon;
+  const tone =
+    action.tone === "primary"
+      ? "border-neutral-900 bg-neutral-900 text-white hover:bg-neutral-800 dark:border-white dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+      : action.tone === "danger"
+        ? "border-neutral-200 bg-white text-red-700 hover:bg-red-50 dark:border-neutral-800 dark:bg-transparent dark:text-red-400 dark:hover:bg-red-950/40"
+        : "border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-transparent dark:text-neutral-200 dark:hover:bg-neutral-900";
+
+  return (
+    <button
+      type="button"
+      onClick={action.onClick}
+      className={`h-9 items-center gap-1.5 rounded-lg border px-3 text-sm font-semibold transition-colors sm:h-8 ${tone} ${
+        action.secondary ? "hidden sm:inline-flex" : "inline-flex"
+      }`}
+    >
+      <Icon className="h-4 w-4" />
+      {action.label}
+    </button>
+  );
+};
+
+const HistoryChip = ({
+  icon: Icon,
+  label,
+  count,
+  onClick,
+}: {
+  icon: LucideIcon;
+  label: string;
+  count: number;
+  onClick: () => void;
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    title={`View ${label.toLowerCase()} history`}
+    className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 py-1 pr-1 pl-2.5 text-xs font-semibold text-neutral-700 transition-colors hover:bg-neutral-100 dark:border-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-900"
+  >
+    <Icon size={12} />
+    {label}
+    <span className="rounded-full bg-neutral-900 px-1.5 text-[10px] leading-4 text-white dark:bg-white dark:text-black">
+      {count}
+    </span>
+  </button>
+);

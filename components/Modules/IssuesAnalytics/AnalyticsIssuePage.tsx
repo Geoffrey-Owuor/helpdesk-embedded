@@ -23,6 +23,7 @@ export const AnalyticsIssuePage = ({ uuid }: { uuid: string }) => {
     data: issueData,
     isLoading: loading,
     isError,
+    isFetching,
     refetch: refetchData,
   } = useQuery({
     queryKey: ["analyticsIssue", uuid],
@@ -56,24 +57,28 @@ export const AnalyticsIssuePage = ({ uuid }: { uuid: string }) => {
 
   return (
     <div className="mx-auto py-6 md:py-4">
-      {/* Link buttons */}
-      <div className="mb-2 flex flex-wrap items-center gap-3">
-        <Link href="/dashboard/analytics" className={breadcrumbClass}>
-          <ArrowLeft className="h-3 w-3" />
-          Back to analytics
-        </Link>
-        {(userCanView || agentCanView || adminsCanView) && (
-          <Link
-            href={`/dashboard/${issueData.issue_uuid}?title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`}
-            className={breadcrumbClass}
-          >
-            Go to issue
-            <ArrowRight className="h-3 w-3" />
-          </Link>
-        )}
-      </div>
-
-      <IssueHeader issue={issueData} onRefresh={() => refetchData()} />
+      <IssueHeader
+        issue={issueData}
+        onRefresh={() => refetchData()}
+        isRefreshing={isFetching}
+        breadcrumb={
+          <div className="flex flex-wrap items-center gap-3">
+            <Link href="/dashboard/analytics" className={breadcrumbClass}>
+              <ArrowLeft className="h-3 w-3" />
+              Back to analytics
+            </Link>
+            {(userCanView || agentCanView || adminsCanView) && (
+              <Link
+                href={`/dashboard/${issueData.issue_uuid}?title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`}
+                className={breadcrumbClass}
+              >
+                Go to issue
+                <ArrowRight className="h-3 w-3" />
+              </Link>
+            )}
+          </div>
+        }
+      />
 
       {/* Comments are read-only for analytics viewers */}
       <IssueDetailBody
