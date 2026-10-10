@@ -39,7 +39,8 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   } = useQuery({
     queryKey: ["AgentInfo", department],
     queryFn: () => fetchedIssueAgents(department),
-    enabled: !!department,
+    // The panel is mounted for the whole dashboard; only fetch once it's opened
+    enabled: !!department && showAdminPanel,
   });
 
   // Refetch agents and issue types data
