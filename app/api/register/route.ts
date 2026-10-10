@@ -76,6 +76,7 @@ export async function POST(request: NextRequest) {
     await sendEmail({
       to: email,
       subject: "Verify Your Email Address",
+      essential: true,
       html: emailHtml,
     });
 

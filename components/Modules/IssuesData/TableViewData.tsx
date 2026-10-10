@@ -112,9 +112,7 @@ const TableViewData = ({ currentIssues }: TableViewDataProps) => {
                   key={issueData.issue_uuid}
                   onClick={() => {
                     setLoadingLine(true);
-                    router.push(
-                      `/dashboard/${issueData.issue_uuid}?title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`,
-                    );
+                    router.push(`/dashboard/${issueData.issue_uuid}`);
                   }}
                   className="group cursor-pointer rounded-xl shadow-sm transition-transform duration-200"
                 >
@@ -133,7 +131,7 @@ const TableViewData = ({ currentIssues }: TableViewDataProps) => {
                             setLoadingLine(true);
                           }}
                           title={titleHelper(issueData.issue_reference_id)}
-                          href={`/dashboard/${issueData.issue_uuid}?title=${encodeURIComponent(issueData.issue_title)}&description=${encodeURIComponent(issueData.issue_description)}`}
+                          href={`/dashboard/${issueData.issue_uuid}`}
                           className="max-w-50 truncate text-sm font-semibold text-neutral-900 hover:text-blue-500 hover:underline dark:text-neutral-100"
                         >
                           {issueData.issue_reference_id}

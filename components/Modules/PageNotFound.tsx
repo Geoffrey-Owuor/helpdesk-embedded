@@ -6,7 +6,7 @@ import { Gauge, Home } from "lucide-react";
 
 const PageNotFound = () => {
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden">
+    <div className="relative flex min-h-dvh flex-col overflow-hidden">
       {/* Header */}
       <header className="relative z-20 flex items-center justify-between px-6 py-5 sm:px-10">
         <HomePagesLogo />

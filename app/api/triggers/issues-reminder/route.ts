@@ -114,11 +114,13 @@ export async function GET(request: NextRequest) {
 
     for (let i = 0; i < emailTasks.length; i++) {
       const task = emailTasks[i];
+      let result: Awaited<ReturnType<typeof sendEmail>> | undefined;
 
       try {
         const html = ReminderTemplate(task.nameOrDept, task.issues);
 
-        await sendEmail({
+        // sendEmail reports failure in its result rather than throwing
+        result = await sendEmail({
           to: task.to,
           subject: task.subject,
           html,
@@ -127,7 +129,9 @@ export async function GET(request: NextRequest) {
         summary.push({
           recipient: task.to,
           type: task.type,
-          sent: true,
+          sent: result.success && !result.skipped,
+          ...(result.skipped ? { skipped: true } : {}),
+          ...(result.error ? { error: result.error } : {}),
           count: task.issues.length,
         });
       } catch (error) {
@@ -140,8 +144,9 @@ export async function GET(request: NextRequest) {
         });
       }
 
-      // Apply delay, skipping it on the final iteration
-      if (i < emailTasks.length - 1) {
+      // Apply delay, skipping it on the final iteration and after skipped
+      // emails (the delay only spaces out real sends for Graph's rate limits)
+      if (i < emailTasks.length - 1 && !result?.skipped) {
         await delay(3000);
       }
     }

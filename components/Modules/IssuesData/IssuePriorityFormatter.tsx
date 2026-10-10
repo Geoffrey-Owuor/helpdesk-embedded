@@ -65,7 +65,7 @@ const IssuePriorityFormatter = ({
 
   return (
     <div
-      className={`inline-flex items-center rounded-full ${!showText ? "justify-center p-1.5" : "w-22 px-2 py-1"} border text-xs ${config.border} font-semibold ${config.bg} ${config.text} `}
+      className={`inline-flex items-center rounded-lg ${!showText ? "justify-center p-1.5" : "w-22 px-2 py-1"} border text-xs ${config.border} font-semibold ${config.bg} ${config.text} `}
     >
       <Icon
         size={12}

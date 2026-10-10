@@ -2,6 +2,7 @@ import { query } from "@/lib/Db";
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { IssueValueTypes } from "@/public/assets";
+import { canViewIssue } from "@/lib/IssueAccess";
 
 // Our result interface
 export interface commentsQuery {
@@ -12,11 +13,17 @@ export interface commentsQuery {
   comment_created_at: IssueValueTypes;
 }
 
-export const GET = withAuth(async ({ request }) => {
+export const GET = withAuth(async ({ request, user }) => {
   try {
     const searchParams = request.nextUrl.searchParams;
 
     const uuid = searchParams.get("uuid");
+
+    // Only for those who can see the issue (analytics viewers included) - a
+    // 404 either way so we don't leak which uuids exist
+    if (!uuid || !(await canViewIssue(uuid, user, { allowAnalytics: true }))) {
+      return NextResponse.json({ message: "Issue not found" }, { status: 404 });
+    }
 
     // Our query
     const getQuery = `SELECT 

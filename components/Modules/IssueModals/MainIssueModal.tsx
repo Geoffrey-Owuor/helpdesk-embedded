@@ -1,9 +1,7 @@
 "use client";
 
-import { ChangeEvent, Dispatch, FormEvent, SetStateAction } from "react";
-import ClientPortal from "../ClientPortal";
-import { useState, useRef, useCallback } from "react";
-import { useFocusTrapping } from "@/hooks/useFocusTrapping";
+import { ChangeEvent, FormEvent } from "react";
+import { useState, useCallback } from "react";
 import {
   X,
   UserRoundCog,
@@ -39,6 +37,13 @@ import DocumentUpload from "./DocumentUpload";
 import Link from "next/link";
 import { invalidateIssuesCaches } from "@/utils/invalidateIssuesCaches";
 import AiRefineSuggestion from "./AiRefineSuggestion";
+import {
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalForm,
+  ModalHeader,
+} from "../Modal/Modal";
 
 // Priority icon types
 const priorityIcons: Record<string, LucideIcon> = {
@@ -64,7 +69,7 @@ const DynamicIcon = ({ priority }: { priority: string }) => {
 
 type MainIssueModalProps = {
   isOpen: boolean;
-  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  setIsOpen: (open: boolean) => void;
 };
 
 const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
@@ -102,10 +107,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     setSubmitForUserData(data);
   };
 
-  // Tab Focus Trapping
   const closeModal = useCallback(() => setIsOpen(false), [setIsOpen]);
-  const modalRef = useRef<HTMLDivElement | null>(null);
-  useFocusTrapping(modalRef, isOpen, closeModal);
 
   // State for the Assignment Bot Card
   const [assignmentInfo, setAssignmentInfo] =
@@ -268,304 +270,273 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <ClientPortal>
-      {/* Backdrop */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 dark:bg-black/80">
-        {/* Modal Container */}
-        <div
-          ref={modalRef}
-          className="flex max-h-[90vh] w-full max-w-3xl flex-col rounded-2xl border border-neutral-300 bg-neutral-50 shadow-2xl dark:border-neutral-800 dark:bg-neutral-950"
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between border-b border-neutral-200/50 p-4 dark:border-neutral-900">
-            <div>
-              <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
-                Create A New Issue
-              </h2>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                Enter the required issue details and submit.
-              </p>
+    <Modal open={isOpen} onClose={closeModal} size="3xl" tone="muted">
+      <ModalHeader
+        title="Create A New Issue"
+        description="Enter the required issue details and submit."
+      />
+
+      {/* Issue Form */}
+      <ModalForm onSubmit={handleConfirmSubmit} autoComplete="off">
+        <ModalBody className="space-y-6">
+          {/* Button for submitting for another user */}
+          {role !== "user" && (
+            <div className="inline-flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIsSubmitForUserOpen((prev) => !prev)}
+                className="inline-flex items-center justify-between gap-2.5 rounded-xl bg-neutral-950 px-3 py-2 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200"
+              >
+                <div className="inline-flex items-center gap-1.5">
+                  <ContactRound className="h-4 w-4" />
+                  <span>Submit for a user</span>
+                </div>
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${isSubmitForUserOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+
+              {/* Clear button — only visible when user data has been set */}
+              {submitForUserData && !isSubmitForUserOpen && (
+                <button
+                  type="button"
+                  onClick={() => setSubmitForUserData(null)}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-600 hover:border-red-300 hover:bg-red-50 hover:text-red-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:border-red-800 dark:hover:bg-red-950/30 dark:hover:text-red-400"
+                >
+                  <X size={14} />
+                  <span>Clear</span>
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Submit for user modal */}
+          <SubmitForAUser
+            isOpen={isSubmitForUserOpen}
+            setIsOpen={setIsSubmitForUserOpen}
+            onConfirm={handleSubmitForUserConfirm}
+          />
+
+          {/* A card that displays the selected user info - only displayed when all required submitForUserData is available and isSubmitForUserOpen is false */}
+          {submitForUserData && !isSubmitForUserOpen && (
+            <div className="w-fit rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900">
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
+                  <UserRound size={16} />
+                </div>
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <span className="truncate text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                    {submitForUserData.user_name}
+                  </span>
+                  <span className="truncate text-xs text-neutral-500 dark:text-neutral-400">
+                    {submitForUserData.user_email}
+                  </span>
+                </div>
+                <span className="shrink-0 rounded-lg bg-neutral-100 px-2 py-1 text-xs font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
+                  {submitForUserData.user_department}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Row: Department & Target Department */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="flex flex-col gap-1">
+              <label
+                htmlFor="target_department"
+                className="flex items-center gap-1 text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
+              >
+                Target Department <FormAsterisk />
+              </label>
+
+              {/* Options Dropdown */}
+              <OptionsDropDown
+                value={formData.target_department}
+                onChange={handleDepartmentChange}
+                loading={loading}
+                options={baseDepartments}
+                dropDownType="department"
+                error={optionsError}
+              />
             </div>
 
-            <button
-              onClick={() => setIsOpen(false)}
-              className="rounded-full p-2 text-neutral-500 hover:bg-neutral-200 hover:text-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
-            >
-              <X size={20} />
-            </button>
+            {/* Dynamic Issue Types */}
+            <DynamicIssueTypes
+              value={formData.issue_type}
+              onChange={handleIssueChange}
+              department={formData.target_department}
+              error={optionsError}
+            />
           </div>
 
-          {/* Issue Form */}
-          <div className="layout-scrollbar flex-1 overflow-y-auto bg-neutral-50 p-6 dark:bg-neutral-950">
-            <form
-              onSubmit={handleConfirmSubmit}
-              autoComplete="off"
-              className="space-y-6"
-            >
-              {/* Button for submitting for another user */}
-              {role !== "user" && (
-                <div className="inline-flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsSubmitForUserOpen((prev) => !prev)}
-                    className="inline-flex items-center justify-between gap-2.5 rounded-xl bg-neutral-950 px-3 py-2 text-sm text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200"
-                  >
-                    <div className="inline-flex items-center gap-1.5">
-                      <ContactRound className="h-4 w-4" />
-                      <span>Submit for a user</span>
-                    </div>
-                    <ChevronDown
-                      className={`h-4 w-4 transition-transform ${isSubmitForUserOpen ? "rotate-180" : ""}`}
-                    />
-                  </button>
-
-                  {/* Clear button — only visible when user data has been set */}
-                  {submitForUserData && !isSubmitForUserOpen && (
-                    <button
-                      type="button"
-                      onClick={() => setSubmitForUserData(null)}
-                      className="inline-flex items-center gap-1.5 rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-600 hover:border-red-300 hover:bg-red-50 hover:text-red-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:border-red-800 dark:hover:bg-red-950/30 dark:hover:text-red-400"
-                    >
-                      <X size={14} />
-                      <span>Clear</span>
-                    </button>
+          {/* --- NEW: Auto-Assignment Bot Card --- */}
+          {(assignmentInfo || isFetchingAssignment) && (
+            <div className="relative overflow-hidden rounded-xl border border-blue-100 bg-blue-50/50 p-3 dark:border-blue-900/30 dark:bg-blue-900/10">
+              <div className="flex gap-3">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-800 dark:text-blue-200">
+                  {isFetchingAssignment ? (
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+                  ) : (
+                    <BotMessageSquare size={18} />
                   )}
                 </div>
-              )}
+                <div className="flex-1">
+                  <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+                    Auto-Assignment Bot
+                  </h4>
 
-              {/* Submit for user modal */}
-              <SubmitForAUser
-                isOpen={isSubmitForUserOpen}
-                setIsOpen={setIsSubmitForUserOpen}
-                onConfirm={handleSubmitForUserConfirm}
-              />
-
-              {/* A card that displays the selected user info - only displayed when all required submitForUserData is available and isSubmitForUserOpen is false */}
-              {submitForUserData && !isSubmitForUserOpen && (
-                <div className="w-fit rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
-                      <UserRound size={16} />
-                    </div>
-                    <div className="flex min-w-0 flex-1 flex-col">
-                      <span className="truncate text-sm font-semibold text-neutral-900 dark:text-neutral-100">
-                        {submitForUserData.user_name}
-                      </span>
-                      <span className="truncate text-xs text-neutral-500 dark:text-neutral-400">
-                        {submitForUserData.user_email}
-                      </span>
-                    </div>
-                    <span className="shrink-0 rounded-lg bg-neutral-100 px-2 py-1 text-xs font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
-                      {submitForUserData.user_department}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {/* Row: Department & Target Department */}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="flex flex-col gap-1">
-                  <label
-                    htmlFor="target_department"
-                    className="flex items-center gap-1 text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
-                  >
-                    Target Department <FormAsterisk />
-                  </label>
-
-                  {/* Options Dropdown */}
-                  <OptionsDropDown
-                    value={formData.target_department}
-                    onChange={handleDepartmentChange}
-                    loading={loading}
-                    options={baseDepartments}
-                    dropDownType="department"
-                    error={optionsError}
-                  />
-                </div>
-
-                {/* Dynamic Issue Types */}
-                <DynamicIssueTypes
-                  value={formData.issue_type}
-                  onChange={handleIssueChange}
-                  department={formData.target_department}
-                  error={optionsError}
-                />
-              </div>
-
-              {/* --- NEW: Auto-Assignment Bot Card --- */}
-              {(assignmentInfo || isFetchingAssignment) && (
-                <div className="relative overflow-hidden rounded-xl border border-blue-100 bg-blue-50/50 p-3 dark:border-blue-900/30 dark:bg-blue-900/10">
-                  <div className="flex gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-800 dark:text-blue-200">
-                      {isFetchingAssignment ? (
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
-                      ) : (
-                        <BotMessageSquare size={18} />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100">
-                        Auto-Assignment Bot
-                      </h4>
-
-                      {isFetchingAssignment ? (
-                        <p className="text-xs text-blue-700 dark:text-blue-300">
-                          Finding the best agent for this issue...
-                        </p>
-                      ) : (
-                        <div className="mt-1 flex flex-col gap-1 text-xs text-blue-700 dark:text-blue-300">
-                          <p>
-                            Based on your selection, this issue may be assigned
-                            to:
-                          </p>
-                          <div className="mt-1 flex flex-wrap items-center gap-4">
-                            <div className="flex items-center gap-1.5 font-semibold">
-                              <UserRoundCog size={14} />
-                              <span>
-                                Agent:{" "}
-                                {assignmentInfo?.agent_name || "None found"}
-                              </span>
-                            </div>
-
-                            <div className="flex items-center gap-1.5 opacity-75">
-                              <span>
-                                (<span className="font-semibold">Admin</span>:{" "}
-                                {assignmentInfo?.admin_name || "None found"})
-                              </span>
-                            </div>
-
-                            {/* Current issue priority */}
-                            <div className="flex items-center gap-1.5 font-semibold">
-                              <ArrowUpDown size={14} />
-                              <span>
-                                Default priority:{" "}
-                                <span className="font-normal">
-                                  {assignmentInfo?.issue_priority || "None"}
-                                </span>
-                              </span>
-                              {/* Dynamic Icon */}
-                              <DynamicIcon
-                                priority={
-                                  assignmentInfo?.issue_priority
-                                    ? assignmentInfo.issue_priority
-                                    : "None"
-                                }
-                              />
-                            </div>
-                          </div>
+                  {isFetchingAssignment ? (
+                    <p className="text-xs text-blue-700 dark:text-blue-300">
+                      Finding the best agent for this issue...
+                    </p>
+                  ) : (
+                    <div className="mt-1 flex flex-col gap-1 text-xs text-blue-700 dark:text-blue-300">
+                      <p>
+                        Based on your selection, this issue may be assigned to:
+                      </p>
+                      <div className="mt-1 flex flex-wrap items-center gap-4">
+                        <div className="flex items-center gap-1.5 font-semibold">
+                          <UserRoundCog size={14} />
+                          <span>
+                            Agent: {assignmentInfo?.agent_name || "None found"}
+                          </span>
                         </div>
-                      )}
+
+                        <div className="flex items-center gap-1.5 opacity-75">
+                          <span>
+                            (<span className="font-semibold">Admin</span>:{" "}
+                            {assignmentInfo?.admin_name || "None found"})
+                          </span>
+                        </div>
+
+                        {/* Current issue priority */}
+                        <div className="flex items-center gap-1.5 font-semibold">
+                          <ArrowUpDown size={14} />
+                          <span>
+                            Default priority:{" "}
+                            <span className="font-normal">
+                              {assignmentInfo?.issue_priority || "None"}
+                            </span>
+                          </span>
+                          {/* Dynamic Icon */}
+                          <DynamicIcon
+                            priority={
+                              assignmentInfo?.issue_priority
+                                ? assignmentInfo.issue_priority
+                                : "None"
+                            }
+                          />
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
-              )}
-
-              {/* Issue Title */}
-              <div className="flex flex-col gap-1">
-                <label
-                  htmlFor="issue_title"
-                  className="flex items-center gap-1 text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
-                >
-                  Issue Title
-                  <FormAsterisk />
-                </label>
-                <input
-                  type="text"
-                  name="issue_title"
-                  id="issue_title"
-                  value={formData.issue_title}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  required
-                  maxLength={50}
-                  placeholder="Brief summary of the issue (50 characters maximum)"
-                  className="rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
-                />
               </div>
+            </div>
+          )}
 
-              {/* Issue Description */}
-              <div className="flex flex-col gap-1">
-                <label
-                  htmlFor="issue_description"
-                  className="flex items-center gap-1 text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
-                >
-                  Description
-                  <FormAsterisk />
-                </label>
-                <textarea
-                  id="issue_description"
-                  name="issue_description"
-                  value={formData.issue_description}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  required
-                  rows={4}
-                  placeholder="Please describe the issue in detail..."
-                  className="resize-none rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
-                />
-              </div>
-
-              {/* AI Refine Suggestion */}
-              {role !== "user" && (
-                <AiRefineSuggestion
-                  title={formData.issue_title}
-                  description={formData.issue_description}
-                  onRefine={async () => {
-                    const response = await apiClient.post("/ai/refine-issue", {
-                      title: formData.issue_title,
-                      description: formData.issue_description,
-                    });
-                    return response.data;
-                  }}
-                  onApply={(title, description) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      issue_title: title,
-                      issue_description: description,
-                    }))
-                  }
-                />
-              )}
-
-              {/* Document Upload */}
-              <DocumentUpload
-                files={files}
-                setFiles={setFiles}
-                maxTotalSizeMB={2}
-              />
-
-              {/* Submit Button */}
-              <div className="flex items-center justify-between gap-4">
-                <Link
-                  href="/manual#issues-docs"
-                  target="_blank"
-                  className="inline-flex items-center gap-1 text-xs text-blue-500 hover:underline"
-                >
-                  <CircleQuestionMark className="h-3 w-3" />
-                  Issue types docs
-                </Link>
-                <button
-                  type="submit"
-                  disabled={
-                    !formData.issue_title ||
-                    !formData.issue_description ||
-                    !formData.issue_type ||
-                    !formData.target_department
-                  }
-                  className="flex items-center justify-center gap-2 rounded-xl bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800 focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 dark:focus:ring-zinc-400 dark:focus:ring-offset-neutral-900"
-                >
-                  Submit
-                  <Send className="h-4 w-4" />
-                </button>
-              </div>
-            </form>
+          {/* Issue Title */}
+          <div className="flex flex-col gap-1">
+            <label
+              htmlFor="issue_title"
+              className="flex items-center gap-1 text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
+            >
+              Issue Title
+              <FormAsterisk />
+            </label>
+            <input
+              type="text"
+              name="issue_title"
+              id="issue_title"
+              value={formData.issue_title}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              required
+              maxLength={50}
+              placeholder="Brief summary of the issue (50 characters maximum)"
+              className="rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+            />
           </div>
-        </div>
-      </div>
-    </ClientPortal>
+
+          {/* Issue Description */}
+          <div className="flex flex-col gap-1">
+            <label
+              htmlFor="issue_description"
+              className="flex items-center gap-1 text-xs font-semibold text-neutral-500 uppercase dark:text-neutral-400"
+            >
+              Description
+              <FormAsterisk />
+            </label>
+            <textarea
+              id="issue_description"
+              name="issue_description"
+              value={formData.issue_description}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              required
+              rows={4}
+              placeholder="Please describe the issue in detail..."
+              className="resize-none rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+            />
+          </div>
+
+          {/* AI Refine Suggestion */}
+          {role !== "user" && (
+            <AiRefineSuggestion
+              title={formData.issue_title}
+              description={formData.issue_description}
+              onRefine={async () => {
+                const response = await apiClient.post("/ai/refine-issue", {
+                  title: formData.issue_title,
+                  description: formData.issue_description,
+                });
+                return response.data;
+              }}
+              onApply={(title, description) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  issue_title: title,
+                  issue_description: description,
+                }))
+              }
+            />
+          )}
+
+          {/* Document Upload */}
+          <DocumentUpload
+            files={files}
+            setFiles={setFiles}
+            maxTotalSizeMB={2}
+          />
+        </ModalBody>
+
+        {/* Submit Button */}
+        <ModalFooter stretch={false} className="justify-between gap-4">
+          <Link
+            href="/manual#issues-docs"
+            target="_blank"
+            className="inline-flex items-center gap-1 text-xs text-blue-500 hover:underline"
+          >
+            <CircleQuestionMark className="h-3 w-3" />
+            Issue types docs
+          </Link>
+          <button
+            type="submit"
+            disabled={
+              !formData.issue_title ||
+              !formData.issue_description ||
+              !formData.issue_type ||
+              !formData.target_department
+            }
+            className="flex items-center justify-center gap-2 rounded-xl bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800 focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 dark:focus:ring-zinc-400 dark:focus:ring-offset-neutral-900"
+          >
+            Submit
+            <Send className="h-4 w-4" />
+          </button>
+        </ModalFooter>
+      </ModalForm>
+    </Modal>
   );
 };
 

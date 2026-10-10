@@ -2,11 +2,18 @@ import { query } from "@/lib/Db";
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { emailSender } from "@/services/EmailSender";
+import { canViewIssue } from "@/lib/IssueAccess";
 
 export const POST = withAuth(async ({ request, user }) => {
   try {
     const { uuid, comment } = await request.json();
     const { userId, username, email } = user;
+
+    // Only those who can see the issue may comment on it - a 404 either way so we
+    // don't leak which uuids exist
+    if (!(await canViewIssue(uuid, user))) {
+      return NextResponse.json({ message: "Issue not found" }, { status: 404 });
+    }
 
     // Getting issue reference id
     const result = await query(

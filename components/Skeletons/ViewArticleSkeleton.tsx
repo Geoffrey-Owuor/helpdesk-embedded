@@ -1,7 +1,7 @@
 import SkeletonBox from "./SkeletonBox";
 
 const TOCSidebarSkeleton = () => (
-  <nav className="sticky top-12 hidden max-h-[calc(100vh-5rem)] w-70 shrink-0 flex-col overflow-y-auto rounded-xl p-4 lg:flex">
+  <nav className="sticky top-12 hidden max-h-[calc(100dvh-5rem)] w-70 shrink-0 flex-col overflow-y-auto rounded-xl p-4 lg:flex">
     {/* "On this page" heading */}
     <div className="mb-4 border-b-2 border-neutral-200 pb-2 dark:border-neutral-800">
       <SkeletonBox className="h-3.5 w-24 bg-neutral-200 dark:bg-neutral-800" />

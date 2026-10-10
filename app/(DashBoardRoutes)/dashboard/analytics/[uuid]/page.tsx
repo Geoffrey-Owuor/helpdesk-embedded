@@ -1,27 +1,33 @@
 import { Metadata } from "next";
 import { requireSession } from "@/lib/Auth";
+import { getIssueMeta } from "@/lib/issues/getIssueMeta";
+import { metaDescription } from "@/lib/metadata";
 import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
 import UnauthorizedModal from "@/components/Navigation/UnauthorizedModal";
 import AnalyticsIssuePage from "@/components/Modules/IssuesAnalytics/AnalyticsIssuePage";
 
 type analyticsIssuePageProps = {
   params: Promise<{ uuid: string }>;
-  searchParams: Promise<{ title: string; description: string }>;
 };
 
 export const generateMetadata = async ({
-  searchParams,
+  params,
 }: analyticsIssuePageProps): Promise<Metadata> => {
   const user = await requireSession();
 
   if (!hasFeatureAccess(user, FEATURES.ANALYTICS))
     return { title: "Unauthorized Access" };
 
-  const { title, description } = await searchParams;
+  const { uuid } = await params;
+  const issue = user
+    ? await getIssueMeta(uuid, user, { analytics: true })
+    : null;
+
+  if (!issue) return { title: "Issue not found" };
 
   return {
-    title: title || "Issue Title",
-    description: description || "Issue Description",
+    title: issue.issue_title,
+    description: metaDescription(issue.issue_description),
   };
 };
 

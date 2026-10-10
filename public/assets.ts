@@ -22,7 +22,7 @@ export const abbreviateUserName = (username: string | undefined) => {
 };
 
 // Title helper for converting values to string
-export const titleHelper = (value: IssueValueTypes) => {
+export const titleHelper = (value: IssueValueTypes | null | undefined) => {
   if (!value) return "";
 
   return value.toString();
@@ -42,7 +42,9 @@ export const generateValueType = (
 };
 
 // Date formatter to format date for the ui
-export const dateFormatter = (dateString: IssueValueTypes) => {
+export const dateFormatter = (
+  dateString: IssueValueTypes | null | undefined,
+) => {
   if (!dateString) return "N/A";
   const date = new Date(dateString);
 

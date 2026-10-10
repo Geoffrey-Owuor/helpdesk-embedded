@@ -46,7 +46,7 @@ export const ResolutionTimePill: FC<ResolutionTimePillProps> = ({
 
   return (
     <div
-      className="inline-flex items-center gap-1.5 rounded-full border-none bg-linear-to-r from-neutral-200 to-neutral-300 px-2.5 py-1 text-xs font-medium text-neutral-800 dark:from-neutral-700 dark:to-neutral-800 dark:text-neutral-200"
+      className="inline-flex items-center gap-1.5 rounded-lg border-none bg-linear-to-r from-neutral-200 to-neutral-300 px-2.5 py-1 text-xs font-medium text-neutral-800 dark:from-neutral-700 dark:to-neutral-800 dark:text-neutral-200"
       title={`Resolved on ${new Date(dateResolved).toLocaleString()}`}
     >
       <ClockCheck className="h-3.5 w-3.5" />

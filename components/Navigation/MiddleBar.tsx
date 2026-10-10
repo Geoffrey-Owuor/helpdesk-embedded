@@ -3,8 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useUser } from "@/contexts/UserContext";
-import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
-import AdminPanel from "./AdminFunctions/AdminPanel";
 import {
   Search,
   LayoutDashboard,
@@ -18,14 +16,24 @@ import {
 } from "lucide-react";
 import { useLoadingStore } from "@/store/useLoadingStore";
 import SearchArea from "./SearchArea";
+import ClientPortal from "../Modules/ClientPortal";
 import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
+import { useDashboardModalsStore } from "@/store/useDashboardModalsStore";
+
+// The search bar is only rendered in the header from the "custom" breakpoint
+// up (--breakpoint-custom in css/globals.css), so search is desktop-only
+const DESKTOP_QUERY = "(min-width: 1200px)";
 
 const MiddleBar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  //   States for opening the admin panel and new issue
-  const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
-  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
+  // Openers for the dashboard-wide new issue modal and admin panel
+  const setIsIssueModalOpen = useDashboardModalsStore(
+    (state) => state.setIsIssueModalOpen,
+  );
+  const setIsAdminPanelOpen = useDashboardModalsStore(
+    (state) => state.setIsAdminPanelOpen,
+  );
 
   const router = useRouter();
   const pathname = usePathname();
@@ -51,7 +59,7 @@ const MiddleBar = () => {
         return;
       }
 
-      if (e.key === "/") {
+      if (e.key === "/" && window.matchMedia(DESKTOP_QUERY).matches) {
         e.preventDefault(); // Prevent typing the '/' character
         setIsOpen((prev) => !prev);
       }
@@ -70,6 +78,17 @@ const MiddleBar = () => {
     };
   }, [isOpen, router]);
 
+  // Close when the window shrinks below the breakpoint and the bar disappears,
+  // so the overlay doesn't stay open with nothing on screen to close it
+  useEffect(() => {
+    const mql = window.matchMedia(DESKTOP_QUERY);
+    const handleChange = (e: MediaQueryListEvent) => {
+      if (!e.matches) setIsOpen(false);
+    };
+    mql.addEventListener("change", handleChange);
+    return () => mql.removeEventListener("change", handleChange);
+  }, []);
+
   // --- Navigation Helper ---
   const handleNavigation = (path: string) => {
     setIsOpen(false); // Close dropdown on navigate
@@ -80,20 +99,6 @@ const MiddleBar = () => {
 
   return (
     <>
-      {/* Main Issue Modal */}
-      {isIssueModalOpen && (
-        <MainIssueModal
-          isOpen={isIssueModalOpen}
-          setIsOpen={setIsIssueModalOpen}
-        />
-      )}
-
-      {/* Admin Panel */}
-      <AdminPanel
-        showAdminPanel={isAdminPanelOpen}
-        setShowAdminPanel={setIsAdminPanelOpen}
-      />
-
       <div className="w-full max-w-md px-8">
         {/* Changed from div to button to be semantically correct and focusable */}
         <button
@@ -116,92 +121,93 @@ const MiddleBar = () => {
         </button>
       </div>
 
-      {/* ── DROPDOWN PANEL ── */}
+      {/* ── DROPDOWN PANEL ── (portaled so it covers the whole viewport, panel corners included) */}
       {isOpen && (
-        <div
-          onClick={() => setIsOpen(false)}
-          className="fixed inset-0 z-100 hidden items-start justify-center bg-black/60 pt-2 md:flex dark:bg-black/80"
-        >
+        <ClientPortal>
           <div
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-lg overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-[0_16px_40px_-12px_rgba(0,0,0,0.15)] dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]"
+            onClick={() => setIsOpen(false)}
+            className="fixed inset-0 z-100 flex items-start justify-center bg-black/60 pt-2 dark:bg-black/80"
           >
-            {/* Section 1: Quick Links (Rounded Pills) */}
-            <div className="p-4">
-              <h3 className="mb-3 text-xs font-semibold tracking-wider text-neutral-400 uppercase">
-                Quick Navigation
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                <PillButton
-                  icon={<LayoutDashboard size={14} />}
-                  label="Home"
-                  onClick={() => handleNavigation("/dashboard")}
-                />
-
-                {/* TODO: To trigger this modal from here, you either need to pass `setIsIssueModalOpen` as a prop down to this header, OR move `isIssueModalOpen` to a global Zustand store. */}
-                <PillButton
-                  icon={<CirclePlus size={14} />}
-                  label="New Issue"
-                  onClick={() => {
-                    setIsIssueModalOpen(true);
-                    setIsOpen(false);
-                  }}
-                  accent
-                />
-
-                <PillButton
-                  icon={<NotebookPen size={14} />}
-                  label="Articles"
-                  onClick={() => handleNavigation("/dashboard/articles")}
-                />
-
-                {isSuper && (
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-lg overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-[0_16px_40px_-12px_rgba(0,0,0,0.15)] dark:border-neutral-800 dark:bg-neutral-950 dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)]"
+            >
+              {/* Section 1: Quick Links (Rounded Pills) */}
+              <div className="p-4">
+                <h3 className="mb-3 text-xs font-semibold tracking-wider text-neutral-400 uppercase">
+                  Quick Navigation
+                </h3>
+                <div className="flex flex-wrap gap-2">
                   <PillButton
-                    icon={<ShieldPlus size={14} />}
-                    label="Super Admin"
-                    onClick={() => handleNavigation("/dashboard/superadmin")}
+                    icon={<LayoutDashboard size={14} />}
+                    label="Home"
+                    onClick={() => handleNavigation("/dashboard")}
                   />
-                )}
 
-                {/* Issues Analytics */}
-                {hasFeatureAccess(
-                  { role, specialAccess },
-                  FEATURES.ANALYTICS,
-                ) && (
                   <PillButton
-                    icon={<ChartColumnBig size={14} />}
-                    label="Analytics"
-                    onClick={() => handleNavigation("/dashboard/analytics")}
-                  />
-                )}
-
-                {/* Trigger opening of the admin panel */}
-                {role === "admin" && (
-                  <PillButton
-                    icon={<ShieldUser size={14} />}
-                    label="Admin Panel"
+                    icon={<CirclePlus size={14} />}
+                    label="New Issue"
                     onClick={() => {
-                      setIsAdminPanelOpen(true);
+                      setIsIssueModalOpen(true);
+                      setIsOpen(false);
+                    }}
+                    accent
+                  />
+
+                  <PillButton
+                    icon={<NotebookPen size={14} />}
+                    label="Articles"
+                    onClick={() => handleNavigation("/dashboard/articles")}
+                  />
+
+                  {isSuper && (
+                    <PillButton
+                      icon={<ShieldPlus size={14} />}
+                      label="Super Admin"
+                      onClick={() => handleNavigation("/dashboard/superadmin")}
+                    />
+                  )}
+
+                  {/* Issues Analytics */}
+                  {hasFeatureAccess(
+                    { role, specialAccess },
+                    FEATURES.ANALYTICS,
+                  ) && (
+                    <PillButton
+                      icon={<ChartColumnBig size={14} />}
+                      label="Analytics"
+                      onClick={() => handleNavigation("/dashboard/analytics")}
+                    />
+                  )}
+
+                  {/* Trigger opening of the admin panel */}
+                  {role === "admin" && (
+                    <PillButton
+                      icon={<ShieldUser size={14} />}
+                      label="Admin Panel"
+                      onClick={() => {
+                        setIsAdminPanelOpen(true);
+                        setIsOpen(false);
+                      }}
+                    />
+                  )}
+
+                  <PillButton
+                    icon={<ChevronLeft size={14} />}
+                    label="Back"
+                    onClick={() => {
+                      router.back();
                       setIsOpen(false);
                     }}
                   />
-                )}
-
-                <PillButton
-                  icon={<ChevronLeft size={14} />}
-                  label="Back"
-                  onClick={() => {
-                    router.back();
-                    setIsOpen(false);
-                  }}
-                />
+                </div>
               </div>
-            </div>
 
-            {/* Section 2: Search Area */}
-            <SearchArea closeBar={() => setIsOpen(false)} />
+              {/* Section 2: Search Area */}
+              <SearchArea closeBar={() => setIsOpen(false)} />
+            </div>
           </div>
-        </div>
+        </ClientPortal>
       )}
     </>
   );
@@ -224,7 +230,7 @@ const PillButton = ({
 }: PillButtonProps) => (
   <button
     onClick={onClick}
-    className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12px] font-medium transition-all active:scale-95 ${
+    className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[12px] font-medium transition-all active:scale-95 ${
       accent
         ? "border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:border-blue-900/50 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/40"
         : "border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-400 dark:hover:bg-neutral-900"
