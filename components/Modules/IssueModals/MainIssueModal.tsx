@@ -102,9 +102,23 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   const [isSubmitForUserOpen, setIsSubmitForUserOpen] = useState(false);
   const [submitForUserData, setSubmitForUserData] =
     useState<SubmitForUserData | null>(null);
+  // Whether any submit-for-user detail has been entered, complete or not
+  const [hasSubmitForUserInput, setHasSubmitForUserInput] = useState(false);
+  // Bumped to remount (and so empty) the submit-for-user form
+  const [submitForUserKey, setSubmitForUserKey] = useState(0);
 
-  const handleSubmitForUserConfirm = (data: SubmitForUserData) => {
+  const handleSubmitForUserChange = (
+    data: SubmitForUserData | null,
+    hasInput: boolean,
+  ) => {
     setSubmitForUserData(data);
+    setHasSubmitForUserInput(hasInput);
+  };
+
+  const clearSubmitForUser = () => {
+    setSubmitForUserData(null);
+    setHasSubmitForUserInput(false);
+    setSubmitForUserKey((key) => key + 1);
   };
 
   const closeModal = useCallback(() => setIsOpen(false), [setIsOpen]);
@@ -235,8 +249,8 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
         behalf_user_department: "",
       });
 
-      // Clear submitForUserData
-      setSubmitForUserData(null);
+      // Clear the submit-for-user details
+      clearSubmitForUser();
 
       setFiles([]);
       setAssignmentInfo(null); // Clear assignment info
@@ -261,10 +275,19 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
 
     if (!formData.target_department || !formData.issue_type) {
       triggerAlert("error", "Missing some required fields");
+    } else if (hasSubmitForUserInput && !submitForUserData) {
+      // Half-entered user details would otherwise submit in your own name
+      setIsSubmitForUserOpen(true);
+      triggerAlert(
+        "error",
+        "Complete or clear the user details before submitting",
+      );
     } else {
       triggerDialog({
         title: "Submit Issue",
-        description: "Confirm submission of the issue.",
+        description: submitForUserData
+          ? `Confirm submitting this issue for ${submitForUserData.user_name} (${submitForUserData.user_email}).`
+          : "Confirm submission of the issue.",
         onConfirm: handleFormSubmit,
       });
     }
@@ -297,11 +320,11 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
                 />
               </button>
 
-              {/* Clear button — only visible when user data has been set */}
-              {submitForUserData && !isSubmitForUserOpen && (
+              {/* Clear button — only visible once user details are entered */}
+              {hasSubmitForUserInput && (
                 <button
                   type="button"
-                  onClick={() => setSubmitForUserData(null)}
+                  onClick={clearSubmitForUser}
                   className="inline-flex items-center gap-1.5 rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-600 hover:border-red-300 hover:bg-red-50 hover:text-red-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:border-red-800 dark:hover:bg-red-950/30 dark:hover:text-red-400"
                 >
                   <X size={14} />
@@ -313,9 +336,9 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
 
           {/* Submit for user modal */}
           <SubmitForAUser
+            key={submitForUserKey}
             isOpen={isSubmitForUserOpen}
-            setIsOpen={setIsSubmitForUserOpen}
-            onConfirm={handleSubmitForUserConfirm}
+            onChange={handleSubmitForUserChange}
           />
 
           {/* A card that displays the selected user info - only displayed when all required submitForUserData is available and isSubmitForUserOpen is false */}

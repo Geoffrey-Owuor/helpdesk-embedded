@@ -1,13 +1,13 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState, ChangeEvent } from "react";
+import { useState, ChangeEvent } from "react";
 import { NameValidationResult, NameValidator } from "@/utils/Validators";
 import { validateHotpointEmail } from "@/utils/Validators";
 import NameRulesCard from "../NameRulesCard";
 import { baseDepartments } from "@/public/assets";
 import OptionsDropDown from "./OptionsDropDown";
 import FormAsterisk from "../FormAsterisk";
-import { CheckCircle2, UserRound, UserRoundPlus } from "lucide-react";
+import { CheckCircle2, UserRound, UserRoundCheck } from "lucide-react";
 import UserEmailAutocomplete from "./UserEmailAutocomplete";
 import { UserRecord } from "@/serverActions/GetCachedUsers";
 
@@ -19,15 +19,12 @@ export type SubmitForUserData = {
 
 type SubmitForAUserProps = {
   isOpen: boolean;
-  setIsOpen: Dispatch<SetStateAction<boolean>>;
-  onConfirm: (data: SubmitForUserData) => void;
+  // Called on every edit - data is set once all the details are valid, and
+  // hasInput says whether anything has been entered at all
+  onChange: (data: SubmitForUserData | null, hasInput: boolean) => void;
 };
 
-const SubmitForAUser = ({
-  setIsOpen,
-  isOpen,
-  onConfirm,
-}: SubmitForAUserProps) => {
+const SubmitForAUser = ({ isOpen, onChange }: SubmitForAUserProps) => {
   const [formData, setFormData] = useState<SubmitForUserData>({
     user_name: "",
     user_email: "",
@@ -45,44 +42,75 @@ const SubmitForAUser = ({
     isValid: true,
   });
 
+  // Stores the edit and tells the parent - the user is selected as soon as
+  // every detail is valid, so there's no separate confirm step to forget
+  const update = (
+    next: SubmitForUserData,
+    validation: NameValidationResult = nameValidation,
+  ) => {
+    setFormData(next);
+
+    const trimmed = {
+      user_name: next.user_name.trim(),
+      user_email: next.user_email.trim(),
+      user_department: next.user_department,
+    };
+    const isComplete =
+      Boolean(trimmed.user_name && trimmed.user_department) &&
+      validateHotpointEmail(trimmed.user_email) &&
+      validation.isValid;
+    const hasInput = Boolean(
+      trimmed.user_name || trimmed.user_email || trimmed.user_department,
+    );
+
+    onChange(isComplete ? trimmed : null, hasInput);
+  };
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
 
     if (name === "user_name") {
       const validationResult = NameValidator(value);
       setNameValidation(validationResult);
+      update({ ...formData, user_name: value }, validationResult);
+    } else {
+      update({ ...formData, [name]: value });
     }
   };
 
   const handleBlur = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value.trim() }));
+    update({ ...formData, [name]: value.trim() });
   };
 
   const handleDepartmentChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, user_department: value }));
+    update({ ...formData, user_department: value });
   };
 
-  // NEW: Handler for when a user is selected from the autocomplete dropdown
+  // Picking an existing user from the autocomplete fills in their record,
+  // whose name is trusted as-is
   const handleUserAutofill = (user: UserRecord) => {
-    setFormData((prev) => ({
-      ...prev,
-      user_email: user.email,
-      user_name: user.name,
-      user_department: user.department,
-    }));
+    const validName: NameValidationResult = {
+      hasTwoNames: true,
+      isCapitalized: true,
+      singleSpace: true,
+      isValid: true,
+    };
+    setNameValidation(validName);
+    update(
+      {
+        user_email: user.email,
+        user_name: user.name,
+        user_department: user.department,
+      },
+      validName,
+    );
   };
 
-  const handleConfirm = () => {
-    onConfirm(formData);
-    setIsOpen(false);
-  };
-
-  const isValid =
-    formData.user_name.trim() &&
-    formData.user_email.trim() &&
-    formData.user_department;
+  const isComplete =
+    Boolean(formData.user_name.trim() && formData.user_department) &&
+    isValidEmail &&
+    nameValidation.isValid;
 
   if (!isOpen) return null;
 
@@ -174,16 +202,27 @@ const SubmitForAUser = ({
           />
         </div>
 
-        {/* Confirm Button */}
-        <div className="pt-5">
-          <button
-            onClick={handleConfirm}
-            disabled={!isValid || !nameValidation.isValid || !isValidEmail}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-neutral-950 px-4 py-2.25 text-sm text-white hover:bg-neutral-800 focus:outline-none disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+        {/* Selection status - replaces the old confirm button */}
+        <div className="flex items-end">
+          <div
+            aria-live="polite"
+            className={`flex w-full items-center gap-2 rounded-xl border px-3 py-2.25 text-sm ${
+              isComplete
+                ? "border-green-200 bg-green-50 text-green-800 dark:border-green-900/50 dark:bg-green-950/30 dark:text-green-300"
+                : "border-dashed border-neutral-300 text-neutral-500 dark:border-neutral-700 dark:text-neutral-400"
+            }`}
           >
-            <UserRoundPlus className="h-4 w-4" />
-            Confirm
-          </button>
+            {isComplete ? (
+              <UserRoundCheck className="h-4 w-4 shrink-0" />
+            ) : (
+              <UserRound className="h-4 w-4 shrink-0" />
+            )}
+            <span className="truncate">
+              {isComplete
+                ? `Submitting for ${formData.user_name.trim()}`
+                : "Fill in all details to select the user"}
+            </span>
+          </div>
         </div>
       </div>
     </div>
