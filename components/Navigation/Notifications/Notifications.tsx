@@ -4,7 +4,6 @@ import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useState } from "react";
 import NotificationModal from "./NotificationModal";
-import { useLoadingStore } from "@/store/useLoadingStore";
 import { useRouter, usePathname } from "next/navigation";
 import { RouteChangeProps } from "./NotificationModal";
 import { useAlertStore } from "@/store/useAlertStore";
@@ -37,16 +36,12 @@ const Notifications = () => {
 
   const router = useRouter();
 
-  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
-
   const handleRouteChange = ({ uuid }: RouteChangeProps) => {
     setIsModalOpen(false);
 
     const dashboardPath = `/dashboard/${uuid}`;
     // Return if we already on the issue's page
     if (dashboardPath === pathname) return;
-
-    setLoadingLine(true);
 
     router.push(dashboardPath);
   };

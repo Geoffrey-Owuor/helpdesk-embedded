@@ -7,6 +7,7 @@ import AuthShell from "./AuthShell";
 import { Eye, EyeOff, Mail, Lock, Loader2, AlertTriangle } from "lucide-react";
 import { useIsEmbedd } from "@/hooks/useIsEmbedd";
 import { useAlertStore } from "@/store/useAlertStore";
+import { useLoadingStore } from "@/store/useLoadingStore";
 import { basePath } from "@/public/assets";
 
 // Microsoft Icon Here
@@ -46,6 +47,7 @@ export default function LoginPage() {
       // Listen for the signal from the popup
       if (event.data?.type === "AUTH_SUCCESS" && event.data?.url) {
         // Redirect the parent iframe to the URL dictated by the backend
+        useLoadingStore.getState().startLoadingLine(); // Full page load, so instrumentation-client.ts never sees it
         window.location.href = event.data.url;
       }
     };
@@ -77,6 +79,7 @@ export default function LoginPage() {
       const data = await response.json();
       //   Successfull login
       if (response.ok) {
+        useLoadingStore.getState().startLoadingLine(); // Full page load, so instrumentation-client.ts never sees it
         window.location.href = `${basePath}/dashboard`;
       } else {
         setError(data.message || "Login Failed");

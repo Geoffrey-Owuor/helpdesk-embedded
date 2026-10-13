@@ -2,7 +2,6 @@
 import { useRouter } from "next/navigation";
 import { Paperclip, UndoDot, GitMerge, UsersRound } from "lucide-react";
 import { titleHelper, dateFormatter } from "@/public/assets";
-import { useLoadingStore } from "@/store/useLoadingStore";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import IssuePriorityFormatter from "../IssuesData/IssuePriorityFormatter";
 import { AssignedAgentFormatter } from "../IssuesData/AssignedAgentFormatter";
@@ -19,10 +18,8 @@ const AnalyticsIssuesTable = ({
   isLoading: boolean;
 }) => {
   const router = useRouter();
-  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
 
   const goToIssue = (issue: AnalyticsIssueRow) => {
-    setLoadingLine(true);
     router.push(`/dashboard/analytics/${issue.issue_uuid}`);
   };
 
@@ -76,10 +73,7 @@ const AnalyticsIssuesTable = ({
                     <div className="inline-flex items-center gap-2">
                       <Link
                         href={`/dashboard/analytics/${issue.issue_uuid}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setLoadingLine(true);
-                        }}
+                        onClick={(e) => e.stopPropagation()}
                         title={titleHelper(issue.issue_reference_id)}
                         className="max-w-50 truncate text-sm font-semibold text-neutral-900 hover:text-blue-500 hover:underline dark:text-neutral-100"
                       >

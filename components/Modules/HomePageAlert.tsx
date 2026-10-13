@@ -3,8 +3,6 @@
 import { X, BookOpen, ArrowRight } from "lucide-react";
 import { useEffect, useCallback, useState, useRef } from "react";
 import Link from "next/link";
-import { useLoadingStore } from "@/store/useLoadingStore";
-import { usePathname } from "next/navigation";
 
 interface HomePageAlertProps {
   isOpen: boolean;
@@ -12,8 +10,6 @@ interface HomePageAlertProps {
 }
 
 const HomePageAlert = ({ isOpen, onClose }: HomePageAlertProps) => {
-  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
-  const pathname = usePathname();
   const [isClosing, setIsClosing] = useState(false);
 
   // Keep a mutable ref of the open state to access inside the cleanup function
@@ -87,13 +83,7 @@ const HomePageAlert = ({ isOpen, onClose }: HomePageAlertProps) => {
 
           <Link
             href="/manual"
-            onClick={() => {
-              // Showing the loading line logic
-              if (pathname === "/manual") return;
-
-              setLoadingLine(true);
-              handleClose();
-            }} // Closes the alert when the user clicks the link
+            onClick={handleClose} // Closes the alert when the user clicks the link
             className="group mt-3 inline-flex w-fit items-center gap-1.5 text-[13px] font-semibold text-blue-400 transition-colors hover:text-blue-300 dark:text-blue-600 dark:hover:text-blue-700"
           >
             Read the Manual

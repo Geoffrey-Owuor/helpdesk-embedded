@@ -1,6 +1,5 @@
 "use client";
 
-import { useLoadingStore } from "@/store/useLoadingStore";
 import { fetchIssues } from "@/queries/fetchIssues";
 import { IssueValueTypes } from "@/public/assets";
 import { useQuery } from "@tanstack/react-query";
@@ -20,7 +19,6 @@ const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
   const [searchQuery, setSearchQuery] = useState("");
 
   // Global stores
-  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
   const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
   const superAdminFilter = useSearchStore((state) => state.superAdminFilter);
 
@@ -75,8 +73,6 @@ const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
     const route = `/dashboard/${record.issue_uuid}`;
 
     if (pathname === route) return;
-
-    setLoadingLine(true);
 
     router.push(route);
   };

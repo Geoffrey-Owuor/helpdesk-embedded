@@ -11,7 +11,6 @@ import { generateSlug } from "@/utils/GenerateSlug";
 import ArticleTOC from "./ArticleTOC";
 import MarkdownVideoLink from "./MarkdownVideoLink";
 import { usePathname } from "next/navigation";
-import { useLoadingStore } from "@/store/useLoadingStore";
 import ViewArticleSkeleton from "@/components/Skeletons/ViewArticleSkeleton";
 import Link from "next/link";
 
@@ -20,8 +19,6 @@ type ViewArticleProps = {
 };
 
 const ViewArticle = ({ uuid }: ViewArticleProps) => {
-  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
-
   const pathname = usePathname();
   const isInDashboard = pathname.includes("/dashboard/articles");
 
@@ -69,7 +66,6 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
           </p>
           <Link
             href={backToRoute}
-            onClick={() => setLoadingLine(true)}
             className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-3 font-medium text-white transition-colors hover:bg-neutral-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -134,7 +130,6 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
 
             <Link
               href={backToRoute}
-              onClick={() => setLoadingLine(true)}
               className="flex cursor-pointer items-center gap-2 transition-colors duration-200 hover:text-neutral-700 dark:hover:text-neutral-300"
             >
               <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
