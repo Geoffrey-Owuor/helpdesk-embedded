@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Building2, ChevronDown, Loader2 } from "lucide-react";
 import { baseDepartments, basePath } from "@/public/assets";
 import { ApiHandler } from "@/utils/ApiHandler";
+import { useLoadingStore } from "@/store/useLoadingStore";
 import AuthShell from "./AuthShell";
 
 const SSOCompletionForm = ({
@@ -55,6 +56,7 @@ const SSOCompletionForm = ({
       }
 
       // Success! Redirect to the dashboard
+      useLoadingStore.getState().startLoadingLine(); // Full page load, so instrumentation-client.ts never sees it
       window.location.href = `${basePath}/dashboard`;
     } catch (error) {
       console.error("Sso completion error:", error);

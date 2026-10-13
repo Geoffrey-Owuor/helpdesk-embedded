@@ -1,8 +1,6 @@
 "use client";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { useLoadingStore } from "@/store/useLoadingStore";
-import { usePathname } from "next/navigation";
 import ThemeToggle from "../Themes/ThemeToggle";
 import HomePagesLogo from "../Modules/HomePagesLogo";
 
@@ -16,9 +14,6 @@ const navLinks = [
 ];
 
 const HomeNavBar = () => {
-  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
-  const pathname = usePathname();
-
   const [isScrolled, setIsScrolled] = useState(false);
   const lastScrollY = useRef(0);
 
@@ -49,12 +44,6 @@ const HomeNavBar = () => {
     };
   }, []);
 
-  const handleNavLinkClick = (href: string) => {
-    if (pathname === href) return;
-
-    setLoadingLine(true);
-  };
-
   return (
     <div
       className={`sticky top-0 right-0 left-0 z-50 ${isScrolled ? "bg-white dark:bg-neutral-950" : "bg-transparent"}`}
@@ -68,7 +57,6 @@ const HomeNavBar = () => {
         <div className="hidden items-center gap-1 lg:flex">
           {navLinks.map((link) => (
             <Link
-              onClick={() => handleNavLinkClick(link.href)}
               key={link.href}
               href={link.href}
               className="rounded-full px-4 py-1.5 text-sm text-black hover:bg-gray-200 dark:text-white dark:hover:bg-neutral-800"

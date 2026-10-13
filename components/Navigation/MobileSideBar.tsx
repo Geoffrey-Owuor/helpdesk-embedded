@@ -33,14 +33,12 @@ const linkClasses = (isActive: boolean) =>
 
 type MobileSideBarProps = {
   sideBarOpen: boolean;
-  handleRouteChange: (val: string) => void;
   highlightLink: (path: string) => boolean;
   setSideBarOpen: Dispatch<SetStateAction<boolean>> | ((open: boolean) => void);
 };
 
 const MobileSideBar = ({
   sideBarOpen,
-  handleRouteChange,
   highlightLink,
   setSideBarOpen,
 }: MobileSideBarProps) => {
@@ -61,12 +59,6 @@ const MobileSideBar = ({
   );
   const menuRef = useRef<HTMLElement | null>(null);
   useFocusTrapping(menuRef, sideBarOpen, closeSidebar);
-
-  // Handling mobile route change
-  const handleMobileRouteChange = (route: string) => {
-    setSideBarOpen(false);
-    handleRouteChange(route);
-  };
 
   const handleNewIssueOpening = () => {
     setSideBarOpen(false);
@@ -117,7 +109,7 @@ const MobileSideBar = ({
             {/* Link: Homepage */}
             <Link
               href="/dashboard"
-              onClick={() => handleMobileRouteChange("/dashboard")}
+              onClick={closeSidebar}
               aria-current={highlightLink("/dashboard") ? "page" : undefined}
               className={linkClasses(highlightLink("/dashboard"))}
             >
@@ -138,7 +130,7 @@ const MobileSideBar = ({
             {isSuper && (
               <Link
                 href="/dashboard/superadmin"
-                onClick={() => handleMobileRouteChange("/dashboard/superadmin")}
+                onClick={closeSidebar}
                 aria-current={
                   highlightLink("/dashboard/superadmin") ? "page" : undefined
                 }
@@ -153,7 +145,7 @@ const MobileSideBar = ({
             {hasFeatureAccess({ role, specialAccess }, FEATURES.ANALYTICS) && (
               <Link
                 href="/dashboard/analytics"
-                onClick={() => handleMobileRouteChange("/dashboard/analytics")}
+                onClick={closeSidebar}
                 aria-current={
                   highlightLink("/dashboard/analytics") ? "page" : undefined
                 }
@@ -178,7 +170,7 @@ const MobileSideBar = ({
             {/* Articles Page */}
             <Link
               href="/dashboard/articles"
-              onClick={() => handleMobileRouteChange("/dashboard/articles")}
+              onClick={closeSidebar}
               aria-current={
                 highlightLink("/dashboard/articles") ? "page" : undefined
               }

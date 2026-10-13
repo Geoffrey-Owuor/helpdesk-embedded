@@ -16,7 +16,6 @@ import { useState, useRef, useEffect } from "react";
 import { useUser } from "@/contexts/UserContext";
 import MobileSideBar from "./MobileSideBar";
 import { usePathname, useRouter } from "next/navigation";
-import { useLoadingStore } from "@/store/useLoadingStore";
 import ClientPortal from "../Modules/ClientPortal";
 import { useSidebarToggleStore } from "@/store/useSidebarToggleStore";
 import { useDashboardModalsStore } from "@/store/useDashboardModalsStore";
@@ -67,24 +66,16 @@ const DashboardSidebar = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [toggleIssueModal]);
 
-  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
   const pathname = usePathname();
   const router = useRouter();
 
   // Determine which link to highlight
   const highlightLink = (path: string) => path === pathname;
 
-  const handleRouteChange = (route: string) => {
-    if (route === pathname) return;
-
-    setLoadingLine(true);
-  };
-
   return (
     <>
       {/* Mobile overlay sidebar (opened from the topbar menu button) */}
       <MobileSideBar
-        handleRouteChange={handleRouteChange}
         highlightLink={highlightLink}
         sideBarOpen={showMobileSidebar}
         setSideBarOpen={setShowMobileSidebar}
@@ -106,7 +97,6 @@ const DashboardSidebar = () => {
             icon={<LayoutDashboard className="h-5 w-5" />}
             label="Home"
             isActive={highlightLink("/dashboard")}
-            onClick={() => handleRouteChange("/dashboard")}
             showToolTip={true}
             ToolTipMessage="Dashboard"
           />
@@ -131,7 +121,6 @@ const DashboardSidebar = () => {
               icon={<ShieldPlus className="h-5 w-5" />}
               label="Super"
               isActive={highlightLink("/dashboard/superadmin")}
-              onClick={() => handleRouteChange("/dashboard/superadmin")}
               showToolTip={true}
               ToolTipMessage="Super Admin"
             />
@@ -144,7 +133,6 @@ const DashboardSidebar = () => {
               icon={<ChartColumnBig className="h-5 w-5" />}
               label="Analytics"
               isActive={highlightLink("/dashboard/analytics")}
-              onClick={() => handleRouteChange("/dashboard/analytics")}
               showToolTip={true}
               ToolTipMessage="Issues Analytics"
             />
@@ -167,7 +155,6 @@ const DashboardSidebar = () => {
             icon={<NotebookPen className="h-5 w-5" />}
             label="Articles"
             isActive={highlightLink("/dashboard/articles")}
-            onClick={() => handleRouteChange("/dashboard/articles")}
             showToolTip={true}
             ToolTipMessage="Articles Hub"
           />
@@ -329,7 +316,6 @@ type SidebarLinkProps = {
   icon: React.ReactNode;
   label: string;
   isActive: boolean;
-  onClick?: () => void;
   showToolTip?: boolean;
   ToolTipMessage?: string;
 };
@@ -339,7 +325,6 @@ const SidebarLink = ({
   icon,
   label,
   isActive,
-  onClick,
   showToolTip = false,
   ToolTipMessage,
 }: SidebarLinkProps) => {
@@ -351,7 +336,6 @@ const SidebarLink = ({
       <Link
         ref={ref}
         href={href}
-        onClick={onClick}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         className={`flex w-full flex-col items-center gap-1 ${isActive ? "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200" : "text-neutral-600 hover:bg-neutral-200 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"} rounded-2xl py-2.5 text-[11px] font-semibold`}

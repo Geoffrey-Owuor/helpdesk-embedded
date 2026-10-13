@@ -5,8 +5,6 @@ import Link from "next/link";
 import { assets } from "@/public/assets";
 import { currentYear } from "@/public/assets";
 import { ArrowUp, Mail } from "lucide-react";
-import { useLoadingStore } from "@/store/useLoadingStore";
-import { usePathname } from "next/navigation";
 import { DbStatusPill } from "../Modules/DbStatus/DbStatusPill";
 
 const linkGroups = [
@@ -37,17 +35,6 @@ const linkGroups = [
 ];
 
 const Footer = () => {
-  const pathname = usePathname();
-  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
-
-  const handleLoadingClick = (href: string) => {
-    const originalHref = href.split("#")[0];
-
-    if (originalHref === pathname) return;
-
-    setLoadingLine(true);
-  };
-
   // Every page that renders this footer scrolls inside a ".home-container"
   const handleScrollToTop = () => {
     document
@@ -107,7 +94,6 @@ const Footer = () => {
                   {group.links.map((item) => (
                     <li key={item.name}>
                       <Link
-                        onClick={() => handleLoadingClick(item.href)}
                         href={item.href}
                         className="text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
                       >
