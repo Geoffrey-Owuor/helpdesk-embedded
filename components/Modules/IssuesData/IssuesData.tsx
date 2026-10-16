@@ -44,7 +44,11 @@ const IssuesData = () => {
       page,
       pageSize,
     ],
-    queryFn: () => fetchIssues(committedFilters, page, pageSize),
+    queryFn: () =>
+      fetchIssues(committedFilters, page, pageSize, {
+        agentAdminFilter,
+        superAdminFilter,
+      }),
   });
 
   const rows = data?.rows ?? [];

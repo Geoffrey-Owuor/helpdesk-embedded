@@ -68,7 +68,8 @@ const Notifications = () => {
     refetch: refetchDefaultData,
   } = useQuery({
     queryKey: ["issuesDashboardData", superAdminFilter, agentAdminFilter, null, 1, 100],
-    queryFn: () => fetchIssues(null, 1, 100),
+    queryFn: () =>
+      fetchIssues(null, 1, 100, { agentAdminFilter, superAdminFilter }),
   });
 
   // Filter issuesData to only those created on or after notificationDate
