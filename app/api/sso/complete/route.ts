@@ -11,7 +11,11 @@ import { query } from "@/lib/Db";
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, email, department } = await req.json();
+    // Only the department comes from the client. Name and email come from
+    // the signed pending-registration token - the form just displays them,
+    // and trusting the posted values would let a user register (and get a
+    // session) under any not-yet-registered email.
+    const { department } = await req.json();
 
     const cookieStore = await cookies();
 
@@ -24,6 +28,9 @@ export async function POST(req: NextRequest) {
         { status: 403 },
       );
     }
+
+    const name = tempUser.username;
+    const email = tempUser.email;
 
     // 2. Insert into database (role defaults to 'user')
     const insertQuery = `
