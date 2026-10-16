@@ -9,7 +9,6 @@ import {
   PencilLine,
   CircleCheckBig,
 } from "lucide-react";
-import { useLoadingStore } from "@/store/useLoadingStore";
 import IssueStatusFormatter from "../Modules/IssuesData/IssueStatusFormatter";
 
 const steps = [
@@ -33,8 +32,6 @@ const steps = [
 const lifecycle = ["open", "in progress", "resolved", "closed"];
 
 const HowItWorks = () => {
-  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
-
   return (
     <section id="how-it-works" className="custom:px-8 scroll-mt-20 px-4 pb-16">
       {/* Header */}
@@ -117,7 +114,6 @@ const HowItWorks = () => {
       <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm">
         <Link
           href="/manual#user-manual"
-          onClick={() => setLoadingLine(true)}
           className="group inline-flex items-center gap-1.5 font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
         >
           Read the full walkthrough
@@ -125,7 +121,6 @@ const HowItWorks = () => {
         </Link>
         <Link
           href="/manual#color-codes"
-          onClick={() => setLoadingLine(true)}
           className="group inline-flex items-center gap-1.5 font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
         >
           Understand the color codes

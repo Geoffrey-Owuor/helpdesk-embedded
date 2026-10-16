@@ -1,5 +1,4 @@
 import apiClient from "@/lib/AxiosClient";
-import { useSearchStore } from "@/store/useSearchStore";
 import { IssueValueTypes } from "@/public/assets";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { IssuesFilterParams } from "@/lib/issues/buildIssuesFilter";
@@ -9,6 +8,13 @@ export interface IssuesResponse {
   total: number;
   page: number;
   pageSize: number;
+}
+
+// Which slice of issues to show - passed in by the caller, which already has
+// these values in its query key, so the request always matches the key
+export interface IssuesView {
+  agentAdminFilter: string;
+  superAdminFilter: boolean;
 }
 
 const emptyResponse = (page: number, pageSize: number): IssuesResponse => ({
@@ -22,10 +28,8 @@ export const fetchIssues = async (
   filters: IssuesFilterParams | null,
   page: number,
   pageSize: number,
+  { agentAdminFilter, superAdminFilter }: IssuesView,
 ): Promise<IssuesResponse> => {
-  const agentAdminFilter = useSearchStore.getState().agentAdminFilter;
-  const superAdminFilter = useSearchStore.getState().superAdminFilter;
-
   try {
     const response = await apiClient.get("/get-issues", {
       params: {

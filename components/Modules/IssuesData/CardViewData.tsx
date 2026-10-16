@@ -5,7 +5,6 @@ import Link from "next/link";
 import IssueStatusFormatter from "./IssueStatusFormatter";
 import { AssignedAgentFormatter } from "./AssignedAgentFormatter";
 import { useRouter } from "next/navigation";
-import { useLoadingStore } from "@/store/useLoadingStore";
 import {
   Calendar,
   Tag,
@@ -28,7 +27,6 @@ type CardViewDataProps = {
 
 const CardViewData = ({ currentIssues }: CardViewDataProps) => {
   const router = useRouter();
-  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
 
   if (currentIssues.length === 0) {
     return (
@@ -43,20 +41,14 @@ const CardViewData = ({ currentIssues }: CardViewDataProps) => {
       {currentIssues.map((issueData) => (
         <div
           key={issueData.issue_uuid}
-          onClick={() => {
-            setLoadingLine(true);
-            router.push(`/dashboard/${issueData.issue_uuid}`);
-          }}
+          onClick={() => router.push(`/dashboard/${issueData.issue_uuid}`)}
           className="group flex cursor-pointer flex-col justify-between rounded-xl border border-neutral-200 bg-white p-5 shadow-xs transition-all duration-200 hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700"
         >
           {/* Header: Ref ID & Status */}
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <div className="inline-flex items-center gap-3">
               <Link
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setLoadingLine(true);
-                }}
+                onClick={(e) => e.stopPropagation()}
                 title={titleHelper(issueData.issue_reference_id)}
                 href={`/dashboard/${issueData.issue_uuid}`}
                 className="flex items-center gap-1.5 text-sm font-semibold text-neutral-500 transition-colors hover:text-blue-500 hover:underline dark:text-neutral-400"

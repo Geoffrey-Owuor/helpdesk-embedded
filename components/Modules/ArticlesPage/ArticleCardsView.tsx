@@ -10,7 +10,6 @@ import {
   Building2,
   PenLine,
 } from "lucide-react";
-import { useLoadingStore } from "@/store/useLoadingStore";
 import { dateFormatter } from "@/public/assets";
 import { ArticlesCardValues } from "@/serverActions/GetUserArticles";
 import { JSX, useState } from "react";
@@ -36,8 +35,6 @@ const ArticleCardsView = ({
   getPreviewText,
   userId,
 }: ArticleCardsProps) => {
-  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
-
   const [modalId, setModalId] = useState("");
 
   const pathname = usePathname();
@@ -126,7 +123,6 @@ const ArticleCardsView = ({
               <ArticleTypeFormatter type={article.article_type} />
               <Link
                 href={`${baseLink}/${article.article_id}`}
-                onClick={() => setLoadingLine(true)}
                 className="w-fit text-sm text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
               >
                 Read more...

@@ -10,7 +10,6 @@ import {
   MopSparkles,
   ShieldCheck,
 } from "lucide-react";
-import { useLoadingStore } from "@/store/useLoadingStore";
 import IssuePriorityFormatter from "../Modules/IssuesData/IssuePriorityFormatter";
 
 const priorities = ["Critical", "High", "Medium", "Low"];
@@ -47,8 +46,6 @@ const cards = [
 ];
 
 const Features = () => {
-  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
-
   return (
     <section id="features" className="custom:px-8 scroll-mt-20 px-4 pb-16">
       {/* Header */}
@@ -116,7 +113,6 @@ const Features = () => {
             <Link
               key={card.title}
               href={card.href}
-              onClick={() => setLoadingLine(true)}
               className="group relative flex flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-neutral-300 hover:shadow-xl hover:shadow-neutral-900/5 dark:border-neutral-800 dark:bg-neutral-900/20 dark:hover:border-neutral-700 dark:hover:shadow-black/40"
             >
               <div className="absolute inset-x-0 top-0 h-0.5 bg-linear-to-r from-blue-500 to-indigo-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />

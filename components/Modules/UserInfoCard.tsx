@@ -5,6 +5,7 @@ import { useTheme } from "next-themes";
 import apiClient from "@/lib/AxiosClient";
 import { useUser } from "@/contexts/UserContext";
 import { useOverlayStore } from "@/store/useOverlayStore";
+import { useLoadingStore } from "@/store/useLoadingStore";
 import { useEffect, RefObject } from "react";
 import { basePath } from "@/public/assets";
 import { useIsEmbedd } from "@/hooks/useIsEmbedd";
@@ -61,6 +62,7 @@ const UserInfoCard = ({
       authChannel.close();
 
       // Redirect to login and refresh the page state
+      useLoadingStore.getState().startLoadingLine(); // Full page load, so instrumentation-client.ts never sees it
       window.location.href = `${basePath}/login`;
     } catch (error) {
       console.error("Logout failed", error);

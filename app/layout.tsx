@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../css/globals.css";
 import Alert from "@/components/Modules/Alert";
@@ -55,7 +56,10 @@ export default function RootLayout({
       <body className="bg-gray-50 antialiased dark:bg-neutral-950">
         <Provider>
           <DbRecoveryManager />
-          <LoadingLine />
+          {/* LoadingLine reads search params, which need a Suspense boundary */}
+          <Suspense fallback={null}>
+            <LoadingLine />
+          </Suspense>
           <Alert />
           <PromiseOverlay />
           <ConfirmationDialog />

@@ -2,63 +2,57 @@
 
 import { useLoadingStore } from "@/store/useLoadingStore";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
-const LoadingLine = () => {
-  const pathname = usePathname();
-  const [progress, setProgress] = useState(0);
+// Mounted fresh each time the line appears. It paints at 10%, then a long decelerating transition
+// toward 90% stands in for an interval-driven trickle; on finish, the shorter transition takes over
+// from wherever the bar currently is
+const Bar = ({ finishing }: { finishing: boolean }) => {
+  const [creeping, setCreeping] = useState(false);
 
-  // Loading store data
-  const loadingLine = useLoadingStore((state) => state.loadingLine);
-  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
-
-  // 1. Reset on route change
+  // Wait for the 10% frame to paint, otherwise there is nothing for the transition to start from
   useEffect(() => {
-    setLoadingLine(false);
-    Promise.resolve().then(() => setProgress(0));
-  }, [pathname, setLoadingLine]);
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => setCreeping(true));
+    });
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
-  // 2. Handle the progress animation
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-
-    if (loadingLine) {
-      // Jump start to 10% immediately so user sees something happened
-      Promise.resolve().then(() => setProgress(10));
-
-      interval = setInterval(() => {
-        setProgress((prev) => {
-          // If we reached our cap, stop incrementing
-          if (prev >= 95) {
-            return 95;
-          }
-
-          // "Decay" formula: The closer we get to 95, the smaller the jump.
-          // This simulates a "loading..." feeling without hitting 100% prematurely.
-          const remaining = 95 - prev;
-          const jump = Math.max(0.5, remaining * 0.05); // Move 5% of the remaining distance (Zeno breaker, if jump is less than 0.5 then move at 0.5 intervals of the remaining instead - When it reaches 85)
-
-          return prev + jump;
-        });
-      }, 100); // Update every 100ms
-    } else {
-      Promise.resolve().then(() => setProgress(0));
-    }
-
-    return () => clearInterval(interval);
-  }, [loadingLine]);
-
-  // If not loading, render nothing
-  if (!loadingLine) return null;
+  const scale = finishing
+    ? "scale-x-100 duration-200 ease-out"
+    : creeping
+      ? "scale-x-90 duration-[10s] ease-[cubic-bezier(0.1,0.7,0.3,1)]"
+      : "scale-x-10";
 
   return (
-    <div className="fixed top-0 left-0 z-100 h-[0.15rem] w-full bg-transparent">
+    <div
+      role="progressbar"
+      aria-label="Loading page"
+      className={`fixed top-0 left-0 z-100 h-[0.15rem] w-full bg-transparent transition-opacity duration-200 motion-reduce:transition-none ${finishing ? "opacity-0 delay-200" : "opacity-100"}`}
+    >
       <div
-        className="h-full bg-linear-to-r from-blue-800 via-blue-700 to-blue-500 transition-all duration-300 ease-out dark:from-blue-700 dark:via-blue-600 dark:to-blue-400"
-        style={{ width: `${progress}%` }}
+        className={`h-full origin-left bg-linear-to-r from-blue-800 via-blue-700 to-blue-500 transition-transform motion-reduce:transition-none dark:from-blue-700 dark:via-blue-600 dark:to-blue-400 ${scale}`}
       />
     </div>
   );
+};
+
+const LoadingLine = () => {
+  const pathname = usePathname();
+  const search = useSearchParams().toString();
+
+  // Loading store data
+  const phase = useLoadingStore((state) => state.phase);
+  const finishLoadingLine = useLoadingStore((state) => state.finishLoadingLine);
+
+  // The new URL has rendered
+  useEffect(() => {
+    finishLoadingLine();
+  }, [pathname, search, finishLoadingLine]);
+
+  if (phase !== "visible" && phase !== "finishing") return null;
+
+  return <Bar finishing={phase === "finishing"} />;
 };
 
 export default LoadingLine;

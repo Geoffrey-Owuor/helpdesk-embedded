@@ -3,7 +3,6 @@
 import { PinOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { MouseEvent } from "react";
-import { useLoadingStore } from "@/store/useLoadingStore";
 import { useAlertStore } from "@/store/useAlertStore";
 import {
   usePinnedIssuesStore,
@@ -24,13 +23,11 @@ const PinnedIssueListItem = ({
   onBeforeNavigate,
 }: PinnedIssueListItemProps) => {
   const router = useRouter();
-  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
   const unpinIssue = usePinnedIssuesStore((state) => state.unpinIssue);
 
   const handleNavigate = () => {
     onBeforeNavigate?.();
-    setLoadingLine(true);
     router.push(`/dashboard/${issue.issue_uuid}`);
   };
 

@@ -13,7 +13,6 @@ import { useEffect, useState } from "react";
 import { AppVersion } from "@/public/assets";
 import DashboardSkeleton from "./DashboardSkeleton";
 import { useQuickCreateStore } from "@/store/useQuickCreateStore";
-import { useLoadingStore } from "@/store/useLoadingStore";
 
 const featureTicks = [
   { icon: CheckCircle2, label: "Easy Submission" },
@@ -27,7 +26,6 @@ const Hero = () => {
   const status = useDbStore((state) => state.status);
   const triggerCheck = useDbStore((state) => state.triggerCheck);
   const openQuickCreate = useQuickCreateStore((state) => state.openQuickCreate);
-  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
 
   useEffect(() => {
     triggerCheck();
@@ -72,7 +70,6 @@ const Hero = () => {
           {/* Version badge — links through to the changelog */}
           <Link
             href="/changelog"
-            onClick={() => setLoadingLine(true)}
             className="animate-fadeUp group mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white/70 py-1 pr-2 pl-3 text-sm text-neutral-600 shadow-sm backdrop-blur transition-colors hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-800 dark:bg-neutral-900/60 dark:text-neutral-400 dark:hover:border-neutral-700 dark:hover:text-white"
           >
             <span
