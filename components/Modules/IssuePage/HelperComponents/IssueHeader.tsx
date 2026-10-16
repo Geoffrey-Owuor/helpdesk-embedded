@@ -108,12 +108,14 @@ export const IssueHeader = ({
 
       {/* --- COMPACT STICKY BAR ---
           Zero-height so it never shifts the layout; the bar hangs below it
-          and stretches over the main column's side padding. */}
+          keeps its contents on the page column, while a ::before band paints
+          the background and bottom border across the whole scroller, which
+          clips it to its inner edges. */}
       <div className="sticky top-0 z-30 h-0">
         <div
           inert={!isScrolledPast}
           aria-hidden={!isScrolledPast}
-          className={`absolute inset-x-0 -mx-4 flex items-center gap-2 border-b border-neutral-200 bg-white px-4 py-2 transition-[opacity,translate] duration-150 dark:border-neutral-800 dark:bg-black ${
+          className={`absolute inset-x-0 isolate -mx-4 flex items-center gap-2 px-4 py-2 transition-[opacity,translate] duration-150 before:absolute before:inset-y-0 before:-inset-x-[100vw] before:-z-10 before:border-b before:border-neutral-200 before:bg-white dark:before:border-neutral-800 dark:before:bg-black ${
             isScrolledPast
               ? "translate-y-0 opacity-100"
               : "pointer-events-none -translate-y-1 opacity-0"
