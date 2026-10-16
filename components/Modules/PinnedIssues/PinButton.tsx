@@ -4,6 +4,7 @@ import { MouseEvent } from "react";
 import { Pin } from "lucide-react";
 import { useAlertStore } from "@/store/useAlertStore";
 import { usePinnedIssuesStore, PinnedIssue } from "@/store/usePinnedIssuesStore";
+import { usePinnedIssuesHydrated } from "@/hooks/usePinnedIssuesHydrated";
 
 type PinButtonProps = {
   issue: PinnedIssue;
@@ -31,6 +32,11 @@ const PinButton = ({
   const pinIssue = usePinnedIssuesStore((state) => state.pinIssue);
   const unpinIssue = usePinnedIssuesStore((state) => state.unpinIssue);
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
+
+  // Hidden (but holding its space) until the stored pins load, so a pinned
+  // issue doesn't first render as unpinned
+  const hydrated = usePinnedIssuesHydrated();
+  const hydrationClass = hydrated ? "" : "invisible";
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -61,7 +67,7 @@ const PinButton = ({
           isPinned
             ? "bg-amber-600 hover:bg-amber-700"
             : "bg-neutral-700 hover:bg-neutral-600"
-        } ${className}`}
+        } ${hydrationClass} ${className}`}
       >
         <Pin size={12} fill={isPinned ? "currentColor" : "none"} />
         {isPinned ? "Pinned" : "Pin"}
@@ -83,7 +89,7 @@ const PinButton = ({
         revealOnHover && !isPinned
           ? "opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100"
           : ""
-      } ${className}`}
+      } ${hydrationClass} ${className}`}
     >
       <Pin size={size} fill={isPinned ? "currentColor" : "none"} />
     </button>

@@ -38,7 +38,7 @@ const IssuesCards = () => {
       superAdminFilter,
       committedFilters,
     ],
-    queryFn: () => fetchIssueCards(committedFilters),
+    queryFn: () => fetchIssueCards(committedFilters, { agentAdminFilter, superAdminFilter }),
   });
 
   // Call srolling top hook

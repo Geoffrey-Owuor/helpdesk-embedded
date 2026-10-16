@@ -23,6 +23,7 @@ import {
 import AuthShell from "../AuthShell";
 import { useSearchParams } from "next/navigation";
 import { useAlertStore } from "@/store/useAlertStore";
+import { useLoadingStore } from "@/store/useLoadingStore";
 import { ApiHandler } from "@/utils/ApiHandler";
 import NameRulesCard from "@/components/Modules/NameRulesCard";
 import { NameValidator, NameValidationResult } from "@/utils/Validators";
@@ -152,6 +153,7 @@ const CompleteRegistration = ({ email }: { email: string }) => {
       if (!response.ok) throw new Error(data.message || "Registration failed");
 
       // Push to protected dashboard
+      useLoadingStore.getState().startLoadingLine(); // Full page load, so instrumentation-client.ts never sees it
       window.location.href = `${basePath}/dashboard`;
     } catch (error) {
       if (error instanceof Error) triggerAlert("error", error.message);

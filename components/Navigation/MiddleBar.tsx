@@ -14,7 +14,6 @@ import {
   SlidersHorizontal,
   ChartColumnBig,
 } from "lucide-react";
-import { useLoadingStore } from "@/store/useLoadingStore";
 import SearchArea from "./SearchArea";
 import ClientPortal from "../Modules/ClientPortal";
 import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
@@ -38,7 +37,6 @@ const MiddleBar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const { role, isSuper, specialAccess } = useUser();
-  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
 
   // --- Keyboard & Click Outside Listeners ---
   useEffect(() => {
@@ -93,7 +91,6 @@ const MiddleBar = () => {
   const handleNavigation = (path: string) => {
     setIsOpen(false); // Close dropdown on navigate
     if (pathname === path) return;
-    setLoadingLine(true);
     router.push(path);
   };
 

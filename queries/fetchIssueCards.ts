@@ -1,15 +1,13 @@
 import { DataCounts, defaultCounts } from "@/public/assets";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { useSearchStore } from "@/store/useSearchStore";
 import { IssuesFilterParams } from "@/lib/issues/buildIssuesFilter";
+import { IssuesView } from "./fetchIssues";
 
 export const fetchIssueCards = async (
   filters: IssuesFilterParams | null,
+  { agentAdminFilter, superAdminFilter }: IssuesView,
 ): Promise<DataCounts> => {
-  const agentAdminFilter = useSearchStore.getState().agentAdminFilter;
-  const superAdminFilter = useSearchStore.getState().superAdminFilter;
-
   try {
     const response = await apiClient.get("/issues-cards", {
       params: {

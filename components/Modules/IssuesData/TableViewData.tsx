@@ -7,7 +7,6 @@ import IssueStatusFormatter from "./IssueStatusFormatter";
 import { dateFormatter } from "@/public/assets";
 import { AssignedAgentFormatter } from "./AssignedAgentFormatter";
 import { useRouter } from "next/navigation";
-import { useLoadingStore } from "@/store/useLoadingStore";
 import IssuePriorityFormatter from "./IssuePriorityFormatter";
 import RelativeTimeBadge from "./RelativeTimeBadge";
 import { GitMerge, Paperclip, UndoDot, UsersRound } from "lucide-react";
@@ -21,7 +20,6 @@ type TableViewDataProps = {
 const TableViewData = ({ currentIssues }: TableViewDataProps) => {
   const visibleColumns = useColumnStore((state) => state.visibleColumns);
   const router = useRouter();
-  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
 
   return (
     <div className="w-full rounded-xl border border-neutral-200 bg-gray-50 px-4 py-2 dark:border-neutral-800 dark:bg-neutral-950">
@@ -110,10 +108,9 @@ const TableViewData = ({ currentIssues }: TableViewDataProps) => {
               currentIssues.map((issueData) => (
                 <tr
                   key={issueData.issue_uuid}
-                  onClick={() => {
-                    setLoadingLine(true);
-                    router.push(`/dashboard/${issueData.issue_uuid}`);
-                  }}
+                  onClick={() =>
+                    router.push(`/dashboard/${issueData.issue_uuid}`)
+                  }
                   className="group cursor-pointer rounded-xl shadow-sm transition-transform duration-200"
                 >
                   {/* ROW STYLING NOTES: 
@@ -126,10 +123,7 @@ const TableViewData = ({ currentIssues }: TableViewDataProps) => {
                     <td className="bg-white px-4 py-4 whitespace-nowrap group-hover:bg-gray-50 first:rounded-l-xl last:rounded-r-xl dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
                       <div className="inline-flex items-center gap-2">
                         <Link
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setLoadingLine(true);
-                          }}
+                          onClick={(e) => e.stopPropagation()}
                           title={titleHelper(issueData.issue_reference_id)}
                           href={`/dashboard/${issueData.issue_uuid}`}
                           className="max-w-50 truncate text-sm font-semibold text-neutral-900 hover:text-blue-500 hover:underline dark:text-neutral-100"

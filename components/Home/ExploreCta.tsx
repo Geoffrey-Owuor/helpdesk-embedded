@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowRight, Bug, Mail, Star, Zap } from "lucide-react";
-import { useLoadingStore } from "@/store/useLoadingStore";
 import { useQuickCreateStore } from "@/store/useQuickCreateStore";
 
 const secondaryLinks = [
@@ -13,7 +12,6 @@ const secondaryLinks = [
 
 const ExploreCta = () => {
   const [fullUrl, setFullUrl] = useState("");
-  const setLoadingLine = useLoadingStore((state) => state.setLoadingLine);
   const openQuickCreate = useQuickCreateStore((state) => state.openQuickCreate);
 
   useEffect(() => {
@@ -66,7 +64,6 @@ const ExploreCta = () => {
               <Link
                 key={href}
                 href={href}
-                onClick={() => setLoadingLine(true)}
                 className="inline-flex items-center gap-1.5 text-neutral-400 transition-colors hover:text-white dark:text-neutral-600 dark:hover:text-neutral-950"
               >
                 <Icon className="h-3.5 w-3.5" />
