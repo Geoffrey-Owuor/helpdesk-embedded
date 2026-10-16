@@ -26,7 +26,8 @@ const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
   // rather than the whole dataset - a quick-jump tool, not the main search.
   const { data, isLoading: recordsLoading } = useQuery({
     queryKey: ["issuesDashboardData", superAdminFilter, agentAdminFilter, null, 1, 100],
-    queryFn: () => fetchIssues(null, 1, 100),
+    queryFn: () =>
+      fetchIssues(null, 1, 100, { agentAdminFilter, superAdminFilter }),
   });
 
   const recordsData = useMemo(() => data?.rows ?? [], [data]);
