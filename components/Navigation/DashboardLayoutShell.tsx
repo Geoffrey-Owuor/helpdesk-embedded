@@ -1,12 +1,13 @@
 "use client";
 
+import { useEffect } from "react";
 import DashboardSidebar from "./DashboardSidebar";
 import DashboardFooter from "./DashboardFooter";
-import HydrationGuard from "../Skeletons/HydrationGuard";
 import { DbStatusOverlay } from "../Modules/DbStatus/DbStatusOverlay";
 import { useDbStore } from "@/store/useDbStore";
 import { useSidebarToggleStore } from "@/store/useSidebarToggleStore";
 import { useDashboardModalsStore } from "@/store/useDashboardModalsStore";
+import { usePinnedIssuesStore } from "@/store/usePinnedIssuesStore";
 import DashboardHeader from "./DashboardHeader";
 import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
 import AdminPanel from "./AdminFunctions/AdminPanel";
@@ -35,8 +36,13 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
     (state) => state.setIsUserSettingsOpen,
   );
 
+  // Pinned issues persist in localStorage, which the server can't read
+  useEffect(() => {
+    usePinnedIssuesStore.persist.rehydrate();
+  }, []);
+
   const defaultContent = (
-    <HydrationGuard>
+    <>
       {/* Dashboard-wide modals — mounted once, opened via useDashboardModalsStore */}
       {isIssueModalOpen && (
         <MainIssueModal
@@ -112,7 +118,7 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
           className="shell-ear shell-ear-br custom:block hidden"
         />
       </div>
-    </HydrationGuard>
+    </>
   );
 
   if (status === "degraded") {

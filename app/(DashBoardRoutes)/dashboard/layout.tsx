@@ -3,6 +3,9 @@ import { redirect } from "next/navigation";
 import { UserProvider } from "@/contexts/UserContext";
 import DashboardLayoutShell from "@/components/Navigation/DashboardLayoutShell";
 import { Metadata } from "next";
+import { cookies } from "next/headers";
+import { StoreProviders } from "@/store/StoreProviders";
+import { readPreferences } from "@/lib/DashboardPreferences";
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const user = await requireSession();
@@ -25,9 +28,14 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
   const user = await requireSession();
   if (!user) redirect("/login");
 
+  // View preferences come from cookies so the first server render matches the client
+  const preferences = readPreferences(await cookies());
+
   return (
     <UserProvider user={user}>
-      <DashboardLayoutShell>{children}</DashboardLayoutShell>
+      <StoreProviders preferences={preferences}>
+        <DashboardLayoutShell>{children}</DashboardLayoutShell>
+      </StoreProviders>
     </UserProvider>
   );
 };

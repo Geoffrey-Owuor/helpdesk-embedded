@@ -55,6 +55,11 @@ export const usePinnedIssuesStore = create<
       name: "HelpDesk-pinned-issues-store",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ pinnedIssues: state.pinnedIssues }),
+      // Too large for a cookie, so the server can't know the pins: the server
+      // and first client render both start empty, and DashboardLayoutShell
+      // loads the stored pins after mount. Gate on usePinnedIssuesHydrated
+      // where the empty-then-filled switch would show.
+      skipHydration: true,
     },
   ),
 );
