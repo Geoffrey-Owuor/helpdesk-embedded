@@ -11,6 +11,11 @@ import { getUserPrivileges } from "@/lib/UserPrivileges";
 import { getRequestOrigin } from "@/lib/getRequestOrigin";
 import { NextRequest } from "next/server";
 import { basePath } from "@/public/assets";
+import {
+  fetchMicrosoftProfile,
+  isMicrosoftUnreachable,
+  retryOnConnectFailure,
+} from "@/lib/microsoftSso";
 
 export async function GET(req: NextRequest) {
   const origin = await getRequestOrigin(req);
@@ -69,9 +74,10 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const tokens = await entraId.validateAuthorizationCode(
-      code,
-      storedCodeVerifier,
+    // Retried once only if the connection to Microsoft never opened - the
+    // code is single-use, so anything that may have reached Microsoft isn't.
+    const tokens = await retryOnConnectFailure("SSO code exchange", () =>
+      entraId.validateAuthorizationCode(code, storedCodeVerifier),
     );
 
     // Fallback checks for handling across Arctic version updates safely
@@ -80,11 +86,14 @@ export async function GET(req: NextRequest) {
         ? tokens.accessToken()
         : tokens.accessToken;
 
-    const response = await fetch("https://graph.microsoft.com/oidc/userinfo", {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-
-    const profile = await response.json();
+    const profile = await fetchMicrosoftProfile(accessToken as string);
+    if (!profile.email) {
+      // Without an email we can neither match an account nor pre-fill a
+      // registration - never continue with an undefined email.
+      console.error("Authentication handshake error: profile has no email");
+      cookieStore.delete("oauth_is_popup");
+      return handleRedirect(`${basePath}/login?sso_error=failed`);
+    }
 
     // Query the user from our database
     const baseQuery = `
@@ -145,7 +154,7 @@ export async function GET(req: NextRequest) {
       // 1. Create a short-lived temporary payload
       const tempPayload = {
         userId: "some_random_id",
-        username: profile.name,
+        username: profile.name ?? "",
         role: "user",
         department: "no_department",
         email: profile.email,
@@ -170,6 +179,10 @@ export async function GET(req: NextRequest) {
     }
   } catch (error) {
     console.error("Authentication handshake error:", error);
-    return new Response("Authentication failed", { status: 500 });
+    // Back to the login page with a reason the page turns into an alert:
+    // couldn't reach Microsoft at all (network) vs. sign-in failed.
+    const reason = isMicrosoftUnreachable(error) ? "unreachable" : "failed";
+    cookieStore.delete("oauth_is_popup");
+    return handleRedirect(`${basePath}/login?sso_error=${reason}`);
   }
 }

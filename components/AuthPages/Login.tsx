@@ -99,6 +99,7 @@ export default function LoginPage() {
   useEffect(() => {
     const reset = searchParams.get("reset");
     const disabled = searchParams.get("disabled");
+    const ssoError = searchParams.get("sso_error");
 
     let shouldCleanUrl = false;
 
@@ -109,6 +110,15 @@ export default function LoginPage() {
       triggerAlert(
         "error",
         "Your account has been disabled, please contact your administrator",
+      );
+      shouldCleanUrl = true;
+    } else if (ssoError) {
+      // Set by app/api/sso/microsoft/callback when sign-in doesn't complete
+      triggerAlert(
+        "error",
+        ssoError === "unreachable"
+          ? "We couldn't reach Microsoft to complete your sign-in. Please try again in a moment."
+          : "Microsoft sign-in didn't complete. Please try again.",
       );
       shouldCleanUrl = true;
     }
