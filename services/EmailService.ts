@@ -66,6 +66,7 @@
 // NEW EMAILING IMPLEMENTATION - USING THE MICROSOFT GRAPH API
 
 import { sendGraphMail } from "./GraphMailClient";
+import { withNoReplyNotice } from "@/templates/NoReplyNotice";
 import {
   logSkippedEmail,
   notificationEmailsEnabled,
@@ -133,7 +134,9 @@ export const sendEmail = async ({
         subject: subject,
         body: {
           contentType: "HTML",
-          content: html,
+          // Every sendEmail email gets the unmonitored-mailbox notice
+          // (PostMail's sendCustomGraphEmail deliberately doesn't).
+          content: withNoReplyNotice(html, subject),
         },
         toRecipients: toRecipients,
         ccRecipients: ccRecipients,

@@ -226,8 +226,7 @@ export function ReminderTemplate(
                 <tr>
                   <td align="center">
                     <p style="font-size: 12px; color: #9ca3af; margin: 0 0 4px;">This is an automated reminder from</p>
-                    <p style="font-size: 13px; font-weight: 700; color: #404040; margin: 0 0 12px; letter-spacing: -0.2px;">HelpDesk</p>
-                    <p style="font-size: 11.5px; color: #d1d5db; margin: 0;">Please do not reply to this email directly.</p>
+                    <p style="font-size: 13px; font-weight: 700; color: #404040; margin: 0; letter-spacing: -0.2px;">HelpDesk</p>
                   </td>
                 </tr>
               </table>
