@@ -495,14 +495,9 @@ export function generateIssueNotificationEmail(
                         font-size: 13px;
                         font-weight: 700;
                         color: #404040;
-                        margin: 0 0 12px;
+                        margin: 0;
                         letter-spacing: -0.2px;
                       ">HelpDesk</p>
-                      <p style="
-                        font-size: 11.5px;
-                        color: #d1d5db;
-                        margin: 0;
-                      ">Please do not reply to this email directly.</p>
                     </td>
                   </tr>
                 </table>

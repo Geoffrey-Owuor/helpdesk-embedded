@@ -101,7 +101,7 @@ export const BugReportTemplate = (bugReportData: BugReportProps): string => {
             </div>
         </div>
         <div class="footer">
-            This is an automated notification. Please do not reply to this email.
+            This is an automated notification.
         </div>
     </div>
 </body>
