@@ -32,7 +32,7 @@ Local dev requires a `.env.local` with Postgres connection vars (`DATABASE_HOST`
 - `lib/api-middleware/ApiMiddleware.ts` exports `withAuth(handler)`, a wrapper for `app/api/*/route.ts` handlers that runs a DB health check (503 if unhealthy), verifies the access token (401 if missing/invalid), resolves route params, and injects `{ request, params, user }` into the handler. Use this wrapper for any new authenticated API route rather than re-implementing auth checks inline.
 - The `AuthJWTPayload` shape (`userId`, `email`, `username`, `role`, `department`, `isSuper`) is the canonical "current user" object threaded through the app via `contexts/UserContext.tsx` (`useUser()` hook).
 - Cross-tab/embedded-iframe session sync uses a `BroadcastChannel("embed_auth_session_sync")`: `UserProvider` posts `EMBEDLOGIN` on mount, `hooks/useAuthSync.ts` listens for `EMBEDLOGIN` (different user → reload) and `EMBEDLOGOUT` (→ redirect to login). `hooks/useIsEmbedd.ts` detects iframe embedding via `window.self !== window.top`.
-- Signed-link SSO for embedding (`app/api/sso/external`, `app/(auth)/sso/page.tsx`) and Microsoft Entra ID SSO (`app/api/sso/microsoft/*`, `@azure/msal-node`) are the two SSO paths, in addition to local email/password login.
+- Signed-link SSO for embedding (`app/api/sso/external`, `app/(auth)/sso/page.tsx`) and Microsoft Entra ID SSO (`app/api/sso/microsoft/*`, `@azure/msal-node`) are the two SSO paths, in addition to local email/password login. The Microsoft callback is hardened by `lib/microsoftSso.ts`: the authorization-code exchange is retried once **only** when the connection never opened (`retryOnConnectFailure` - codes are single-use), `/oidc/userinfo` goes through `fetchMicrosoftProfile` (timeout, one retry, throws on non-2xx), a profile without an email is rejected, and failures land on `/login?sso_error=unreachable|failed`, which `Login.tsx` shows as an alert.
 
 ### Roles & permissions
 
@@ -57,10 +57,14 @@ Client HTTP calls go through the shared `lib/AxiosClient.ts` instance; `utils/Ax
 
 ### Email
 
-All mail goes through the Microsoft Graph `sendMail` API (app-only token via `@azure/msal-node`; the old Nodemailer code in `services/EmailService.ts` is commented out) using HTML built from `templates/*.ts`. There are two send functions, both with 429 retry logic and both returning `{ success, error? }` instead of throwing:
+All mail goes through the Microsoft Graph `sendMail` API (app-only token via `@azure/msal-node`; the old Nodemailer code in `services/EmailService.ts` is commented out) using HTML built from `templates/*.ts`. There are two send functions, both returning `{ success, error? }` instead of throwing:
 
 - `sendEmail` (`services/EmailService.ts`) — sends as `EMAIL_SENDER`. Issue notifications go through the `emailSender` wrapper in `services/EmailSender.ts`, which looks up recipients and builds the issue template. Reminders (`app/api/triggers/*`), verification codes, password resets, first-login links and `services/SendBugReport.ts` call it directly.
 - `sendCustomGraphEmail` (`services/CustomEmailSender.ts`) — sends from a caller-chosen address; used only by the Super Admin "PostMail" feature (`components/Modules/ArticlesPage/PostMail/PostMail.tsx`).
+
+Both build the Graph message and hand it to the shared transport. The actual Graph call lives in `services/GraphMailClient.ts` (`sendGraphMail`): one shared MSAL client, at most 2 concurrent sends per PM2 worker (Exchange caps ~4 concurrent requests per mailbox), a 30s per-attempt timeout, and up to 4 attempts with backoff for 429 (honouring `Retry-After`), 5xx, network failures and token-acquisition failures; other 4xx fail immediately. A timed-out attempt may still have been delivered, so a retry can rarely duplicate an email. Callers that `await` a send can now wait noticeably longer during an outage (worst case ~2 minutes) before getting `{ success: false }`. Don't add another direct `fetch` to `sendMail`.
+
+`sendEmail` wraps every email it sends (notifications and essentials) with `withNoReplyNotice` (`templates/NoReplyNotice.ts`): a slim "automated, don't reply" line at the top (after a hidden subject preheader so inbox previews stay useful) and an "unmonitored mailbox - open HelpDesk" footer linking `NEXT_PUBLIC_BASE_URL`. PostMail (`sendCustomGraphEmail`) deliberately doesn't get it. Templates must not add their own do-not-reply text.
 
 `NOTIFICATION_EMAILS_ENABLED=false` (see `services/NotificationEmailSwitch.ts`) makes `sendEmail` skip notification emails, logging the subject and recipients and returning `{ success: true, skipped: true }`. Unset or `true` sends normally. Emails passed `essential: true` (verification codes, password resets, first-login links, bug reports) always send, as does PostMail. A new `sendEmail` call is a notification unless marked essential.
 
