@@ -53,6 +53,8 @@ Two separate state systems are used for different purposes — don't blur them:
 - **TanStack Query** (`queries/`, wired up via `components/Navigation/QueryProvider.tsx`) — server data fetching/caching/invalidation (issues, analytics, attachments, cards).
 - **Zustand** (`store/`) — client-only UI state: alerts, overlays/modals, confirm dialogs, sidebar toggle, active tab, table column visibility, search, and DB connectivity status (`useDbStore`, consumed by `components/Modules/DbStatus/DbStatusPill.tsx` / `DbRecoveryManager.tsx`).
 
+The dashboard navigation — the desktop rail (`components/Navigation/DashboardSidebar.tsx`) and the mobile drawer (`MobileSideBar.tsx`) — renders from `lib/dashboardNav.ts`: page links and modal-opening actions (New Issue, Admin Panel), their role gates, and `isNavItemActive` (a section stays active on its sub-pages; Home owns the issue pages at `/dashboard/[uuid]`). Add nav items there, not in either component. The rail measures its height and moves the items that don't fit into a More menu (`SidebarMoreMenu.tsx`, portaled to `<body>` because the fixed rail is its own stacking context); the drawer keeps `useFocusTrapping` and is `inert` while closed.
+
 Client HTTP calls go through the shared `lib/AxiosClient.ts` instance; `utils/AxiosErrorHelper.ts` normalizes error handling.
 
 ### Email

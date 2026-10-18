@@ -12,7 +12,7 @@ export const DashBoardLogo = ({
         src={assets.hotpoint_black_logo}
         alt="HelpDesk Logo"
         sizes="32px"
-        loading="eager"
+        preload
         className="object-contain dark:invert"
       />
     </div>
