@@ -25,6 +25,20 @@ export const loadDepartments = unstable_cache(
   { revalidate: 3600, tags: ["Departments_Data"] },
 );
 
+// Input rules for the super admin departments manager, matching the table's
+// CHECK constraints. Null when the value is not acceptable.
+export const normalizeDepartmentName = (name: unknown): string | null => {
+  if (typeof name !== "string") return null;
+  const trimmed = name.trim().replace(/\s+/g, " ");
+  return trimmed && trimmed.length <= 255 ? trimmed : null;
+};
+
+export const normalizeIssuePrefix = (prefix: unknown): string | null => {
+  if (typeof prefix !== "string") return null;
+  const upper = prefix.trim().toUpperCase();
+  return /^[A-Z0-9]{1,10}$/.test(upper) ? upper : null;
+};
+
 export const INVALID_DEPARTMENT_MESSAGE =
   "The selected department is not available, please select another department";
 

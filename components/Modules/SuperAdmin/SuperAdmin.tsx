@@ -3,14 +3,23 @@ import { useState } from "react";
 import Users from "./Users";
 import IssuesMapping from "./IssuesMapping/IssuesMapping";
 import { useQueryClient } from "@tanstack/react-query";
-import { Bug, Building2, KeyRound, RotateCw, UsersRound } from "lucide-react";
+import {
+  Bug,
+  Building2,
+  KeyRound,
+  Mail,
+  RotateCw,
+  UsersRound,
+} from "lucide-react";
 import GroupEmailsModal from "./GroupEmails/GroupEmailsModal";
 import SpecialAccessModal from "./SpecialAccess/SpecialAccessModal";
+import DepartmentsModal from "./Departments/DepartmentsModal";
 
 const SuperAdmin = () => {
   const querClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("users");
   const [showGroupsModal, setShowGroupsModal] = useState(false);
+  const [showDepartmentsModal, setShowDepartmentsModal] = useState(false);
   const [showSpecialAccessModal, setShowSpecialAccessModal] = useState(false);
 
   const queryKey =
@@ -26,6 +35,13 @@ const SuperAdmin = () => {
         <GroupEmailsModal
           isModalOpen={showGroupsModal}
           closeModal={() => setShowGroupsModal(false)}
+        />
+      )}
+      {/* Staff Departments Modal */}
+      {showDepartmentsModal && (
+        <DepartmentsModal
+          isModalOpen={showDepartmentsModal}
+          closeModal={() => setShowDepartmentsModal(false)}
         />
       )}
       {/* Special Access Modal */}
@@ -55,13 +71,22 @@ const SuperAdmin = () => {
               <RotateCw className="h-5 w-5" />
             </button>
 
-            {/* Group Emails Button */}
+            {/* Staff Departments Button */}
             <button
-              onClick={() => setShowGroupsModal(true)}
+              onClick={() => setShowDepartmentsModal(true)}
               className="inline-flex items-center gap-2 rounded-xl bg-neutral-100 px-3 py-2 text-sm text-neutral-800 hover:bg-neutral-200/60 dark:bg-neutral-800/60 dark:text-neutral-300 dark:hover:bg-neutral-800/80"
             >
               <Building2 strokeWidth={1.5} className="h-4 w-4" />
               <span>Departments</span>
+            </button>
+
+            {/* Group Emails Button - the departments issues are raised to */}
+            <button
+              onClick={() => setShowGroupsModal(true)}
+              className="inline-flex items-center gap-2 rounded-xl bg-neutral-100 px-3 py-2 text-sm text-neutral-800 hover:bg-neutral-200/60 dark:bg-neutral-800/60 dark:text-neutral-300 dark:hover:bg-neutral-800/80"
+            >
+              <Mail strokeWidth={1.5} className="h-4 w-4" />
+              <span>Group Emails</span>
             </button>
 
             {/* Special Access Button */}
