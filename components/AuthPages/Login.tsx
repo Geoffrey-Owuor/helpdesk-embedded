@@ -1,12 +1,11 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { ApiHandler } from "@/utils/ApiHandler";
 import AuthShell from "./AuthShell";
+import LoginUrlAlerts from "./LoginUrlAlerts";
 import { Eye, EyeOff, Mail, Lock, Loader2, AlertTriangle } from "lucide-react";
 import { useIsEmbedd } from "@/hooks/useIsEmbedd";
-import { useAlertStore } from "@/store/useAlertStore";
 import { useLoadingStore } from "@/store/useLoadingStore";
 import { basePath } from "@/public/assets";
 
@@ -61,10 +60,6 @@ export default function LoginPage() {
   // Microsoft sso state
   const [ssoLoading, setSsoLoading] = useState(false);
 
-  const searchParams = useSearchParams();
-
-  const triggerAlert = useAlertStore((state) => state.triggerAlert);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -100,39 +95,6 @@ export default function LoginPage() {
     }
   };
 
-  useEffect(() => {
-    const reset = searchParams.get("reset");
-    const disabled = searchParams.get("disabled");
-    const ssoError = searchParams.get("sso_error");
-
-    let shouldCleanUrl = false;
-
-    if (reset === "success") {
-      triggerAlert("success", "Your password has been reset successfully");
-      shouldCleanUrl = true;
-    } else if (disabled === "true") {
-      triggerAlert(
-        "error",
-        "Your account has been disabled, please contact your administrator",
-      );
-      shouldCleanUrl = true;
-    } else if (ssoError) {
-      // Set by app/api/sso/microsoft/callback when sign-in doesn't complete
-      triggerAlert(
-        "error",
-        ssoError === "unreachable"
-          ? "We couldn't reach Microsoft to complete your sign-in. Please try again in a moment."
-          : "Microsoft sign-in didn't complete. Please try again.",
-      );
-      shouldCleanUrl = true;
-    }
-
-    // Clean the URL once if any alert was triggered
-    if (shouldCleanUrl) {
-      window.history.replaceState(null, "", window.location.pathname);
-    }
-  }, [searchParams, triggerAlert]);
-
   // 2. Modify your handleLogin function
   const handleLogin = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (isEmbedded) {
@@ -162,6 +124,9 @@ export default function LoginPage() {
 
   return (
     <AuthShell>
+      <Suspense fallback={null}>
+        <LoginUrlAlerts />
+      </Suspense>
       <div className="w-full max-w-90 px-2">
         {/* Header */}
         <div className="mb-8">

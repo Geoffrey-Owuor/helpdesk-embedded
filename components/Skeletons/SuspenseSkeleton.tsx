@@ -5,6 +5,7 @@ import ThemeToggle from "../Themes/ThemeToggle";
 import Link from "next/link";
 import { footerQuickLinks } from "@/public/assets";
 import { Star } from "lucide-react";
+import SkeletonBox from "./SkeletonBox";
 
 const SuspenseSkeleton = () => {
   return (
@@ -24,7 +25,29 @@ const SuspenseSkeleton = () => {
         </div>
 
         {/* Auth Cards */}
-        <div className="flex w-full flex-1 items-center justify-center px-3"></div>
+        <div className="flex w-full flex-1 items-center justify-center px-3">
+          {/* Placeholder card - same footprint as the auth forms */}
+          <div
+            className="w-full max-w-90 px-2"
+            role="status"
+            aria-label="Loading"
+          >
+            <div className="mb-8 flex flex-col items-center">
+              <SkeletonBox className="mb-3 h-8 w-52 rounded-full!" />
+              <SkeletonBox className="h-4 w-64 rounded-full!" />
+            </div>
+
+            <div className="space-y-6">
+              {[0, 1].map((i) => (
+                <div key={i}>
+                  <SkeletonBox className="mb-2 h-4 w-28 rounded-full!" />
+                  <SkeletonBox className="h-12 w-full rounded-full!" />
+                </div>
+              ))}
+              <SkeletonBox className="h-12 w-full rounded-full!" />
+            </div>
+          </div>
+        </div>
 
         {/* Bottom Footer */}
         <div className="mt-12 mb-16 flex w-full flex-col items-center justify-between gap-4 p-6 text-sm text-neutral-500 md:mb-0 md:flex-row">
