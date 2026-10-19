@@ -2,7 +2,7 @@
 
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import { UserCountBreakdown } from "@/public/assets";
-import { LucideIcon, CircleCheck, CircleX } from "lucide-react";
+import { LucideIcon, CircleCheck, CircleX, Lock } from "lucide-react";
 
 interface breakdownObject {
   label: string;
@@ -29,12 +29,18 @@ const ActiveCounts = ({ cardLoading, breakdown }: ActiveCountsProps) => {
       icon: CircleX,
       text: "text-red-600 dark:text-red-500",
     },
+    {
+      label: "Locked",
+      count: breakdown.locked,
+      icon: Lock,
+      text: "text-amber-600 dark:text-amber-500",
+    },
   ];
   return (
     <div className="mt-4 flex items-center gap-4">
       {cardLoading ? (
         <>
-          {[...Array(4)].map((_, i) => (
+          {[...Array(3)].map((_, i) => (
             <div key={i} className="flex items-center gap-1">
               <SkeletonBox className="h-4 w-3 rounded-sm" />
               <SkeletonBox className="h-4 w-4 rounded-sm" />
@@ -46,7 +52,7 @@ const ActiveCounts = ({ cardLoading, breakdown }: ActiveCountsProps) => {
           {BreakDownCountsArray.map(({ label, count, icon: Icon, text }) => (
             <div
               key={label}
-              title={`${label} priority`}
+              title={`${label} accounts`}
               className="flex items-center gap-1"
             >
               <Icon className={`h-3 w-3 shrink-0 ${text}`} strokeWidth={2} />

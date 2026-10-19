@@ -35,6 +35,8 @@ export default function LoginPage() {
   const [remainingAttempts, setRemainingAttempts] = useState<number | null>(
     null,
   );
+  // Locked after too many failed attempts - a password reset unlocks it
+  const [isLocked, setIsLocked] = useState(false);
 
   const isEmbedded = useIsEmbedd();
 
@@ -68,6 +70,7 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     setRemainingAttempts(null);
+    setIsLocked(false);
 
     try {
       // Standard fetch for login
@@ -88,6 +91,7 @@ export default function LoginPage() {
             ? data.remainingAttempts
             : null,
         );
+        setIsLocked(data.locked === true);
         setLoading(false);
       }
     } catch (error) {
@@ -189,6 +193,17 @@ export default function LoginPage() {
                   (remainingAttempts === 1
                     ? " This is your last attempt before your account is locked."
                     : ` You have ${remainingAttempts} attempts remaining before your account is locked.`)}
+                {isLocked && (
+                  <>
+                    {" "}
+                    <Link
+                      href="/forgot-password"
+                      className="font-semibold underline underline-offset-2"
+                    >
+                      Reset password
+                    </Link>
+                  </>
+                )}
               </span>
             </div>
           )}

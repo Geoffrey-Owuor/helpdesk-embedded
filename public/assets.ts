@@ -96,11 +96,14 @@ export interface UserCountBreakdown {
   total: number;
   active: number;
   inactive: number;
+  // Active accounts locked after too many failed sign-ins
+  locked: number;
 }
 export const defaultUserCountBreakdown: UserCountBreakdown = {
   total: 0,
   active: 0,
   inactive: 0,
+  locked: 0,
 };
 
 export interface UserCounts {

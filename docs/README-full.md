@@ -89,7 +89,7 @@ Notable API routes under `app/api` include: `get-issues`, `post-issue`, `update-
 - **user** — submits and views their own issues, reads articles
 - **agent** — works issues assigned to them within their department/issue type
 - **admin** — manages issues, agents, and issue-type mappings for their department; can access the IT Team page
-- **super admin** (`isSuper`, backed by the `super_admins` table) — full access via the Super Admin panel: manage users, issue types, department-to-agent mappings, and group emails
+- **super admin** (`isSuper`, backed by the `super_admins` table) — full access via the Super Admin panel: manage users (profile, password, lock and status as separate actions), staff departments, issue types, department-to-agent mappings, and group emails
 
 ## Development notes
 
