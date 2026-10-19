@@ -1,13 +1,18 @@
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
-import { revalidateTag } from "next/cache";
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
+import {
+  findActiveStaff,
+  issueTypeNameTaken,
+  renameIssueTypeOnIssues,
+  revalidateIssueAgentTags,
+} from "@/lib/userAccounts";
 
 export const PUT = withAuth(async ({ request, user }) => {
   let client: PoolClient | undefined;
 
-  const { role } = user;
+  const { role, department } = user;
 
   // Make sure the user running the query is an admin
   if (role !== "admin") {
@@ -19,17 +24,20 @@ export const PUT = withAuth(async ({ request, user }) => {
 
   try {
     const {
-      selectedType,
+      selectedType: rawSelectedType,
       selectedEmail,
       issueType,
       selectedPriority,
       longName,
     } = await request.json();
+    // The new name; issueType is the current one
+    const selectedType =
+      typeof rawSelectedType === "string" ? rawSelectedType.trim() : "";
 
     if (!selectedType || !selectedEmail || !issueType || !selectedPriority) {
       return NextResponse.json(
         { message: "Missing some required payload information" },
-        { status: 403 },
+        { status: 400 },
       );
     }
 
@@ -39,31 +47,50 @@ export const PUT = withAuth(async ({ request, user }) => {
     // Begin a transaction
     await client.query("BEGIN");
 
-    // Check if the issue type exists
+    // Check if the issue type exists and belongs to the admin's department
     const { rows } = await client.query(
-      `SELECT issue_type FROM issues_mapping WHERE issue_type = $1`,
-      [issueType],
+      `SELECT m.id, m.issue_type FROM issues_mapping AS m
+       JOIN users AS admins ON admins.user_id = m.admin_id
+       WHERE m.issue_type = $1 AND admins.department = $2
+       FOR UPDATE OF m`,
+      [issueType, department],
     );
 
     // Issue type does not exist
     if (rows.length === 0) {
       await client.query("ROLLBACK");
       return NextResponse.json(
-        { message: "Issue type not found" },
+        { message: "Issue type not found in your department" },
         { status: 404 },
       );
     }
 
-    // Check if the agent exists
-    const { rows: existingAgent } = await client.query(
-      `SELECT user_id FROM users WHERE email = $1 AND is_user_active = TRUE LIMIT 1`,
-      [selectedEmail],
-    );
+    const mappingId = rows[0].id;
 
-    if (existingAgent.length === 0) {
+    // A rename must not clash with another issue type
+    if (await issueTypeNameTaken(client, selectedType, mappingId)) {
       await client.query("ROLLBACK");
       return NextResponse.json(
-        { message: "Selected agent could not be found" },
+        { message: "An issue type with this name already exists" },
+        { status: 409 },
+      );
+    }
+
+    // The agent must be an active agent or admin of the admin's department
+    const agent = await findActiveStaff(
+      client,
+      selectedEmail,
+      ["agent", "admin"],
+      department,
+    );
+
+    if (!agent) {
+      await client.query("ROLLBACK");
+      return NextResponse.json(
+        {
+          message:
+            "Selected agent could not be found among your department's active agents",
+        },
         { status: 404 },
       );
     }
@@ -75,25 +102,31 @@ export const PUT = withAuth(async ({ request, user }) => {
        issue_priority = $2,
        agent_id = $3,
        long_name = $4
-       WHERE issue_type = $5
+       WHERE id = $5
     `;
 
     // Run the query
     await client.query(updateQuery, [
       selectedType,
       selectedPriority,
-      existingAgent[0].user_id,
+      agent.userId,
       longName || selectedType,
-      issueType,
+      mappingId,
     ]);
+
+    // Issues raised under the old name follow the rename
+    await renameIssueTypeOnIssues(
+      client,
+      rows[0].issue_type,
+      selectedType,
+      department,
+    );
 
     // Commit the transaction
     await client.query("COMMIT");
 
     // Revalidate the cache tags
-    revalidateTag("GetIssueAgents", { expire: 0 });
-    revalidateTag("Issue_Types", { expire: 0 });
-    revalidateTag("Issue_Agents_Mapping", { expire: 0 });
+    revalidateIssueAgentTags();
 
     // return a response
     return NextResponse.json(

@@ -7,6 +7,7 @@ export interface IssueAgents {
   long_name: string;
   agent_name: string;
   agent_email: string;
+  agent_role: "agent" | "admin";
   issue_priority: string;
 }
 
@@ -16,6 +17,7 @@ const getIssueAgents = async (department: string) => {
       SELECT 
         agents.username AS agent_name,
         agents.email AS agent_email,
+        agents.role AS agent_role,
         -- If issue_type or issue_priority is NULL, display 'No Issues Assigned or None' instead
         COALESCE(m.issue_type, 'No Issues Assigned') AS issue_type,
         COALESCE(m.long_name, m.issue_type, 'No Issues Assigned') AS long_name,

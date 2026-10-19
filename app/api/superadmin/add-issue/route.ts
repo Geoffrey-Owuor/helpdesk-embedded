@@ -1,9 +1,16 @@
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
-import { query } from "@/lib/Db";
-import { revalidateTag } from "next/cache";
+import { pool } from "@/lib/Db";
+import { PoolClient } from "pg";
+import {
+  findActiveStaff,
+  issueTypeNameTaken,
+  revalidateIssueAgentTags,
+} from "@/lib/userAccounts";
 
 export const POST = withAuth(async ({ request, user }) => {
+  let client: PoolClient | undefined;
+
   const { isSuper } = user;
 
   if (!isSuper) {
@@ -14,8 +21,15 @@ export const POST = withAuth(async ({ request, user }) => {
   }
 
   try {
-    const { issueType, issuePriority, agentEmail, adminEmail, longName } =
-      await request.json();
+    const {
+      issueType: rawIssueType,
+      issuePriority,
+      agentEmail,
+      adminEmail,
+      longName,
+    } = await request.json();
+    const issueType =
+      typeof rawIssueType === "string" ? rawIssueType.trim() : "";
 
     if (!issueType || !issuePriority || !agentEmail || !adminEmail) {
       return NextResponse.json(
@@ -24,60 +38,50 @@ export const POST = withAuth(async ({ request, user }) => {
       );
     }
 
-    // Get the corresponding admin id
-    const adminData = await query(
-      `
-        SELECT user_id AS admin_id
-        FROM users
-        WHERE email = $1 AND is_user_active = TRUE LIMIT 1
-        `,
-      [adminEmail],
-    );
+    // get a pool client
+    client = await pool.connect();
 
-    // Get the corresponding agent id
-    const agentData = await query(
-      `
-        SELECT user_id AS agent_id
-        FROM users
-        WHERE email = $1 AND is_user_active = TRUE LIMIT 1
-        `,
-      [agentEmail],
-    );
+    // Begin a transaction
+    await client.query("BEGIN");
 
-    // Admin not found
-    if (adminData.length === 0) {
+    // The admin must hold the admin role - their department is the one the
+    // issue type is offered to
+    const admin = await findActiveStaff(client, adminEmail, ["admin"]);
+
+    if (!admin) {
+      await client.query("ROLLBACK");
       return NextResponse.json(
-        { message: "Selected admin could not be found" },
+        { message: "Selected admin could not be found among active admins" },
         { status: 404 },
       );
     }
 
-    // Agent not found
-    if (agentData.length === 0) {
+    // The agent must be an agent or admin of the same department
+    const agent = await findActiveStaff(
+      client,
+      agentEmail,
+      ["agent", "admin"],
+      admin.department,
+    );
+
+    if (!agent) {
+      await client.query("ROLLBACK");
       return NextResponse.json(
-        { message: "Selected agent could not be found" },
+        {
+          message: `Selected agent could not be found among the ${admin.department} department's active agents`,
+        },
         { status: 404 },
       );
     }
 
     // Selected issue type already exists in the issues database
-    const existingIssueType = await query(
-      `
-        SELECT id FROM issues_mapping WHERE issue_type = $1
-        `,
-      [issueType],
-    );
-
-    if (existingIssueType.length > 0) {
+    if (await issueTypeNameTaken(client, issueType)) {
+      await client.query("ROLLBACK");
       return NextResponse.json(
         { message: "An issue type already exists with the same name" },
         { status: 409 },
       );
     }
-
-    // The returned data
-    const adminId = adminData[0].admin_id;
-    const agentId = agentData[0].agent_id;
 
     // Insert Query
     const insertQuery = `
@@ -87,18 +91,19 @@ export const POST = withAuth(async ({ request, user }) => {
 
     const insertParams = [
       issueType,
-      adminId,
-      agentId,
+      admin.userId,
+      agent.userId,
       issuePriority,
       longName || issueType,
     ];
 
-    await query(insertQuery, insertParams);
+    await client.query(insertQuery, insertParams);
+
+    // Commit transaction
+    await client.query("COMMIT");
 
     // Revalidate the cache tags
-    revalidateTag("GetIssueAgents", { expire: 0 });
-    revalidateTag("Issue_Types", { expire: 0 });
-    revalidateTag("Issue_Agents_Mapping", { expire: 0 });
+    revalidateIssueAgentTags();
 
     // Success Response
     return NextResponse.json(
@@ -106,10 +111,13 @@ export const POST = withAuth(async ({ request, user }) => {
       { status: 200 },
     );
   } catch (error) {
+    await client?.query("ROLLBACK");
     console.error("Error while trying to add an issuetype:", error);
     return NextResponse.json(
       { message: "Error while trying to add the issue type" },
       { status: 500 },
     );
+  } finally {
+    if (client) client.release();
   }
 });
