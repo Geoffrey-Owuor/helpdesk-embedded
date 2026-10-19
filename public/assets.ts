@@ -185,6 +185,9 @@ export const priorityOptions = [
   { label: "Low", value: "Low" },
 ];
 
+// Public support address shown in the home page footer and CTA
+export const HELPDESK_EMAIL = "helpdesk@hotpoint.co.ke";
+
 export const footerQuickLinks = [
   { label: "Changelog", href: "/changelog" },
   { label: "Manual", href: "/manual" },

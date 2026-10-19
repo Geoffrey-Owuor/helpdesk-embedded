@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowRight, Bug, Mail, Star, Zap } from "lucide-react";
 import { useQuickCreateStore } from "@/store/useQuickCreateStore";
+import { HELPDESK_EMAIL } from "@/public/assets";
 
 const secondaryLinks = [
   { href: "/manual#bug-report", label: "Report a bug", icon: Bug },
@@ -71,7 +72,7 @@ const ExploreCta = () => {
               </Link>
             ))}
             <a
-              href="mailto:helpdesk@hotpoint.co.ke"
+              href={`mailto:${HELPDESK_EMAIL}`}
               className="inline-flex items-center gap-1.5 text-neutral-400 transition-colors hover:text-white dark:text-neutral-600 dark:hover:text-neutral-950"
             >
               <Mail className="h-3.5 w-3.5" />

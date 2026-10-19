@@ -13,7 +13,7 @@ export const SendBugReport = async (bugReportInfo: BugReportProps) => {
 
   // Send the email
   await sendEmail({
-    to: "geoffrey@hotpoint.co.ke",
+    to: process.env.ADMIN_EMAIL!,
     subject: "New Bug Report Submitted",
     essential: true,
     html: emailTemplate,
