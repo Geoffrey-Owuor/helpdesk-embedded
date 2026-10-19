@@ -1,7 +1,7 @@
 "use client";
 
-import { baseDepartments } from "@/public/assets";
 import { useState, FocusEvent } from "react";
+import { useDepartmentOptions } from "@/hooks/useDepartmentOptions";
 import { CheckCircle2, Eye, EyeOff, Lock, Mail, UserRound } from "lucide-react";
 import { NameValidationResult, NameValidator } from "@/utils/Validators";
 import { validateHotpointEmail } from "@/utils/Validators";
@@ -61,6 +61,9 @@ const EditUserModal = ({
   userId,
   userInfo,
 }: EditUserModalProps) => {
+  // Staff departments (public.departments)
+  const { departments: baseDepartments } = useDepartmentOptions();
+
   const queryClient = useQueryClient();
 
   // The query key

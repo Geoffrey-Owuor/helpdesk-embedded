@@ -1,6 +1,10 @@
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { NextResponse } from "next/server";
 import { pool } from "@/lib/Db";
+import {
+  INVALID_DEPARTMENT_MESSAGE,
+  resolveDepartmentName,
+} from "@/lib/departments";
 import { PoolClient } from "pg";
 import { hashPassword } from "@/lib/Auth";
 
@@ -60,7 +64,7 @@ export const PUT = withAuth(async ({ request, user }) => {
 
     // Check if the user exists
     const { rows } = await client.query(
-      `SELECT email from users WHERE user_id = $1 FOR UPDATE`,
+      `SELECT email, department from users WHERE user_id = $1 FOR UPDATE`,
       [userId],
     );
 
@@ -69,6 +73,21 @@ export const PUT = withAuth(async ({ request, user }) => {
       return NextResponse.json(
         { message: "Selected user not found" },
         { status: 404 },
+      );
+    }
+
+    // Only an active department - or the one the user already has, even if
+    // it has been made inactive since
+    const departmentName = await resolveDepartmentName(
+      department,
+      rows[0].department,
+    );
+
+    if (!departmentName) {
+      await client.query("ROLLBACK");
+      return NextResponse.json(
+        { message: INVALID_DEPARTMENT_MESSAGE },
+        { status: 400 },
       );
     }
 
@@ -111,7 +130,7 @@ export const PUT = withAuth(async ({ request, user }) => {
       email,
       name,
       role,
-      department,
+      departmentName,
       isUserActive,
       hashedPassword,
       userId,

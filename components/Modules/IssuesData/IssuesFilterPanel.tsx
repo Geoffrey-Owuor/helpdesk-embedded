@@ -1,14 +1,11 @@
 "use client";
 import { useMemo, useState, useRef, useEffect } from "react";
+import { useAllDepartmentOptions } from "@/hooks/useDepartmentOptions";
 import { Search, X, RotateCcw, ChevronDown } from "lucide-react";
 import { useIssuesFilterStore } from "@/store/useIssuesFilterStore";
 import { useUser } from "@/contexts/UserContext";
 import { useSearchStore } from "@/store/useSearchStore";
-import {
-  baseDepartments,
-  statusOptions,
-  priorityOptions,
-} from "@/public/assets";
+import { statusOptions, priorityOptions } from "@/public/assets";
 import { DatePicker } from "../DatePicker";
 import ActiveIssuesFilterPills from "./ActiveIssuesFilterPills";
 import CustomDropdown from "../CustomDropdown";
@@ -153,6 +150,9 @@ const FilterFieldSelector = ({
 };
 
 const IssuesFilterPanel = () => {
+  // Every staff department, inactive ones included, so older issues stay filterable
+  const { departments: baseDepartments } = useAllDepartmentOptions();
+
   const { role } = useUser();
   const agentAdminFilter = useSearchStore((state) => state.agentAdminFilter);
 

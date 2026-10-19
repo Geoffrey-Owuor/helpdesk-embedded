@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useDepartmentOptions } from "@/hooks/useDepartmentOptions";
 import { Building2, ChevronDown, Loader2 } from "lucide-react";
-import { baseDepartments, basePath } from "@/public/assets";
+import { basePath } from "@/public/assets";
 import { ApiHandler } from "@/utils/ApiHandler";
 import { useLoadingStore } from "@/store/useLoadingStore";
 import AuthShell from "./AuthShell";
@@ -14,6 +15,9 @@ const SSOCompletionForm = ({
   name: string;
   email: string;
 }) => {
+  // Staff departments (public.departments)
+  const { departments: baseDepartments } = useDepartmentOptions();
+
   const [department, setDepartment] = useState("");
   const [isDepartmentOpen, setIsDepartmentOpen] = useState(false);
   const [loading, setLoading] = useState(false);
