@@ -5,7 +5,7 @@ import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { emailSender } from "@/services/EmailSender";
 import { CheckBehalfUser } from "@/serverActions/CheckBehalfUser";
 import { writeFile, mkdir } from "fs/promises";
-import { issuePrefixMapping } from "@/public/assets";
+import { issuePrefixFor } from "@/lib/departments";
 import path from "path";
 import type { AllowedFileType } from "@/components/Modules/IssueModals/DocumentUpload";
 
@@ -183,7 +183,7 @@ export const POST = withAuth(async ({ request, user }) => {
     const resultantUuid = returnedId[0].issue_uuid;
 
     // Update the submitted issue to insert a generated issue reference
-    const referencePrefix = issuePrefixMapping[selectedDepartment] || "UNK";
+    const referencePrefix = await issuePrefixFor(selectedDepartment);
     const formattedId = resultantId.toString().padStart(3, "0");
     const issueReferenceNumber = `${referencePrefix}-${formattedId}`;
 

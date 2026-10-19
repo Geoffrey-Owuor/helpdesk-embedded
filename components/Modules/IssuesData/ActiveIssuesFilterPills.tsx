@@ -1,12 +1,7 @@
 "use client";
 import { X } from "lucide-react";
 import { useIssuesFilterStore } from "@/store/useIssuesFilterStore";
-import {
-  baseDepartments,
-  statusOptions,
-  priorityOptions,
-  dateFormatter,
-} from "@/public/assets";
+import { statusOptions, priorityOptions, dateFormatter } from "@/public/assets";
 import { IssuesFilterParams } from "@/lib/issues/buildIssuesFilter";
 
 const filterLabels: Record<string, string> = {
@@ -54,11 +49,9 @@ const ActiveIssuesFilterPills = () => {
     const value = committedFilters[key];
 
     switch (key) {
+      // A department's label is its name
       case "department":
-        return (
-          baseDepartments.find((dept) => dept.value === value)?.option ||
-          String(value)
-        );
+        return String(value);
       case "status":
         return (
           statusOptions.find((opt) => opt.value === value)?.label ||

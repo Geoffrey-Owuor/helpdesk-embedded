@@ -1,4 +1,8 @@
 import { cookies } from "next/headers";
+import {
+  INVALID_DEPARTMENT_MESSAGE,
+  resolveDepartmentName,
+} from "@/lib/departments";
 import { NextResponse, NextRequest } from "next/server";
 import {
   requireTemporarySession,
@@ -32,6 +36,16 @@ export async function POST(req: NextRequest) {
     const name = tempUser.username;
     const email = tempUser.email;
 
+    // Only an active department, stored in the departments table's spelling
+    const departmentName = await resolveDepartmentName(department);
+
+    if (!departmentName) {
+      return NextResponse.json(
+        { message: INVALID_DEPARTMENT_MESSAGE },
+        { status: 400 },
+      );
+    }
+
     // 2. Insert into database (role defaults to 'user')
     const insertQuery = `
       INSERT INTO users (username, email, department, role, password) 
@@ -41,7 +55,7 @@ export async function POST(req: NextRequest) {
     const newUser = await query(insertQuery, [
       name,
       email,
-      department,
+      departmentName,
       "user",
       "microsoft_sso",
     ]);

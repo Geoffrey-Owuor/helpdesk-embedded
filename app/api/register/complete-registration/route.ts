@@ -5,6 +5,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSession } from "@/lib/Auth";
 import { cookies } from "next/headers";
 import {
+  INVALID_DEPARTMENT_MESSAGE,
+  resolveDepartmentName,
+} from "@/lib/departments";
+import {
   signRefreshToken,
   signAccessToken,
   hashRefreshToken,
@@ -31,6 +35,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Only an active department, stored in the departments table's spelling
+    const departmentName = await resolveDepartmentName(department);
+
+    if (!departmentName) {
+      return NextResponse.json(
+        { message: INVALID_DEPARTMENT_MESSAGE },
+        { status: 400 },
+      );
+    }
+
     // Get the user's hashed password
     const hashedPassword = await hashPassword(password);
 
@@ -48,7 +62,7 @@ export async function POST(request: NextRequest) {
         VALUES ($1, $2, $3, $4, 'user')
         RETURNING user_id, role
         `,
-      [name, email, department, hashedPassword],
+      [name, email, departmentName, hashedPassword],
     );
 
     // Get the user id and role
@@ -60,7 +74,7 @@ export async function POST(request: NextRequest) {
       userId: userId,
       username: name,
       role: role,
-      department: department,
+      department: departmentName,
       email: email,
       isSuper: false,
       specialAccess: [],

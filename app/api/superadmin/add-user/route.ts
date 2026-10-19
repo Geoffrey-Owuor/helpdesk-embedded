@@ -1,6 +1,10 @@
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { NextResponse } from "next/server";
 import { query } from "@/lib/Db";
+import {
+  INVALID_DEPARTMENT_MESSAGE,
+  resolveDepartmentName,
+} from "@/lib/departments";
 import { hashPassword } from "@/lib/Auth";
 
 export const POST = withAuth(async ({ request, user }) => {
@@ -28,6 +32,16 @@ export const POST = withAuth(async ({ request, user }) => {
     ) {
       return NextResponse.json(
         { message: "Missing some required fields" },
+        { status: 400 },
+      );
+    }
+
+    // Only an active department, stored in the departments table's spelling
+    const departmentName = await resolveDepartmentName(department);
+
+    if (!departmentName) {
+      return NextResponse.json(
+        { message: INVALID_DEPARTMENT_MESSAGE },
         { status: 400 },
       );
     }
@@ -67,7 +81,7 @@ export const POST = withAuth(async ({ request, user }) => {
     const insertParams = [
       name,
       email,
-      department,
+      departmentName,
       hashedPassword,
       role,
       isActive,

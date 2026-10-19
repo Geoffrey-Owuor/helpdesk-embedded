@@ -1,7 +1,7 @@
 "use client";
 
-import { baseDepartments } from "@/public/assets";
 import { useState, FocusEvent, FormEvent } from "react";
+import { useDepartmentOptions } from "@/hooks/useDepartmentOptions";
 import { Mail, Lock, UserRound, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import CustomDropdown from "./CustomDropDown";
 import { UserInfo } from "./EditUserModal";
@@ -41,6 +41,9 @@ interface AddUserData {
 }
 
 const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
+  // Staff departments (public.departments)
+  const { departments: baseDepartments } = useDepartmentOptions();
+
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState<AddUserData>({

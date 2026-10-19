@@ -8,6 +8,7 @@ import {
   FocusEvent,
   useRef,
 } from "react";
+import { useDepartmentOptions } from "@/hooks/useDepartmentOptions";
 import Link from "next/link";
 import {
   Eye,
@@ -27,9 +28,12 @@ import { useLoadingStore } from "@/store/useLoadingStore";
 import { ApiHandler } from "@/utils/ApiHandler";
 import NameRulesCard from "@/components/Modules/NameRulesCard";
 import { NameValidator, NameValidationResult } from "@/utils/Validators";
-import { baseDepartments, basePath } from "@/public/assets";
+import { basePath } from "@/public/assets";
 
 const CompleteRegistration = ({ email }: { email: string }) => {
+  // Staff departments (public.departments)
+  const { departments: baseDepartments } = useDepartmentOptions();
+
   const searchParams = useSearchParams();
 
   // Drop down state
