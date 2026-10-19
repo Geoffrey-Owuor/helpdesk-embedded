@@ -6,6 +6,7 @@ import {
   resolveDepartmentName,
 } from "@/lib/departments";
 import { hashPassword } from "@/lib/Auth";
+import { isUserRole, revalidateIssueAgentTags } from "@/lib/userAccounts";
 
 export const POST = withAuth(async ({ request, user }) => {
   const { isSuper } = user;
@@ -36,6 +37,13 @@ export const POST = withAuth(async ({ request, user }) => {
       );
     }
 
+    if (!isUserRole(role)) {
+      return NextResponse.json(
+        { message: "The selected role is not valid" },
+        { status: 400 },
+      );
+    }
+
     // Only an active department, stored in the departments table's spelling
     const departmentName = await resolveDepartmentName(department);
 
@@ -57,7 +65,7 @@ export const POST = withAuth(async ({ request, user }) => {
     // Check whether there is a user that already exists with the sent email address (conflict)
     const existingUserQuery = `
           SELECT email from users
-          WHERE email = $1
+          WHERE LOWER(email) = LOWER($1)
         `;
     const existingUser = await query(existingUserQuery, [email]);
 
@@ -89,6 +97,9 @@ export const POST = withAuth(async ({ request, user }) => {
 
     // Execute the query
     await query(insertQuery, insertParams);
+
+    // A new agent or admin shows up in the agent lists
+    revalidateIssueAgentTags();
 
     // Return a response
     return NextResponse.json(

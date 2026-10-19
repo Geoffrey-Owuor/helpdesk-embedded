@@ -4,7 +4,6 @@ import { useState, FocusEvent, FormEvent } from "react";
 import { useDepartmentOptions } from "@/hooks/useDepartmentOptions";
 import { Mail, Lock, UserRound, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import CustomDropdown from "./CustomDropDown";
-import { UserInfo } from "./EditUserModal";
 import { NameValidationResult, NameValidator } from "@/utils/Validators";
 import NameRulesCard from "../../NameRulesCard";
 import FormAsterisk from "../../FormAsterisk";
@@ -91,7 +90,7 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
     setFormData((prev) => ({ ...prev, [name]: value.trim() }));
   };
 
-  const handleDropdownChange = (field: keyof UserInfo, value: string) => {
+  const handleDropdownChange = (field: keyof AddUserData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -123,12 +122,15 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
         role: payload.role,
         user_id: Date.now().toLocaleString(), //Get a random generic id
         is_user_active: payload.status === "true",
+        is_locked: false,
         created_at: new Date().toISOString(),
       };
       queryClient.setQueryData(["UsersDataInfo"], (oldData: UserRecord[]) => {
         if (!oldData) return oldData;
         return [newUser, ...oldData];
       });
+      // Reload for the real user_id - the row's actions send it
+      queryClient.invalidateQueries({ queryKey: ["UsersDataInfo"] });
 
       // Hide overlay on success
       hideOverlay();

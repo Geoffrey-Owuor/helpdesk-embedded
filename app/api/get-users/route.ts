@@ -14,7 +14,8 @@ export const GET = withAuth(async ({ user }) => {
 
   try {
     const baseQuery = `
-    SELECT user_id, username, email, department, role, is_user_active, created_at
+    SELECT user_id, username, email, department, role, is_user_active,
+    locked_at IS NOT NULL AS is_locked, created_at
     FROM users ORDER BY created_at DESC
     `;
 

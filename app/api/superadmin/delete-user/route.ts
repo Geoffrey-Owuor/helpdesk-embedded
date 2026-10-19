@@ -2,11 +2,16 @@ import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { NextResponse } from "next/server";
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
+import {
+  accountRemovalBlocker,
+  revalidateIssueAgentTags,
+  softDeleteUser,
+} from "@/lib/userAccounts";
 
 export const DELETE = withAuth(async ({ user, request }) => {
   let client: PoolClient | undefined;
 
-  const { isSuper } = user;
+  const { isSuper, userId: currentUserId } = user;
 
   if (!isSuper) {
     return NextResponse.json(
@@ -21,6 +26,13 @@ export const DELETE = withAuth(async ({ user, request }) => {
   if (!userId) {
     return NextResponse.json(
       { message: "Selected user id could not be found" },
+      { status: 400 },
+    );
+  }
+
+  if (userId === currentUserId) {
+    return NextResponse.json(
+      { message: "You cannot delete your own account" },
       { status: 400 },
     );
   }
@@ -46,47 +58,32 @@ export const DELETE = withAuth(async ({ user, request }) => {
       );
     }
 
-    // Check if there are some issues assigned to that specific user
-    const { rows: assignedIssues } = await client.query(
-      `SELECT id FROM issues_mapping WHERE $1 = ANY(ARRAY[agent_id, admin_id])`,
-      [userId],
-    );
-
-    if (assignedIssues.length > 0) {
+    if (rows[0].email.startsWith("deleted_")) {
       await client.query("ROLLBACK");
       return NextResponse.json(
-        {
-          message:
-            "Selected user has some assigned issues, reassign those issues before deleting the user",
-        },
+        { message: "Selected user is already deleted" },
         { status: 409 },
       );
     }
 
-    // Everything satisfied, mark user as inactive
-    const userEmail = rows[0].email;
-    const deletedEmail = `deleted_${userEmail}`;
-    const deletedPassword = "deleted_password";
+    // Issue types and open issues assigned to the user must be reassigned
+    const blocker = await accountRemovalBlocker(client, userId);
 
-    // update query
-    const updateQuery = `
-    UPDATE users
-    SET email = $1,
-    password = $2,
-    refresh_token = NULL,
-    refresh_token_expiry = NULL,
-    reset_token = NULL,
-    is_user_active = FALSE,
-    reset_token_expiry = NULL
-    WHERE user_id = $3
-    `;
+    if (blocker) {
+      await client.query("ROLLBACK");
+      return NextResponse.json(
+        { message: `${blocker} before deleting the user` },
+        { status: 409 },
+      );
+    }
 
-    const updateParams = [deletedEmail, deletedPassword, userId];
-
-    await client.query(updateQuery, updateParams);
+    // Everything satisfied, mark the user as deleted
+    await softDeleteUser(client, userId, rows[0].email);
 
     // Commit transaction
     await client.query("COMMIT");
+
+    revalidateIssueAgentTags();
 
     // Return a response
     return NextResponse.json(
