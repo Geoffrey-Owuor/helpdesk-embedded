@@ -9,6 +9,12 @@ const AgentsInfoSkeleton = () => {
         <SkeletonBox className="h-3 w-64" />
       </div>
 
+      {/* Add button & search row */}
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <SkeletonBox className="h-9 w-28 rounded-xl" />
+        <SkeletonBox className="h-10 w-full max-w-3xs" />
+      </div>
+
       {/* 2. Grid of Agent Cards */}
       <div className="grid gap-4">
         {[...Array(3)].map((_, index) => (
