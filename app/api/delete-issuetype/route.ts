@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
-import { revalidateTag } from "next/cache";
+import { revalidateIssueAgentTags } from "@/lib/userAccounts";
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
 
 export const DELETE = withAuth(async ({ user, request }) => {
   let client: PoolClient | undefined;
 
-  const { role } = user;
+  const { role, department } = user;
 
   // User must be an admin
   if (role !== "admin") {
@@ -36,18 +36,20 @@ export const DELETE = withAuth(async ({ user, request }) => {
     // Begin a transaction
     await client.query("BEGIN");
 
-    // Check if we have the issue type in our mapping
+    // Check if we have the issue type in our mapping, in the admin's department
     const { rows } = await client.query(
-      `SELECT issue_type FROM issues_mapping
-        WHERE issue_type = $1 FOR UPDATE
+      `SELECT m.id FROM issues_mapping AS m
+        JOIN users AS admins ON admins.user_id = m.admin_id
+        WHERE m.issue_type = $1 AND admins.department = $2
+        FOR UPDATE OF m
         `,
-      [issueType],
+      [issueType, department],
     );
 
     if (rows.length === 0) {
       await client.query("ROLLBACK");
       return NextResponse.json(
-        { message: "Selected issue type not found" },
+        { message: "Selected issue type not found in your department" },
         { status: 404 },
       );
     }
@@ -55,18 +57,16 @@ export const DELETE = withAuth(async ({ user, request }) => {
     // Issue is there, we perform our deletion
     await client.query(
       `DELETE FROM issues_mapping
-        WHERE issue_type = $1
+        WHERE id = $1
         `,
-      [issueType],
+      [rows[0].id],
     );
 
     // commit the transaction
     await client.query("COMMIT");
 
     // revalidate issues info related data
-    revalidateTag("GetIssueAgents", { expire: 0 });
-    revalidateTag("Issue_Types", { expire: 0 });
-    revalidateTag("Issue_Agents_Mapping", { expire: 0 });
+    revalidateIssueAgentTags();
 
     // return a response
     return NextResponse.json(

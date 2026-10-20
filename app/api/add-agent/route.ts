@@ -2,10 +2,11 @@ import { NextResponse } from "next/server";
 import { query } from "@/lib/Db";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { hashPassword } from "@/lib/Auth";
-import { revalidateTag } from "next/cache";
+import { revalidateIssueAgentTags } from "@/lib/userAccounts";
 
 export const POST = withAuth(async ({ request, user }) => {
-  const { role } = user;
+  // Agents join the admin's own department, whatever the form sends
+  const { role, department } = user;
   // Check if the user is authorized to perform this operation
   if (role !== "admin") {
     return NextResponse.json(
@@ -18,7 +19,6 @@ export const POST = withAuth(async ({ request, user }) => {
     const {
       name,
       email,
-      department,
       role: payloadRole,
       password,
       confirmPassword,
@@ -28,7 +28,6 @@ export const POST = withAuth(async ({ request, user }) => {
     if (
       !name ||
       !email ||
-      !department ||
       !payloadRole ||
       !password ||
       !confirmPassword
@@ -58,7 +57,7 @@ export const POST = withAuth(async ({ request, user }) => {
     // Check whether there is a user that already exists with the sent email address (conflict)
     const existingUserQuery = `
           SELECT email from users
-          WHERE email = $1
+          WHERE LOWER(email) = LOWER($1)
         `;
     const existingUser = await query(existingUserQuery, [email]);
 
@@ -83,8 +82,8 @@ export const POST = withAuth(async ({ request, user }) => {
     // Execute the query
     await query(insertQuery, insertParams);
 
-    // Revalidate agents cache tag
-    revalidateTag("GetIssueAgents", { expire: 0 });
+    // Revalidate agents cache tags
+    revalidateIssueAgentTags();
 
     // Return a response
     return NextResponse.json(

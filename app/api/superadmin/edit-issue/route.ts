@@ -2,7 +2,12 @@ import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { NextResponse } from "next/server";
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
-import { revalidateTag } from "next/cache";
+import {
+  findActiveStaff,
+  issueTypeNameTaken,
+  renameIssueTypeOnIssues,
+  revalidateIssueAgentTags,
+} from "@/lib/userAccounts";
 
 export const PUT = withAuth(async ({ user, request }) => {
   let client: PoolClient | undefined;
@@ -19,12 +24,14 @@ export const PUT = withAuth(async ({ user, request }) => {
   try {
     const {
       issueId,
-      issueType,
+      issueType: rawIssueType,
       issuePriority,
       agentEmail,
       adminEmail,
       longName,
     } = await request.json();
+    const issueType =
+      typeof rawIssueType === "string" ? rawIssueType.trim() : "";
 
     if (
       !issueId ||
@@ -55,11 +62,14 @@ export const PUT = withAuth(async ({ user, request }) => {
     // Begin a transaction
     await client.query("BEGIN");
 
-    // Check if the issue type exists
+    // Check if the issue type exists - with its current name and the
+    // department it serves, for renaming the issues raised under it
     const { rows } = await client.query(
       `
-          SELECT id FROM issues_mapping
-          WHERE id = $1 FOR UPDATE
+          SELECT m.id, m.issue_type, admins.department
+          FROM issues_mapping AS m
+          JOIN users AS admins ON admins.user_id = m.admin_id
+          WHERE m.id = $1 FOR UPDATE OF m
         `,
       [issueNumber],
     );
@@ -72,47 +82,48 @@ export const PUT = withAuth(async ({ user, request }) => {
       );
     }
 
-    // Get the corresponding admin id
-    const { rows: adminData } = await client.query(
-      `
-            SELECT user_id AS admin_id
-            FROM users
-            WHERE email = $1 AND is_user_active = TRUE LIMIT 1
-            `,
-      [adminEmail],
-    );
-
-    // Get the corresponding agent id
-    const { rows: agentData } = await client.query(
-      `
-            SELECT user_id AS agent_id
-            FROM users
-            WHERE email = $1 AND is_user_active = TRUE LIMIT 1
-            `,
-      [agentEmail],
-    );
-
-    // Admin not found
-    if (adminData.length === 0) {
+    // A rename must not clash with another issue type
+    if (await issueTypeNameTaken(client, issueType, issueNumber)) {
       await client.query("ROLLBACK");
       return NextResponse.json(
-        { message: "Selected admin could not be found" },
+        { message: "An issue type already exists with the same name" },
+        { status: 409 },
+      );
+    }
+
+    // The admin must hold the admin role - their department is the one the
+    // issue type is offered to
+    const admin = await findActiveStaff(client, adminEmail, ["admin"]);
+
+    if (!admin) {
+      await client.query("ROLLBACK");
+      return NextResponse.json(
+        { message: "Selected admin could not be found among active admins" },
         { status: 404 },
       );
     }
 
-    // Agent not found
-    if (agentData.length === 0) {
+    // The agent must be an agent or admin of the same department
+    const agent = await findActiveStaff(
+      client,
+      agentEmail,
+      ["agent", "admin"],
+      admin.department,
+    );
+
+    if (!agent) {
       await client.query("ROLLBACK");
       return NextResponse.json(
-        { message: "Selected agent could not be found" },
+        {
+          message: `Selected agent could not be found among the ${admin.department} department's active agents`,
+        },
         { status: 404 },
       );
     }
 
     // The returned data
-    const adminId = adminData[0].admin_id;
-    const agentId = agentData[0].agent_id;
+    const adminId = admin.userId;
+    const agentId = agent.userId;
 
     // The update query
     const updateQuery = `
@@ -136,13 +147,19 @@ export const PUT = withAuth(async ({ user, request }) => {
 
     await client.query(updateQuery, updateParams);
 
+    // Issues raised under the old name follow the rename
+    await renameIssueTypeOnIssues(
+      client,
+      rows[0].issue_type,
+      issueType,
+      rows[0].department,
+    );
+
     // Commit transaction
     await client.query("COMMIT");
 
     // Revalidate cache tags
-    revalidateTag("GetIssueAgents", { expire: 0 });
-    revalidateTag("Issue_Types", { expire: 0 });
-    revalidateTag("Issue_Agents_Mapping", { expire: 0 });
+    revalidateIssueAgentTags();
 
     // Return a response
     return NextResponse.json(

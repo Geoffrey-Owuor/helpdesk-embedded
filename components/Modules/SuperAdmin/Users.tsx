@@ -13,6 +13,11 @@ import {
   Trash2,
   UserRoundPen,
   UserRoundCheck,
+  UserRoundX,
+  KeyRound,
+  Lock,
+  LockOpen,
+  Ban,
 } from "lucide-react";
 import Pagination from "../IssuesData/Pagination";
 import { useState, useEffect, useMemo } from "react";
@@ -22,6 +27,7 @@ import ExportData from "./ExportData";
 import SearchInput from "./SearchInput";
 import { useUser } from "@/contexts/UserContext";
 import EditUserModal from "./EditModals/EditUserModal";
+import UserPasswordModal from "./EditModals/UserPasswordModal";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -32,6 +38,8 @@ export interface UserRecord {
   department: string;
   role: "admin" | "user" | "agent";
   is_user_active: boolean;
+  // Locked after too many failed sign-ins - separate from is_user_active
+  is_locked: boolean;
   created_at: string;
 }
 
@@ -61,7 +69,20 @@ const ROLES: Record<
   },
 };
 
-// ── Active badge config ────────────────────────────────────────────────────────
+// ── Status badge config ────────────────────────────────────────────────────────
+
+// Deleted accounts keep their row with a "deleted_" email prefix
+export const isDeletedUser = (user: UserRecord) =>
+  user.email.startsWith("deleted_");
+
+const statusKey = (user: UserRecord) =>
+  isDeletedUser(user)
+    ? "deleted"
+    : !user.is_user_active
+      ? "false"
+      : user.is_locked
+        ? "locked"
+        : "true";
 
 const ACTIVE_STATES: Record<
   string,
@@ -78,7 +99,22 @@ const ACTIVE_STATES: Record<
     label: "Inactive",
     styles: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400",
   },
+  locked: {
+    icon: <Lock size={13} />,
+    label: "Locked",
+    styles:
+      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  },
+  deleted: {
+    icon: <Ban size={13} />,
+    label: "Deleted",
+    styles:
+      "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400",
+  },
 };
+
+const actionButtonStyles =
+  "rounded-lg p-2 text-neutral-400 transition-colors hover:bg-neutral-200 hover:text-neutral-700 disabled:pointer-events-none disabled:opacity-40 dark:hover:bg-neutral-700 dark:hover:text-neutral-200";
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
@@ -139,6 +175,9 @@ const Users = () => {
   const [searchValue, setSearchValue] = useState("");
 
   const [activeEditId, setActiveEditId] = useState<string | null>(null);
+  const [activePasswordId, setActivePasswordId] = useState<string | null>(
+    null,
+  );
 
   // Zustand stores
   const triggerDialog = useConfirmStore((state) => state.triggerDialog);
@@ -194,21 +233,7 @@ const Users = () => {
     mutationFn: (id: string) =>
       apiClient.delete("/superadmin/delete-user", { params: { userId: id } }),
 
-    onSuccess: (response, id) => {
-      // Only update cache after confirmed success
-      queryClient.setQueryData(activeQueryKey, (oldData: UserRecord[]) => {
-        if (!oldData) return oldData;
-        return oldData.map((user) =>
-          user.user_id === id
-            ? {
-                ...user,
-                email: `deleted_${user.email}`,
-                is_user_active: !user.is_user_active,
-              }
-            : user,
-        );
-      });
-
+    onSuccess: (response) => {
       triggerAlert("success", response.data.message);
     },
 
@@ -217,10 +242,75 @@ const Users = () => {
       triggerAlert("error", errorMessage);
     },
 
+    // The server renames the email on delete, so reload the list
     onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: activeQueryKey });
       queryClient.invalidateQueries({ queryKey: ["UserCountsData"] });
     },
   });
+
+  // Updates one user in the cached list after a confirmed change
+  const patchUser = (id: string, changes: Partial<UserRecord>) =>
+    queryClient.setQueryData(activeQueryKey, (oldData: UserRecord[]) =>
+      oldData?.map((user) =>
+        user.user_id === id ? { ...user, ...changes } : user,
+      ),
+    );
+
+  const { mutate: mutateStatus, isPending: changingStatus } = useMutation({
+    mutationFn: ({ id, active }: { id: string; active: boolean }) =>
+      apiClient.patch("/superadmin/user-status", { userId: id, active }),
+
+    onSuccess: (response, { id, active }) => {
+      patchUser(id, { is_user_active: active });
+      triggerAlert("success", response.data.message);
+    },
+
+    onError: (error) => triggerAlert("error", getApiErrorMessage(error)),
+
+    onSettled: () =>
+      queryClient.invalidateQueries({ queryKey: ["UserCountsData"] }),
+  });
+
+  const { mutate: mutateUnlock, isPending: unlocking } = useMutation({
+    mutationFn: (id: string) =>
+      apiClient.patch("/superadmin/unlock-user", { userId: id }),
+
+    onSuccess: (response, id) => {
+      patchUser(id, { is_locked: false });
+      triggerAlert("success", response.data.message);
+    },
+
+    onError: (error) => triggerAlert("error", getApiErrorMessage(error)),
+
+    onSettled: () =>
+      queryClient.invalidateQueries({ queryKey: ["UserCountsData"] }),
+  });
+
+  const handleStatusChange = (user: UserRecord) => {
+    const active = !user.is_user_active;
+    triggerDialog({
+      title: active ? "Activate User" : "Deactivate User",
+      description: active
+        ? `${user.username} will be able to sign in again`
+        : `${user.username} will be signed out and unable to sign in`,
+      onConfirm: async () => {
+        hideDialog();
+        mutateStatus({ id: user.user_id, active });
+      },
+    });
+  };
+
+  const handleUnlock = (user: UserRecord) => {
+    triggerDialog({
+      title: "Unlock User",
+      description: `${user.username} can sign in with their current password again`,
+      onConfirm: async () => {
+        hideDialog();
+        mutateUnlock(user.user_id);
+      },
+    });
+  };
 
   return (
     <>
@@ -299,8 +389,9 @@ const Users = () => {
                 currentUsers.map((user) => {
                   const role = ROLES[user.role] ?? ROLES.user;
                   const active =
-                    ACTIVE_STATES[String(user.is_user_active)] ??
-                    ACTIVE_STATES.false;
+                    ACTIVE_STATES[statusKey(user)] ?? ACTIVE_STATES.false;
+                  const isSelf = userId === user.user_id;
+                  const isDeleted = isDeletedUser(user);
 
                   return (
                     <tr
@@ -364,19 +455,53 @@ const Users = () => {
                         <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => setActiveEditId(user.user_id)}
-                            disabled={userId === user.user_id}
-                            className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-neutral-200 hover:text-neutral-700 disabled:opacity-50 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
+                            disabled={isSelf || isDeleted}
+                            title="Edit profile"
+                            className={actionButtonStyles}
                           >
                             <UserRoundPen size={15} />
                           </button>
                           <button
-                            onClick={() => handleDelete(user.user_id)}
+                            onClick={() => setActivePasswordId(user.user_id)}
                             disabled={
-                              userId === user.user_id ||
-                              !user.is_user_active ||
-                              deleting
+                              isSelf || isDeleted || !user.is_user_active
                             }
-                            className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-red-100 hover:text-red-600 disabled:opacity-50 dark:hover:bg-red-900/30 dark:hover:text-red-400"
+                            title="Password"
+                            className={actionButtonStyles}
+                          >
+                            <KeyRound size={15} />
+                          </button>
+                          {user.is_locked && !isDeleted && (
+                            <button
+                              onClick={() => handleUnlock(user)}
+                              disabled={unlocking}
+                              title="Unlock account"
+                              className="rounded-lg p-2 text-amber-500 transition-colors hover:bg-amber-100 hover:text-amber-700 disabled:pointer-events-none disabled:opacity-40 dark:hover:bg-amber-900/30 dark:hover:text-amber-300"
+                            >
+                              <LockOpen size={15} />
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleStatusChange(user)}
+                            disabled={isSelf || isDeleted || changingStatus}
+                            title={
+                              user.is_user_active
+                                ? "Deactivate account"
+                                : "Activate account"
+                            }
+                            className={actionButtonStyles}
+                          >
+                            {user.is_user_active ? (
+                              <UserRoundX size={15} />
+                            ) : (
+                              <UserRoundCheck size={15} />
+                            )}
+                          </button>
+                          <button
+                            onClick={() => handleDelete(user.user_id)}
+                            disabled={isSelf || isDeleted || deleting}
+                            title="Delete user"
+                            className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-red-100 hover:text-red-600 disabled:pointer-events-none disabled:opacity-40 dark:hover:bg-red-900/30 dark:hover:text-red-400"
                           >
                             <Trash2 size={15} />
                           </button>
@@ -392,10 +517,16 @@ const Users = () => {
                                 email: user.email,
                                 department: user.department,
                                 role: user.role,
-                                status: String(user.is_user_active),
-                                password: "",
-                                confirmPassword: "",
                               }}
+                            />
+                          )}
+
+                          {/* The password modal */}
+                          {activePasswordId === user.user_id && (
+                            <UserPasswordModal
+                              isModalOpen={activePasswordId === user.user_id}
+                              hideModal={() => setActivePasswordId(null)}
+                              user={user}
                             />
                           )}
                         </div>

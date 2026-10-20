@@ -19,6 +19,8 @@ export async function POST(request: NextRequest) {
             SELECT user_id, password FROM users
             WHERE reset_token = $1
             AND reset_token_expiry > NOW()
+            AND is_user_active = TRUE
+            FOR UPDATE
             `,
       [token],
     );
@@ -52,13 +54,18 @@ export async function POST(request: NextRequest) {
     // Hash the new password
     const hashedPassword = await hashPassword(password);
 
-    // Update the password and clear the token
+    // Update the password, clear the token, unlock the account and end
+    // existing sessions (they were signed in with the old password)
     await client.query(
       `
         UPDATE users
         SET password = $1,
         reset_token = NULL,
-        reset_token_expiry = NULL
+        reset_token_expiry = NULL,
+        password_attempts = 0,
+        locked_at = NULL,
+        refresh_token = NULL,
+        refresh_token_expiry = NULL
         WHERE user_id = $2
         `,
       [hashedPassword, userId],

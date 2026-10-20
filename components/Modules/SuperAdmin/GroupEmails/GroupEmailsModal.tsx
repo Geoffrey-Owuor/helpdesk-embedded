@@ -260,8 +260,8 @@ const GroupEmailsModal = ({
   return (
     <Modal open={isModalOpen} onClose={closeModal} size="lg">
       <ModalHeader
-        title="Departments"
-        description="Manage departments info"
+        title="Group Emails"
+        description="Departments issues are raised to, and who they notify"
         actions={
           <button
             onClick={() => {

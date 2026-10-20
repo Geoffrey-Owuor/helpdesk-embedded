@@ -8,6 +8,7 @@ import {
   useState,
   useCallback,
 } from "react";
+import { useDepartmentOptions } from "@/hooks/useDepartmentOptions";
 import {
   UserRoundCog,
   BotMessageSquare,
@@ -33,7 +34,6 @@ import {
 import { fetchedBaseDepartments } from "@/serverActions/GetBaseDepartments";
 import { UserRecord } from "@/serverActions/GetCachedUsers";
 import { NameValidationResult, NameValidator } from "@/utils/Validators";
-import { baseDepartments } from "@/public/assets";
 
 // Stores
 import { useAlertStore } from "@/store/useAlertStore";
@@ -82,6 +82,9 @@ type QuickCreateModalProps = {
 };
 
 const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
+  // Staff departments (public.departments)
+  const { departments: baseDepartments } = useDepartmentOptions();
+
   // Fetch departments
   const {
     data: fetchedDepartments = [],

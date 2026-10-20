@@ -21,6 +21,9 @@ export interface IssueMappingRecord {
   issue_id: string;
   agent_name: string;
   agent_email: string;
+  // The agent's own role - only admins can be an issue type's admin. Absent
+  // on rows added to the cache before a refetch.
+  agent_role?: "agent" | "admin";
   admin_name: string;
   admin_email: string;
   issue_type: string;
@@ -106,6 +109,18 @@ const IssuesMapping = () => {
         issue.agent_email,
         { option: issue.agent_name, value: issue.agent_email },
       ]),
+    ).values(),
+  ];
+
+  // Only users with the admin role can own an issue type
+  const adminsInformation = [
+    ...new Map(
+      issuesMapping
+        .filter((issue) => issue.agent_role === "admin")
+        .map((issue) => [
+          issue.agent_email,
+          { option: issue.agent_name, value: issue.agent_email },
+        ]),
     ).values(),
   ];
 
@@ -200,7 +215,7 @@ const IssuesMapping = () => {
 
         <ExportData
           agentsInfo={agentsInformation}
-          adminsInfo={agentsInformation}
+          adminsInfo={adminsInformation}
           type="issues"
           refetch={() => refetchIssuesMapping()}
         />
@@ -309,7 +324,7 @@ const IssuesMapping = () => {
                             isModalOpen={activeEditId === item.issue_id}
                             hideModal={() => setActiveEditId(null)}
                             agentsInfo={agentsInformation}
-                            adminsInfo={agentsInformation}
+                            adminsInfo={adminsInformation}
                             issueId={item.issue_id}
                             issueInfo={{
                               issueType: item.issue_type,

@@ -55,42 +55,6 @@ export const dateFormatter = (
   });
 };
 
-// export our departments
-export const baseDepartments = [
-  { option: "IT & Projects", value: "IT & Projects" },
-  { option: "Finance", value: "Finance" },
-  { option: "Marketing", value: "Marketing" },
-  { option: "Operations", value: "Operations" },
-  { option: "Commercial", value: "Commercial" },
-  { option: "HR & Admin", value: "HR & Admin" },
-  { option: "Modern Trade", value: "Modern Trade" },
-  { option: "Retail", value: "Retail" },
-  { option: "B2B", value: "B2B" },
-  { option: "Internal Audit", value: "Internal Audit" },
-  { option: "Engineering & HVAC", value: "Engineering & HVAC" },
-  { option: "Security", value: "Security" },
-  { option: "Service Center", value: "Service Center" },
-  { option: "Directorate", value: "Directorate" },
-];
-
-// Issue reference prefix mapping
-export const issuePrefixMapping: Record<string, string> = {
-  "IT & Projects": "IT",
-  Finance: "FIN",
-  Marketing: "MKT",
-  Operations: "OPS",
-  Commercial: "COM",
-  "HR & Admin": "HR",
-  "Modern Trade": "MT",
-  Retail: "RTL",
-  B2B: "B2B",
-  "Internal Audit": "IA",
-  "Engineering & HVAC": "ENG",
-  Security: "SEC",
-  "Service Center": "SVC",
-  Directorate: "DIR",
-};
-
 // Default page size for server-side paginated issue queries
 export const DEFAULT_PAGE_SIZE = 25;
 
@@ -132,11 +96,14 @@ export interface UserCountBreakdown {
   total: number;
   active: number;
   inactive: number;
+  // Active accounts locked after too many failed sign-ins
+  locked: number;
 }
 export const defaultUserCountBreakdown: UserCountBreakdown = {
   total: 0,
   active: 0,
   inactive: 0,
+  locked: 0,
 };
 
 export interface UserCounts {
@@ -184,6 +151,9 @@ export const priorityOptions = [
   { label: "Medium", value: "Medium" },
   { label: "Low", value: "Low" },
 ];
+
+// Public support address shown in the home page footer and CTA
+export const HELPDESK_EMAIL = "helpdesk@hotpoint.co.ke";
 
 export const footerQuickLinks = [
   { label: "Changelog", href: "/changelog" },

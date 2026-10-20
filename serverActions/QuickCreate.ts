@@ -6,7 +6,7 @@ import { query } from "@/lib/Db";
 import { emailSender } from "@/services/EmailSender";
 import { CheckBehalfUser } from "@/serverActions/CheckBehalfUser";
 import { writeFile, mkdir } from "fs/promises";
-import { issuePrefixMapping } from "@/public/assets";
+import { issuePrefixFor } from "@/lib/departments";
 import path from "path";
 
 export interface AlertMessage {
@@ -152,8 +152,7 @@ export async function QuickCreate(formData: FormData): Promise<AlertMessage> {
     const resultantUuid = returnedId[0].issue_uuid;
 
     // Update the submitted issue to insert a generated issue reference
-    const referencePrefix =
-      issuePrefixMapping[returnedUser.department] || "UNK";
+    const referencePrefix = await issuePrefixFor(returnedUser.department);
     const formattedId = resultantId.toString().padStart(3, "0");
     const issueReferenceNumber = `${referencePrefix}-${formattedId}`;
 
