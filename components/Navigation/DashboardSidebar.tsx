@@ -1,30 +1,45 @@
 "use client";
 import {
-  CirclePlus,
   ChevronLeft,
-  ShieldUser,
-  ShieldPlus,
-  LayoutDashboard,
-  NotebookPen,
   Keyboard,
   CircleQuestionMark,
   HousePlug,
-  ChartColumnBig,
 } from "lucide-react";
 import Link from "next/link";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useUser } from "@/contexts/UserContext";
 import MobileSideBar from "./MobileSideBar";
+import SidebarMoreMenu from "./SidebarMoreMenu";
 import { usePathname, useRouter } from "next/navigation";
 import ClientPortal from "../Modules/ClientPortal";
 import { useSidebarToggleStore } from "@/store/useSidebarToggleStore";
 import { useDashboardModalsStore } from "@/store/useDashboardModalsStore";
 import { DashBoardLogo } from "../Modules/DashBoardLogo";
 import { useIsEmbedd } from "@/hooks/useIsEmbedd";
-import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
+import {
+  DashboardNavAction,
+  DashboardNavItem,
+  HOME_NAV_ITEM,
+  getDashboardNavGroups,
+  isNavItemActive,
+} from "@/lib/dashboardNav";
+
+// Keyboard focus ring for rail items, offset from the page background
+const FOCUS_RING_CLASSES =
+  "outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50 dark:focus-visible:ring-white dark:focus-visible:ring-offset-neutral-950";
+
+const railItemClass = (highlighted: boolean) =>
+  `flex w-full shrink-0 flex-col items-center gap-1 rounded-2xl py-2.5 text-[11px] font-semibold transition-colors ${FOCUS_RING_CLASSES} ${
+    highlighted
+      ? "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+      : "text-neutral-600 hover:bg-neutral-200 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+  }`;
+
+// Matches the list's gap-1.5
+const RAIL_GAP_PX = 6;
 
 const DashboardSidebar = () => {
-  const { role, isSuper, specialAccess } = useUser();
+  const user = useUser();
   const showSidebar = useSidebarToggleStore((state) => state.showSidebar);
   const showMobileSidebar = useSidebarToggleStore(
     (state) => state.showMobileSidebar,
@@ -69,14 +84,55 @@ const DashboardSidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Determine which link to highlight
-  const highlightLink = (path: string) => path === pathname;
+  const runAction = (action: DashboardNavAction) => {
+    if (action === "newIssue") setIsIssueModalOpen(true);
+    else setIsAdminPanelOpen(true);
+  };
+
+  const items = getDashboardNavGroups(user).flatMap((group) => group.items);
+
+  // How many items fit the rail's height; the rest go into More, which takes
+  // the next slot. All items render until the first measurement.
+  const [visibleCount, setVisibleCount] = useState(items.length);
+  const spaceRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const itemHeightRef = useRef(0);
+  const itemCount = items.length;
+
+  useLayoutEffect(() => {
+    const space = spaceRef.current;
+    if (!space) return;
+
+    const measure = () => {
+      // Every rail item has the same height; remember it for when none show.
+      // A hidden rail measures 0, so keep the last real height.
+      const firstItem = listRef.current?.firstElementChild as HTMLElement;
+      if (firstItem?.offsetHeight) {
+        itemHeightRef.current = firstItem.offsetHeight;
+      }
+      const itemHeight = itemHeightRef.current;
+      if (!itemHeight) return;
+
+      const fits = Math.floor(
+        (space.clientHeight + RAIL_GAP_PX) / (itemHeight + RAIL_GAP_PX),
+      );
+      setVisibleCount(fits >= itemCount ? itemCount : Math.max(fits - 1, 0));
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(space);
+    return () => observer.disconnect();
+    // Re-measure when the rail is shown again (it's display:none while hidden)
+  }, [itemCount, showSidebar]);
+
+  const visibleItems = items.slice(0, visibleCount);
+  const overflowItems = items.slice(visibleCount);
 
   return (
     <>
       {/* Mobile overlay sidebar (opened from the topbar menu button) */}
       <MobileSideBar
-        highlightLink={highlightLink}
         sideBarOpen={showMobileSidebar}
         setSideBarOpen={setShowMobileSidebar}
       />
@@ -90,78 +146,48 @@ const DashboardSidebar = () => {
           <DashBoardLogo />
         </div>
 
-        <div className="mx-auto mb-2 w-full px-2">
-          {/* Home */}
-          <SidebarLink
-            href="/dashboard"
-            icon={<LayoutDashboard className="h-5 w-5" />}
-            label="Home"
-            isActive={highlightLink("/dashboard")}
-            showToolTip={true}
-            ToolTipMessage="Dashboard"
+        <nav
+          aria-label="Main"
+          className="mb-2 flex min-h-0 w-full flex-1 flex-col gap-1.5 overflow-hidden px-2 pt-1"
+        >
+          <RailItem
+            item={HOME_NAV_ITEM}
+            isActive={isNavItemActive(HOME_NAV_ITEM, pathname)}
+            onAction={runAction}
           />
-        </div>
-
-        {/* Nav items — grow to fill space */}
-        <nav className="sidebar-nav mb-2 flex w-full flex-1 flex-col items-center gap-1.5 overflow-y-auto px-2">
-          {/* New Issue */}
-          <SidebarButton
-            onClick={() => setIsIssueModalOpen(true)}
-            icon={<CirclePlus className="h-5 w-5" />}
-            label="New Issue"
-            showToolTip={true}
-            showTooltipIcon={true}
-            ToolTipMessage="Ctrl + Q"
+          <div
+            aria-hidden="true"
+            className="mx-3 my-0.5 h-px shrink-0 bg-neutral-200 dark:bg-neutral-800"
           />
 
-          {/* Super Admin */}
-          {isSuper && (
-            <SidebarLink
-              href="/dashboard/superadmin"
-              icon={<ShieldPlus className="h-5 w-5" />}
-              label="Super"
-              isActive={highlightLink("/dashboard/superadmin")}
-              showToolTip={true}
-              ToolTipMessage="Super Admin"
-            />
-          )}
-
-          {/* Issues Analytics */}
-          {hasFeatureAccess({ role, specialAccess }, FEATURES.ANALYTICS) && (
-            <SidebarLink
-              href="/dashboard/analytics"
-              icon={<ChartColumnBig className="h-5 w-5" />}
-              label="Analytics"
-              isActive={highlightLink("/dashboard/analytics")}
-              showToolTip={true}
-              ToolTipMessage="Issues Analytics"
-            />
-          )}
-
-          {/* Admin Panel */}
-          {role === "admin" && (
-            <SidebarButton
-              onClick={() => setIsAdminPanelOpen(true)}
-              icon={<ShieldUser className="h-5 w-5" />}
-              label="Admin"
-              showToolTip={true}
-              ToolTipMessage="Admin Panel"
-            />
-          )}
-
-          {/* Articles Page */}
-          <SidebarLink
-            href="/dashboard/articles"
-            icon={<NotebookPen className="h-5 w-5" />}
-            label="Articles"
-            isActive={highlightLink("/dashboard/articles")}
-            showToolTip={true}
-            ToolTipMessage="Articles Hub"
-          />
+          {/* Measured: the space left under Home */}
+          <div ref={spaceRef} className="flex min-h-0 flex-1 flex-col">
+            <ul ref={listRef} className="flex flex-col gap-1.5">
+              {visibleItems.map((item) => (
+                <li key={item.key}>
+                  <RailItem
+                    item={item}
+                    isActive={isNavItemActive(item, pathname)}
+                    onAction={runAction}
+                  />
+                </li>
+              ))}
+              {overflowItems.length > 0 && (
+                <li>
+                  <SidebarMoreMenu
+                    items={overflowItems}
+                    pathname={pathname}
+                    onAction={runAction}
+                    buttonClassName={railItemClass}
+                  />
+                </li>
+              )}
+            </ul>
+          </div>
         </nav>
 
         {/* The back button */}
-        <div className="mt-auto w-full px-2">
+        <div className="w-full shrink-0 px-2">
           <div className="flex w-full flex-col items-center justify-center gap-1.5">
             {/* The main hub link - uses a tag to avoid basePath issues */}
             {!isEmbedded && (
@@ -173,14 +199,11 @@ const DashboardSidebar = () => {
               />
             )}
             {/* Back */}
-            <SidebarButton
+            <SidebarIconButton
               onClick={() => router.back()}
               icon={<ChevronLeft className="h-5 w-5" />}
               label="Back"
-              iconOnly={true}
-              showToolTip={true}
-              showTooltipIcon={true}
-              ToolTipMessage="Back · Ctrl + ←"
+              tooltip="Back · Ctrl + ←"
             />
             <SidebarIconLink
               href="/manual"
@@ -198,32 +221,33 @@ const DashboardSidebar = () => {
 // ─── Small helpers ────────────────────────────────────────────────────────────
 
 // Round icon-only buttons used by the rail's bottom group (Hub, Back, user manual)
-const ICON_BUTTON_CLASSES =
-  "rounded-full p-2 text-neutral-600 transition-colors hover:bg-neutral-200 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200";
+const ICON_BUTTON_CLASSES = `rounded-full p-2 text-neutral-600 transition-colors hover:bg-neutral-200 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 ${FOCUS_RING_CLASSES}`;
 
-// Tracks hover and the trigger's right-edge midpoint so the tooltip can be portaled out of the rail's overflow
-const useRailTooltip = <T extends HTMLElement>(enabled: boolean) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [coords, setCoords] = useState({ top: 0, left: 0 });
-  const ref = useRef<T>(null);
+// Shows the tooltip on hover and keyboard focus, at the trigger's right-edge
+// midpoint so it can be portaled out of the rail's overflow
+const useRailTooltip = () => {
+  const [coords, setCoords] = useState<{ top: number; left: number } | null>(
+    null,
+  );
 
-  const onMouseEnter = () => {
-    if (!enabled) return;
-
-    // Calculate exactly where the trigger is on the screen right now
-    if (ref.current) {
-      const rect = ref.current.getBoundingClientRect();
-      setCoords({
-        top: rect.top + rect.height / 2, // Vertical center of the trigger
-        left: rect.right, // Right edge of the trigger
-      });
-    }
-    setIsHovered(true);
+  const show = (e: React.SyntheticEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setCoords({ top: rect.top + rect.height / 2, left: rect.right });
   };
+  const hide = () => setCoords(null);
 
-  const onMouseLeave = () => setIsHovered(false);
-
-  return { ref, isHovered, coords, onMouseEnter, onMouseLeave };
+  return {
+    coords,
+    handlers: {
+      onMouseEnter: show,
+      onMouseLeave: hide,
+      onFocus: (e: React.FocusEvent<HTMLElement>) => {
+        // Keyboard focus only, not the focus a click leaves behind
+        if (e.currentTarget.matches(":focus-visible")) show(e);
+      },
+      onBlur: hide,
+    },
+  };
 };
 
 type RailTooltipProps = {
@@ -260,92 +284,94 @@ const RailTooltip = ({
   </ClientPortal>
 );
 
-type SidebarButtonProps = {
-  onClick: () => void;
-  icon: React.ReactNode;
-  label: string;
-  iconOnly?: boolean;
-  showTooltipIcon?: boolean;
-  showToolTip?: boolean;
-  ToolTipMessage?: string;
-};
+// A rail entry: a page link, or a button that opens a dashboard modal
+const RailItem = ({
+  item,
+  isActive,
+  onAction,
+}: {
+  item: DashboardNavItem;
+  isActive: boolean;
+  onAction: (action: DashboardNavAction) => void;
+}) => {
+  const { coords, handlers } = useRailTooltip();
+  const tooltip = item.shortcut
+    ? `${item.label} · ${item.shortcut}`
+    : item.label;
 
-const SidebarButton = ({
-  onClick,
-  icon,
-  label,
-  iconOnly = false,
-  showTooltipIcon = false,
-  showToolTip = false,
-  ToolTipMessage,
-}: SidebarButtonProps) => {
-  const { ref, isHovered, coords, onMouseEnter, onMouseLeave } =
-    useRailTooltip<HTMLButtonElement>(showToolTip);
+  const content = (
+    <>
+      <item.Icon className="h-5 w-5" />
+      <span className="max-w-full truncate px-1">{item.shortLabel}</span>
+    </>
+  );
 
   return (
     <>
-      <button
-        ref={ref}
-        onClick={onClick}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
-        aria-label={label}
-        className={
-          iconOnly
-            ? ICON_BUTTON_CLASSES
-            : "flex w-full flex-col items-center gap-1 rounded-2xl py-2.5 text-[11px] font-semibold text-neutral-600 transition-colors hover:bg-neutral-200 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
-        }
-      >
-        {icon}
-        {!iconOnly && <span>{label}</span>}
-      </button>
+      {item.kind === "link" ? (
+        <Link
+          href={item.href}
+          aria-label={item.label}
+          aria-current={isActive ? "page" : undefined}
+          {...handlers}
+          className={railItemClass(isActive)}
+        >
+          {content}
+        </Link>
+      ) : (
+        <button
+          type="button"
+          aria-label={item.label}
+          aria-keyshortcuts={item.shortcut?.replace(/ \+ /g, "+")}
+          onClick={() => onAction(item.action)}
+          {...handlers}
+          className={railItemClass(false)}
+        >
+          {content}
+        </button>
+      )}
 
-      {showToolTip && ToolTipMessage && isHovered && (
+      {coords && (
         <RailTooltip
           coords={coords}
-          message={ToolTipMessage}
-          showKeyboardIcon={showTooltipIcon}
+          message={tooltip}
+          showKeyboardIcon={!!item.shortcut}
         />
       )}
     </>
   );
 };
 
-type SidebarLinkProps = {
-  href: string;
+type SidebarIconButtonProps = {
+  onClick: () => void;
   icon: React.ReactNode;
   label: string;
-  isActive: boolean;
-  showToolTip?: boolean;
-  ToolTipMessage?: string;
+  tooltip: string;
 };
 
-const SidebarLink = ({
-  href,
+// Round icon-only button with a rail tooltip showing its shortcut
+const SidebarIconButton = ({
+  onClick,
   icon,
   label,
-  isActive,
-  showToolTip = false,
-  ToolTipMessage,
-}: SidebarLinkProps) => {
-  const { ref, isHovered, coords, onMouseEnter, onMouseLeave } =
-    useRailTooltip<HTMLAnchorElement>(showToolTip);
+  tooltip,
+}: SidebarIconButtonProps) => {
+  const { coords, handlers } = useRailTooltip();
 
   return (
     <>
-      <Link
-        ref={ref}
-        href={href}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
-        className={`flex w-full flex-col items-center gap-1 ${isActive ? "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200" : "text-neutral-600 hover:bg-neutral-200 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"} rounded-2xl py-2.5 text-[11px] font-semibold`}
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={label}
+        {...handlers}
+        className={ICON_BUTTON_CLASSES}
       >
         {icon}
-        <span>{label}</span>
-      </Link>
+      </button>
 
-      {showToolTip && ToolTipMessage && isHovered && (
-        <RailTooltip coords={coords} message={ToolTipMessage} />
+      {coords && (
+        <RailTooltip coords={coords} message={tooltip} showKeyboardIcon />
       )}
     </>
   );
@@ -368,15 +394,12 @@ const SidebarIconLink = ({
   nativeAnchor = false,
   openInNewTab = false,
 }: SidebarIconLinkProps) => {
-  const { ref, isHovered, coords, onMouseEnter, onMouseLeave } =
-    useRailTooltip<HTMLAnchorElement>(true);
+  const { coords, handlers } = useRailTooltip();
 
   const linkProps = {
-    ref,
     href,
-    onMouseEnter,
-    onMouseLeave,
-    "aria-label": label,
+    ...handlers,
+    "aria-label": openInNewTab ? `${label} (opens in a new tab)` : label,
     className: ICON_BUTTON_CLASSES,
     ...(openInNewTab && { target: "_blank", rel: "noopener noreferrer" }),
   };
@@ -389,7 +412,7 @@ const SidebarIconLink = ({
         <Link {...linkProps}>{icon}</Link>
       )}
 
-      {isHovered && <RailTooltip coords={coords} message={label} />}
+      {coords && <RailTooltip coords={coords} message={label} />}
     </>
   );
 };

@@ -17,6 +17,7 @@ export const GET = withAuth(async ({ user }) => {
    SELECT
     agents.username AS agent_name,
     agents.email AS agent_email,
+    agents.role AS agent_role,
     COALESCE(m.issue_type, 'Unassigned') AS issue_type,
     COALESCE(m.long_name, m.issue_type, 'Unassigned') AS long_name,
     COALESCE(m.issue_priority, 'None') AS issue_priority,

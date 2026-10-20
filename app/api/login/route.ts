@@ -10,12 +10,15 @@ import { getUserPrivileges } from "@/lib/UserPrivileges";
 import { MAX_LOGIN_ATTEMPTS } from "@/lib/AuthConstants";
 import { NextRequest, NextResponse } from "next/server";
 
+const LOCKED_ACCOUNT_MESSAGE =
+  "Your account is locked after too many failed attempts. Reset your password to unlock it, or contact the administrator";
+
 export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json();
 
-    // 1. Find user by email (added password_attempts to SELECT)
-    const query1 = `SELECT user_id, email, password, username, department, role, is_user_active, password_attempts
+    // 1. Find user by email
+    const query1 = `SELECT user_id, email, password, username, department, role, is_user_active, password_attempts, locked_at
                     FROM users
                     WHERE email = $1 LIMIT 1`;
     const params1 = [email];
@@ -41,22 +44,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Verify password
+    // 3. Locked after too many failed attempts - a password reset (or a
+    // super admin) unlocks it. Checked before the password so a locked
+    // account can't keep being guessed at.
+    if (user.locked_at) {
+      return NextResponse.json(
+        { message: LOCKED_ACCOUNT_MESSAGE, locked: true },
+        { status: 423 },
+      );
+    }
+
+    // 4. Verify password
     const isValid = await verifyPassword(password, user.password);
 
     if (!isValid) {
       const newAttempts = (user.password_attempts || 0) + 1;
 
       if (newAttempts >= MAX_LOGIN_ATTEMPTS) {
-        // Lock the account and update total attempts
+        // Lock the account (it stays active) and update total attempts
         const lockQuery = `UPDATE users
-                           SET password_attempts = $1, is_user_active = false
+                           SET password_attempts = $1, locked_at = NOW()
                            WHERE user_id = $2`;
         await query(lockQuery, [newAttempts, user.user_id]);
 
         return NextResponse.json(
-          { message: "Too many failed attempts, contact the administrator" },
-          { status: 403 },
+          { message: LOCKED_ACCOUNT_MESSAGE, locked: true },
+          { status: 423 },
         );
       } else {
         // Increment the counter only
@@ -75,7 +88,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 4. Check for elevated/special privileges (super admin, feature grants)
+    // 5. Check for elevated/special privileges (super admin, feature grants)
     const { isSuper, specialAccess } = await getUserPrivileges(user.user_id);
 
     // Define the payload
@@ -96,7 +109,7 @@ export async function POST(request: NextRequest) {
     // Hash refresh token and store it in the database
     const hashedRefreshToken = await hashRefreshToken(refreshToken);
 
-    // 5. SUCCESS: Update tokens AND reset password_attempts back to 0
+    // 6. SUCCESS: Update tokens AND reset password_attempts back to 0
     const query2 = `UPDATE users 
                     SET refresh_token = $1, 
                         refresh_token_expiry = NOW() + INTERVAL '7 days',

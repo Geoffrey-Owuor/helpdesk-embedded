@@ -25,6 +25,7 @@ type TabId = "agent-info" | "issue-info";
 
 const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
   const [activeTab, setActiveTab] = useState<TabId>("agent-info");
+  const [refreshing, setRefreshing] = useState(false);
 
   const { department } = useUser();
 
@@ -43,11 +44,17 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
     enabled: !!department && showAdminPanel,
   });
 
-  // Refetch agents and issue types data
+  // Refetch agents and issue types data - the list stays visible (the skeleton is
+  // for the first load only) while the Refresh icon spins
   const handleRefetchIssueAgents = async () => {
-    // We call our server action here - the below function invalidates next.js unstable_cache
-    await handleRefetchIssueAgentsData();
-    refetch();
+    setRefreshing(true);
+    try {
+      // We call our server action here - the below function invalidates next.js unstable_cache
+      await handleRefetchIssueAgentsData();
+      await refetch();
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   // Shared button styles
@@ -114,6 +121,8 @@ const AdminPanel = ({ showAdminPanel, setShowAdminPanel }: AdminPanelProps) => {
               label="Refresh"
               icon={RotateCcw}
               onClick={handleRefetchIssueAgents}
+              disabled={refreshing || loading}
+              className={refreshing ? "[&_svg]:animate-spin" : undefined}
             />
           }
         />

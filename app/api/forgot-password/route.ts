@@ -1,8 +1,6 @@
 import { query } from "@/lib/Db";
 import { validateHotpointEmail } from "@/utils/Validators";
-import crypto from "crypto";
-import { sendEmail } from "@/services/EmailService";
-import ResetLinkTemplate from "@/templates/ResetLinkTemplate";
+import { sendPasswordResetLink } from "@/lib/passwordReset";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -17,11 +15,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if the email exists in our users database
+    // Check if the email belongs to an active account - a disabled one can't
+    // sign in after a reset anyway. A locked one can: the reset unlocks it.
     const emailExists = await query(
       `
         SELECT user_id FROM users
-        WHERE email = $1
+        WHERE email = $1 AND is_user_active = TRUE
         `,
       [email],
     );
@@ -33,31 +32,8 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    //Get the user_id and generate a random uuid token
-    const userId = emailExists[0].user_id;
-    const token = crypto.randomUUID();
-
-    // Update the users table with the generated token
-    await query(
-      `
-        UPDATE users
-        SET reset_token = $1, 
-        reset_token_expiry = NOW() + INTERVAL '10 minutes'
-        WHERE user_id = $2
-        `,
-      [token, userId],
-    );
-
-    //Send the reset link email
-    const resetLink = `${process.env.NEXT_PUBLIC_BASE_URL}/reset-password?token=${token}`;
-    const emailHtml = ResetLinkTemplate(resetLink);
-
-    await sendEmail({
-      to: email,
-      subject: "Password Reset Request",
-      essential: true,
-      html: emailHtml,
-    });
+    // Generate a reset token and email the link
+    await sendPasswordResetLink(emailExists[0].user_id, email);
 
     return NextResponse.json(
       { message: "If an account exists, a reset link has been sent" },

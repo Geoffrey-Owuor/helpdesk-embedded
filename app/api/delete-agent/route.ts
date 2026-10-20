@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
-import { revalidateTag } from "next/cache";
+import {
+  countOpenAssignedIssues,
+  revalidateIssueAgentTags,
+  softDeleteUser,
+} from "@/lib/userAccounts";
 
 export const DELETE = withAuth(async ({ user, request }) => {
   let client: PoolClient | undefined;
@@ -36,10 +40,12 @@ export const DELETE = withAuth(async ({ user, request }) => {
     // Begin a transaction
     await client.query("BEGIN");
 
-    // Check if the agent exists in our user's table
+    // Check if the agent exists in the admin's department
     const { rows: agentInfo } = await client.query(
       `
-        SELECT user_id FROM users WHERE email = $1 AND department = $2 FOR UPDATE
+        SELECT user_id, email, role FROM users
+        WHERE email = $1 AND department = $2 AND is_user_active = TRUE
+        FOR UPDATE
         `,
       [agentEmail, department],
     );
@@ -52,50 +58,54 @@ export const DELETE = withAuth(async ({ user, request }) => {
       );
     }
 
-    //Agent is there - get the agent_id, and prepare the data we will replace
-    const agentId = agentInfo[0].user_id;
-    const deletedEmail = `deleted_${agentEmail}`;
-    const deletedPassword = "deleted_password";
+    // Admins can delete agents only - not other admins, users or themselves
+    // (a super admin manages those)
+    if (agentInfo[0].role !== "agent" || agentInfo[0].user_id === userId) {
+      await client.query("ROLLBACK");
+      return NextResponse.json(
+        {
+          message:
+            "Only agents can be deleted here, contact a super admin to remove an admin",
+        },
+        { status: 403 },
+      );
+    }
 
-    // Replace issue types assigned to the agent being deleted to the admin performing the deletion
+    const agentId = agentInfo[0].user_id;
+
+    // Open issues assigned to the agent would be stranded
+    const openIssues = await countOpenAssignedIssues(client, agentId);
+
+    if (openIssues > 0) {
+      await client.query("ROLLBACK");
+      return NextResponse.json(
+        {
+          message: `The agent has ${openIssues} open issue${openIssues === 1 ? "" : "s"} assigned, reassign ${openIssues === 1 ? "it" : "them"} before deleting the agent`,
+        },
+        { status: 409 },
+      );
+    }
+
+    // Hand the agent's issue types to the admin performing the deletion -
+    // including ones that recorded the agent as their admin too
     await client.query(
       `
         UPDATE issues_mapping
-        SET agent_id = $1
-        WHERE agent_id = $2 AND admin_id = $3
+        SET agent_id = CASE WHEN agent_id = $2 THEN $1 ELSE agent_id END,
+        admin_id = CASE WHEN admin_id = $2 THEN $1 ELSE admin_id END
+        WHERE $2 IN (agent_id, admin_id)
         `,
-      [userId, agentId, userId],
+      [userId, agentId],
     );
 
-    // Update the user's table with the deleted info
-    const userUpdateQuery = `
-     UPDATE users
-     SET email = $1,
-     password = $2,
-     refresh_token = NULL,
-     refresh_token_expiry = NULL,
-     reset_token = NULL,
-     is_user_active = FALSE,
-     reset_token_expiry = NULL
-     WHERE email = $3 AND department = $4
-    `;
-
-    const userUpdateParams = [
-      deletedEmail,
-      deletedPassword,
-      agentEmail,
-      department,
-    ];
-
-    await client.query(userUpdateQuery, userUpdateParams);
+    // Mark the agent as deleted
+    await softDeleteUser(client, agentId, agentInfo[0].email);
 
     // Commit the transaction
     await client.query("COMMIT");
 
     // Revalidate issue cache tags
-    revalidateTag("GetIssueAgents", { expire: 0 });
-    revalidateTag("Issue_Types", { expire: 0 });
-    revalidateTag("Issue_Agents_Mapping", { expire: 0 });
+    revalidateIssueAgentTags();
 
     // Return a response
     return NextResponse.json(

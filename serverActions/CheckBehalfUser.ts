@@ -2,6 +2,7 @@ import { sendEmail } from "@/services/EmailService";
 import FirstLoginLinkTemplate from "@/templates/FirstLoginLinkTemplate";
 import { query } from "@/lib/Db";
 import { hashPassword } from "@/lib/Auth";
+import { canonicalDepartmentName } from "@/lib/departments";
 import crypto from "crypto";
 
 export interface ReturnedUser {
@@ -69,10 +70,12 @@ export const CheckBehalfUser = async ({
         `;
 
       // Insert params
+      // The HR records spell some departments differently ("Hr & Admin");
+      // store the departments table's spelling so prefixes and filters match
       const insertParams = [
         staffInfo.name,
         staffInfo.email,
-        staffInfo.department,
+        await canonicalDepartmentName(staffInfo.department),
         hashedPassword,
         "user",
         resetToken,

@@ -2,12 +2,7 @@
 import { X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useAnalyticsFilterStore } from "@/store/useAnalyticsFilterStore";
-import {
-  baseDepartments,
-  statusOptions,
-  priorityOptions,
-  dateFormatter,
-} from "@/public/assets";
+import { statusOptions, priorityOptions, dateFormatter } from "@/public/assets";
 import { fetchGlobalAgents } from "@/queries/analytics/fetchGlobalAgents";
 import { AnalyticsFilterParams } from "./types";
 
@@ -64,11 +59,9 @@ const ActiveAnalyticsFilterPills = () => {
     const value = committedFilters[key];
 
     switch (key) {
+      // A department's label is its name
       case "department":
-        return (
-          baseDepartments.find((dept) => dept.value === value)?.option ||
-          String(value)
-        );
+        return String(value);
       case "agent":
         return (
           globalAgents.find((a) => a.agent_email === value)?.agent_name ||

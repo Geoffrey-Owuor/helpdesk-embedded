@@ -9,8 +9,11 @@ const IssueTypesInfoSkeleton = () => {
         <SkeletonBox className="h-3 w-64" />
       </div>
 
-      {/* "Add Issue Type" Button Skeleton */}
-      <SkeletonBox className="mb-4 h-9 w-36 rounded-xl" />
+      {/* Add button & search row */}
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <SkeletonBox className="h-9 w-36 rounded-xl" />
+        <SkeletonBox className="h-10 w-full max-w-3xs" />
+      </div>
 
       {/* 2. Grid of Issue Type Cards */}
       <div className="grid gap-3">

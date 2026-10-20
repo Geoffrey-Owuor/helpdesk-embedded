@@ -1,13 +1,10 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import { useAllDepartmentOptions } from "@/hooks/useDepartmentOptions";
 import { Search, X, RotateCcw, ChevronDown } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useAnalyticsFilterStore } from "@/store/useAnalyticsFilterStore";
-import {
-  baseDepartments,
-  statusOptions,
-  priorityOptions,
-} from "@/public/assets";
+import { statusOptions, priorityOptions } from "@/public/assets";
 import { DatePicker } from "../DatePicker";
 import CustomDropdown from "../CustomDropdown";
 import { fetchGlobalAgents } from "@/queries/analytics/fetchGlobalAgents";
@@ -174,6 +171,9 @@ const FilterFieldSelector = ({
 };
 
 const FilterPanel = () => {
+  // Every staff department, inactive ones included, so older issues stay filterable
+  const { departments: baseDepartments } = useAllDepartmentOptions();
+
   const [activeField, setActiveField] = useState<FilterFieldKey>("department");
 
   const {

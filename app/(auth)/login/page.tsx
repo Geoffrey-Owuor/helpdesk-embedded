@@ -1,7 +1,5 @@
 import Login from "@/components/AuthPages/Login";
 import { Metadata } from "next";
-import { Suspense } from "react";
-import SuspenseSkeleton from "@/components/Skeletons/SuspenseSkeleton";
 
 export const metadata: Metadata = {
   title: "Login",
@@ -9,11 +7,7 @@ export const metadata: Metadata = {
 };
 
 const page = () => {
-  return (
-    <Suspense fallback={<SuspenseSkeleton />}>
-      <Login />
-    </Suspense>
-  );
+  return <Login />;
 };
 
 export default page;

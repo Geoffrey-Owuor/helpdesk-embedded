@@ -7,6 +7,7 @@ import { IssueValueTypes } from "@/public/assets";
 export interface AgentWithSkills {
   name: string;
   email: string;
+  role: "agent" | "admin";
   supported_issues: IssueValueTypes[];
 }
 
@@ -21,6 +22,7 @@ export const arrayReducer = (queryArray: IssueAgents[]): AgentWithSkills[] => {
         acc[key] = {
           name: row.agent_name,
           email: row.agent_email,
+          role: row.agent_role,
           supported_issues: [],
         };
       }

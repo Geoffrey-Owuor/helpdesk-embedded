@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, ChangeEvent } from "react";
+import { useDepartmentOptions } from "@/hooks/useDepartmentOptions";
 import { NameValidationResult, NameValidator } from "@/utils/Validators";
 import { validateHotpointEmail } from "@/utils/Validators";
 import NameRulesCard from "../NameRulesCard";
-import { baseDepartments } from "@/public/assets";
 import OptionsDropDown from "./OptionsDropDown";
 import FormAsterisk from "../FormAsterisk";
 import { CheckCircle2, UserRound, UserRoundCheck } from "lucide-react";
@@ -25,6 +25,9 @@ type SubmitForAUserProps = {
 };
 
 const SubmitForAUser = ({ isOpen, onChange }: SubmitForAUserProps) => {
+  // Staff departments (public.departments)
+  const { departments: baseDepartments } = useDepartmentOptions();
+
   const [formData, setFormData] = useState<SubmitForUserData>({
     user_name: "",
     user_email: "",

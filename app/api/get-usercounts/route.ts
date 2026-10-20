@@ -19,18 +19,22 @@ export const GET = withAuth(async ({ user }) => {
         COUNT(*) AS totals,
         COUNT(*) FILTER (WHERE is_user_active = true) AS total_active,
         COUNT(*) FILTER (WHERE is_user_active = false) AS total_inactive,
+        COUNT(*) FILTER (WHERE is_user_active = true AND locked_at IS NOT NULL) AS total_locked,
 
         COUNT(*) FILTER (WHERE role = 'agent') AS agents,
         COUNT(*) FILTER (WHERE role = 'agent' AND is_user_active = true) AS agents_active,
         COUNT(*) FILTER (WHERE role = 'agent' AND is_user_active = false) AS agents_inactive,
+        COUNT(*) FILTER (WHERE role = 'agent' AND is_user_active = true AND locked_at IS NOT NULL) AS agents_locked,
       
         COUNT(*) FILTER (WHERE role = 'admin') AS admins,
         COUNT(*) FILTER (WHERE role = 'admin' AND is_user_active = true) AS admins_active,
         COUNT(*) FILTER (WHERE role = 'admin' AND is_user_active = false) AS admins_inactive,
+        COUNT(*) FILTER (WHERE role = 'admin' AND is_user_active = true AND locked_at IS NOT NULL) AS admins_locked,
 
         COUNT(*) FILTER (WHERE role = 'user') AS normal_users,
         COUNT(*) FILTER (WHERE role = 'user' AND is_user_active = true) AS normal_users_active,
-        COUNT(*) FILTER (WHERE role = 'user' AND is_user_active = false) AS normal_users_inactive
+        COUNT(*) FILTER (WHERE role = 'user' AND is_user_active = false) AS normal_users_inactive,
+        COUNT(*) FILTER (WHERE role = 'user' AND is_user_active = true AND locked_at IS NOT NULL) AS normal_users_locked
 
     FROM users
     `;
@@ -47,21 +51,25 @@ export const GET = withAuth(async ({ user }) => {
           total: getCount(row.totals),
           active: getCount(row.total_active),
           inactive: getCount(row.total_inactive),
+          locked: getCount(row.total_locked),
         },
         agents: {
           total: getCount(row.agents),
           active: getCount(row.agents_active),
           inactive: getCount(row.agents_inactive),
+          locked: getCount(row.agents_locked),
         },
         admins: {
           total: getCount(row.admins),
           active: getCount(row.admins_active),
           inactive: getCount(row.admins_inactive),
+          locked: getCount(row.admins_locked),
         },
         normalUsers: {
           total: getCount(row.normal_users),
           active: getCount(row.normal_users_active),
           inactive: getCount(row.normal_users_inactive),
+          locked: getCount(row.normal_users_locked),
         },
       },
       { status: 200 },
