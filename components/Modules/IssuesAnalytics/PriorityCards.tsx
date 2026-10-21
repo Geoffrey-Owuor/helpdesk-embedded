@@ -1,5 +1,5 @@
 import { Gauge } from "lucide-react";
-import { DataCounts } from "@/public/assets";
+import { DataCounts } from "@/lib/assets";
 import BreakdownListCard from "./BreakdownListCard";
 
 const PriorityCards = ({

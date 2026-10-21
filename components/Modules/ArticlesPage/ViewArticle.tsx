@@ -6,7 +6,7 @@ import rehypeHighlight from "rehype-highlight";
 import { UserRound, Calendar, Clock, Building2, ArrowLeft } from "lucide-react";
 import { getArticle } from "@/serverActions/GetArticle";
 import ArticleTypeFormatter from "./ArticleTypeFormatter";
-import { dateFormatter } from "@/public/assets";
+import { dateFormatter } from "@/lib/assets";
 import { generateSlug } from "@/utils/GenerateSlug";
 import ArticleTOC from "./ArticleTOC";
 import MarkdownVideoLink from "./MarkdownVideoLink";

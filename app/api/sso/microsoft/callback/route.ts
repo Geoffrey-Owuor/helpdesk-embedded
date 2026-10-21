@@ -10,7 +10,7 @@ import { query } from "@/lib/Db";
 import { getUserPrivileges } from "@/lib/UserPrivileges";
 import { getRequestOrigin } from "@/lib/getRequestOrigin";
 import { NextRequest } from "next/server";
-import { basePath } from "@/public/assets";
+import { basePath } from "@/lib/basePath";
 import {
   fetchMicrosoftProfile,
   isMicrosoftUnreachable,

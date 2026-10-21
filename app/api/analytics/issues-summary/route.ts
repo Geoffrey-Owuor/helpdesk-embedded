@@ -2,7 +2,7 @@ import { query } from "@/lib/Db";
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
-import { defaultCounts } from "@/public/assets";
+import { defaultCounts } from "@/lib/assets";
 import {
   buildAnalyticsIssuesFilter,
   parseAnalyticsFilterParams,

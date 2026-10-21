@@ -4,7 +4,7 @@ import {
   AnalyticsFilterParams,
   AnalyticsSummary,
 } from "@/components/Modules/IssuesAnalytics/types";
-import { defaultCounts } from "@/public/assets";
+import { defaultCounts } from "@/lib/assets";
 
 const emptySummary: AnalyticsSummary = {
   statusCounts: defaultCounts,

@@ -9,7 +9,7 @@ import {
   Image as ImageIcon,
   ExternalLink,
 } from "lucide-react";
-import { basePath } from "@/public/assets";
+import { basePath } from "@/lib/basePath";
 
 type Props = {
   uuid: string;

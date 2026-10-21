@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/Db";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
-import { DefaultIssuesMappingCounts } from "@/public/assets";
+import { DefaultIssuesMappingCounts } from "@/lib/assets";
 
 export const GET = withAuth(async ({ user }) => {
   const { isSuper } = user;

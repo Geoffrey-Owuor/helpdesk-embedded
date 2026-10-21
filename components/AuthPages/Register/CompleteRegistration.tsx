@@ -28,7 +28,7 @@ import { useLoadingStore } from "@/store/useLoadingStore";
 import { ApiHandler } from "@/utils/ApiHandler";
 import NameRulesCard from "@/components/Modules/NameRulesCard";
 import { NameValidator, NameValidationResult } from "@/utils/Validators";
-import { basePath } from "@/public/assets";
+import { basePath } from "@/lib/basePath";
 
 const CompleteRegistration = ({ email }: { email: string }) => {
   // Staff departments (public.departments)

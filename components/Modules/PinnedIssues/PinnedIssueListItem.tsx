@@ -8,7 +8,7 @@ import {
   usePinnedIssuesStore,
   PinnedIssue,
 } from "@/store/usePinnedIssuesStore";
-import { titleHelper } from "@/public/assets";
+import { titleHelper } from "@/lib/assets";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import IssuePriorityFormatter from "../IssuesData/IssuePriorityFormatter";
 

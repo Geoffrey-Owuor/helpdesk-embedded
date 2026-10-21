@@ -1,4 +1,4 @@
-import { currentYear } from "@/public/assets";
+import { currentYear } from "@/lib/assets";
 
 // TODO: If you want to include the user's name in the greeting, add it as a 3rd parameter.
 const FirstLoginLinkTemplate = (

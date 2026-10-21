@@ -1,4 +1,4 @@
-import { basePath } from "@/public/assets";
+import { basePath } from "@/lib/basePath";
 import { create } from "zustand";
 
 export type DbStatus = "ok" | "degraded" | "checking";

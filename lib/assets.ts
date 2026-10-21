@@ -1,5 +1,5 @@
-import issue_desk_image from "./issue_desk_light.png";
-import hotpoint_black_logo from "./hotpoint_black_logo.png";
+import issue_desk_image from "@/public/issue_desk_light.png";
+import hotpoint_black_logo from "@/public/hotpoint_black_logo.png";
 
 export const assets = {
   issue_desk_image,
@@ -10,8 +10,6 @@ export const assets = {
 const currentYear = new Date().getFullYear();
 
 export { currentYear };
-
-export const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 // Function that receives username
 // And generates a capitalized abbreviation from it

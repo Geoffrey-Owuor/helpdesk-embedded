@@ -1,4 +1,4 @@
-import { currentYear } from "@/public/assets";
+import { currentYear } from "@/lib/assets";
 
 const VerificationCodeTemplate = (verificationCode: string): string => {
   return `

@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { assets } from "@/public/assets";
-import { currentYear, HELPDESK_EMAIL } from "@/public/assets";
+import { assets } from "@/lib/assets";
+import { currentYear, HELPDESK_EMAIL } from "@/lib/assets";
 import { ArrowUp, Mail } from "lucide-react";
 import { DbStatusPill } from "../Modules/DbStatus/DbStatusPill";
 

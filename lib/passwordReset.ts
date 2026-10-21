@@ -6,6 +6,7 @@ import crypto from "crypto";
 import { query } from "@/lib/Db";
 import { sendEmail } from "@/services/EmailService";
 import ResetLinkTemplate from "@/templates/ResetLinkTemplate";
+import { appUrl } from "@/lib/basePath";
 
 export async function sendPasswordResetLink(
   userId: string,
@@ -21,7 +22,7 @@ export async function sendPasswordResetLink(
     [token, userId],
   );
 
-  const resetLink = `${process.env.NEXT_PUBLIC_BASE_URL}/reset-password?token=${token}`;
+  const resetLink = appUrl(`/reset-password?token=${token}`);
 
   return sendEmail({
     to: email,

@@ -6,6 +6,8 @@
 // - A footer pointing to the app, since a dead end is why people reply.
 // Inline styles + tables only (Outlook), with explicit colours.
 
+import { homeUrl } from "@/lib/basePath";
+
 const APP_NAME = "HelpDesk";
 
 const escapeHtml = (value: string) =>
@@ -32,9 +34,8 @@ function topNotice(subject: string) {
 }
 
 function footerNotice() {
-  const appUrl = process.env.NEXT_PUBLIC_BASE_URL;
-  const followUp = appUrl
-    ? `To follow up, open <a href="${escapeHtml(appUrl)}" style="color:#4b5563;font-weight:bold;text-decoration:underline;">${APP_NAME}</a>.`
+  const followUp = homeUrl
+    ? `To follow up, open <a href="${escapeHtml(homeUrl)}" style="color:#4b5563;font-weight:bold;text-decoration:underline;">${APP_NAME}</a>.`
     : `To follow up, open ${APP_NAME}.`;
   return `
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
