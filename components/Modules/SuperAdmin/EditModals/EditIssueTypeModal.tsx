@@ -12,7 +12,7 @@ import { useAlertStore } from "@/store/useAlertStore";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { IssueMappingRecord } from "../IssuesMapping/IssuesMapping";
-import { priorityOptions as baseOptions } from "@/public/assets";
+import { priorityOptions as baseOptions } from "@/lib/assets";
 import {
   Modal,
   ModalBody,

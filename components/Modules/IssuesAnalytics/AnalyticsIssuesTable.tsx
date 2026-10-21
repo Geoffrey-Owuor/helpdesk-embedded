@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { Paperclip, UndoDot, GitMerge, UsersRound } from "lucide-react";
-import { titleHelper, dateFormatter } from "@/public/assets";
+import { titleHelper, dateFormatter } from "@/lib/assets";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import IssuePriorityFormatter from "../IssuesData/IssuePriorityFormatter";
 import { AssignedAgentFormatter } from "../IssuesData/AssignedAgentFormatter";

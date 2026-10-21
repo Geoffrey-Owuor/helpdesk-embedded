@@ -1,4 +1,4 @@
-import { IssueValueTypes } from "@/public/assets";
+import { IssueValueTypes } from "@/lib/assets";
 
 import {
   LucideIcon,

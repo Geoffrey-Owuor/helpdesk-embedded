@@ -1,5 +1,6 @@
-import { abbreviateUserName } from "@/public/assets";
-import { dateFormatter } from "@/public/assets";
+import { abbreviateUserName } from "@/lib/assets";
+import { dateFormatter } from "@/lib/assets";
+import { appUrl } from "@/lib/basePath";
 
 type IssueEmailStatus = string;
 type IssueEmailPriority = string;
@@ -274,7 +275,7 @@ export function generateIssueNotificationEmail(
     reasonEscalated,
   } = params;
 
-  const issueLink = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/${uuid}?title=${encodeURIComponent(body.issueTitle)}&description=${encodeURIComponent(body.issueDescription)}`;
+  const issueLink = appUrl(`/dashboard/${uuid}?title=${encodeURIComponent(body.issueTitle)}&description=${encodeURIComponent(body.issueDescription)}`);
 
   const statusBadge = renderStatusBadge(body.status);
   const priorityBadge = renderPriorityBadge(body.priority);

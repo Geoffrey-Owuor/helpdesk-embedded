@@ -1,5 +1,5 @@
 import { Clock, Activity, BookmarkCheck, CheckCircle2 } from "lucide-react";
-import { DataCounts } from "@/public/assets";
+import { DataCounts } from "@/lib/assets";
 import StatTile from "./StatTile";
 
 const StatusCards = ({

@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowRight, Bug, Mail, Star, Zap } from "lucide-react";
 import { useQuickCreateStore } from "@/store/useQuickCreateStore";
-import { HELPDESK_EMAIL } from "@/public/assets";
+import { homeUrl } from "@/lib/basePath";
+import { HELPDESK_EMAIL } from "@/lib/assets";
 
 const secondaryLinks = [
   { href: "/manual#bug-report", label: "Report a bug", icon: Bug },
@@ -20,7 +21,7 @@ const ExploreCta = () => {
     Promise.resolve().then(() => setFullUrl(window.location.href));
   }, []);
 
-  const showButton = fullUrl !== process.env.NEXT_PUBLIC_BASE_URL;
+  const showButton = fullUrl !== homeUrl;
   return (
     <section className="custom:px-8 px-4 pb-20">
       <div className="relative overflow-hidden rounded-3xl bg-neutral-950 px-6 py-14 sm:px-12 dark:bg-white">

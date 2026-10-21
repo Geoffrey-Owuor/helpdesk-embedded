@@ -2,7 +2,7 @@
 import { X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useAnalyticsFilterStore } from "@/store/useAnalyticsFilterStore";
-import { statusOptions, priorityOptions, dateFormatter } from "@/public/assets";
+import { statusOptions, priorityOptions, dateFormatter } from "@/lib/assets";
 import { fetchGlobalAgents } from "@/queries/analytics/fetchGlobalAgents";
 import { AnalyticsFilterParams } from "./types";
 

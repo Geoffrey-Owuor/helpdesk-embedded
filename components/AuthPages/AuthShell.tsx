@@ -1,8 +1,8 @@
 import ThemeToggle from "../Themes/ThemeToggle";
-import { currentYear } from "@/public/assets";
+import { currentYear } from "@/lib/assets";
 import HomePagesLogo from "../Modules/HomePagesLogo";
 import { Star } from "lucide-react";
-import { footerQuickLinks } from "@/public/assets";
+import { footerQuickLinks } from "@/lib/assets";
 import { DbStatusPill } from "../Modules/DbStatus/DbStatusPill";
 import Link from "next/link";
 

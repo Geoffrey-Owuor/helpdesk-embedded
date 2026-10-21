@@ -11,7 +11,7 @@ import { cookies } from "next/headers";
 import crypto from "crypto";
 import { query } from "@/lib/Db";
 import { getUserPrivileges } from "@/lib/UserPrivileges";
-import { basePath } from "@/public/assets";
+import { basePath } from "@/lib/basePath";
 
 export async function GET(request: NextRequest) {
   const baseUrl = await getRequestOrigin(request);

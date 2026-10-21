@@ -4,7 +4,7 @@ import { useAllDepartmentOptions } from "@/hooks/useDepartmentOptions";
 import { Search, X, RotateCcw, ChevronDown } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useAnalyticsFilterStore } from "@/store/useAnalyticsFilterStore";
-import { statusOptions, priorityOptions } from "@/public/assets";
+import { statusOptions, priorityOptions } from "@/lib/assets";
 import { DatePicker } from "../DatePicker";
 import CustomDropdown from "../CustomDropdown";
 import { fetchGlobalAgents } from "@/queries/analytics/fetchGlobalAgents";

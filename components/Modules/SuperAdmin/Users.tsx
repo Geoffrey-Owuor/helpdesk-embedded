@@ -4,7 +4,7 @@ import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useAlertStore } from "@/store/useAlertStore";
-import { dateFormatter } from "@/public/assets";
+import { dateFormatter } from "@/lib/assets";
 import {
   ShieldCheck,
   Headset,

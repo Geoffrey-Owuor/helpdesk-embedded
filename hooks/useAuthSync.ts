@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { AuthJWTPayload } from "@/lib/Auth";
-import { basePath } from "@/public/assets";
+import { basePath } from "@/lib/basePath";
 
 // Type definition for the BroadcastChannel message payload
 interface AuthChannelMessage {

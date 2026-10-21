@@ -1,4 +1,4 @@
-import { dateFormatter } from "@/public/assets";
+import { dateFormatter } from "@/lib/assets";
 import Link from "next/link";
 import HomeNavBar from "../Navigation/HomeNavBar";
 import { ArrowLeft, GitCommitHorizontal, RotateCcw } from "lucide-react";

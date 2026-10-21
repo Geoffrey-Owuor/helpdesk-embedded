@@ -1,9 +1,9 @@
 import { DbStatusPill } from "../Modules/DbStatus/DbStatusPill";
-import { currentYear } from "@/public/assets";
+import { currentYear } from "@/lib/assets";
 import HomePagesLogo from "../Modules/HomePagesLogo";
 import ThemeToggle from "../Themes/ThemeToggle";
 import Link from "next/link";
-import { footerQuickLinks } from "@/public/assets";
+import { footerQuickLinks } from "@/lib/assets";
 import { Star } from "lucide-react";
 import SkeletonBox from "./SkeletonBox";
 

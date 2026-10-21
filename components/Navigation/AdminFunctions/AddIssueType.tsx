@@ -24,7 +24,7 @@ import { useAlertStore } from "@/store/useAlertStore";
 import FormAsterisk from "@/components/Modules/FormAsterisk";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
-import { priorityOptions } from "@/public/assets";
+import { priorityOptions } from "@/lib/assets";
 import { RefetchFunction } from "./AgentsInfo";
 
 type AddIssueTypeProps = {

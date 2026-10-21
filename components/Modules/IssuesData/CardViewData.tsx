@@ -1,6 +1,6 @@
 "use client";
 
-import { titleHelper, dateFormatter } from "@/public/assets";
+import { titleHelper, dateFormatter } from "@/lib/assets";
 import Link from "next/link";
 import IssueStatusFormatter from "./IssueStatusFormatter";
 import { AssignedAgentFormatter } from "./AssignedAgentFormatter";

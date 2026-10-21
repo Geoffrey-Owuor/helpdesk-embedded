@@ -1,7 +1,7 @@
 import { query } from "@/lib/Db";
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
-import { defaultCounts } from "@/public/assets";
+import { defaultCounts } from "@/lib/assets";
 import {
   buildIssuesFilter,
   parseIssuesFilterParams,

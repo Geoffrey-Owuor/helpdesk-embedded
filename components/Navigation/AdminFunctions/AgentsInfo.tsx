@@ -2,7 +2,7 @@
 
 import { Mail, Tag, Info, UserRoundPlus, Trash2 } from "lucide-react";
 import { arrayReducer } from "@/utils/ArrayReducer";
-import { abbreviateUserName } from "@/public/assets";
+import { abbreviateUserName } from "@/lib/assets";
 import AgentsInfoSkeleton from "@/components/Skeletons/AgentsInfoSkeleton";
 import { useMemo, useState } from "react";
 import { useUser } from "@/contexts/UserContext";

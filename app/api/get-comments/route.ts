@@ -1,7 +1,7 @@
 import { query } from "@/lib/Db";
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
-import { IssueValueTypes } from "@/public/assets";
+import { IssueValueTypes } from "@/lib/assets";
 import { canViewIssue } from "@/lib/IssueAccess";
 
 // Our result interface

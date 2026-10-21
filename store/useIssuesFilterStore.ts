@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { IssuesFilterParams } from "@/lib/issues/buildIssuesFilter";
-import { DEFAULT_PAGE_SIZE } from "@/public/assets";
+import { DEFAULT_PAGE_SIZE } from "@/lib/assets";
 
 // Draft filter values, keyed the same as IssuesFilterParams so building
 // committedFilters from the draft is a straight field-by-field copy.

@@ -10,7 +10,7 @@ import {
   Building2,
   PenLine,
 } from "lucide-react";
-import { dateFormatter } from "@/public/assets";
+import { dateFormatter } from "@/lib/assets";
 import { ArticlesCardValues } from "@/serverActions/GetUserArticles";
 import { JSX, useState } from "react";
 import { usePathname } from "next/navigation";
