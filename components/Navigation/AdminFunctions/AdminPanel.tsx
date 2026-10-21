@@ -8,7 +8,7 @@ import { useUser } from "@/contexts/UserContext";
 import { useQuery } from "@tanstack/react-query";
 import { handleRefetchIssueAgentsData } from "@/serverActions/refetchIssueAgentsData";
 import { fetchedIssueAgents } from "@/serverActions/GetIssueAgents";
-import { AppVersion } from "@/public/assets";
+import { AppVersion } from "@/lib/assets";
 import {
   Modal,
   ModalBody,

@@ -1,6 +1,6 @@
 import { LucideIcon } from "lucide-react";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
-import { PriorityBreakdown } from "@/public/assets";
+import { PriorityBreakdown } from "@/lib/assets";
 import PriorityCounts from "@/components/Modules/IssuesCards/PriorityCounts";
 
 interface StatTileProps {

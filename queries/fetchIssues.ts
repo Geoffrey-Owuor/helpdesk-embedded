@@ -1,5 +1,5 @@
 import apiClient from "@/lib/AxiosClient";
-import { IssueValueTypes } from "@/public/assets";
+import { IssueValueTypes } from "@/lib/assets";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { IssuesFilterParams } from "@/lib/issues/buildIssuesFilter";
 

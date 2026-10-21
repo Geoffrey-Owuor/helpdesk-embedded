@@ -2,7 +2,7 @@ import { MicrosoftEntraId, generateState, generateCodeVerifier } from "arctic";
 import { cookies } from "next/headers";
 import { getRequestOrigin } from "@/lib/getRequestOrigin";
 import { NextRequest } from "next/server";
-import { basePath } from "@/public/assets";
+import { basePath } from "@/lib/basePath";
 
 export async function GET(req: NextRequest) {
   // 1. Get the true origin via our helper

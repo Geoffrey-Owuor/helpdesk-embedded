@@ -11,7 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { IssueOption } from "@/serverActions/GetIssueTypes";
-import { generateValueType } from "@/public/assets";
+import { generateValueType } from "@/lib/assets";
 
 interface OptionsDropDownProps {
   value: string;

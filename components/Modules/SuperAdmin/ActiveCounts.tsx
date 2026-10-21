@@ -1,7 +1,7 @@
 "use client";
 
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
-import { UserCountBreakdown } from "@/public/assets";
+import { UserCountBreakdown } from "@/lib/assets";
 import { LucideIcon, CircleCheck, CircleX, Lock } from "lucide-react";
 
 interface breakdownObject {

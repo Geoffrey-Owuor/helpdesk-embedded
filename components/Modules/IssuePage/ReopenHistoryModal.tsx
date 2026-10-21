@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { getReopenHistory, ReopenRow } from "@/serverActions/GetReopenHistory"; // TODO: Adjust import path
-import { dateFormatter } from "@/public/assets";
+import { dateFormatter } from "@/lib/assets";
 import { UndoDot, Clock, AlertCircle, UserRound } from "lucide-react";
 import { Modal, ModalBody, ModalHeader } from "../Modal/Modal";
 

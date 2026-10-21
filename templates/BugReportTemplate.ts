@@ -1,4 +1,4 @@
-import { dateFormatter } from "@/public/assets";
+import { dateFormatter } from "@/lib/assets";
 import { BugReportProps } from "@/services/SendBugReport";
 
 export const BugReportTemplate = (bugReportData: BugReportProps): string => {

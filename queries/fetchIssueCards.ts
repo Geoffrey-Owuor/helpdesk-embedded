@@ -1,4 +1,4 @@
-import { DataCounts, defaultCounts } from "@/public/assets";
+import { DataCounts, defaultCounts } from "@/lib/assets";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { IssuesFilterParams } from "@/lib/issues/buildIssuesFilter";

@@ -1,8 +1,8 @@
 "use client";
 
 import { CircleDot, CheckCheck, BellOff, RotateCcw } from "lucide-react";
-import { dateFormatter } from "@/public/assets";
-import { IssueValueTypes } from "@/public/assets";
+import { dateFormatter } from "@/lib/assets";
+import { IssueValueTypes } from "@/lib/assets";
 import { ChangelogItem } from "./Notifications";
 import { Dispatch, SetStateAction } from "react";
 import { ChangelogTypePill } from "@/components/Home/ChangeLog";

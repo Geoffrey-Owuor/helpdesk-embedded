@@ -5,7 +5,7 @@ import {
   IssueNotificationEmailParams,
 } from "@/templates/IssueEmailTemplate";
 import { getEmailData } from "./EmailData";
-import { dateFormatter } from "@/public/assets";
+import { dateFormatter } from "@/lib/assets";
 
 type EmailSenderProps = {
   title: string;

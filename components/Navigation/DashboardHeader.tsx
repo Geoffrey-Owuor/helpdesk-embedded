@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Keyboard, Menu, ChevronLeft } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
-import { abbreviateUserName } from "@/public/assets";
+import { abbreviateUserName } from "@/lib/assets";
 import { DashBoardLogo } from "../Modules/DashBoardLogo";
 import UserInfoCard from "../Modules/UserInfoCard";
 import ThemeToggle from "../Themes/ThemeToggle";

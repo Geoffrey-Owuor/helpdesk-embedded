@@ -2,7 +2,7 @@
 import CustomAgentsDropdown from "./CustomAgentsDropdown";
 import CustomDropdown from "./CustomDropDown";
 import { useState, FocusEvent } from "react";
-import { priorityOptions as baseOptions } from "@/public/assets";
+import { priorityOptions as baseOptions } from "@/lib/assets";
 import { DropdownOption } from "./CustomDropDown";
 import { EditIssueInfo } from "./EditIssueTypeModal";
 import { Bug } from "lucide-react";

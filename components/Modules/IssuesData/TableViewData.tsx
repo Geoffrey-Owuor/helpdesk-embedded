@@ -1,10 +1,10 @@
 "use client";
 
 import { useColumnStore } from "@/store/useColumnStore";
-import { titleHelper } from "@/public/assets";
+import { titleHelper } from "@/lib/assets";
 import Link from "next/link";
 import IssueStatusFormatter from "./IssueStatusFormatter";
-import { dateFormatter } from "@/public/assets";
+import { dateFormatter } from "@/lib/assets";
 import { AssignedAgentFormatter } from "./AssignedAgentFormatter";
 import { useRouter } from "next/navigation";
 import IssuePriorityFormatter from "./IssuePriorityFormatter";

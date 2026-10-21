@@ -1,6 +1,5 @@
 import { useLoadingStore } from "@/store/useLoadingStore";
-
-const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+import { basePath } from "@/lib/basePath";
 
 // Runs for every App Router navigation: <Link>, router.push/replace and back/forward
 export function onRouterTransitionStart(
@@ -11,7 +10,7 @@ export function onRouterTransitionStart(
   if (navigationType !== "traverse") {
     // push/replace pass the href without the base path
     const target = new URL(
-      url.startsWith("/") ? `${BASE_PATH}${url}` : url,
+      url.startsWith("/") ? `${basePath}${url}` : url,
       window.location.href,
     );
 

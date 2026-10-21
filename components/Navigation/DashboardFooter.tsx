@@ -1,7 +1,7 @@
 import { Star } from "lucide-react";
 import Link from "next/link";
-import { currentYear } from "@/public/assets";
-import { footerQuickLinks } from "@/public/assets";
+import { currentYear } from "@/lib/assets";
+import { footerQuickLinks } from "@/lib/assets";
 
 const DashboardFooter = () => {
   return (

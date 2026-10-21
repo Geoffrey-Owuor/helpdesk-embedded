@@ -5,7 +5,7 @@ import {
   getEscalationHistory,
   EscalationRow,
 } from "@/serverActions/GetEscalationHistory";
-import { dateFormatter } from "@/public/assets"; // Assuming you have this from your IssuePage
+import { dateFormatter } from "@/lib/assets"; // Assuming you have this from your IssuePage
 import {
   GitMerge,
   ArrowRight,

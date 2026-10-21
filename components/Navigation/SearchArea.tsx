@@ -1,13 +1,13 @@
 "use client";
 
 import { fetchIssues } from "@/queries/fetchIssues";
-import { IssueValueTypes } from "@/public/assets";
+import { IssueValueTypes } from "@/lib/assets";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useRouter } from "next/navigation";
 import { useState, useMemo } from "react";
 import { usePathname } from "next/navigation";
-import { dateFormatter } from "@/public/assets";
+import { dateFormatter } from "@/lib/assets";
 import { dynamicCircleColor } from "./Notifications/NotificationModal";
 import { Search, ArrowRight, Loader2, CircleDot, X } from "lucide-react";
 

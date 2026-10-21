@@ -8,7 +8,7 @@ import {
   UndoDot,
 } from "lucide-react";
 import { IssueDetail } from "@/queries/fetchIssue";
-import { dateFormatter, titleHelper } from "@/public/assets";
+import { dateFormatter, titleHelper } from "@/lib/assets";
 import RelativeTimeBadge from "../../IssuesData/RelativeTimeBadge";
 import { ResolutionTimePill } from "../../IssuesData/ResolutionTimePill";
 import EscalationHistoryModal from "../EscalationHistoryModal";

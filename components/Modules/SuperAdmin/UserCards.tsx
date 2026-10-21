@@ -2,7 +2,7 @@
 
 import apiClient from "@/lib/AxiosClient";
 import { useQuery } from "@tanstack/react-query";
-import { UserCounts, DefaultUserCounts } from "@/public/assets";
+import { UserCounts, DefaultUserCounts } from "@/lib/assets";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import { ShieldCheck, UsersRound, UserRoundCheck, Headset } from "lucide-react";
 import ActiveCounts from "./ActiveCounts";
