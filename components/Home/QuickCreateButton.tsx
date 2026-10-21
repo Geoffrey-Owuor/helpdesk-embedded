@@ -4,6 +4,7 @@ import { MessageCirclePlus, Keyboard } from "lucide-react";
 import { useState, useEffect } from "react";
 import QuickCreateModal from "./QuickCreateModal";
 import { useQuickCreateStore } from "@/store/useQuickCreateStore";
+import { homeUrl } from "@/lib/basePath";
 
 const QuickCreateButton = () => {
   const [fullUrl, setFullUrl] = useState("");
@@ -20,7 +21,7 @@ const QuickCreateButton = () => {
   // --- Keyboard Shortcut Listener ---
   useEffect(() => {
     //Return if in an external domain
-    if (window.location.href === process.env.NEXT_PUBLIC_BASE_URL) return;
+    if (window.location.href === homeUrl) return;
 
     // Set full url
     Promise.resolve().then(() => setFullUrl(window.location.href));
@@ -45,7 +46,7 @@ const QuickCreateButton = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [toggleQuickCreate]);
 
-  const showButton = fullUrl !== process.env.NEXT_PUBLIC_BASE_URL;
+  const showButton = fullUrl !== homeUrl;
 
   return (
     <>

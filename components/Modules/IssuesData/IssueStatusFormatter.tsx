@@ -6,7 +6,7 @@ import {
   BookmarkCheck,
   Activity,
 } from "lucide-react";
-import { IssueValueTypes } from "@/public/assets";
+import { IssueValueTypes } from "@/lib/assets";
 
 interface IssueStatusProps {
   status: IssueValueTypes;

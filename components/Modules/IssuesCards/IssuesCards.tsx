@@ -16,7 +16,7 @@ import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { fetchIssueCards } from "@/queries/fetchIssueCards";
 import { useQuery } from "@tanstack/react-query";
 import SuperAdminFilter from "./SuperAdminFilter";
-import { defaultCounts } from "@/public/assets";
+import { defaultCounts } from "@/lib/assets";
 import PriorityCounts from "./PriorityCounts";
 
 const IssuesCards = () => {

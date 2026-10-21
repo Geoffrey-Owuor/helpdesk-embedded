@@ -1,4 +1,4 @@
-import { DataCounts } from "@/public/assets";
+import { DataCounts } from "@/lib/assets";
 
 export type { AnalyticsFilterParams } from "@/lib/analytics/buildAnalyticsIssuesFilter";
 

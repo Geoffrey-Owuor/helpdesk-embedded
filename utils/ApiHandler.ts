@@ -1,4 +1,4 @@
-import { basePath } from "@/public/assets";
+import { basePath } from "@/lib/basePath";
 
 // A custom api handler for sending data to api endpoints
 export async function ApiHandler(

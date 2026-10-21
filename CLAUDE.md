@@ -87,6 +87,17 @@ Both build the Graph message and hand it to the shared transport. The actual Gra
 
 `@/*` maps to the project root (see `tsconfig.json`), e.g. `@/lib/Auth`, `@/components/...`.
 
+### Base path
+
+The app is served under a sub-path (`NEXT_PUBLIC_BASE_PATH`, e.g. `/helpdesk`; `""` at the root), set as `basePath` in `next.config.ts`. Everything else imports it, and the URL helpers, from `lib/basePath.ts` - don't read the env var again.
+
+- **Added automatically - don't prefix:** `<Link>`, `router.push`/`replace`, `redirect()` from `next/navigation`, static image imports, the metadata files in `app/` (favicon, icons, manifest link), and `request.nextUrl` (`proxy.ts` redirects by cloning it).
+- **Needs `${basePath}` by hand:** `fetch`, `window.location`, `window.open`, `<form action>`, plain `<a href>`, `NextResponse.redirect`/`Response.redirect` built with `new URL(...)`, and the Microsoft SSO redirect URI. `AxiosClient` (`baseURL`) and `utils/ApiHandler.ts` already add it, so pass them app paths (`/api/...`). Paths inside `app/manifest.json` are relative so they resolve against the manifest's own URL.
+- **Absolute links (emails):** build them with `appUrl(path)`; `homeUrl` is the home page URL. `NEXT_PUBLIC_BASE_URL` should be the origin only - a value that already ends with the base path is still accepted.
+- **Apps Hub link** (rail and mobile drawer) goes to `NEXT_PUBLIC_HUB_URL` and is hidden when that isn't set or when HelpDesk is embedded.
+- **Cookies** are set with `path: "/"`, so other apps on the same origin (the hub) receive them too. That's fine while the hub's cookie names differ from HelpDesk's (`accessToken`, `refreshToken`, `oauth_*`, `verify_email`, `sso_pending_registration`). If they could collide, scope them to `basePath || "/"` and pass the same `path` to every `cookies.delete()`.
+- `public/` is served as-is under the base path - keep only static assets there, never source files (shared constants live in `lib/assets.ts`).
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 # This is NOT the Next.js you know

@@ -8,7 +8,7 @@ import { IssueAgentsSkeleton } from "@/components/Skeletons/IssueAgentsSkeleton"
 import { AlertCircle, Mail, UserRound, GitBranchPlus } from "lucide-react";
 import { arrayReducer } from "@/utils/ArrayReducer";
 import FormAsterisk from "../FormAsterisk";
-import { IssueValueTypes } from "@/public/assets";
+import { IssueValueTypes } from "@/lib/assets";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";

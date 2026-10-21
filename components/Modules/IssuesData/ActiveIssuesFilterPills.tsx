@@ -1,7 +1,7 @@
 "use client";
 import { X } from "lucide-react";
 import { useIssuesFilterStore } from "@/store/useIssuesFilterStore";
-import { statusOptions, priorityOptions, dateFormatter } from "@/public/assets";
+import { statusOptions, priorityOptions, dateFormatter } from "@/lib/assets";
 import { IssuesFilterParams } from "@/lib/issues/buildIssuesFilter";
 
 const filterLabels: Record<string, string> = {

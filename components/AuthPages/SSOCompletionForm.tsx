@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useDepartmentOptions } from "@/hooks/useDepartmentOptions";
 import { Building2, ChevronDown, Loader2 } from "lucide-react";
-import { basePath } from "@/public/assets";
+import { basePath } from "@/lib/basePath";
 import { ApiHandler } from "@/utils/ApiHandler";
 import { useLoadingStore } from "@/store/useLoadingStore";
 import AuthShell from "./AuthShell";

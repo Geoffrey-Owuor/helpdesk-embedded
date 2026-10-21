@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { assets } from "@/public/assets";
+import { assets } from "@/lib/assets";
 
 export const DashBoardLogo = ({
   isSideBarOpen,

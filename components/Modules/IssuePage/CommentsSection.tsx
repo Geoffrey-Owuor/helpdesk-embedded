@@ -13,7 +13,7 @@ import {
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { commentsQuery } from "@/app/api/get-comments/route";
-import { abbreviateUserName } from "@/public/assets";
+import { abbreviateUserName } from "@/lib/assets";
 import CommentsSkeleton from "@/components/Skeletons/CommentsSkeleton";
 import { useUser } from "@/contexts/UserContext";
 import { useAlertStore } from "@/store/useAlertStore";

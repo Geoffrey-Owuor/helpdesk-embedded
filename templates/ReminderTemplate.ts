@@ -1,5 +1,6 @@
-import { dateFormatter } from "@/public/assets";
+import { dateFormatter } from "@/lib/assets";
 import { renderStatusBadge, renderPriorityBadge } from "./IssueEmailTemplate";
+import { appUrl } from "@/lib/basePath";
 
 export interface UnresolvedIssue {
   issue_uuid: string;
@@ -27,7 +28,7 @@ function renderIssueRow(issue: UnresolvedIssue): string {
   );
 
   // Building the issue uuid link
-  const issueLink = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/${issue.issue_uuid}?title=${encodeURIComponent(issue.issue_title)}&description=${encodeURIComponent(issue.issue_description)}`;
+  const issueLink = appUrl(`/dashboard/${issue.issue_uuid}?title=${encodeURIComponent(issue.issue_title)}&description=${encodeURIComponent(issue.issue_description)}`);
 
   return `
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="

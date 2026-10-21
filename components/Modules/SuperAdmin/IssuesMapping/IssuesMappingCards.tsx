@@ -4,7 +4,7 @@ import apiClient from "@/lib/AxiosClient";
 import {
   DefaultIssuesMappingCounts,
   IssuesMappingCounts,
-} from "@/public/assets";
+} from "@/lib/assets";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowDown, ArrowUp, MoveHorizontal, Zap } from "lucide-react";

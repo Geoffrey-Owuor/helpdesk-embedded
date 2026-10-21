@@ -10,9 +10,10 @@ import {
 } from "lucide-react";
 import { DbStatus, useDbStore } from "@/store/useDbStore";
 import { useEffect, useState } from "react";
-import { AppVersion } from "@/public/assets";
+import { AppVersion } from "@/lib/assets";
 import DashboardSkeleton from "./DashboardSkeleton";
 import { useQuickCreateStore } from "@/store/useQuickCreateStore";
+import { homeUrl } from "@/lib/basePath";
 
 const featureTicks = [
   { icon: CheckCircle2, label: "Easy Submission" },
@@ -41,7 +42,7 @@ const Hero = () => {
     degraded: "bg-amber-500",
     ok: "bg-green-500",
   };
-  const showButton = fullUrl !== process.env.NEXT_PUBLIC_BASE_URL;
+  const showButton = fullUrl !== homeUrl;
   return (
     <section className="relative overflow-hidden pt-10 pb-16">
       {/* ── Ambient backdrop ── */}

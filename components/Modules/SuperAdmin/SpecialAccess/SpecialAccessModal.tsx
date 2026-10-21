@@ -7,7 +7,7 @@ import { useAlertStore } from "@/store/useAlertStore";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
-import { dateFormatter } from "@/public/assets";
+import { dateFormatter } from "@/lib/assets";
 import { FEATURES, FeatureKey } from "@/lib/FeatureAccess";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import { UserRecord } from "../Users";

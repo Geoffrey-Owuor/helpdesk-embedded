@@ -1,6 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { useDbStore } from "@/store/useDbStore";
-import { basePath } from "@/public/assets";
+import { basePath } from "@/lib/basePath";
 
 // 1. The Type Definition
 let refreshPromise: Promise<unknown> | null = null;

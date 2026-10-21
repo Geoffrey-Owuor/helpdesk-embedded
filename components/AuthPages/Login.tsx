@@ -7,7 +7,7 @@ import LoginUrlAlerts from "./LoginUrlAlerts";
 import { Eye, EyeOff, Mail, Lock, Loader2, AlertTriangle } from "lucide-react";
 import { useIsEmbedd } from "@/hooks/useIsEmbedd";
 import { useLoadingStore } from "@/store/useLoadingStore";
-import { basePath } from "@/public/assets";
+import { basePath } from "@/lib/basePath";
 
 // Microsoft Icon Here
 const MicrosoftIcon = () => (

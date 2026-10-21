@@ -1,6 +1,6 @@
 import { FileText } from "lucide-react";
 import { IssueDetail } from "@/queries/fetchIssue";
-import { dateFormatter } from "@/public/assets";
+import { dateFormatter } from "@/lib/assets";
 
 // The issue's update/resolve/close dates
 export const IssueMetadataCard = ({ issue }: { issue: IssueDetail }) => {

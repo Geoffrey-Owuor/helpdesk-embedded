@@ -1,4 +1,4 @@
-import { titleHelper } from "@/public/assets";
+import { titleHelper } from "@/lib/assets";
 
 // 2. Info Block (Slightly refined)
 export const InfoBlock = ({

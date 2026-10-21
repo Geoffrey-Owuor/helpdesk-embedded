@@ -1,5 +1,5 @@
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
-import { PriorityBreakdown } from "@/public/assets";
+import { PriorityBreakdown } from "@/lib/assets";
 import {
   ArrowDown,
   ArrowUp,

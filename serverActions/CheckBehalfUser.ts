@@ -4,6 +4,7 @@ import { query } from "@/lib/Db";
 import { hashPassword } from "@/lib/Auth";
 import { canonicalDepartmentName } from "@/lib/departments";
 import crypto from "crypto";
+import { appUrl } from "@/lib/basePath";
 
 export interface ReturnedUser {
   userId: string;
@@ -86,7 +87,7 @@ export const CheckBehalfUser = async ({
 
       // Emailing logic will go here - template generation for notifying the user of the created account
       const emailTemplate = FirstLoginLinkTemplate(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/firstlogin?token=${resetToken}`,
+        appUrl(`/firstlogin?token=${resetToken}`),
         tempPassword,
       );
 

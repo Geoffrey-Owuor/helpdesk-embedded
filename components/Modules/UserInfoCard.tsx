@@ -7,7 +7,7 @@ import { useUser } from "@/contexts/UserContext";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useLoadingStore } from "@/store/useLoadingStore";
 import { useEffect, RefObject } from "react";
-import { basePath } from "@/public/assets";
+import { basePath } from "@/lib/basePath";
 import { useIsEmbedd } from "@/hooks/useIsEmbedd";
 
 type UserCardProps = {

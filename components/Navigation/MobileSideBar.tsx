@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-html-link-for-pages */
 "use client";
 
 import Link from "next/link";
@@ -11,6 +10,7 @@ import { useUser } from "@/contexts/UserContext";
 import { useFocusTrapping } from "@/hooks/useFocusTrapping";
 import { useDashboardModalsStore } from "@/store/useDashboardModalsStore";
 import { useIsEmbedd } from "@/hooks/useIsEmbedd";
+import { hubUrl } from "@/lib/basePath";
 import {
   DashboardNavItem,
   HOME_NAV_ITEM,
@@ -166,10 +166,10 @@ const MobileSideBar = ({ sideBarOpen, setSideBarOpen }: MobileSideBarProps) => {
 
           {/* Leaving HelpDesk: the hub (not when embedded in it) and the manual */}
           <div className="flex shrink-0 flex-col gap-1 border-t border-neutral-200 pt-3 dark:border-neutral-800">
-            {!isEmbedded && (
-              // Plain <a>: the Apps Hub lives at the site root, outside basePath
+            {!isEmbedded && hubUrl && (
+              // Plain <a>: the Apps Hub (NEXT_PUBLIC_HUB_URL) is outside basePath
               <a
-                href="/dashboard"
+                href={hubUrl}
                 onClick={closeSidebar}
                 className={INACTIVE_ITEM_CLASSES}
               >

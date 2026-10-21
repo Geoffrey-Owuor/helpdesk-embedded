@@ -16,6 +16,7 @@ import { useSidebarToggleStore } from "@/store/useSidebarToggleStore";
 import { useDashboardModalsStore } from "@/store/useDashboardModalsStore";
 import { DashBoardLogo } from "../Modules/DashBoardLogo";
 import { useIsEmbedd } from "@/hooks/useIsEmbedd";
+import { hubUrl } from "@/lib/basePath";
 import {
   DashboardNavAction,
   DashboardNavItem,
@@ -189,10 +190,10 @@ const DashboardSidebar = () => {
         {/* The back button */}
         <div className="w-full shrink-0 px-2">
           <div className="flex w-full flex-col items-center justify-center gap-1.5">
-            {/* The main hub link - uses a tag to avoid basePath issues */}
-            {!isEmbedded && (
+            {/* The Apps Hub (NEXT_PUBLIC_HUB_URL) - a plain <a>, since it's outside basePath */}
+            {!isEmbedded && hubUrl && (
               <SidebarIconLink
-                href="/dashboard"
+                href={hubUrl}
                 nativeAnchor={true}
                 icon={<HousePlug className="h-5 w-5" />}
                 label="Apps Hub"
@@ -381,7 +382,7 @@ type SidebarIconLinkProps = {
   href: string;
   icon: React.ReactNode;
   label: string;
-  // Plain <a> that bypasses basePath (e.g. the Apps Hub at the site root)
+  // Plain <a> that bypasses basePath (e.g. the Apps Hub)
   nativeAnchor?: boolean;
   openInNewTab?: boolean;
 };

@@ -5,7 +5,7 @@ import { Search, X, RotateCcw, ChevronDown } from "lucide-react";
 import { useIssuesFilterStore } from "@/store/useIssuesFilterStore";
 import { useUser } from "@/contexts/UserContext";
 import { useSearchStore } from "@/store/useSearchStore";
-import { statusOptions, priorityOptions } from "@/public/assets";
+import { statusOptions, priorityOptions } from "@/lib/assets";
 import { DatePicker } from "../DatePicker";
 import ActiveIssuesFilterPills from "./ActiveIssuesFilterPills";
 import CustomDropdown from "../CustomDropdown";
