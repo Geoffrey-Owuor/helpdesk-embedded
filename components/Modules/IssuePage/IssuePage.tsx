@@ -193,6 +193,7 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           closeModal={() => setStatusModalOpen(false)}
           uuid={uuid}
           selectedStatus={selectedStatus}
+          currentStatus={issueData.issue_status}
         />
       )}
       {/* Title and description edit modal */}

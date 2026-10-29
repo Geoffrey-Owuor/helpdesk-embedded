@@ -12,7 +12,7 @@ export const ISSUE_DETAIL_SELECT = `
     a.issue_type, a.issue_title, a.issue_description, a.issue_status, a.issue_priority,
     a.issue_remarks, a.issue_agent_name, a.issue_agent_email, a.issue_assigner_name,
     a.issue_assigner_email, a.issue_created_at, a.issue_updated_at, a.issue_date_resolved,
-    a.issue_date_closed,
+    a.issue_date_closed, a.issue_close_reason,
     (SELECT COUNT(*)::int FROM issue_attachments b WHERE b.issue_id = a.issue_uuid) AS attachments_count,
     (SELECT GREATEST(COUNT(*)::int - 1, 0) FROM issue_reopening c WHERE c.issue_id = a.issue_uuid) AS reopened_count,
     (SELECT GREATEST(COUNT(*)::int - 1, 0) FROM issue_escalation d WHERE d.issue_id = a.issue_uuid) AS escalated_count,

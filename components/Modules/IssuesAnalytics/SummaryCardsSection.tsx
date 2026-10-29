@@ -45,6 +45,9 @@ const SummaryCardsSection = ({
             reopenedCount={summary?.reopenedCount ?? 0}
             escalatedCount={summary?.escalatedCount ?? 0}
             collaboratedCount={summary?.collaboratedCount ?? 0}
+            closedWithoutResolutionCount={
+              summary?.closedWithoutResolutionCount ?? 0
+            }
             isLoading={isLoading}
           />
         </div>

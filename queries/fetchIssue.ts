@@ -24,6 +24,7 @@ export interface IssueDetail {
   issue_updated_at: string;
   issue_date_resolved: string | null;
   issue_date_closed: string | null;
+  issue_close_reason: string | null;
   attachments_count: number;
   reopened_count: number;
   escalated_count: number;

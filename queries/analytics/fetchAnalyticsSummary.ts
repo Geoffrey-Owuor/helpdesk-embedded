@@ -11,6 +11,7 @@ const emptySummary: AnalyticsSummary = {
   reopenedCount: 0,
   escalatedCount: 0,
   collaboratedCount: 0,
+  closedWithoutResolutionCount: 0,
   avgResolutionSeconds: null,
   avgStaleSeconds: null,
   totalFiltered: 0,
