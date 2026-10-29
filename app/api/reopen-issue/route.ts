@@ -111,7 +111,8 @@ export const PUT = withAuth(async ({ request, user }) => {
       issue_updated_at = CURRENT_TIMESTAMP,
       issue_date_closed = NULL,
       issue_date_resolved = NULL,
-      issue_first_response_at = NULL
+      issue_first_response_at = NULL,
+      issue_close_reason = NULL
       WHERE issue_uuid = $2
       `,
       ["open", uuid],

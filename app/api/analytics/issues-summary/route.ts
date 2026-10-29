@@ -32,6 +32,7 @@ interface PivotRow {
   reopened_count: string;
   escalated_count: string;
   collaborated_count: string;
+  closed_without_resolution_count: string;
   avg_resolution_seconds: string | null;
   avg_stale_seconds: string | null;
   total_filtered: string;
@@ -96,9 +97,10 @@ export const GET = withAuth(async ({ user, request }) => {
       COUNT(*) FILTER (WHERE EXISTS (SELECT 1 FROM issue_reopening r WHERE r.issue_id = a.issue_uuid)) AS reopened_count,
       COUNT(*) FILTER (WHERE EXISTS (SELECT 1 FROM issue_escalation esc WHERE esc.issue_id = a.issue_uuid)) AS escalated_count,
       COUNT(*) FILTER (WHERE EXISTS (SELECT 1 FROM issue_collaborators col WHERE col.issue_id = a.issue_uuid)) AS collaborated_count,
+      COUNT(*) FILTER (WHERE a.issue_close_reason IS NOT NULL) AS closed_without_resolution_count,
 
       AVG(EXTRACT(EPOCH FROM (a.issue_date_resolved - a.issue_created_at)))
-        FILTER (WHERE a.issue_date_resolved IS NOT NULL AND a.issue_status IN ('resolved', 'closed')) AS avg_resolution_seconds,
+        FILTER (WHERE a.issue_date_resolved IS NOT NULL AND a.issue_status IN ('resolved', 'closed') AND a.issue_close_reason IS NULL) AS avg_resolution_seconds,
       AVG(EXTRACT(EPOCH FROM (NOW() - a.issue_created_at)))
         FILTER (WHERE a.issue_status IN ('open', 'in progress')) AS avg_stale_seconds,
 
@@ -107,9 +109,11 @@ export const GET = withAuth(async ({ user, request }) => {
     ${whereSql}
   `;
 
+  // Issues closed without being resolved (issue_close_reason set) have no
+  // real resolution time, so they're left out of the resolution averages
   const timingAggregatesSql = `
       AVG(EXTRACT(EPOCH FROM (a.issue_date_resolved - a.issue_created_at)))
-        FILTER (WHERE a.issue_date_resolved IS NOT NULL AND a.issue_status IN ('resolved', 'closed')) AS avg_resolution_seconds,
+        FILTER (WHERE a.issue_date_resolved IS NOT NULL AND a.issue_status IN ('resolved', 'closed') AND a.issue_close_reason IS NULL) AS avg_resolution_seconds,
       AVG(EXTRACT(EPOCH FROM (NOW() - a.issue_created_at)))
         FILTER (WHERE a.issue_status IN ('open', 'in progress')) AS avg_stale_seconds
   `;
@@ -126,20 +130,20 @@ export const GET = withAuth(async ({ user, request }) => {
   const agentBreakdownQuery = `
     WITH filtered_issues AS (
       SELECT a.issue_uuid, a.issue_agent_name, a.issue_agent_email, a.issue_status,
-             a.issue_created_at, a.issue_date_resolved
+             a.issue_created_at, a.issue_date_resolved, a.issue_close_reason
       FROM issues_table a
       ${whereSql}
     ),
     agent_issue_map AS (
       SELECT issue_uuid, issue_agent_name AS agent_name, issue_agent_email AS agent_email,
-             issue_status, issue_created_at, issue_date_resolved
+             issue_status, issue_created_at, issue_date_resolved, issue_close_reason
       FROM filtered_issues
       WHERE issue_agent_email IS NOT NULL
 
       UNION ALL
 
       SELECT fi.issue_uuid, col.collaborator_name AS agent_name, col.collaborator_email AS agent_email,
-             fi.issue_status, fi.issue_created_at, fi.issue_date_resolved
+             fi.issue_status, fi.issue_created_at, fi.issue_date_resolved, fi.issue_close_reason
       FROM filtered_issues fi
       JOIN issue_collaborators col ON col.issue_id = fi.issue_uuid
     )
@@ -147,7 +151,7 @@ export const GET = withAuth(async ({ user, request }) => {
       agent_name,
       COUNT(*) AS count,
       AVG(EXTRACT(EPOCH FROM (issue_date_resolved - issue_created_at)))
-        FILTER (WHERE issue_date_resolved IS NOT NULL AND issue_status IN ('resolved', 'closed')) AS avg_resolution_seconds,
+        FILTER (WHERE issue_date_resolved IS NOT NULL AND issue_status IN ('resolved', 'closed') AND issue_close_reason IS NULL) AS avg_resolution_seconds,
       AVG(EXTRACT(EPOCH FROM (NOW() - issue_created_at)))
         FILTER (WHERE issue_status IN ('open', 'in progress')) AS avg_stale_seconds
     FROM agent_issue_map
@@ -216,6 +220,9 @@ export const GET = withAuth(async ({ user, request }) => {
         reopenedCount: getCount(row?.reopened_count),
         escalatedCount: getCount(row?.escalated_count),
         collaboratedCount: getCount(row?.collaborated_count),
+        closedWithoutResolutionCount: getCount(
+          row?.closed_without_resolution_count,
+        ),
         avgResolutionSeconds: getAvg(row?.avg_resolution_seconds),
         avgStaleSeconds: getAvg(row?.avg_stale_seconds),
         totalFiltered: getCount(row?.total_filtered),
@@ -248,6 +255,7 @@ export const GET = withAuth(async ({ user, request }) => {
         reopenedCount: 0,
         escalatedCount: 0,
         collaboratedCount: 0,
+        closedWithoutResolutionCount: 0,
         avgResolutionSeconds: null,
         avgStaleSeconds: null,
         totalFiltered: 0,

@@ -1,15 +1,17 @@
-import { UndoDot, GitMerge, UsersRound } from "lucide-react";
+import { UndoDot, GitMerge, UsersRound, CircleSlash } from "lucide-react";
 import StatTile from "./StatTile";
 
 const ActivityCards = ({
   reopenedCount,
   escalatedCount,
   collaboratedCount,
+  closedWithoutResolutionCount,
   isLoading,
 }: {
   reopenedCount: number;
   escalatedCount: number;
   collaboratedCount: number;
+  closedWithoutResolutionCount: number;
   isLoading: boolean;
 }) => {
   const items = [
@@ -37,10 +39,18 @@ const ActivityCards = ({
       bgColor: "bg-cyan-100 dark:bg-cyan-900/30",
       borderColor: "border-cyan-200 dark:border-cyan-800/50",
     },
+    {
+      label: "Closed Unresolved",
+      count: closedWithoutResolutionCount,
+      icon: CircleSlash,
+      color: "text-neutral-600 dark:text-neutral-400",
+      bgColor: "bg-neutral-100 dark:bg-neutral-800/60",
+      borderColor: "border-neutral-200 dark:border-neutral-700/50",
+    },
   ];
 
   return (
-    <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       {items.map((item) => (
         <StatTile
           key={item.label}

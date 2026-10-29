@@ -56,6 +56,7 @@ export interface AnalyticsSummary {
   reopenedCount: number;
   escalatedCount: number;
   collaboratedCount: number;
+  closedWithoutResolutionCount: number;
   avgResolutionSeconds: number | null;
   avgStaleSeconds: number | null;
   totalFiltered: number;
