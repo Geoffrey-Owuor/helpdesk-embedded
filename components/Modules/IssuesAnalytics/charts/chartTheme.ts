@@ -8,6 +8,9 @@ export const chartColors = {
   axis: "var(--chart-axis)",
   inkMuted: "var(--chart-ink-muted)",
   cursor: "var(--chart-cursor)",
+  statusGood: "var(--chart-status-good)",
+  statusCritical: "var(--chart-status-critical)",
+  target: "var(--chart-target)",
   series: [
     "var(--chart-series-1)",
     "var(--chart-series-2)",

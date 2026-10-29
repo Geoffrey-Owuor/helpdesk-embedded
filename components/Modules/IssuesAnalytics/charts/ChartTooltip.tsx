@@ -7,9 +7,11 @@ const ChartTooltip = ({
   payload,
   label,
   formatLabel,
+  formatValue = (value) => String(value),
   hideZero = false,
 }: Partial<TooltipContentProps<number, string>> & {
   formatLabel?: (label: string) => string;
+  formatValue?: (value: number) => string;
   // Stacked charts leave out empty segments so the list matches what's drawn
   hideZero?: boolean;
 }) => {
@@ -46,7 +48,7 @@ const ChartTooltip = ({
               {item.name}
             </span>
             <span className="font-semibold text-neutral-900 tabular-nums dark:text-neutral-100">
-              {item.value}
+              {formatValue(Number(item.value))}
             </span>
           </div>
         ))}

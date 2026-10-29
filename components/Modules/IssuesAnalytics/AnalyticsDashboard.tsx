@@ -1,5 +1,5 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { RotateCw } from "lucide-react";
 import { useAnalyticsFilterStore } from "@/store/useAnalyticsFilterStore";
 import { fetchAnalyticsIssues } from "@/queries/analytics/fetchAnalyticsIssues";
@@ -36,9 +36,13 @@ const AnalyticsDashboard = () => {
     queryFn: () => fetchAnalyticsIssues(committedFilters, page, pageSize),
   });
 
+  const queryClient = useQueryClient();
+
   const handleRefresh = () => {
     refetchSummary();
     refetchIssues();
+    // The SLA section fetches its own data under the same filters
+    queryClient.refetchQueries({ queryKey: ["analyticsSla"] });
   };
 
   return (
@@ -65,7 +69,10 @@ const AnalyticsDashboard = () => {
 
       {!summaryLoading && (
         <div className="mb-4">
-          <AiInsightPanel summary={summary} committedFilters={committedFilters} />
+          <AiInsightPanel
+            summary={summary}
+            committedFilters={committedFilters}
+          />
         </div>
       )}
 

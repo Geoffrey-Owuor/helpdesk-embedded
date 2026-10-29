@@ -11,6 +11,7 @@ import IssuesTrendChart from "./charts/IssuesTrendChart";
 import PriorityStatusChart from "./charts/PriorityStatusChart";
 import BacklogAgeingChart from "./charts/BacklogAgeingChart";
 import AgentWorkloadChart from "./charts/AgentWorkloadChart";
+import SlaSection from "./sla/SlaSection";
 
 const SummaryCardsSection = ({
   summary,
@@ -67,6 +68,8 @@ const SummaryCardsSection = ({
           className="lg:col-span-2"
         />
       </div>
+
+      <SlaSection />
 
       <ActivityCards
         reopenedCount={summary?.reopenedCount ?? 0}
