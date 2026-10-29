@@ -1,13 +1,18 @@
 import { FileText } from "lucide-react";
 import { IssueDetail } from "@/queries/fetchIssue";
 import { dateFormatter } from "@/lib/assets";
+import { closeReasonLabel } from "@/lib/issues/closeReasons";
 
-// The issue's update/resolve/close dates
+// The issue's update/resolve/close dates, and why it closed if it wasn't resolved
 export const IssueMetadataCard = ({ issue }: { issue: IssueDetail }) => {
+  const closedWithout = closeReasonLabel(issue.issue_close_reason);
   const rows = [
     { label: "Date Updated", value: dateFormatter(issue.issue_updated_at) },
     { label: "Date Resolved", value: dateFormatter(issue.issue_date_resolved) },
     { label: "Date Closed", value: dateFormatter(issue.issue_date_closed) },
+    ...(closedWithout
+      ? [{ label: "Closed Without Resolution", value: closedWithout }]
+      : []),
   ];
 
   return (

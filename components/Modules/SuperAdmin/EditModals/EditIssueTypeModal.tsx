@@ -5,6 +5,7 @@ import { useState, FocusEvent } from "react";
 import { DropdownOption } from "./CustomDropDown";
 import { Bug } from "lucide-react";
 import FormAsterisk from "../../FormAsterisk";
+import ChangeRequestToggle from "./ChangeRequestToggle";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useConfirmStore } from "@/store/useConfirmStore";
@@ -32,6 +33,7 @@ export interface EditIssueInfo {
   issuePriority: string;
   agentEmail: string;
   adminEmail: string;
+  isChangeRequest: boolean;
 }
 
 // Payload we send to the api
@@ -129,6 +131,7 @@ const EditIssueTypeModal = ({
                 issue_type: payload.issueType,
                 long_name: payload.longName || payload.issueType,
                 issue_priority: payload.issuePriority,
+                is_change_request: payload.isChangeRequest,
               };
             }
             return issue;
@@ -237,6 +240,13 @@ const EditIssueTypeModal = ({
             options={adminsInfo}
             value={formData.adminEmail}
             onChange={(val) => handleDropdownChange("adminEmail", val)}
+          />
+
+          <ChangeRequestToggle
+            checked={formData.isChangeRequest}
+            onChange={(isChangeRequest) =>
+              setFormData((prev) => ({ ...prev, isChangeRequest }))
+            }
           />
         </ModalBody>
 

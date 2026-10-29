@@ -5,7 +5,9 @@
 // app/api/analytics/issues-summary/route.ts.
 
 export interface AnalyticsFilterParams {
+  // The submitter's staff department; targetDepartment is the one the issue was raised to
   department?: string;
+  targetDepartment?: string;
   agent?: string;
   issueType?: string;
   status?: string;
@@ -30,6 +32,11 @@ export const buildAnalyticsIssuesFilter = (
   if (filters.department) {
     params.push(filters.department);
     clauses.push(`${col("issue_submitter_department")} = $${params.length}`);
+  }
+
+  if (filters.targetDepartment) {
+    params.push(filters.targetDepartment);
+    clauses.push(`${col("issue_target_department")} = $${params.length}`);
   }
 
   if (filters.agent) {
@@ -105,6 +112,7 @@ export const parseAnalyticsFilterParams = (
   searchParams: URLSearchParams,
 ): AnalyticsFilterParams => ({
   department: searchParams.get("department") || undefined,
+  targetDepartment: searchParams.get("targetDepartment") || undefined,
   agent: searchParams.get("agent") || undefined,
   issueType: searchParams.get("issueType") || undefined,
   status: searchParams.get("status") || undefined,

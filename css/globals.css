@@ -28,6 +28,54 @@
   );
 }
 
+/* Analytics chart tokens (components/Modules/IssuesAnalytics/charts). The
+   categorical slots are assigned in this fixed order and were checked for
+   colour-blind separation against the card surfaces (white / neutral-950);
+   dark mode uses its own steps of the same hues. The ramp is one hue for
+   ordered steps (ageing buckets, heatmap counts); ramp-1 is always the
+   step closest to the surface, so higher steps stand out in both modes. */
+:root {
+  --chart-surface: #ffffff;
+  --chart-grid: #e5e5e5;
+  --chart-axis: #d4d4d4;
+  --chart-ink-muted: #737373;
+  --chart-cursor: rgba(10, 10, 10, 0.04);
+  --chart-series-1: #2a78d6;
+  --chart-series-2: #eb6834;
+  --chart-series-3: #1baf7a;
+  --chart-series-4: #eda100;
+  --chart-ramp-1: #86b6ef;
+  --chart-ramp-2: #5598e7;
+  --chart-ramp-3: #2a78d6;
+  --chart-ramp-4: #1c5cab;
+  --chart-ramp-5: #104281;
+  /* SLA status - reserved for met / missed, always with an icon and label */
+  --chart-status-good: #0ca30c;
+  --chart-status-critical: #d03b3b;
+  --chart-target: #404040;
+}
+
+html[data-theme="dark"] {
+  --chart-surface: #0a0a0a;
+  --chart-grid: #262626;
+  --chart-axis: #404040;
+  --chart-ink-muted: #a3a3a3;
+  --chart-cursor: rgba(255, 255, 255, 0.05);
+  --chart-series-1: #3987e5;
+  --chart-series-2: #d95926;
+  --chart-series-3: #199e70;
+  --chart-series-4: #c98500;
+  /* Dim to bright here: on a dark surface "more" has to stand out more */
+  --chart-ramp-1: #184f95;
+  --chart-ramp-2: #256abf;
+  --chart-ramp-3: #3987e5;
+  --chart-ramp-4: #6da7ec;
+  --chart-ramp-5: #9ec5f4;
+  --chart-status-good: #0ca30c;
+  --chart-status-critical: #d03b3b;
+  --chart-target: #d4d4d4;
+}
+
 html[data-font="geist"] {
   font-family: var(--font-sans);
 }

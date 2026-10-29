@@ -21,6 +21,7 @@ export const GET = withAuth(async ({ user }) => {
     COALESCE(m.issue_type, 'Unassigned') AS issue_type,
     COALESCE(m.long_name, m.issue_type, 'Unassigned') AS long_name,
     COALESCE(m.issue_priority, 'None') AS issue_priority,
+    COALESCE(m.is_change_request, false) AS is_change_request,
     COALESCE(m.id::text, gen_random_uuid()::text) AS issue_id,
     COALESCE((SELECT username FROM users WHERE user_id = m.admin_id), 'Unassigned') AS admin_name,
     COALESCE((SELECT email FROM users WHERE user_id = m.admin_id), 'Unassigned') AS admin_email

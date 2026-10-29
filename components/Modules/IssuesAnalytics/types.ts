@@ -1,4 +1,5 @@
 import { DataCounts } from "@/lib/assets";
+import { AgeingBucket } from "@/lib/analytics/ageingBuckets";
 
 export type { AnalyticsFilterParams } from "@/lib/analytics/buildAnalyticsIssuesFilter";
 
@@ -40,6 +41,8 @@ export interface IssueTypeBreakdownEntry {
 export interface AgentBreakdownEntry {
   agentName: string;
   count: number;
+  // Of count, the issues still open or in progress
+  activeCount: number;
   avgResolutionSeconds: number | null;
   avgStaleSeconds: number | null;
 }
@@ -51,14 +54,40 @@ export interface DepartmentBreakdownEntry {
   avgStaleSeconds: number | null;
 }
 
+export interface MonthlyTrendEntry {
+  // yyyy-mm
+  month: string;
+  created: number;
+  resolved: number;
+}
+
+export interface SubmissionSlotEntry {
+  // ISO weekday, 1 = Monday ... 7 = Sunday
+  weekday: number;
+  // 0-23, Nairobi time
+  hour: number;
+  count: number;
+}
+
+export interface BacklogAgeingEntry {
+  bucket: AgeingBucket;
+  count: number;
+}
+
 export interface AnalyticsSummary {
   statusCounts: DataCounts;
   reopenedCount: number;
   escalatedCount: number;
   collaboratedCount: number;
+  closedWithoutResolutionCount: number;
   avgResolutionSeconds: number | null;
   avgStaleSeconds: number | null;
+  avgFirstResponseSeconds: number | null;
   totalFiltered: number;
+  monthlyTrend: MonthlyTrendEntry[];
+  // Sparse - slots with no issues are left out
+  submissions: SubmissionSlotEntry[];
+  backlogAgeing: BacklogAgeingEntry[];
   issueTypeBreakdown: IssueTypeBreakdownEntry[];
   agentBreakdown: AgentBreakdownEntry[];
   departmentBreakdown: DepartmentBreakdownEntry[];
@@ -68,4 +97,52 @@ export interface GlobalAgentOption {
   agent_name: string;
   agent_email: string;
   department: string;
+}
+
+// app/api/analytics/sla - see lib/analytics/slaIssuesCte.ts for the rules
+export interface SlaStateCounts {
+  met: number;
+  breached: number;
+  // Still inside the target - not counted towards compliance yet
+  pending: number;
+}
+
+export interface SlaCounts {
+  response: SlaStateCounts;
+  resolution: SlaStateCounts;
+  // Within SLA: both targets met
+  sla: SlaStateCounts;
+  // Average target of the judged issues' priorities, for mixed sets
+  blendedTarget: number | null;
+}
+
+export interface SlaPriorityEntry extends SlaCounts {
+  priorityCode: string;
+  priority: string;
+  responseMinutes: number;
+  resolutionMinutes: number;
+  targetPercent: number;
+}
+
+export interface SlaAgentEntry extends SlaCounts {
+  agentName: string;
+  agentEmail: string;
+}
+
+export interface SlaMonthlyEntry {
+  // yyyy-mm
+  month: string;
+  // null for the row covering every agent
+  agentEmail: string | null;
+  agentName: string | null;
+  sla: SlaStateCounts;
+  blendedTarget: number | null;
+}
+
+export interface AnalyticsSla {
+  overall: SlaCounts;
+  priorities: SlaPriorityEntry[];
+  changeRequests: { sla: SlaStateCounts; targetPercent: number | null };
+  agents: SlaAgentEntry[];
+  monthly: SlaMonthlyEntry[];
 }

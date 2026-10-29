@@ -14,7 +14,7 @@ interface StatTileProps {
   breakdown?: PriorityBreakdown;
 }
 
-// Shared stat-tile look used across StatusCards/PriorityCards/TimingCards/
+// Shared stat-tile look used across StatusCards/TimingCards/
 // ActivityCards, following the same visual pattern as IssuesCards.tsx.
 const StatTile = ({
   label,

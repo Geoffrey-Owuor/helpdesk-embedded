@@ -9,12 +9,20 @@ import { DatePicker } from "../DatePicker";
 import CustomDropdown from "../CustomDropdown";
 import { fetchGlobalAgents } from "@/queries/analytics/fetchGlobalAgents";
 import { fetchGlobalIssueTypes } from "@/queries/analytics/fetchGlobalIssueTypes";
+import { fetchedBaseDepartments } from "@/serverActions/GetBaseDepartments";
+import {
+  DATE_PRESETS,
+  DatePreset,
+  datePresetRange,
+  matchingDatePreset,
+} from "@/lib/analytics/datePresets";
 import ActiveAnalyticsFilterPills from "./ActiveAnalyticsFilterPills";
 import StickyFilterPanel from "../StickyFilterPanel";
 import MobileFilterBar, { countActiveFilters } from "../MobileFilterBar";
 
 type FilterFieldKey =
   | "department"
+  | "targetDepartment"
   | "agent"
   | "issueType"
   | "status"
@@ -24,7 +32,8 @@ type FilterFieldKey =
   | "dateRange";
 
 const filterFieldOptions: { key: FilterFieldKey; label: string }[] = [
-  { key: "department", label: "Department" },
+  { key: "department", label: "Submitter Dept." },
+  { key: "targetDepartment", label: "Target Dept." },
   { key: "agent", label: "Agent" },
   { key: "issueType", label: "Issue Type" },
   { key: "status", label: "Status" },
@@ -178,6 +187,7 @@ const FilterPanel = () => {
 
   const {
     department,
+    targetDepartment,
     agent,
     issueType,
     status,
@@ -190,6 +200,8 @@ const FilterPanel = () => {
     submitter,
     reference,
     setDepartment,
+    setTargetDepartment,
+    setDateRange,
     setAgent,
     setIssueType,
     setStatus,
@@ -211,6 +223,12 @@ const FilterPanel = () => {
     queryFn: fetchGlobalAgents,
   });
 
+  // The departments issues are raised to (group_emails), shared with the new-issue form
+  const { data: targetDepartments = [] } = useQuery({
+    queryKey: ["BaseDepartmentsData"],
+    queryFn: fetchedBaseDepartments,
+  });
+
   const { data: globalIssueTypes = [] } = useQuery({
     queryKey: ["analyticsGlobalIssueTypes"],
     queryFn: fetchGlobalIssueTypes,
@@ -219,6 +237,16 @@ const FilterPanel = () => {
   const departmentOptions = baseDepartments.map((dept) => ({
     label: dept.option,
     value: dept.value,
+  }));
+
+  const targetDepartmentOptions = targetDepartments.map((dept) => ({
+    label: dept.option,
+    value: dept.value,
+  }));
+
+  const datePresetOptions = DATE_PRESETS.map(({ value, label }) => ({
+    label,
+    value,
   }));
 
   const agentOptions = globalAgents.map((a) => ({
@@ -233,6 +261,7 @@ const FilterPanel = () => {
 
   const hasValue: Record<FilterFieldKey, boolean> = {
     department: !!department,
+    targetDepartment: !!targetDepartment,
     agent: !!agent,
     issueType: !!issueType,
     status: !!status,
@@ -247,12 +276,23 @@ const FilterPanel = () => {
       case "department":
         return (
           <CustomDropdown
-            label="Department"
+            label="Submitter Department"
             hideLabel
             options={departmentOptions}
             value={department}
             onChange={setDepartment}
-            placeholder="All departments"
+            placeholder="All submitter departments"
+          />
+        );
+      case "targetDepartment":
+        return (
+          <CustomDropdown
+            label="Target Department"
+            hideLabel
+            options={targetDepartmentOptions}
+            value={targetDepartment}
+            onChange={setTargetDepartment}
+            placeholder="All target departments"
           />
         );
       case "agent":
@@ -317,14 +357,41 @@ const FilterPanel = () => {
         );
       case "dateRange":
         return (
-          <div className="flex items-center gap-2">
-            <DatePicker
-              value={fromDate}
-              onChange={setFromDate}
-              placeholder="From"
-            />
-            <span className="shrink-0 text-sm text-neutral-400">to</span>
-            <DatePicker value={toDate} onChange={setToDate} placeholder="To" />
+          <div className="grid grid-cols-2 items-center gap-2 sm:flex">
+            <div className="col-span-2 sm:w-40 sm:shrink-0">
+              <CustomDropdown
+                label="Quick range"
+                hideLabel
+                options={datePresetOptions}
+                value={matchingDatePreset(fromDate, toDate)}
+                onChange={(preset) => {
+                  // Clearing the quick range clears the dates it filled in
+                  if (!preset) return setDateRange("", "");
+                  const range = datePresetRange(preset as DatePreset);
+                  setDateRange(range.fromDate, range.toDate);
+                }}
+                placeholder="Quick range"
+              />
+            </div>
+            {/* Side by side on phones; on wider screens each is wide enough for
+                "01 Aug 2026" plus the clear and calendar icons */}
+            <div className="min-w-0 sm:min-w-38 sm:flex-1">
+              <DatePicker
+                value={fromDate}
+                onChange={setFromDate}
+                placeholder="From"
+              />
+            </div>
+            <span className="hidden shrink-0 text-sm text-neutral-400 sm:inline">
+              to
+            </span>
+            <div className="min-w-0 sm:min-w-38 sm:flex-1">
+              <DatePicker
+                value={toDate}
+                onChange={setToDate}
+                placeholder="To"
+              />
+            </div>
           </div>
         );
     }
@@ -373,7 +440,13 @@ const FilterPanel = () => {
             hasValue={hasValue}
           />
 
-          <div className="min-w-55 flex-1">{renderControl(activeField)}</div>
+          {/* The date range needs room for the quick range and both pickers;
+              the chips wrap below it when the row runs out */}
+          <div
+            className={`flex-1 ${activeField === "dateRange" ? "min-w-128" : "min-w-55"}`}
+          >
+            {renderControl(activeField)}
+          </div>
 
           <div className="flex flex-wrap items-center gap-2">{toggleChips}</div>
 

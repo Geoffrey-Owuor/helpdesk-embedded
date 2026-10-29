@@ -7,7 +7,8 @@ import { fetchGlobalAgents } from "@/queries/analytics/fetchGlobalAgents";
 import { AnalyticsFilterParams } from "./types";
 
 const filterLabels: Record<string, string> = {
-  department: "Department",
+  department: "Submitter Dept.",
+  targetDepartment: "Target Dept.",
   agent: "Agent",
   issueType: "Type",
   status: "Status",
@@ -61,6 +62,7 @@ const ActiveAnalyticsFilterPills = () => {
     switch (key) {
       // A department's label is its name
       case "department":
+      case "targetDepartment":
         return String(value);
       case "agent":
         return (

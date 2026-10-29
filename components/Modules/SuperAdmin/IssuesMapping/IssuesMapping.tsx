@@ -29,6 +29,9 @@ export interface IssueMappingRecord {
   issue_type: string;
   long_name: string;
   issue_priority: string;
+  // Counts towards the change request SLA target. Absent on rows added to
+  // the cache before a refetch.
+  is_change_request?: boolean;
 }
 
 // ── Sub-components ────────────────────────────────────────────────────────────
@@ -287,8 +290,13 @@ const IssuesMapping = () => {
                         <span className="font-medium text-neutral-700 dark:text-neutral-300">
                           {item.long_name}
                         </span>
-                        <span className="text-[11px] text-neutral-500">
+                        <span className="flex items-center gap-1.5 text-[11px] text-neutral-500">
                           {item.issue_type}
+                          {item.is_change_request && (
+                            <span className="rounded-full bg-neutral-100 px-1.5 py-px font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+                              Change request
+                            </span>
+                          )}
                         </span>
                       </div>
                     </td>
@@ -332,6 +340,7 @@ const IssuesMapping = () => {
                               issuePriority: item.issue_priority,
                               adminEmail: item.admin_email,
                               agentEmail: item.agent_email,
+                              isChangeRequest: !!item.is_change_request,
                             }}
                           />
                         )}
