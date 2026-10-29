@@ -25,7 +25,10 @@ export const datePresetRange = (
 
   switch (preset) {
     case "thisMonth":
-      return { fromDate: toIsoDate(new Date(year, month, 1)), toDate: todayIso };
+      return {
+        fromDate: toIsoDate(new Date(year, month, 1)),
+        toDate: todayIso,
+      };
     case "lastMonth":
       return {
         fromDate: toIsoDate(new Date(year, month - 1, 1)),

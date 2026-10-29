@@ -1,4 +1,5 @@
 import { DataCounts } from "@/lib/assets";
+import { AgeingBucket } from "@/lib/analytics/ageingBuckets";
 
 export type { AnalyticsFilterParams } from "@/lib/analytics/buildAnalyticsIssuesFilter";
 
@@ -40,6 +41,8 @@ export interface IssueTypeBreakdownEntry {
 export interface AgentBreakdownEntry {
   agentName: string;
   count: number;
+  // Of count, the issues still open or in progress
+  activeCount: number;
   avgResolutionSeconds: number | null;
   avgStaleSeconds: number | null;
 }
@@ -51,6 +54,18 @@ export interface DepartmentBreakdownEntry {
   avgStaleSeconds: number | null;
 }
 
+export interface MonthlyTrendEntry {
+  // yyyy-mm
+  month: string;
+  created: number;
+  resolved: number;
+}
+
+export interface BacklogAgeingEntry {
+  bucket: AgeingBucket;
+  count: number;
+}
+
 export interface AnalyticsSummary {
   statusCounts: DataCounts;
   reopenedCount: number;
@@ -59,7 +74,10 @@ export interface AnalyticsSummary {
   closedWithoutResolutionCount: number;
   avgResolutionSeconds: number | null;
   avgStaleSeconds: number | null;
+  avgFirstResponseSeconds: number | null;
   totalFiltered: number;
+  monthlyTrend: MonthlyTrendEntry[];
+  backlogAgeing: BacklogAgeingEntry[];
   issueTypeBreakdown: IssueTypeBreakdownEntry[];
   agentBreakdown: AgentBreakdownEntry[];
   departmentBreakdown: DepartmentBreakdownEntry[];
