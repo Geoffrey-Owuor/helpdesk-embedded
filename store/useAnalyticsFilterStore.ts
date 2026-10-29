@@ -5,6 +5,7 @@ import { AnalyticsFilterParams } from "@/lib/analytics/buildAnalyticsIssuesFilte
 // committedFilters from the draft is a straight field-by-field copy.
 interface DraftFilters {
   department: string;
+  targetDepartment: string;
   agent: string;
   issueType: string;
   status: string;
@@ -20,6 +21,7 @@ interface DraftFilters {
 
 const defaultDraft: DraftFilters = {
   department: "",
+  targetDepartment: "",
   agent: "",
   issueType: "",
   status: "",
@@ -38,12 +40,18 @@ const defaultDraft: DraftFilters = {
 const toFilterParams = (draft: DraftFilters): AnalyticsFilterParams => {
   const params: AnalyticsFilterParams = {};
   if (draft.department) params.department = draft.department;
+  if (draft.targetDepartment) params.targetDepartment = draft.targetDepartment;
   if (draft.agent) params.agent = draft.agent;
   if (draft.issueType) params.issueType = draft.issueType;
   if (draft.status) params.status = draft.status;
   if (draft.priority) params.priority = draft.priority;
-  if (draft.fromDate) params.fromDate = draft.fromDate;
-  if (draft.toDate) params.toDate = draft.toDate;
+  // A range picked backwards is read the right way round rather than matching nothing
+  const [fromDate, toDate] =
+    draft.fromDate && draft.toDate && draft.fromDate > draft.toDate
+      ? [draft.toDate, draft.fromDate]
+      : [draft.fromDate, draft.toDate];
+  if (fromDate) params.fromDate = fromDate;
+  if (toDate) params.toDate = toDate;
   if (draft.reopened) params.reopened = true;
   if (draft.escalated) params.escalated = true;
   if (draft.collaborated) params.collaborated = true;
@@ -59,6 +67,8 @@ interface AnalyticsFilterState extends DraftFilters {
   pageSize: number;
 
   setDepartment: (value: string) => void;
+  setTargetDepartment: (value: string) => void;
+  setDateRange: (fromDate: string, toDate: string) => void;
   setAgent: (value: string) => void;
   setIssueType: (value: string) => void;
   setStatus: (value: string) => void;
@@ -86,6 +96,8 @@ export const useAnalyticsFilterStore = create<AnalyticsFilterState>()(
     pageSize: 25,
 
     setDepartment: (department) => set({ department }),
+    setTargetDepartment: (targetDepartment) => set({ targetDepartment }),
+    setDateRange: (fromDate, toDate) => set({ fromDate, toDate }),
     setAgent: (agent) => set({ agent }),
     setIssueType: (issueType) => set({ issueType }),
     setStatus: (status) => set({ status }),
@@ -107,6 +119,9 @@ export const useAnalyticsFilterStore = create<AnalyticsFilterState>()(
         committedFilters:
           Object.keys(filterParams).length > 0 ? filterParams : null,
         page: 1,
+        // Show a backwards range the way it was applied
+        fromDate: filterParams.fromDate ?? "",
+        toDate: filterParams.toDate ?? "",
       });
     },
 

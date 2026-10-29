@@ -27,6 +27,7 @@ export const POST = withAuth(async ({ request, user }) => {
       agentEmail,
       adminEmail,
       longName,
+      isChangeRequest,
     } = await request.json();
     const issueType =
       typeof rawIssueType === "string" ? rawIssueType.trim() : "";
@@ -85,8 +86,8 @@ export const POST = withAuth(async ({ request, user }) => {
 
     // Insert Query
     const insertQuery = `
-    INSERT INTO issues_mapping(issue_type, admin_id, agent_id, issue_priority, long_name)
-    VALUES ($1, $2, $3, $4, $5)
+    INSERT INTO issues_mapping(issue_type, admin_id, agent_id, issue_priority, long_name, is_change_request)
+    VALUES ($1, $2, $3, $4, $5, $6)
     `;
 
     const insertParams = [
@@ -95,6 +96,7 @@ export const POST = withAuth(async ({ request, user }) => {
       agent.userId,
       issuePriority,
       longName || issueType,
+      isChangeRequest === true,
     ];
 
     await client.query(insertQuery, insertParams);

@@ -28,7 +28,7 @@ Local dev requires a `.env.local` with Postgres connection vars (`DATABASE_HOST`
 ### Departments — two lists
 
 - **Staff departments** (the department a user belongs to: `users.department`, `issues_table.issue_submitter_department`) and each one's **issue reference prefix** (the `RTL` in `RTL-042`) live in `public.departments` (`migrations/006_departments.sql`), managed from the super admin Departments modal (`components/Modules/SuperAdmin/Departments/`, routes under `app/api/superadmin/departments/`): add, change the prefix (new references only), activate/deactivate - no rename or delete. `lib/departments.ts` loads them (cached under the `Departments_Data` tag - the routes revalidate it; refresh via `/api/revalidate-tags` after a manual SQL edit) and matches names case-insensitively, since the HR records in `company_user_records` spell some differently. Forms get options through `hooks/useDepartmentOptions.ts` (`serverActions/GetDepartments.ts`, not session-gated because registration needs them): forms that set a user's department offer active ones only, filters list every department. Registration, SSO completion and the super admin add/edit-user routes validate with `resolveDepartmentName` (active only; editing a user may keep their current department) and store the table's spelling; users created on someone's behalf (`CheckBehalfUser`) get the canonical spelling of their HR-record department. Reference prefixes come from `issuePrefixFor` (`UNK` only for a department missing from the table). Deactivate rather than delete or rename a department.
-- **Target departments** (the department an issue is raised *to*) are a separate list in `group_emails` (`serverActions/GetBaseDepartments.ts`), managed from the super admin **Group Emails** modal. Issue types are found by matching the issue's target department to the issue type admin's staff department, so the two lists must spell shared departments the same way.
+- **Target departments** (the department an issue is raised _to_) are a separate list in `group_emails` (`serverActions/GetBaseDepartments.ts`), managed from the super admin **Group Emails** modal. Issue types are found by matching the issue's target department to the issue type admin's staff department, so the two lists must spell shared departments the same way.
 
 ### Auth — JWT cookies + route middleware
 
@@ -98,9 +98,18 @@ The app is served under a sub-path (`NEXT_PUBLIC_BASE_PATH`, e.g. `/helpdesk`; `
 - **Cookies** are set with `path: "/"`, so other apps on the same origin (the hub) receive them too. That's fine while the hub's cookie names differ from HelpDesk's (`accessToken`, `refreshToken`, `oauth_*`, `verify_email`, `sso_pending_registration`). If they could collide, scope them to `basePath || "/"` and pass the same `path` to every `cookies.delete()`.
 - `public/` is served as-is under the base path - keep only static assets there, never source files (shared constants live in `lib/assets.ts`).
 
+### Working on proposed changes (`.claude/skills/CHANGES.md`)
+
+Proposed bug fixes and UI/UX changes are written up in `.claude/skills/CHANGES.md`. Each time you pick that file up:
+
+- **Clarify first.** If anything in a proposal is ambiguous, ask before you implement. Put every open question in one round of multiple-choice questions, with a recommended option where you have one.
+- **Critique and recommend.** Say so if a proposal has trade-offs, edge cases (mobile, dark mode, accessibility) or a better alternative, and point out related bugs you notice along the way.
+- **Phase the work.** Split larger changes into phases. Verify each phase before you commit it, and use one focused commit per change.
+- **Verify in the running app.** A signed-in dev server is usually running at `localhost:3000/helpdesk` in Chrome, so check there first. If none is running, start one (`npm run dev`). If you're blocked (e.g. a sign-in is needed, or the browser can't reach the server), ask the user to step in rather than skipping verification.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
-# This is NOT the Next.js you know
+### This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
 

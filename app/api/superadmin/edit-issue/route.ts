@@ -29,6 +29,7 @@ export const PUT = withAuth(async ({ user, request }) => {
       agentEmail,
       adminEmail,
       longName,
+      isChangeRequest,
     } = await request.json();
     const issueType =
       typeof rawIssueType === "string" ? rawIssueType.trim() : "";
@@ -132,7 +133,8 @@ export const PUT = withAuth(async ({ user, request }) => {
     admin_id = $2,
     agent_id = $3,
     issue_priority = $4,
-    long_name = $5
+    long_name = $5,
+    is_change_request = COALESCE($7, is_change_request)
     WHERE id = $6
     `;
 
@@ -143,6 +145,8 @@ export const PUT = withAuth(async ({ user, request }) => {
       issuePriority,
       longName || issueType,
       issueNumber,
+      // Left as it is when a caller doesn't send it
+      typeof isChangeRequest === "boolean" ? isChangeRequest : null,
     ];
 
     await client.query(updateQuery, updateParams);

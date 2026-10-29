@@ -4,6 +4,7 @@ import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
 import { emailSender } from "@/services/EmailSender";
 import { canActOnIssue } from "@/lib/IssueAccess";
+import { isCloseReason } from "@/lib/issues/closeReasons";
 
 export const PUT = withAuth(async ({ user, request }) => {
   let client: PoolClient | undefined;
@@ -19,7 +20,7 @@ export const PUT = withAuth(async ({ user, request }) => {
   }
 
   try {
-    const { uuid, status, remarks } = await request.json();
+    const { uuid, status, remarks, closeReason } = await request.json();
 
     if (!uuid || !status || !remarks) {
       return NextResponse.json(
@@ -92,15 +93,30 @@ export const PUT = withAuth(async ({ user, request }) => {
       );
     }
 
+    // Closing an issue that wasn't resolved first needs a reason, so analytics
+    // can keep it out of resolution times and the resolution SLA
+    const isPrematureClose =
+      status === "closed" && currentStatus !== "resolved";
+
+    if (isPrematureClose && !isCloseReason(closeReason)) {
+      await client.query("ROLLBACK");
+      return NextResponse.json(
+        { message: "Select why this unresolved issue is being closed" },
+        { status: 400 },
+      );
+    }
+
     // Group our params
     const queryParams = [status, remarks, uuid];
 
-    // Issue is not closed, so we can continue
+    // Issue is not closed, so we can continue. The first status change is the
+    // first response the SLA response target measures (migrations/008)
     await client.query(
-      `UPDATE issues_table 
+      `UPDATE issues_table
         SET issue_status = $1,
         issue_remarks = $2,
-        issue_updated_at = CURRENT_TIMESTAMP
+        issue_updated_at = CURRENT_TIMESTAMP,
+        issue_first_response_at = COALESCE(issue_first_response_at, CURRENT_TIMESTAMP)
         WHERE issue_uuid = $3`,
       queryParams,
     );
@@ -113,14 +129,17 @@ export const PUT = withAuth(async ({ user, request }) => {
       );
     }
 
-    // Update date closed when status is closed
+    // Update date closed when status is closed. A resolved issue keeps its
+    // resolved date, so closing it doesn't stretch its resolution time; one
+    // closed early gets it set now (so it never counts as stale) and its reason
     if (status === "closed") {
       await client.query(
         `UPDATE issues_table
-         SET issue_date_resolved = CURRENT_TIMESTAMP,
-         issue_date_closed = CURRENT_TIMESTAMP 
+         SET issue_date_resolved = CASE WHEN $2 THEN CURRENT_TIMESTAMP ELSE issue_date_resolved END,
+         issue_date_closed = CURRENT_TIMESTAMP,
+         issue_close_reason = $3
          WHERE issue_uuid = $1`,
-        [uuid],
+        [uuid, isPrematureClose, isPrematureClose ? closeReason : null],
       );
     }
 
