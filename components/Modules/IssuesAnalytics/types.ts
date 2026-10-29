@@ -61,6 +61,14 @@ export interface MonthlyTrendEntry {
   resolved: number;
 }
 
+export interface SubmissionSlotEntry {
+  // ISO weekday, 1 = Monday ... 7 = Sunday
+  weekday: number;
+  // 0-23, Nairobi time
+  hour: number;
+  count: number;
+}
+
 export interface BacklogAgeingEntry {
   bucket: AgeingBucket;
   count: number;
@@ -77,6 +85,8 @@ export interface AnalyticsSummary {
   avgFirstResponseSeconds: number | null;
   totalFiltered: number;
   monthlyTrend: MonthlyTrendEntry[];
+  // Sparse - slots with no issues are left out
+  submissions: SubmissionSlotEntry[];
   backlogAgeing: BacklogAgeingEntry[];
   issueTypeBreakdown: IssueTypeBreakdownEntry[];
   agentBreakdown: AgentBreakdownEntry[];

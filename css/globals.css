@@ -31,8 +31,9 @@
 /* Analytics chart tokens (components/Modules/IssuesAnalytics/charts). The
    categorical slots are assigned in this fixed order and were checked for
    colour-blind separation against the card surfaces (white / neutral-950);
-   dark mode uses its own steps of the same hues. The age ramp is one hue,
-   light to dark, for ordered buckets. */
+   dark mode uses its own steps of the same hues. The ramp is one hue for
+   ordered steps (ageing buckets, heatmap counts); ramp-1 is always the
+   step closest to the surface, so higher steps stand out in both modes. */
 :root {
   --chart-surface: #ffffff;
   --chart-grid: #e5e5e5;
@@ -64,11 +65,12 @@ html[data-theme="dark"] {
   --chart-series-2: #d95926;
   --chart-series-3: #199e70;
   --chart-series-4: #c98500;
-  --chart-ramp-1: #9ec5f4;
-  --chart-ramp-2: #6da7ec;
+  /* Dim to bright here: on a dark surface "more" has to stand out more */
+  --chart-ramp-1: #184f95;
+  --chart-ramp-2: #256abf;
   --chart-ramp-3: #3987e5;
-  --chart-ramp-4: #256abf;
-  --chart-ramp-5: #184f95;
+  --chart-ramp-4: #6da7ec;
+  --chart-ramp-5: #9ec5f4;
   --chart-status-good: #0ca30c;
   --chart-status-critical: #d03b3b;
   --chart-target: #d4d4d4;

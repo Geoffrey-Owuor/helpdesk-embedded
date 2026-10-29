@@ -17,6 +17,7 @@ const emptySummary: AnalyticsSummary = {
   avgFirstResponseSeconds: null,
   totalFiltered: 0,
   monthlyTrend: [],
+  submissions: [],
   backlogAgeing: [],
   issueTypeBreakdown: [],
   agentBreakdown: [],

@@ -10,6 +10,7 @@ import DepartmentTimingCard from "./DepartmentTimingCard";
 import IssuesTrendChart from "./charts/IssuesTrendChart";
 import PriorityStatusChart from "./charts/PriorityStatusChart";
 import BacklogAgeingChart from "./charts/BacklogAgeingChart";
+import SubmissionHeatmap from "./charts/SubmissionHeatmap";
 import AgentWorkloadChart from "./charts/AgentWorkloadChart";
 import SlaSection from "./sla/SlaSection";
 
@@ -91,6 +92,11 @@ const SummaryCardsSection = ({
           isLoading={isLoading}
         />
       </div>
+
+      <SubmissionHeatmap
+        submissions={summary?.submissions ?? []}
+        isLoading={isLoading}
+      />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <IssueTypeBreakdownCard
