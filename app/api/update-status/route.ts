@@ -95,12 +95,14 @@ export const PUT = withAuth(async ({ user, request }) => {
     // Group our params
     const queryParams = [status, remarks, uuid];
 
-    // Issue is not closed, so we can continue
+    // Issue is not closed, so we can continue. The first status change is the
+    // first response the SLA response target measures (migrations/008)
     await client.query(
-      `UPDATE issues_table 
+      `UPDATE issues_table
         SET issue_status = $1,
         issue_remarks = $2,
-        issue_updated_at = CURRENT_TIMESTAMP
+        issue_updated_at = CURRENT_TIMESTAMP,
+        issue_first_response_at = COALESCE(issue_first_response_at, CURRENT_TIMESTAMP)
         WHERE issue_uuid = $3`,
       queryParams,
     );
@@ -113,11 +115,12 @@ export const PUT = withAuth(async ({ user, request }) => {
       );
     }
 
-    // Update date closed when status is closed
+    // Update date closed when status is closed - an issue resolved earlier
+    // keeps its resolved date, so closing it doesn't stretch its resolution time
     if (status === "closed") {
       await client.query(
         `UPDATE issues_table
-         SET issue_date_resolved = CURRENT_TIMESTAMP,
+         SET issue_date_resolved = COALESCE(issue_date_resolved, CURRENT_TIMESTAMP),
          issue_date_closed = CURRENT_TIMESTAMP 
          WHERE issue_uuid = $1`,
         [uuid],

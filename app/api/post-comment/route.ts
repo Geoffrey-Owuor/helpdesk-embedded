@@ -37,6 +37,25 @@ export const POST = withAuth(async ({ request, user }) => {
     // Run the query
     await query(baseQuery, queryParams);
 
+    // A comment from support (not the submitter) is the issue's first response
+    // if nothing came before it - the SLA response target measures this
+    await query(
+      `
+      UPDATE issues_table i
+      SET issue_first_response_at = CURRENT_TIMESTAMP
+      WHERE i.issue_uuid = $1
+        AND i.issue_first_response_at IS NULL
+        AND i.issue_submitter_id <> $2
+        AND (
+          i.issue_agent_id = $2
+          OR $3 IN ('agent', 'admin')
+          OR EXISTS (SELECT 1 FROM issue_collaborators col
+                     WHERE col.issue_id = i.issue_uuid AND col.collaborator_id = $2)
+        )
+      `,
+      [uuid, userId, user.role],
+    );
+
     // EMAIL SERVICE
     const title = `New Comment Raised on Issue ${referenceNumber}`;
     const description = `A new comment has been raised by ${username} on ${referenceNumber}`;
