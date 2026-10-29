@@ -48,6 +48,10 @@
   --chart-ramp-3: #2a78d6;
   --chart-ramp-4: #1c5cab;
   --chart-ramp-5: #104281;
+  /* SLA status - reserved for met / missed, always with an icon and label */
+  --chart-status-good: #0ca30c;
+  --chart-status-critical: #d03b3b;
+  --chart-target: #404040;
 }
 
 html[data-theme="dark"] {
@@ -65,6 +69,9 @@ html[data-theme="dark"] {
   --chart-ramp-3: #3987e5;
   --chart-ramp-4: #256abf;
   --chart-ramp-5: #184f95;
+  --chart-status-good: #0ca30c;
+  --chart-status-critical: #d03b3b;
+  --chart-target: #d4d4d4;
 }
 
 html[data-font="geist"] {

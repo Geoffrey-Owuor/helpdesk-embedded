@@ -88,3 +88,51 @@ export interface GlobalAgentOption {
   agent_email: string;
   department: string;
 }
+
+// app/api/analytics/sla - see lib/analytics/slaIssuesCte.ts for the rules
+export interface SlaStateCounts {
+  met: number;
+  breached: number;
+  // Still inside the target - not counted towards compliance yet
+  pending: number;
+}
+
+export interface SlaCounts {
+  response: SlaStateCounts;
+  resolution: SlaStateCounts;
+  // Within SLA: both targets met
+  sla: SlaStateCounts;
+  // Average target of the judged issues' priorities, for mixed sets
+  blendedTarget: number | null;
+}
+
+export interface SlaPriorityEntry extends SlaCounts {
+  priorityCode: string;
+  priority: string;
+  responseMinutes: number;
+  resolutionMinutes: number;
+  targetPercent: number;
+}
+
+export interface SlaAgentEntry extends SlaCounts {
+  agentName: string;
+  agentEmail: string;
+}
+
+export interface SlaMonthlyEntry {
+  // yyyy-mm
+  month: string;
+  // null for the row covering every agent
+  agentEmail: string | null;
+  agentName: string | null;
+  sla: SlaStateCounts;
+  blendedTarget: number | null;
+}
+
+export interface AnalyticsSla {
+  overall: SlaCounts;
+  priorities: SlaPriorityEntry[];
+  changeRequests: { sla: SlaStateCounts; targetPercent: number | null };
+  agents: SlaAgentEntry[];
+  monthly: SlaMonthlyEntry[];
+}
