@@ -18,7 +18,7 @@ import ChartTooltip from "./ChartTooltip";
 import { axisProps, chartColors, countAxisProps } from "./chartTheme";
 
 // How long the open backlog has been waiting. The buckets are ordered, so
-// they step along one hue - older is darker
+// they step along one hue - older stands out more
 const BacklogAgeingChart = ({
   backlogAgeing,
   isLoading,

@@ -46,6 +46,12 @@ interface TrendRow {
   resolved: string;
 }
 
+interface SubmissionRow {
+  weekday: number;
+  hour: number;
+  count: string;
+}
+
 interface AgeingRow {
   bucket: string;
   count: string;
@@ -247,6 +253,18 @@ export const GET = withAuth(async ({ user, request }) => {
     GROUP BY 1
   `;
 
+  // When issues are raised: ISO weekday (1 = Monday) by hour. The database
+  // runs on Africa/Nairobi time, so the stored hour is local office time.
+  const submissionsQuery = `
+    SELECT
+      EXTRACT(ISODOW FROM a.issue_created_at)::int AS weekday,
+      EXTRACT(HOUR FROM a.issue_created_at)::int AS hour,
+      COUNT(*) AS count
+    FROM issues_table a
+    ${whereSql}
+    GROUP BY 1, 2
+  `;
+
   try {
     const [
       pivotResult,
@@ -255,6 +273,7 @@ export const GET = withAuth(async ({ user, request }) => {
       departmentBreakdownResult,
       trendResult,
       ageingResult,
+      submissionsResult,
     ] = await Promise.all([
       query<PivotRow>(pivotQuery, params),
       query<TypeBreakdownRow>(typeBreakdownQuery, params),
@@ -262,6 +281,7 @@ export const GET = withAuth(async ({ user, request }) => {
       query<DepartmentBreakdownRow>(departmentBreakdownQuery, params),
       query<TrendRow>(trendQuery, trendParams),
       query<AgeingRow>(ageingQuery, params),
+      query<SubmissionRow>(submissionsQuery, params),
     ]);
 
     const row = pivotResult[0];
@@ -316,6 +336,12 @@ export const GET = withAuth(async ({ user, request }) => {
           created: getCount(r.created),
           resolved: getCount(r.resolved),
         })),
+        // Only the weekday/hour slots that had issues
+        submissions: submissionsResult.map((r) => ({
+          weekday: r.weekday,
+          hour: r.hour,
+          count: getCount(r.count),
+        })),
         backlogAgeing: AGEING_BUCKETS.map((bucket) => ({
           bucket,
           count: getCount(ageingResult.find((r) => r.bucket === bucket)?.count),
@@ -356,6 +382,7 @@ export const GET = withAuth(async ({ user, request }) => {
         avgFirstResponseSeconds: null,
         totalFiltered: 0,
         monthlyTrend: [],
+        submissions: [],
         backlogAgeing: [],
         issueTypeBreakdown: [],
         agentBreakdown: [],
