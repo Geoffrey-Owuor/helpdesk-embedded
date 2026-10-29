@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
 import { defaultCounts } from "@/lib/assets";
+import { AGEING_BUCKETS } from "@/lib/analytics/ageingBuckets";
 import {
   buildAnalyticsIssuesFilter,
   parseAnalyticsFilterParams,
@@ -35,7 +36,19 @@ interface PivotRow {
   closed_without_resolution_count: string;
   avg_resolution_seconds: string | null;
   avg_stale_seconds: string | null;
+  avg_first_response_seconds: string | null;
   total_filtered: string;
+}
+
+interface TrendRow {
+  month: string;
+  created: string;
+  resolved: string;
+}
+
+interface AgeingRow {
+  bucket: string;
+  count: string;
 }
 
 interface TypeBreakdownRow {
@@ -48,6 +61,7 @@ interface TypeBreakdownRow {
 interface AgentBreakdownRow {
   agent_name: string;
   count: string;
+  active_count: string;
   avg_resolution_seconds: string | null;
   avg_stale_seconds: string | null;
 }
@@ -103,6 +117,9 @@ export const GET = withAuth(async ({ user, request }) => {
         FILTER (WHERE a.issue_date_resolved IS NOT NULL AND a.issue_status IN ('resolved', 'closed') AND a.issue_close_reason IS NULL) AS avg_resolution_seconds,
       AVG(EXTRACT(EPOCH FROM (NOW() - a.issue_created_at)))
         FILTER (WHERE a.issue_status IN ('open', 'in progress')) AS avg_stale_seconds,
+      -- Set by the first status change or support comment (migrations/008)
+      AVG(EXTRACT(EPOCH FROM (a.issue_first_response_at - a.issue_created_at)))
+        FILTER (WHERE a.issue_first_response_at IS NOT NULL) AS avg_first_response_seconds,
 
       COUNT(*) AS total_filtered
     FROM issues_table a
@@ -150,6 +167,7 @@ export const GET = withAuth(async ({ user, request }) => {
     SELECT
       agent_name,
       COUNT(*) AS count,
+      COUNT(*) FILTER (WHERE issue_status IN ('open', 'in progress')) AS active_count,
       AVG(EXTRACT(EPOCH FROM (issue_date_resolved - issue_created_at)))
         FILTER (WHERE issue_date_resolved IS NOT NULL AND issue_status IN ('resolved', 'closed') AND issue_close_reason IS NULL) AS avg_resolution_seconds,
       AVG(EXTRACT(EPOCH FROM (NOW() - issue_created_at)))
@@ -167,17 +185,83 @@ export const GET = withAuth(async ({ user, request }) => {
     ORDER BY count DESC
   `;
 
+  // Issues created vs resolved per calendar month, every month in between
+  // included so gaps show as zero. Resolved counts the filtered issues by the
+  // month they were resolved, leaving out ones closed without resolution.
+  // The months run from the filter's start (or the first issue) to its end
+  // (or this month), so quiet recent months show as zero rather than vanish.
+  const trendParams = [
+    ...params,
+    filters.fromDate ?? null,
+    filters.toDate ?? null,
+  ];
+  const trendFromIndex = trendParams.length - 1;
+  const trendToIndex = trendParams.length;
+  const trendQuery = `
+    WITH filtered_issues AS (
+      SELECT a.issue_created_at, a.issue_date_resolved, a.issue_status, a.issue_close_reason
+      FROM issues_table a
+      ${whereSql}
+    ),
+    resolved_issues AS (
+      SELECT issue_date_resolved FROM filtered_issues
+      WHERE issue_date_resolved IS NOT NULL
+        AND issue_status IN ('resolved', 'closed')
+        AND issue_close_reason IS NULL
+    ),
+    months AS (
+      SELECT generate_series(
+        date_trunc('month', COALESCE(
+          $${trendFromIndex}::date,
+          (SELECT MIN(issue_created_at) FROM filtered_issues)
+        )),
+        date_trunc('month', LEAST(NOW(), COALESCE($${trendToIndex}::date, NOW()))),
+        interval '1 month'
+      ) AS month
+      -- Nothing matches the filters: no months, so the chart shows its empty state
+      WHERE EXISTS (SELECT 1 FROM filtered_issues)
+    )
+    SELECT
+      to_char(m.month, 'YYYY-MM') AS month,
+      (SELECT COUNT(*) FROM filtered_issues f
+        WHERE date_trunc('month', f.issue_created_at) = m.month) AS created,
+      (SELECT COUNT(*) FROM resolved_issues r
+        WHERE date_trunc('month', r.issue_date_resolved) = m.month) AS resolved
+    FROM months m
+    ORDER BY m.month
+  `;
+
+  // How long the open backlog (open and in progress) has been waiting
+  const ageingQuery = `
+    SELECT
+      CASE
+        WHEN NOW() - a.issue_created_at < interval '1 day' THEN 'under1d'
+        WHEN NOW() - a.issue_created_at < interval '3 days' THEN '1to3d'
+        WHEN NOW() - a.issue_created_at < interval '7 days' THEN '3to7d'
+        WHEN NOW() - a.issue_created_at < interval '30 days' THEN '7to30d'
+        ELSE 'over30d'
+      END AS bucket,
+      COUNT(*) AS count
+    FROM issues_table a
+    ${whereSql ? `${whereSql} AND` : "WHERE"} a.issue_status IN ('open', 'in progress')
+    GROUP BY 1
+  `;
+
   try {
     const [
       pivotResult,
       typeBreakdownResult,
       agentBreakdownResult,
       departmentBreakdownResult,
+      trendResult,
+      ageingResult,
     ] = await Promise.all([
       query<PivotRow>(pivotQuery, params),
       query<TypeBreakdownRow>(typeBreakdownQuery, params),
       query<AgentBreakdownRow>(agentBreakdownQuery, params),
       query<DepartmentBreakdownRow>(departmentBreakdownQuery, params),
+      query<TrendRow>(trendQuery, trendParams),
+      query<AgeingRow>(ageingQuery, params),
     ]);
 
     const row = pivotResult[0];
@@ -225,7 +309,17 @@ export const GET = withAuth(async ({ user, request }) => {
         ),
         avgResolutionSeconds: getAvg(row?.avg_resolution_seconds),
         avgStaleSeconds: getAvg(row?.avg_stale_seconds),
+        avgFirstResponseSeconds: getAvg(row?.avg_first_response_seconds),
         totalFiltered: getCount(row?.total_filtered),
+        monthlyTrend: trendResult.map((r) => ({
+          month: r.month,
+          created: getCount(r.created),
+          resolved: getCount(r.resolved),
+        })),
+        backlogAgeing: AGEING_BUCKETS.map((bucket) => ({
+          bucket,
+          count: getCount(ageingResult.find((r) => r.bucket === bucket)?.count),
+        })),
         issueTypeBreakdown: typeBreakdownResult.map((r) => ({
           issueType: r.issue_type,
           count: getCount(r.count),
@@ -235,6 +329,7 @@ export const GET = withAuth(async ({ user, request }) => {
         agentBreakdown: agentBreakdownResult.map((r) => ({
           agentName: r.agent_name,
           count: getCount(r.count),
+          activeCount: getCount(r.active_count),
           avgResolutionSeconds: getAvg(r.avg_resolution_seconds),
           avgStaleSeconds: getAvg(r.avg_stale_seconds),
         })),
@@ -258,7 +353,10 @@ export const GET = withAuth(async ({ user, request }) => {
         closedWithoutResolutionCount: 0,
         avgResolutionSeconds: null,
         avgStaleSeconds: null,
+        avgFirstResponseSeconds: null,
         totalFiltered: 0,
+        monthlyTrend: [],
+        backlogAgeing: [],
         issueTypeBreakdown: [],
         agentBreakdown: [],
         departmentBreakdown: [],
