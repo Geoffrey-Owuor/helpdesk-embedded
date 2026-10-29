@@ -7,6 +7,7 @@ import { DropdownOption } from "./CustomDropDown";
 import { EditIssueInfo } from "./EditIssueTypeModal";
 import { Bug } from "lucide-react";
 import FormAsterisk from "../../FormAsterisk";
+import ChangeRequestToggle from "./ChangeRequestToggle";
 import apiClient from "@/lib/AxiosClient";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useConfirmStore } from "@/store/useConfirmStore";
@@ -33,6 +34,7 @@ interface AddIssueData {
   issuePriority: string;
   agentEmail: string;
   adminEmail: string;
+  isChangeRequest: boolean;
 }
 
 type AddIssueProps = {
@@ -56,6 +58,7 @@ const AddIssue = ({
     issuePriority: "",
     agentEmail: "",
     adminEmail: "",
+    isChangeRequest: false,
   });
 
   // Zustand states
@@ -119,6 +122,7 @@ const AddIssue = ({
         issue_type: issueData.issueType,
         long_name: issueData.longName || issueData.issueType,
         issue_priority: issueData.issuePriority,
+        is_change_request: issueData.isChangeRequest,
       };
 
       // Optimistic data update
@@ -138,6 +142,7 @@ const AddIssue = ({
         issueType: "",
         longName: "",
         issuePriority: "",
+        isChangeRequest: false,
       });
 
       hideModal();
@@ -238,6 +243,13 @@ const AddIssue = ({
             options={adminsInfo}
             value={formData.adminEmail}
             onChange={(val) => handleDropdownChange("adminEmail", val)}
+          />
+
+          <ChangeRequestToggle
+            checked={formData.isChangeRequest}
+            onChange={(isChangeRequest) =>
+              setFormData((prev) => ({ ...prev, isChangeRequest }))
+            }
           />
         </ModalBody>
 
