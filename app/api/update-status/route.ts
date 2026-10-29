@@ -95,7 +95,8 @@ export const PUT = withAuth(async ({ user, request }) => {
 
     // Closing an issue that wasn't resolved first needs a reason, so analytics
     // can keep it out of resolution times and the resolution SLA
-    const isPrematureClose = status === "closed" && currentStatus !== "resolved";
+    const isPrematureClose =
+      status === "closed" && currentStatus !== "resolved";
 
     if (isPrematureClose && !isCloseReason(closeReason)) {
       await client.query("ROLLBACK");
