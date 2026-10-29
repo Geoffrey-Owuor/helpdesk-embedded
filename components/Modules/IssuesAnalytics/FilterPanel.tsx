@@ -386,7 +386,11 @@ const FilterPanel = () => {
               to
             </span>
             <div className="min-w-0 sm:min-w-38 sm:flex-1">
-              <DatePicker value={toDate} onChange={setToDate} placeholder="To" />
+              <DatePicker
+                value={toDate}
+                onChange={setToDate}
+                placeholder="To"
+              />
             </div>
           </div>
         );
