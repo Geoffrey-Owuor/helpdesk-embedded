@@ -18,6 +18,7 @@ import SearchArea from "./SearchArea";
 import ClientPortal from "../Modules/ClientPortal";
 import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
 import { useDashboardModalsStore } from "@/store/useDashboardModalsStore";
+import { NEW_ISSUE_HREF } from "@/lib/dashboardNav";
 
 // The search bar is only rendered in the header from the "custom" breakpoint
 // up (--breakpoint-custom in css/globals.css), so search is desktop-only
@@ -27,9 +28,6 @@ const MiddleBar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   // Openers for the dashboard-wide new issue modal and admin panel
-  const setIsIssueModalOpen = useDashboardModalsStore(
-    (state) => state.setIsIssueModalOpen,
-  );
   const setIsAdminPanelOpen = useDashboardModalsStore(
     (state) => state.setIsAdminPanelOpen,
   );
@@ -144,10 +142,7 @@ const MiddleBar = () => {
                   <PillButton
                     icon={<CirclePlus size={14} />}
                     label="New Issue"
-                    onClick={() => {
-                      setIsIssueModalOpen(true);
-                      setIsOpen(false);
-                    }}
+                    onClick={() => handleNavigation(NEW_ISSUE_HREF)}
                     accent
                   />
 
