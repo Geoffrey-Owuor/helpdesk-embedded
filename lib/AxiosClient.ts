@@ -1,6 +1,7 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { useDbStore } from "@/store/useDbStore";
 import { basePath } from "@/lib/basePath";
+import { loginPath } from "@/lib/loginRedirect";
 
 // 1. The Type Definition
 let refreshPromise: Promise<unknown> | null = null;
@@ -68,8 +69,14 @@ apiClient.interceptors.response.use(
             return Promise.reject(refreshError);
           }
         }
-        // A 401 error - token probably expired redirect to login
-        window.location.href = `${basePath}/login`;
+        // A 401 error - token probably expired redirect to login, which
+        // brings them back to this page once they sign in again
+        const { pathname, search } = window.location;
+        const appPath =
+          basePath && pathname.startsWith(basePath)
+            ? pathname.slice(basePath.length) || "/"
+            : pathname;
+        window.location.href = `${basePath}${loginPath(`${appPath}${search}`)}`;
         return Promise.reject(refreshError);
       }
     }

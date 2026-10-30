@@ -8,6 +8,11 @@ import { Eye, EyeOff, Mail, Lock, Loader2, AlertTriangle } from "lucide-react";
 import { useIsEmbedd } from "@/hooks/useIsEmbedd";
 import { useLoadingStore } from "@/store/useLoadingStore";
 import { basePath } from "@/lib/basePath";
+import {
+  afterLoginPath,
+  NEXT_PARAM,
+  nextFromLocation,
+} from "@/lib/loginRedirect";
 
 // Microsoft Icon Here
 const MicrosoftIcon = () => (
@@ -78,7 +83,8 @@ export default function LoginPage() {
       //   Successfull login
       if (response.ok) {
         useLoadingStore.getState().startLoadingLine(); // Full page load, so instrumentation-client.ts never sees it
-        window.location.href = `${basePath}/dashboard`;
+        // Back to the page that sent them to login, if any
+        window.location.href = `${basePath}${afterLoginPath(nextFromLocation())}`;
       } else {
         setError(data.message || "Login Failed");
         setRemainingAttempts(
@@ -107,8 +113,9 @@ export default function LoginPage() {
       const top = window.screen.height / 2 - height / 2;
 
       // Notice the ?popup=true flag
+      const next = nextFromLocation();
       const popup = window.open(
-        `${basePath}/api/sso/microsoft/login?popup=true`,
+        `${basePath}/api/sso/microsoft/login?popup=true${next ? `&${NEXT_PARAM}=${encodeURIComponent(next)}` : ""}`,
         "MicrosoftAuthPopup",
         `width=${width},height=${height},top=${top},left=${left}`,
       );
@@ -262,8 +269,19 @@ export default function LoginPage() {
           <form
             action={`${basePath}/api/sso/microsoft/login`}
             className="w-full"
-            onSubmit={() => setSsoLoading(true)}
+            onSubmit={(e) => {
+              // A GET form drops the query in its action, so ?next= rides
+              // along as a field - left out (disabled) when there's none
+              const nextInput = e.currentTarget.elements.namedItem(NEXT_PARAM);
+              if (nextInput instanceof HTMLInputElement) {
+                const next = nextFromLocation();
+                nextInput.value = next ?? "";
+                nextInput.disabled = !next;
+              }
+              setSsoLoading(true);
+            }}
           >
+            <input type="hidden" name={NEXT_PARAM} disabled />
             <button
               type="submit"
               onClick={handleLogin}
