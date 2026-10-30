@@ -1,7 +1,8 @@
 "use client";
 
 import { ChangeEvent, FormEvent } from "react";
-import { useState, useCallback } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   X,
   UserRoundCog,
@@ -22,28 +23,24 @@ import {
 import { fetchedIssueAgentsMapping } from "@/serverActions/GetIssueTypes";
 import apiClient from "@/lib/AxiosClient";
 import { IssueAgentMapping } from "@/serverActions/GetIssueTypes";
-import DynamicIssueTypes from "./DynamicIssueTypes";
+import DynamicIssueTypes from "../IssueModals/DynamicIssueTypes";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { useAlertStore } from "@/store/useAlertStore";
-import OptionsDropDown from "./OptionsDropDown";
+import OptionsDropDown from "../IssueModals/OptionsDropDown";
 import { fetchedBaseDepartments } from "@/serverActions/GetBaseDepartments";
 import FormAsterisk from "../FormAsterisk";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useUser } from "@/contexts/UserContext";
-import SubmitForAUser, { SubmitForUserData } from "./SubmitForAUser";
-import DocumentUpload from "./DocumentUpload";
+import SubmitForAUser, {
+  SubmitForUserData,
+} from "../IssueModals/SubmitForAUser";
+import DocumentUpload from "../IssueModals/DocumentUpload";
 import Link from "next/link";
 import { invalidateIssuesCaches } from "@/utils/invalidateIssuesCaches";
-import AiRefineSuggestion from "./AiRefineSuggestion";
-import {
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalForm,
-  ModalHeader,
-} from "../Modal/Modal";
+import AiRefineSuggestion from "../IssueModals/AiRefineSuggestion";
+import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 
 // Priority icon types
 const priorityIcons: Record<string, LucideIcon> = {
@@ -67,13 +64,10 @@ const DynamicIcon = ({ priority }: { priority: string }) => {
   );
 };
 
-type MainIssueModalProps = {
-  isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
-};
-
-const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
+// The New Issue page (/dashboard/new-issue)
+const NewIssueForm = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const { role } = useUser();
 
@@ -85,7 +79,6 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   } = useQuery({
     queryKey: ["BaseDepartmentsData"],
     queryFn: fetchedBaseDepartments,
-    enabled: isOpen,
   });
 
   const [formData, setFormData] = useState({
@@ -128,7 +121,23 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     setSubmitForUserKey((key) => key + 1);
   };
 
-  const closeModal = useCallback(() => setIsOpen(false), [setIsOpen]);
+  // With a single target department there's nothing to choose, so it's
+  // picked for them (still shown); with several the user picks one
+  const targetDepartment =
+    formData.target_department ||
+    (baseDepartments.length === 1 ? baseDepartments[0].value : "");
+
+  // Anything typed, picked or attached would be lost by leaving the page
+  const isDirty =
+    Object.values(formData).some(Boolean) ||
+    files.length > 0 ||
+    hasSubmitForUserInput;
+
+  useUnsavedChangesGuard(isDirty, {
+    title: "Discard This Issue?",
+    description:
+      "You haven't submitted this issue. Leaving the page will discard what you've entered.",
+  });
 
   // State for the Assignment Bot Card
   const [assignmentInfo, setAssignmentInfo] =
@@ -145,7 +154,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   // Each dropdown is red only for its own problem - its options failed to
   // load, or it's still empty after a submit attempt
   const departmentError =
-    departmentsError || (submitAttempted && !formData.target_department);
+    departmentsError || (submitAttempted && !targetDepartment);
   const issueTypeError = submitAttempted && !formData.issue_type;
 
   const handleChange = (
@@ -192,10 +201,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     if (value) {
       setIsFetchingAssignment(true);
       try {
-        const info = await fetchedIssueAgentsMapping(
-          value,
-          formData.target_department,
-        );
+        const info = await fetchedIssueAgentsMapping(value, targetDepartment);
         setAssignmentInfo(info);
       } catch (error) {
         console.error("Failed to fetch assignment info", error);
@@ -211,6 +217,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   const handleFormSubmit = async () => {
     const payload = {
       ...formData,
+      target_department: targetDepartment,
       ...(submitForUserData && {
         behalf_user_name: submitForUserData.user_name,
         behalf_user_email: submitForUserData.user_email,
@@ -247,26 +254,9 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
       // Hide the overlay
       hideOverlay();
 
-      // Clear form data
-      setFormData({
-        target_department: "",
-        issue_type: "",
-        issue_title: "",
-        issue_description: "",
-        behalf_user_name: "",
-        behalf_user_email: "",
-        behalf_user_department: "",
-      });
-
-      // Clear the submit-for-user details
-      clearSubmitForUser();
-
-      setFiles([]);
-      setAssignmentInfo(null); // Clear assignment info
-      setSubmitAttempted(false);
-
-      // Close issue modal
-      setIsOpen(false);
+      // Open the new issue - its reference, agent and status are there
+      const issueUuid: string | undefined = response.data.issue_uuid;
+      router.push(issueUuid ? `/dashboard/${issueUuid}` : "/dashboard");
 
       // Trigger alert on success
       triggerAlert(
@@ -284,7 +274,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
     e.preventDefault();
     setSubmitAttempted(true);
 
-    if (!formData.target_department || !formData.issue_type) {
+    if (!targetDepartment || !formData.issue_type) {
       triggerAlert("error", "Missing some required fields");
     } else if (hasSubmitForUserInput && !submitForUserData) {
       // Half-entered user details would otherwise submit in your own name
@@ -305,15 +295,21 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
   };
 
   return (
-    <Modal open={isOpen} onClose={closeModal} size="3xl" tone="muted">
-      <ModalHeader
-        title="Create A New Issue"
-        description="Enter the required issue details and submit."
-      />
+    <div className="mx-auto max-w-3xl py-6 md:py-4">
+      <div className="mb-4 inline-flex flex-col">
+        <h1 className="text-xl font-semibold">Create A New Issue</h1>
+        <span className="text-sm text-neutral-800 dark:text-neutral-400">
+          Enter the required issue details and submit.
+        </span>
+      </div>
 
       {/* Issue Form */}
-      <ModalForm onSubmit={handleConfirmSubmit} autoComplete="off">
-        <ModalBody className="space-y-6">
+      <form
+        onSubmit={handleConfirmSubmit}
+        autoComplete="off"
+        className="rounded-2xl border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950"
+      >
+        <div className="space-y-6 px-4 py-4 sm:px-6 sm:py-5">
           {/* Button for submitting for another user */}
           {role !== "user" && (
             <div className="inline-flex items-center gap-2">
@@ -386,7 +382,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
 
               {/* Options Dropdown */}
               <OptionsDropDown
-                value={formData.target_department}
+                value={targetDepartment}
                 onChange={handleDepartmentChange}
                 loading={loading}
                 options={baseDepartments}
@@ -399,7 +395,7 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
             <DynamicIssueTypes
               value={formData.issue_type}
               onChange={handleIssueChange}
-              department={formData.target_department}
+              department={targetDepartment}
               error={issueTypeError}
             />
           </div>
@@ -543,10 +539,10 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
             setFiles={setFiles}
             maxTotalSizeMB={2}
           />
-        </ModalBody>
+        </div>
 
         {/* Submit Button */}
-        <ModalFooter stretch={false} className="justify-between gap-4">
+        <div className="flex items-center justify-between gap-4 border-t border-neutral-200 px-4 py-3 sm:px-6 dark:border-neutral-800">
           <Link
             href="/manual#issues-docs"
             target="_blank"
@@ -561,17 +557,17 @@ const MainIssueModal = ({ isOpen, setIsOpen }: MainIssueModalProps) => {
               !formData.issue_title ||
               !formData.issue_description ||
               !formData.issue_type ||
-              !formData.target_department
+              !targetDepartment
             }
             className="flex items-center justify-center gap-2 rounded-xl bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800 focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 dark:focus:ring-zinc-400 dark:focus:ring-offset-neutral-900"
           >
             Submit
             <Send className="h-4 w-4" />
           </button>
-        </ModalFooter>
-      </ModalForm>
-    </Modal>
+        </div>
+      </form>
+    </div>
   );
 };
 
-export default MainIssueModal;
+export default NewIssueForm;

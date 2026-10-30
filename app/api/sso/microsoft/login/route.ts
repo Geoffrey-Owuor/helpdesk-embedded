@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { getRequestOrigin } from "@/lib/getRequestOrigin";
 import { NextRequest } from "next/server";
 import { basePath } from "@/lib/basePath";
+import { NEXT_PARAM, safeNextPath } from "@/lib/loginRedirect";
 
 export async function GET(req: NextRequest) {
   // 1. Get the true origin via our helper
@@ -11,6 +12,8 @@ export async function GET(req: NextRequest) {
 
   const requestUrl = new URL(req.url);
   const isPopup = requestUrl.searchParams.get("popup") === "true";
+  // The page to return to after sign-in, carried to the callback in a cookie
+  const next = safeNextPath(requestUrl.searchParams.get(NEXT_PARAM));
 
   // Instantiate Arctic uniquely for the current domain
   const entraId = new MicrosoftEntraId(
@@ -48,6 +51,18 @@ export async function GET(req: NextRequest) {
     path: "/",
     maxAge: 60 * 10,
   });
+
+  if (next) {
+    cookieStore.set("oauth_next", next, {
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 10,
+    });
+  } else {
+    cookieStore.delete("oauth_next"); // Left over from an abandoned sign-in
+  }
 
   // FIX: Define the scopes as a flat string array
   const scopes = ["openid", "profile", "email"];

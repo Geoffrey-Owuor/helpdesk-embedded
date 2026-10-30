@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { requireSession } from "./lib/Auth";
+import { afterLoginPath, loginPath, NEXT_PARAM } from "./lib/loginRedirect";
 
 const authPaths = [
   "/login",
@@ -9,10 +10,12 @@ const authPaths = [
 ];
 
 // nextUrl keeps the basePath, so the redirect target only needs the app path
-const redirectTo = (request: NextRequest, pathname: string) => {
+// (and query) - "/login?next=..."
+const redirectTo = (request: NextRequest, path: string) => {
   const url = request.nextUrl.clone();
-  url.pathname = pathname;
-  url.search = "";
+  const target = new URL(path, url.href);
+  url.pathname = target.pathname;
+  url.search = target.search;
   return NextResponse.redirect(url);
 };
 
@@ -23,7 +26,11 @@ export async function proxy(request: NextRequest) {
 
   if (pathname.startsWith("/dashboard")) {
     if (!user) {
-      const response = redirectTo(request, "/login");
+      // Remember the page so login can come back to it
+      const response = redirectTo(
+        request,
+        loginPath(`${pathname}${request.nextUrl.search}`),
+      );
       response.cookies.delete("refreshToken");
       return response;
     }
@@ -31,7 +38,11 @@ export async function proxy(request: NextRequest) {
 
   if (authPaths.includes(pathname)) {
     if (user) {
-      return redirectTo(request, "/dashboard");
+      // Already signed in (e.g. another tab) - go where login would have
+      return redirectTo(
+        request,
+        afterLoginPath(request.nextUrl.searchParams.get(NEXT_PARAM)),
+      );
     }
   }
 

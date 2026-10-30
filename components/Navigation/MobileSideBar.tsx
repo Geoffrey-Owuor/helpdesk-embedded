@@ -35,9 +35,6 @@ type MobileSideBarProps = {
 
 const MobileSideBar = ({ sideBarOpen, setSideBarOpen }: MobileSideBarProps) => {
   const user = useUser();
-  const setIsIssueModalOpen = useDashboardModalsStore(
-    (state) => state.setIsIssueModalOpen,
-  );
   const setIsAdminPanelOpen = useDashboardModalsStore(
     (state) => state.setIsAdminPanelOpen,
   );
@@ -86,8 +83,7 @@ const MobileSideBar = ({ sideBarOpen, setSideBarOpen }: MobileSideBarProps) => {
         type="button"
         onClick={() => {
           closeSidebar();
-          if (item.action === "newIssue") setIsIssueModalOpen(true);
-          else setIsAdminPanelOpen(true);
+          if (item.action === "adminPanel") setIsAdminPanelOpen(true);
         }}
         className={INACTIVE_ITEM_CLASSES}
       >
