@@ -12,6 +12,12 @@ import { getRequestOrigin } from "@/lib/getRequestOrigin";
 import { NextRequest } from "next/server";
 import { basePath } from "@/lib/basePath";
 import {
+  afterLoginPath,
+  loginPath,
+  NEXT_PARAM,
+  safeNextPath,
+} from "@/lib/loginRedirect";
+import {
   fetchMicrosoftProfile,
   isMicrosoftUnreachable,
   retryOnConnectFailure,
@@ -36,6 +42,14 @@ export async function GET(req: NextRequest) {
   const storedState = cookieStore.get("oauth_state")?.value;
   const storedCodeVerifier = cookieStore.get("oauth_code_verifier")?.value;
   const isPopup = cookieStore.get("oauth_is_popup")?.value === "true";
+  // The page that sent them to login (set by ../login), validated again
+  const next = safeNextPath(cookieStore.get("oauth_next")?.value);
+
+  // Back to login with an alert reason, keeping ?next= for the retry
+  const loginWith = (param: string) => {
+    const path = loginPath(next);
+    return `${basePath}${path}${path.includes("?") ? "&" : "?"}${param}`;
+  };
 
   const handleRedirect = (targetPath: string) => {
     if (isPopup) {
@@ -47,12 +61,12 @@ export async function GET(req: NextRequest) {
           <script>
             if (window.opener) {
               window.opener.postMessage(
-                { type: "AUTH_SUCCESS", url: "${targetPath}" }, 
+                { type: "AUTH_SUCCESS", url: ${JSON.stringify(targetPath)} }, 
                 window.location.origin
               );
               window.close();
             } else {
-              window.location.href = "${targetPath}";
+              window.location.href = ${JSON.stringify(targetPath)};
             }
           </script>
         </body>
@@ -92,7 +106,8 @@ export async function GET(req: NextRequest) {
       // registration - never continue with an undefined email.
       console.error("Authentication handshake error: profile has no email");
       cookieStore.delete("oauth_is_popup");
-      return handleRedirect(`${basePath}/login?sso_error=failed`);
+      cookieStore.delete("oauth_next");
+      return handleRedirect(loginWith("sso_error=failed"));
     }
 
     // Query the user from our database
@@ -109,6 +124,7 @@ export async function GET(req: NextRequest) {
       // Check if the user is active
       if (!returnedUser.is_user_active) {
         cookieStore.delete("oauth_is_popup");
+        cookieStore.delete("oauth_next");
         return handleRedirect(`${basePath}/login?disabled=true`);
       }
 
@@ -149,7 +165,8 @@ export async function GET(req: NextRequest) {
       cookieStore.delete("oauth_state");
       cookieStore.delete("oauth_code_verifier");
       cookieStore.delete("oauth_is_popup"); // Clean up new cookie
-      return handleRedirect(`${basePath}/dashboard`);
+      cookieStore.delete("oauth_next");
+      return handleRedirect(`${basePath}${afterLoginPath(next)}`);
     } else {
       // 1. Create a short-lived temporary payload
       const tempPayload = {
@@ -175,7 +192,11 @@ export async function GET(req: NextRequest) {
 
       // 4. Redirect to the completion page
       cookieStore.delete("oauth_is_popup");
-      return handleRedirect(`${basePath}/sso`);
+      cookieStore.delete("oauth_next");
+      // Registration can outlast the cookie, so the page rides in the URL
+      return handleRedirect(
+        `${basePath}/sso${next ? `?${new URLSearchParams({ [NEXT_PARAM]: next })}` : ""}`,
+      );
     }
   } catch (error) {
     console.error("Authentication handshake error:", error);
@@ -183,6 +204,7 @@ export async function GET(req: NextRequest) {
     // couldn't reach Microsoft at all (network) vs. sign-in failed.
     const reason = isMicrosoftUnreachable(error) ? "unreachable" : "failed";
     cookieStore.delete("oauth_is_popup");
-    return handleRedirect(`${basePath}/login?sso_error=${reason}`);
+    cookieStore.delete("oauth_next");
+    return handleRedirect(loginWith(`sso_error=${reason}`));
   }
 }

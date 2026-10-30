@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAlertStore } from "@/store/useAlertStore";
+import { NEXT_PARAM } from "@/lib/loginRedirect";
 
 // Shows the one-off alerts other pages hand to /login through the URL.
 // Kept apart from the form (and wrapped in its own Suspense) because
@@ -39,9 +40,18 @@ export default function LoginUrlAlerts() {
       shouldCleanUrl = true;
     }
 
-    // Clean the URL once if any alert was triggered
+    // Clean the URL once if any alert was triggered, keeping ?next= so
+    // signing in still returns to the page that sent them here
     if (shouldCleanUrl) {
-      window.history.replaceState(null, "", window.location.pathname);
+      const next = searchParams.get(NEXT_PARAM);
+      const query = next
+        ? `?${new URLSearchParams({ [NEXT_PARAM]: next })}`
+        : "";
+      window.history.replaceState(
+        null,
+        "",
+        `${window.location.pathname}${query}`,
+      );
     }
   }, [searchParams, triggerAlert]);
 

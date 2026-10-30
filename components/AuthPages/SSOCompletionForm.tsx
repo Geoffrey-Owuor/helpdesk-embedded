@@ -11,9 +11,12 @@ import AuthShell from "./AuthShell";
 const SSOCompletionForm = ({
   name,
   email,
+  redirectPath,
 }: {
   name: string;
   email: string;
+  // App path to open once registered - /dashboard, or the page they asked for
+  redirectPath: string;
 }) => {
   // Staff departments (public.departments)
   const { departments: baseDepartments } = useDepartmentOptions();
@@ -59,9 +62,9 @@ const SSOCompletionForm = ({
         throw new Error("Failed to complete sso setup");
       }
 
-      // Success! Redirect to the dashboard
+      // Success! Redirect to the dashboard (or the page they asked for)
       useLoadingStore.getState().startLoadingLine(); // Full page load, so instrumentation-client.ts never sees it
-      window.location.href = `${basePath}/dashboard`;
+      window.location.href = `${basePath}${redirectPath}`;
     } catch (error) {
       console.error("Sso completion error:", error);
       setError("Something went wrong. Please try again.");
