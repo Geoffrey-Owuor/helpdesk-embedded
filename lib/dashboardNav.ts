@@ -13,7 +13,7 @@ import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
 // the mobile drawer (MobileSideBar), so the two can't drift apart.
 
 // Items that open a dashboard modal instead of a page
-export type DashboardNavAction = "newIssue" | "adminPanel";
+export type DashboardNavAction = "adminPanel";
 
 type DashboardNavItemBase = {
   key: string;
@@ -45,6 +45,8 @@ type NavUser = {
 
 const HOME_HREF = "/dashboard";
 
+export const NEW_ISSUE_HREF = "/dashboard/new-issue";
+
 export const HOME_NAV_ITEM: DashboardNavItem = {
   kind: "link",
   key: "home",
@@ -61,9 +63,9 @@ export function getDashboardNavGroups(user: NavUser): DashboardNavGroup[] {
       label: "Workspace",
       items: [
         {
-          kind: "action",
+          kind: "link",
           key: "newIssue",
-          action: "newIssue",
+          href: NEW_ISSUE_HREF,
           label: "New Issue",
           shortLabel: "New Issue",
           Icon: CirclePlus,
@@ -128,6 +130,7 @@ export function getDashboardNavGroups(user: NavUser): DashboardNavGroup[] {
 
 // Every dashboard section with its own nav item, whoever can see it
 const SECTION_PATHS = [
+  NEW_ISSUE_HREF,
   "/dashboard/articles",
   "/dashboard/analytics",
   "/dashboard/superadmin",

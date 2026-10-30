@@ -19,6 +19,7 @@ import { useIsEmbedd } from "@/hooks/useIsEmbedd";
 import { hubUrl } from "@/lib/basePath";
 import {
   DashboardNavAction,
+  NEW_ISSUE_HREF,
   DashboardNavItem,
   HOME_NAV_ITEM,
   getDashboardNavGroups,
@@ -48,17 +49,14 @@ const DashboardSidebar = () => {
   const setShowMobileSidebar = useSidebarToggleStore(
     (state) => state.setShowMobileSidebar,
   );
-  const setIsIssueModalOpen = useDashboardModalsStore(
-    (state) => state.setIsIssueModalOpen,
-  );
-  const toggleIssueModal = useDashboardModalsStore(
-    (state) => state.toggleIssueModal,
-  );
   const setIsAdminPanelOpen = useDashboardModalsStore(
     (state) => state.setIsAdminPanelOpen,
   );
 
   const isEmbedded = useIsEmbedd();
+
+  const pathname = usePathname();
+  const router = useRouter();
 
   // New Issue Keyboard Shortcut Listener
   useEffect(() => {
@@ -74,20 +72,16 @@ const DashboardSidebar = () => {
       // Listen for Ctrl + Q
       if (e.ctrlKey && e.key.toLowerCase() === "q") {
         e.preventDefault(); // Prevent any default browser behavior
-        toggleIssueModal();
+        router.push(NEW_ISSUE_HREF);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [toggleIssueModal]);
-
-  const pathname = usePathname();
-  const router = useRouter();
+  }, [router]);
 
   const runAction = (action: DashboardNavAction) => {
-    if (action === "newIssue") setIsIssueModalOpen(true);
-    else setIsAdminPanelOpen(true);
+    if (action === "adminPanel") setIsAdminPanelOpen(true);
   };
 
   const items = getDashboardNavGroups(user).flatMap((group) => group.items);
