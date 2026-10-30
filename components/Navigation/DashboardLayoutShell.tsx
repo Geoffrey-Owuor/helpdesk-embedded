@@ -9,7 +9,6 @@ import { useSidebarToggleStore } from "@/store/useSidebarToggleStore";
 import { useDashboardModalsStore } from "@/store/useDashboardModalsStore";
 import { usePinnedIssuesStore } from "@/store/usePinnedIssuesStore";
 import DashboardHeader from "./DashboardHeader";
-import MainIssueModal from "../Modules/IssueModals/MainIssueModal";
 import AdminPanel from "./AdminFunctions/AdminPanel";
 import UserSettings from "./UserSettings/UserSettings";
 
@@ -17,12 +16,6 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
   const status = useDbStore((state) => state.status);
   const showSidebar = useSidebarToggleStore((state) => state.showSidebar);
 
-  const isIssueModalOpen = useDashboardModalsStore(
-    (state) => state.isIssueModalOpen,
-  );
-  const setIsIssueModalOpen = useDashboardModalsStore(
-    (state) => state.setIsIssueModalOpen,
-  );
   const isAdminPanelOpen = useDashboardModalsStore(
     (state) => state.isAdminPanelOpen,
   );
@@ -44,12 +37,6 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
   const defaultContent = (
     <>
       {/* Dashboard-wide modals — mounted once, opened via useDashboardModalsStore */}
-      {isIssueModalOpen && (
-        <MainIssueModal
-          isOpen={isIssueModalOpen}
-          setIsOpen={setIsIssueModalOpen}
-        />
-      )}
       <AdminPanel
         showAdminPanel={isAdminPanelOpen}
         setShowAdminPanel={setIsAdminPanelOpen}
