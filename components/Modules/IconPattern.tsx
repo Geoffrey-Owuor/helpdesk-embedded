@@ -16,8 +16,11 @@ import {
 
 // Decorative tile of the New Issue form's icons mixed with support icons, repeated
 // with an SVG <pattern>. Icons draw in currentColor, so colour and opacity come from
-// the className, and the radial mask fades it out before the wrapper's edges.
-// Place it inside a `relative isolate` wrapper. It is absolute, not fixed: a fixed
+// the className, and the radial mask fades it out towards the edges.
+// Place it inside a `relative isolate` wrapper. It fills the wrapper's height and,
+// with `bleed`, spans the viewport width instead of the wrapper's, so it reaches
+// past <main>'s max-width; #main-content (overflow-x-hidden) clips it to the
+// content area. It is absolute, not fixed: a fixed
 // full-screen layer inside #main-content is recomposited on every scroll frame
 // (see .claude/skills/PERFORMANCE_4K.md)
 const TILE = 240;
@@ -40,9 +43,15 @@ const ICONS: [LucideIcon, number, number, number][] = [
 
 const IconPattern = ({
   className = "text-neutral-900 opacity-[0.1] dark:text-neutral-100 dark:opacity-[0.08]",
+  bleed = false,
 }: {
   className?: string;
+  bleed?: boolean;
 }) => {
+  const placement = bleed
+    ? "inset-y-0 left-1/2 w-screen -translate-x-1/2 [mask-image:radial-gradient(ellipse_75%_70%_at_50%_40%,black_45%,transparent_100%)]"
+    : "inset-0 w-full [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_75%)]";
+
   // useId output contains characters (":" / "«»") that aren't safe in url(#…)
   const id = `icon-pattern-${useId().replace(/[^\w-]/g, "")}`;
 
@@ -50,7 +59,7 @@ const IconPattern = ({
     <svg
       aria-hidden="true"
       focusable="false"
-      className={`pointer-events-none absolute inset-0 -z-10 h-full w-full [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_75%)] ${className}`}
+      className={`pointer-events-none absolute -z-10 h-full ${placement} ${className}`}
     >
       <defs>
         <pattern
