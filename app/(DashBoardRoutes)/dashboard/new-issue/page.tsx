@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 const page = () => {
   return (
     <div className="relative isolate">
-      <IconPattern />
+      <IconPattern bleed />
       <NewIssueForm />
     </div>
   );
