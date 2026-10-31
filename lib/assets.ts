@@ -1,9 +1,3 @@
-import hotpoint_black_logo from "@/public/hotpoint_black_logo.png";
-
-export const assets = {
-  hotpoint_black_logo,
-};
-
 // get current year value and export it
 const currentYear = new Date().getFullYear();
 
