@@ -1,5 +1,4 @@
-import Image from "next/image";
-import { assets } from "@/lib/assets";
+import { HotpointLogo } from "@/components/Modules/HotpointLogo";
 
 export const DashBoardLogo = ({
   isSideBarOpen,
@@ -7,15 +6,7 @@ export const DashBoardLogo = ({
   isSideBarOpen?: boolean;
 }) => (
   <div className="relative flex items-center gap-0.5">
-    <div className="relative h-6.5 w-6.5">
-      <Image
-        src={assets.hotpoint_black_logo}
-        alt="HelpDesk Logo"
-        sizes="32px"
-        preload
-        className="object-contain dark:invert"
-      />
-    </div>
+    <HotpointLogo className="size-6.5 text-black dark:text-white" />
     <span
       className={`${isSideBarOpen ? "block" : "hidden"} text-xl font-semibold text-black dark:text-white`}
     >
