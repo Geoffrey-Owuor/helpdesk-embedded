@@ -47,7 +47,6 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       data-scroll-behavior="smooth"
-      data-font="geist"
       className={`${geistSans.variable} ${geistMono.variable}`}
     >
       <head>

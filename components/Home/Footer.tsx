@@ -1,8 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { assets } from "@/lib/assets";
+import { HotpointLogo } from "@/components/Modules/HotpointLogo";
 import { currentYear, HELPDESK_EMAIL } from "@/lib/assets";
 import { ArrowUp, Mail } from "lucide-react";
 import { DbStatusPill } from "../Modules/DbStatus/DbStatusPill";
@@ -52,15 +51,7 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="flex max-w-sm flex-col gap-4 lg:col-span-5">
             <div className="flex items-center gap-1">
-              <div className="-ml-1.5 h-6.5 w-6.5">
-                <Image
-                  src={assets.hotpoint_black_logo}
-                  alt="HelpDesk Logo"
-                  className="object-contain dark:invert"
-                  loading="eager"
-                  sizes="32px"
-                />
-              </div>
+              <HotpointLogo className="-ml-1.5 size-6.5 text-black dark:text-white" />
               <span className="text-xl font-semibold text-neutral-900 dark:text-white">
                 HelpDesk
               </span>
