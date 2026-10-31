@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import NewIssueForm from "@/components/Modules/NewIssue/NewIssueForm";
+import IconPattern from "@/components/Modules/IconPattern";
 
 export const metadata: Metadata = {
   title: "New Issue",
@@ -7,7 +8,12 @@ export const metadata: Metadata = {
 };
 
 const page = () => {
-  return <NewIssueForm />;
+  return (
+    <div className="relative isolate">
+      <IconPattern bleed />
+      <NewIssueForm />
+    </div>
+  );
 };
 
 export default page;
