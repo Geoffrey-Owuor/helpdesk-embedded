@@ -296,19 +296,20 @@ const NewIssueForm = () => {
 
   return (
     <div className="mx-auto max-w-3xl py-6 md:py-4">
-      <div className="mb-4 inline-flex flex-col">
-        <h1 className="text-xl font-semibold">Create A New Issue</h1>
-        <span className="text-sm text-neutral-800 dark:text-neutral-400">
-          Enter the required issue details and submit.
-        </span>
-      </div>
-
       {/* Issue Form */}
       <form
         onSubmit={handleConfirmSubmit}
         autoComplete="off"
         className="rounded-2xl border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950"
       >
+        {/* Card header */}
+        <div className="flex flex-col border-b border-neutral-200 px-4 py-3 sm:px-6 dark:border-neutral-800">
+          <h1 className="text-xl font-semibold">Create A New Issue</h1>
+          <span className="text-sm text-neutral-800 dark:text-neutral-400">
+            Enter the required issue details and submit.
+          </span>
+        </div>
+
         <div className="space-y-6 px-4 py-4 sm:px-6 sm:py-5">
           {/* Button for submitting for another user */}
           {role !== "user" && (
