@@ -14,6 +14,9 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_APP_VERSION: process.env.GITHUB_SHA ?? "",
   },
+  // A tab on an older build gets a full page load on its next navigation that
+  // reaches the server, rather than a client-side one against this build.
+  deploymentId: process.env.GITHUB_SHA,
   allowedDevOrigins: ["192.168.34.234", "192.168.0.112"],
   basePath: basePath,
 };
