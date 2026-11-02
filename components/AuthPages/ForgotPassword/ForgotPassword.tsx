@@ -13,13 +13,13 @@ const ForgotPassword = () => {
   //   Control which parts of the ui to show based on the step
   const [step, setStep] = useState(1);
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
-  const hideAlert = useAlertStore((state) => state.hideAlert);
+  const clearAlerts = useAlertStore((state) => state.clearAlerts);
   const [coolDown, setCoolDown] = useState(0);
 
   //   Submit Email
   const submitRequest = async () => {
     // clear alerts
-    hideAlert();
+    clearAlerts();
 
     if (!validateHotpointEmail(email)) {
       triggerAlert("error", "Email provided is not a valid Hotpoint email");
