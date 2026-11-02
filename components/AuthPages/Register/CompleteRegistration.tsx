@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import AuthShell from "../AuthShell";
 import { useSearchParams } from "next/navigation";
-import { useAlertStore } from "@/store/useAlertStore";
+import { useAlertStore, useHasErrorAlert } from "@/store/useAlertStore";
 import { useLoadingStore } from "@/store/useLoadingStore";
 import { ApiHandler } from "@/utils/ApiHandler";
 import NameRulesCard from "@/components/Modules/NameRulesCard";
@@ -60,7 +60,7 @@ const CompleteRegistration = ({ email }: { email: string }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
-  const alertType = useAlertStore((state) => state.alertType);
+  const hasErrorAlert = useHasErrorAlert();
 
   // Derived State to check if passwords are matching
   const passwordsMatch =
@@ -378,7 +378,7 @@ const CompleteRegistration = ({ email }: { email: string }) => {
           <button
             type="submit"
             disabled={loading || passwordsMismatch || !nameValidation.isValid}
-            className={`flex w-full items-center ${alertType === "error" ? "bg-red-500 text-white hover:bg-red-400 focus:ring-red-500 dark:ring-offset-neutral-950" : "bg-neutral-900 text-white hover:bg-neutral-800 focus:ring-neutral-600 dark:bg-white dark:text-neutral-950 dark:ring-offset-neutral-950 dark:hover:bg-neutral-200 dark:focus:ring-neutral-300"} justify-center gap-2 rounded-full px-4 py-3 font-semibold ring-offset-2 focus:ring-1 focus:outline-none disabled:opacity-50`}
+            className={`flex w-full items-center ${hasErrorAlert ? "bg-red-500 text-white hover:bg-red-400 focus:ring-red-500 dark:ring-offset-neutral-950" : "bg-neutral-900 text-white hover:bg-neutral-800 focus:ring-neutral-600 dark:bg-white dark:text-neutral-950 dark:ring-offset-neutral-950 dark:hover:bg-neutral-200 dark:focus:ring-neutral-300"} justify-center gap-2 rounded-full px-4 py-3 font-semibold ring-offset-2 focus:ring-1 focus:outline-none disabled:opacity-50`}
           >
             {loading ? (
               <>
