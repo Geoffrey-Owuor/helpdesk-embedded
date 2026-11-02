@@ -29,8 +29,9 @@ export const useFocusTrapping = (
     const previousFocus = document.activeElement as HTMLElement | null;
 
     // Filter out elements that the browser will actually skip
-    const getFocusableElements = (): HTMLElement[] => {
-      const element = modalRef.current;
+    const getFocusableElements = (
+      element: Element | null | undefined = modalRef.current,
+    ): HTMLElement[] => {
       if (!element) return [];
 
       return Array.from(
@@ -71,18 +72,34 @@ export const useFocusTrapping = (
         const currentFocusable = getFocusableElements();
         if (currentFocusable.length === 0) return;
 
+        // Visible alerts (AlertLayer) sit outside the modal but stay reachable:
+        // the cycle runs through the modal, then the alerts, then back around
+        const alertLayer = document.querySelector("[data-alert-layer]");
+        const alertFocusable = getFocusableElements(alertLayer);
+        const active = document.activeElement;
+
         const firstElement = currentFocusable[0];
         const lastElement = currentFocusable[currentFocusable.length - 1];
-        const focusInside = modalRef.current?.contains(document.activeElement);
+        const firstAlert = alertFocusable[0];
+        const lastAlert = alertFocusable[alertFocusable.length - 1];
+        const focusInModal = modalRef.current?.contains(active);
+        const focusInAlerts = alertLayer?.contains(active);
 
+        // Inside the modal or between alerts the browser's own order applies
+        let target: HTMLElement | undefined;
         if (e.shiftKey) {
-          if (!focusInside || document.activeElement === firstElement) {
-            e.preventDefault();
-            lastElement.focus();
-          }
-        } else if (!focusInside || document.activeElement === lastElement) {
+          if (active === firstAlert) target = lastElement;
+          else if (active === firstElement || (!focusInModal && !focusInAlerts))
+            target = lastAlert ?? lastElement;
+        } else {
+          if (active === lastElement) target = firstAlert ?? firstElement;
+          else if (active === lastAlert || (!focusInModal && !focusInAlerts))
+            target = firstElement;
+        }
+
+        if (target) {
           e.preventDefault();
-          firstElement.focus();
+          target.focus();
         }
       }
     };

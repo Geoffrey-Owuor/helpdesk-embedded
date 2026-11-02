@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../css/globals.css";
-import Alert from "@/components/Modules/Alert";
+import AlertLayer from "@/components/Modules/AlertLayer";
 import Provider from "@/components/Themes/Provider";
 import LoadingLine from "@/components/Modules/LoadingLine";
 import {
@@ -59,7 +59,7 @@ export default function RootLayout({
           <Suspense fallback={null}>
             <LoadingLine />
           </Suspense>
-          <Alert />
+          <AlertLayer />
           <PromiseOverlay />
           <ConfirmationDialog />
 
