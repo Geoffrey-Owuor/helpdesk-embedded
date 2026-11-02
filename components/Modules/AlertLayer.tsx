@@ -1,6 +1,8 @@
 "use client";
 
 import Alerts from "@/components/Modules/Alert";
+import UpdateAlert from "@/components/Modules/UpdateAlert";
+import { useUpdateAvailable } from "@/components/Modules/useUpdateAvailable";
 import { useModalStackStore } from "@/store/useModalStackStore";
 
 // Holds the app's alerts above everything, stacked in one corner. On phones a
@@ -10,6 +12,7 @@ import { useModalStackStore } from "@/store/useModalStackStore";
 // cycle can reach the alerts' buttons.
 const AlertLayer = () => {
   const isModalOpen = useModalStackStore((state) => state.stack.length > 0);
+  const update = useUpdateAvailable();
 
   return (
     <div
@@ -21,6 +24,7 @@ const AlertLayer = () => {
       }`}
     >
       <Alerts />
+      {update.available && <UpdateAlert onLater={update.dismiss} />}
     </div>
   );
 };
