@@ -156,7 +156,7 @@ function CustomDropdown({ options, value, onChange }: CustomDropdownProps) {
       {open && (
         <ul
           ref={listRef}
-          className={`default-scrollbar absolute top-full z-60 mt-1 max-h-48 w-32 overflow-y-auto rounded-xl border border-neutral-200 bg-white p-1 py-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900 ${POPOVER_ALIGN[align]}`}
+          className={`small-scrollbar absolute top-full z-60 mt-1 max-h-48 w-32 overflow-y-auto rounded-xl border border-neutral-200 bg-white p-1 py-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900 ${POPOVER_ALIGN[align]}`}
         >
           {options.map((opt) => {
             const isActive = opt.value === value;

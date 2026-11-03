@@ -75,7 +75,7 @@ export const ActionMenu = ({
       {isOpen && (
         <div
           role="menu"
-          className={`default-scrollbar absolute top-full z-20 mt-2 max-h-80 min-w-48 overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-950 dark:shadow-none ${
+          className={`small-scrollbar absolute top-full z-20 mt-2 max-h-80 min-w-48 overflow-y-auto rounded-xl border border-neutral-300 bg-white p-1 shadow-xl shadow-neutral-200/50 dark:border-neutral-700 dark:bg-neutral-950 dark:shadow-none ${
             align === "right" ? "right-0 origin-top-right" : "left-0 origin-top-left"
           }`}
         >
