@@ -64,7 +64,7 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
               sticky bars' oversized bands to its inner edges. */}
           <div
             id="main-content"
-            className="layout-scrollbar custom:border-t-0 custom:border-b absolute inset-0 overflow-x-hidden overflow-y-auto border-x border-t border-[#eceef1] bg-white dark:border-neutral-900 dark:bg-black"
+            className="layout-scrollbar app-scrollbars custom:border-t-0 custom:border-b absolute inset-0 overflow-x-hidden overflow-y-auto border-x border-t border-[#eceef1] bg-white dark:border-neutral-900 dark:bg-black"
           >
             <div className="flex h-full flex-col pb-[env(safe-area-inset-bottom)]">
               {/* Content */}

@@ -47,7 +47,7 @@ const BreakdownListCard = ({
           {emptyMessage}
         </p>
       ) : (
-        <div className="default-scrollbar flex max-h-72 flex-col gap-3 overflow-y-auto px-6 pb-6">
+        <div className="small-scrollbar flex max-h-72 flex-col gap-3 overflow-y-auto px-6 pb-6">
           {entries.map(({ label, count }) => (
             <div key={label} className="flex flex-col gap-1">
               <div className="flex items-center justify-between text-sm">

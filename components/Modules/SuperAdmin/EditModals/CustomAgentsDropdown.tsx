@@ -138,7 +138,7 @@ const CustomAgentsDropdown = ({
             </div>
           )}
 
-          <div className="default-scrollbar flex max-h-60 flex-col overflow-y-auto">
+          <div className="small-scrollbar flex max-h-60 flex-col overflow-y-auto">
             {filteredOptions.length > 0 ? (
               filteredOptions.map((item) => (
                 <button

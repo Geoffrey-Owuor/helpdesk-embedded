@@ -44,12 +44,10 @@ const OptionsDropDown = ({
     if (dropDownType === "department") return undefined;
 
     return Object.fromEntries(
-      (options as IssueOption[]).map(
-        (option): [string, string] => [
-          option.value,
-          option.longName ?? option.value,
-        ],
-      ),
+      (options as IssueOption[]).map((option): [string, string] => [
+        option.value,
+        option.longName ?? option.value,
+      ]),
     );
   }, [options, dropDownType]);
 
@@ -168,7 +166,7 @@ const OptionsDropDown = ({
             </div>
           )}
 
-          <div className="default-scrollbar max-h-60 overflow-y-auto">
+          <div className="small-scrollbar max-h-60 overflow-y-auto">
             {loading ? (
               <div className="flex items-center gap-1 px-3 py-6 text-sm text-neutral-400 dark:text-neutral-500">
                 <Loader2 className="h-4 w-4 animate-spin" />

@@ -78,7 +78,7 @@ const SlaAgentTable = ({
         </div>
       </div>
 
-      <div className="default-scrollbar overflow-x-auto px-6 pt-3 pb-4">
+      <div className="small-scrollbar overflow-x-auto px-6 pt-3 pb-4">
         {isLoading || !sla ? (
           <div className="flex flex-col gap-3">
             {[...Array(4)].map((_, i) => (

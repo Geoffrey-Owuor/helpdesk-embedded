@@ -129,7 +129,7 @@ const SubmissionHeatmap = ({
           {hoveredText}
         </p>
 
-        <div className="default-scrollbar overflow-x-auto pb-1">
+        <div className="small-scrollbar overflow-x-auto pb-1">
           <div
             className="grid min-w-96 gap-0.5"
             style={{
