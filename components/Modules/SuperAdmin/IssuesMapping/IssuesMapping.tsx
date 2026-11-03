@@ -227,7 +227,7 @@ const IssuesMapping = () => {
       {/* Table Section */}
       {/* Rounded card that doesn't clip: the horizontal scroller sits inside its padding. A rounded scroller forces a clip mask that is recomposited on every page scroll. */}
       <div className="w-full rounded-xl border border-neutral-200 bg-gray-50 px-4 py-2 dark:border-neutral-800 dark:bg-neutral-950">
-        <div className="layout-scrollbar overflow-x-auto bg-gray-50 dark:bg-neutral-950">
+        <div className="overflow-x-auto bg-gray-50 dark:bg-neutral-950">
           <table className="min-w-full border-separate border-spacing-y-3 text-left">
             <thead>
               <tr>

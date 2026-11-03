@@ -177,7 +177,7 @@ const ArticleSearchFilter = ({
               </button>
 
               {isValueDropdownOpen && (
-                <ul className="absolute top-full left-0 z-10 mt-1 max-h-60 w-full overflow-y-auto rounded-xl border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-800">
+                <ul className="small-scrollbar absolute top-full left-0 z-10 mt-1 max-h-60 w-full overflow-y-auto rounded-xl border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-800">
                   {uniqueOptions[
                     activeCategory as "department" | "article_type"
                   ].map((opt) => (
