@@ -123,7 +123,7 @@ const CustomDropdown = ({
                 />
               </div>
             )}
-            <div className="default-scrollbar max-h-60 overflow-y-auto">
+            <div className="small-scrollbar max-h-60 overflow-y-auto">
               {filteredOptions.length === 0 ? (
                 <p className="px-3 py-2 text-sm text-neutral-400">
                   No matches found

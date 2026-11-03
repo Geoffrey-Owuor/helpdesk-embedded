@@ -147,7 +147,7 @@ const SSOCompletionForm = ({
               </button>
 
               {isDepartmentOpen && (
-                <ul className="default-scrollbar absolute z-10 mt-2 max-h-52 w-full overflow-y-auto rounded-2xl border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900">
+                <ul className="small-scrollbar absolute z-10 mt-2 max-h-52 w-full overflow-y-auto rounded-2xl border border-neutral-200 bg-white p-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900">
                   {baseDepartments.map((dept) => (
                     <li
                       key={dept.value}

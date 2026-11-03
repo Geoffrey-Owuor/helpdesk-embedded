@@ -177,7 +177,7 @@ const MdEditor = ({ value, onChange }: MdEditorProps) => {
           onChange={onChange}
           required
           style={{ minHeight: "24.87rem" }}
-          className="default-scrollbar field-sizing-content w-full resize-none p-4 text-sm leading-relaxed text-neutral-900 placeholder:text-neutral-400 focus:outline-none dark:text-neutral-100 dark:placeholder:text-neutral-500"
+          className="small-scrollbar field-sizing-content w-full resize-none p-4 text-sm leading-relaxed text-neutral-900 placeholder:text-neutral-400 focus:outline-none dark:text-neutral-100 dark:placeholder:text-neutral-500"
           placeholder="Start writing your masterpiece... (Markdown supported)"
         />
       )}
