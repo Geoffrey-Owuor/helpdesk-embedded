@@ -44,12 +44,10 @@ const OptionsDropDown = ({
     if (dropDownType === "department") return undefined;
 
     return Object.fromEntries(
-      (options as IssueOption[]).map(
-        (option): [string, string] => [
-          option.value,
-          option.longName ?? option.value,
-        ],
-      ),
+      (options as IssueOption[]).map((option): [string, string] => [
+        option.value,
+        option.longName ?? option.value,
+      ]),
     );
   }, [options, dropDownType]);
 

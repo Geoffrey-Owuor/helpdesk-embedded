@@ -45,12 +45,10 @@ const IssueTypeModal = ({
   const issueTypeMap: Record<string, string> = useMemo(
     () =>
       Object.fromEntries(
-        options.map(
-          (option): [string, string] => [
-            option.value,
-            option.longName ?? option.value,
-          ],
-        ),
+        options.map((option): [string, string] => [
+          option.value,
+          option.longName ?? option.value,
+        ]),
       ),
     [options],
   );
