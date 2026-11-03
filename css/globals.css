@@ -306,8 +306,8 @@ html {
 }
 
 /* Scrollbars
-   - .layout-scrollbar marks a public page's scroll container. On its own it
-     keeps the browser's native scrollbar, tinted with the thumb token.
+   - .layout-scrollbar marks a page's scroll container. On its own it keeps the
+     browser's native scrollbar, tinted with the thumb token: the public pages.
    - .app-scrollbars styles itself and every scroller inside it: no arrow
      buttons and a pill thumb flush against the scroller's edge in a
      transparent track. On #main-content, the mobile sidebar's nav and every
@@ -349,7 +349,6 @@ html[data-theme="dark"] {
 @supports selector(::-webkit-scrollbar) {
   @media (hover: hover) and (pointer: fine) {
     .app-scrollbars,
-    .app-scrollbars .layout-scrollbar,
     .small-scrollbar {
       scrollbar-color: auto;
     }
@@ -422,42 +421,6 @@ html[data-theme="dark"] {
     .small-scrollbar::-webkit-scrollbar-button {
       display: none;
     }
-  }
-}
-
-/* Sidebar navigation styles */
-.sidebar-nav {
-  overflow-y: auto;
-}
-
-.sidebar-nav::-webkit-scrollbar {
-  width: 3px;
-}
-
-.sidebar-nav::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.sidebar-nav::-webkit-scrollbar-thumb {
-  background-color: rgb(163 163 163 / 0.4); /* neutral-400 at 40% */
-  border-radius: 999px;
-}
-
-html[data-theme="dark"] .sidebar-nav::-webkit-scrollbar-thumb {
-  background-color: rgb(115 115 115 / 0.4); /* neutral-500 at 40% */
-}
-
-/* Firefox: standard scrollbar properties. Scoped to browsers without
-   ::-webkit-scrollbar support, since Chromium 121+ ignores the webkit
-   pseudo-elements above whenever scrollbar-width/scrollbar-color are set. */
-@supports not selector(::-webkit-scrollbar) {
-  .sidebar-nav {
-    scrollbar-width: thin;
-    scrollbar-color: rgb(163 163 163 / 0.4) transparent; /* neutral-400 at 40% */
-  }
-
-  html[data-theme="dark"] .sidebar-nav {
-    scrollbar-color: rgb(115 115 115 / 0.4) transparent; /* neutral-500 at 40% */
   }
 }
 

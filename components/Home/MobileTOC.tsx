@@ -70,7 +70,7 @@ const MobileTOC = ({ items }: { items: ChangelogData[] }) => {
       </button>
 
       {isOpen && (
-        <div className="layout-scrollbar absolute top-full right-0 left-0 z-30 mt-2 flex max-h-60 flex-col overflow-y-auto rounded-xl bg-neutral-900 px-1 dark:bg-white">
+        <div className="small-scrollbar absolute top-full right-0 left-0 z-30 mt-2 flex max-h-60 flex-col overflow-y-auto rounded-xl bg-neutral-900 px-1 dark:bg-white">
           {items.map((entry) => (
             <a
               key={entry.changelog_id}
