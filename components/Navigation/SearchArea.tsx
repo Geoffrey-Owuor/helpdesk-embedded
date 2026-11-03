@@ -25,7 +25,14 @@ const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
   // Global search only scans the first page of results (sorted newest-first)
   // rather than the whole dataset - a quick-jump tool, not the main search.
   const { data, isLoading: recordsLoading } = useQuery({
-    queryKey: ["issuesDashboardData", superAdminFilter, agentAdminFilter, null, 1, 100],
+    queryKey: [
+      "issuesDashboardData",
+      superAdminFilter,
+      agentAdminFilter,
+      null,
+      1,
+      100,
+    ],
     queryFn: () =>
       fetchIssues(null, 1, 100, { agentAdminFilter, superAdminFilter }),
   });
@@ -115,7 +122,7 @@ const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
       </div>
 
       {/* ── BOTTOM SECTION (Scrollable Results) ── */}
-      <div className="default-scrollbar flex-1 overflow-y-auto p-4">
+      <div className="small-scrollbar flex-1 overflow-y-auto p-4">
         {/* State 1: Data is currently loading */}
         {searchQuery.trim() && recordsLoading ? (
           <div className="flex h-32 flex-col items-center justify-center gap-3 text-neutral-400">

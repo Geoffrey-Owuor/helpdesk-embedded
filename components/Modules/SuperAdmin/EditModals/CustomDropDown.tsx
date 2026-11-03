@@ -138,7 +138,7 @@ const CustomDropdown = ({
               />
             </div>
           )}
-          <ul className="default-scrollbar max-h-60 overflow-y-auto">
+          <ul className="small-scrollbar max-h-60 overflow-y-auto">
             {/* Options list */}
             {filteredOptions.length === 0 ? (
               <li className="px-3.5 py-2 text-sm text-neutral-400">

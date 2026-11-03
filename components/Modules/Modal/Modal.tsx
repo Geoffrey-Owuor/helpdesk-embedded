@@ -126,7 +126,7 @@ export const Modal = ({
             data-closing={closing || undefined}
             data-variant={variant}
             className={cx(
-              "modal-panel relative flex w-full flex-col overflow-hidden border-neutral-200 shadow-2xl dark:border-neutral-800",
+              "modal-panel app-scrollbars relative flex w-full flex-col overflow-hidden border-neutral-200 shadow-2xl dark:border-neutral-800",
               tone === "muted"
                 ? "bg-neutral-50 dark:bg-neutral-950"
                 : "bg-white dark:bg-neutral-950",
@@ -245,7 +245,7 @@ export const ModalBody = ({
 }: ComponentPropsWithoutRef<"div"> & { padded?: boolean }) => (
   <div
     className={cx(
-      "layout-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain",
+      "min-h-0 flex-1 overflow-y-auto overscroll-contain",
       padded && "px-4 py-4 sm:px-6 sm:py-5",
       className,
     )}

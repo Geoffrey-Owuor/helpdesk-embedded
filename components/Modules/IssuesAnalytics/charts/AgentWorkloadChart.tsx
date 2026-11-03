@@ -58,7 +58,7 @@ const AgentWorkloadChart = ({
       className={className}
     >
       {/* Long agent lists scroll inside the card instead of squeezing the bars */}
-      <div className="default-scrollbar max-h-64 overflow-y-auto">
+      <div className="small-scrollbar max-h-64 overflow-y-auto">
         <ResponsiveContainer
           width="100%"
           height={Math.max(data.length * ROW_HEIGHT + 32, 120)}

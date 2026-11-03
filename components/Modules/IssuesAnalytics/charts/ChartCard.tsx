@@ -109,7 +109,7 @@ const ChartCard = ({
             {emptyMessage}
           </p>
         ) : showTable ? (
-          <div className="default-scrollbar max-h-72 overflow-auto px-2">
+          <div className="small-scrollbar max-h-72 overflow-auto px-2">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-neutral-200 dark:border-neutral-800">

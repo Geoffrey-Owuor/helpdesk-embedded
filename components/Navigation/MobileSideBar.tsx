@@ -136,7 +136,7 @@ const MobileSideBar = ({ sideBarOpen, setSideBarOpen }: MobileSideBarProps) => {
           {/* Navigation Links */}
           <nav
             aria-label="Main"
-            className="layout-scrollbar flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto overscroll-contain"
+            className="app-scrollbars flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto overscroll-contain"
           >
             {renderItem(HOME_NAV_ITEM)}
 

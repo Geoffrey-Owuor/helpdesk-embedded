@@ -68,6 +68,8 @@ The same layer shows the "Update available" alert (`UpdateAlert.tsx`, `useUpdate
 
 The dashboard navigation — the desktop rail (`components/Navigation/DashboardSidebar.tsx`) and the mobile drawer (`MobileSideBar.tsx`) — renders from `lib/dashboardNav.ts`: page links and modal-opening actions (New Issue, Admin Panel), their role gates, and `isNavItemActive` (a section stays active on its sub-pages; Home owns the issue pages at `/dashboard/[uuid]`). Add nav items there, not in either component. The rail measures its height and moves the items that don't fit into a More menu (`SidebarMoreMenu.tsx`, portaled to `<body>` because the fixed rail is its own stacking context); the drawer keeps `useFocusTrapping` and is `inert` while closed.
 
+Scrollbars ("Scrollbars" in `css/globals.css`, colors from the `--scrollbar-thumb*` tokens, with their own dark values): `.app-scrollbars`, on `#main-content`, the mobile sidebar's nav and every `Modal` panel, gives itself and every scroller inside it an arrowless pill thumb (Chromium/Safari, mouse or trackpad only; touch screens keep native overlay bars, Firefox gets `scrollbar-color`); `.small-scrollbar` is the thin variant for dropdowns, menus and small card scrollers; `.layout-scrollbar` alone keeps the native scrollbar (public pages). Chromium ignores the webkit styling on any element with `scrollbar-color`/`scrollbar-width` (and `scrollbar-color` inherits), so don't use Tailwind's `scrollbar-thin` inside the scope; `scrollbar-none` is fine.
+
 Client HTTP calls go through the shared `lib/AxiosClient.ts` instance; `utils/AxiosErrorHelper.ts` normalizes error handling.
 
 ### Email
