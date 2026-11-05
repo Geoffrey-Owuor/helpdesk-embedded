@@ -9,10 +9,10 @@ import { isCloseReason } from "@/lib/issues/closeReasons";
 export const PUT = withAuth(async ({ user, request }) => {
   let client: PoolClient | undefined;
 
-  const { role, username } = user;
+  const { role, username, isSuper } = user;
 
   //Check if the user is authorized to perform this transaction
-  if (role === "user") {
+  if (role === "user" && !isSuper) {
     return NextResponse.json(
       { message: "You are not authorized to perform this action" },
       { status: 403 },
