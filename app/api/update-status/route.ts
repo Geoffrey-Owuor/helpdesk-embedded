@@ -5,6 +5,7 @@ import { PoolClient } from "pg";
 import { emailSender } from "@/services/EmailSender";
 import { canActOnIssue } from "@/lib/IssueAccess";
 import { isCloseReason } from "@/lib/issues/closeReasons";
+import { canMoveToStatus } from "@/lib/issues/statusTransitions";
 
 export const PUT = withAuth(async ({ user, request }) => {
   let client: PoolClient | undefined;
@@ -78,6 +79,20 @@ export const PUT = withAuth(async ({ user, request }) => {
       await client.query("ROLLBACK");
       return NextResponse.json(
         { message: `This issue is already marked as ${status}` },
+        { status: 409 },
+      );
+    }
+
+    // Only forward moves - a resolved issue goes back to work through Reopen
+    if (!canMoveToStatus(currentStatus, status)) {
+      await client.query("ROLLBACK");
+      return NextResponse.json(
+        {
+          message:
+            currentStatus === "resolved"
+              ? "A resolved issue can only be closed - reopen it to continue work"
+              : `Can't change the status from ${currentStatus} to ${status}`,
+        },
         { status: 409 },
       );
     }

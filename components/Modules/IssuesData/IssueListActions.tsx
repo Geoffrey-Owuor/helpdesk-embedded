@@ -3,6 +3,7 @@
 import { useUser } from "@/contexts/UserContext";
 import { IssueValueTypes, statusOptions } from "@/lib/assets";
 import { getIssuePermissions } from "@/lib/issues/issuePermissions";
+import { canMoveToStatus } from "@/lib/issues/statusTransitions";
 import {
   CircleCheck,
   CircleX,
@@ -61,7 +62,8 @@ export const useIssueMenuItems = (onAction: IssueActionHandler) => {
     const statusItems: ActionMenuItem[] = can.canUpdateStatus
       ? statusOptions.flatMap(({ value }) => {
           const details = statusItemDetails[value];
-          if (!details || value === issue.issue_status) return [];
+          if (!details || !canMoveToStatus(String(issue.issue_status), value))
+            return [];
           return {
             key: value,
             ...details,
