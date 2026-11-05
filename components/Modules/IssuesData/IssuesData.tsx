@@ -15,6 +15,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchIssues } from "@/queries/fetchIssues";
 import { RotateCw } from "lucide-react";
 import PinnedIssuesSection from "../PinnedIssues/PinnedIssuesSection";
+import { useEffect } from "react";
 import { useSyncPinnedIssues } from "@/hooks/useSyncPinnedIssues";
 import { PinnedIssue } from "@/store/usePinnedIssuesStore";
 
@@ -32,6 +33,7 @@ const IssuesData = () => {
   );
   const page = useIssuesFilterStore((state) => state.page);
   const pageSize = useIssuesFilterStore((state) => state.pageSize);
+  const setPage = useIssuesFilterStore((state) => state.setPage);
 
   const {
     data,
@@ -58,6 +60,14 @@ const IssuesData = () => {
 
   // Rows hold every field a pin does, under the list's looser row type
   useSyncPinnedIssues(data?.rows as unknown as PinnedIssue[] | undefined);
+
+  // An action can move the last row off the last page: go to the new last page
+  // rather than showing an empty one. A total of 0 has no page to go back to,
+  // and is also what a failed fetch returns.
+  useEffect(() => {
+    const lastPage = Math.ceil(total / pageSize);
+    if (total > 0 && page > lastPage) setPage(lastPage);
+  }, [total, page, pageSize, setPage]);
 
   // default subtitle
   const defaultSubtitle = `you have submitted`;
