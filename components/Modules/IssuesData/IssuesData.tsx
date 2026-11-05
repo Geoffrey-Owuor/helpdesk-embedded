@@ -15,6 +15,8 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchIssues } from "@/queries/fetchIssues";
 import { RotateCw } from "lucide-react";
 import PinnedIssuesSection from "../PinnedIssues/PinnedIssuesSection";
+import { useSyncPinnedIssues } from "@/hooks/useSyncPinnedIssues";
+import { PinnedIssue } from "@/store/usePinnedIssuesStore";
 
 const IssuesData = () => {
   const { role, department, isSuper } = useUser();
@@ -53,6 +55,9 @@ const IssuesData = () => {
 
   const rows = data?.rows ?? [];
   const total = data?.total ?? 0;
+
+  // Rows hold every field a pin does, under the list's looser row type
+  useSyncPinnedIssues(data?.rows as unknown as PinnedIssue[] | undefined);
 
   // default subtitle
   const defaultSubtitle = `you have submitted`;

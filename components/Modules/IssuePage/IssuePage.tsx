@@ -10,7 +10,7 @@ import {
   UserRoundPlus,
   Paperclip,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useAlertStore } from "@/store/useAlertStore";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
@@ -31,6 +31,7 @@ import { invalidateIssuesCaches } from "@/utils/invalidateIssuesCaches";
 import PinButton from "../PinnedIssues/PinButton";
 import { useIssueCollaborators } from "@/hooks/useIssueCollaborators";
 import { useIssuePermissions } from "@/hooks/useIssuePermissions";
+import { useSyncPinnedIssues } from "@/hooks/useSyncPinnedIssues";
 import { IssueNotFound } from "./HelperComponents/IssueNotFound";
 import { IssueHeader } from "./HelperComponents/IssueHeader";
 import { IssueDetailBody } from "./HelperComponents/IssueDetailBody";
@@ -60,6 +61,12 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
     useIssueCollaborators(uuid, issueData);
 
   const can = useIssuePermissions(issueData, collaborators);
+
+  const loadedIssues = useMemo(
+    () => (issueData ? [issueData] : undefined),
+    [issueData],
+  );
+  useSyncPinnedIssues(loadedIssues);
 
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
 
