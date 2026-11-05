@@ -12,9 +12,11 @@ import {
   Zap,
 } from "lucide-react";
 
-// Background and text shared by every indicator chip
+// Background and text shared by every indicator chip. The dark background is
+// translucent because chips sit on several dark surfaces (cards, table rows,
+// hovered rows): it lifts whichever one is behind it by the same amount.
 export const indicatorChip =
-  "bg-neutral-100 text-neutral-700 dark:bg-neutral-900 dark:text-neutral-300";
+  "bg-neutral-100 text-neutral-700 dark:bg-white/10 dark:text-neutral-300";
 
 // The round icon holder on stat cards
 export const indicatorCircle =
@@ -35,19 +37,18 @@ export const statusDotColors: Record<string, string> = {
   open: "bg-amber-500",
   "in progress": "bg-blue-500",
   resolved: "bg-emerald-500",
-  closed: "bg-neutral-400 dark:bg-neutral-500",
+  closed: "bg-neutral-400",
 };
 
 // An unrecognized status gets a hollow dot
-export const unknownStatusDot =
-  "border border-neutral-400 dark:border-neutral-500";
+export const unknownStatusDot = "border border-neutral-400";
 
 // Account status dots (super admin users table)
 export const accountDotColors = {
   active: "bg-emerald-500",
   inactive: "bg-red-500",
   locked: "bg-amber-500",
-  deleted: "bg-neutral-400 dark:bg-neutral-500",
+  deleted: "bg-neutral-400",
 };
 
 const priorityHigh = "text-orange-600 dark:text-orange-400";
