@@ -113,7 +113,9 @@ const DashboardHeader = () => {
           {showSidebar ? <SidebarOpenIcon /> : <SidebarClosedIcon />}
 
           {/* ── TOOLTIP ── */}
-          <div className="pointer-events-none absolute top-1/2 left-full z-50 ml-3 translate-x-2 -translate-y-1/2 opacity-0 transition-all duration-200 ease-out group-hover:translate-x-0 group-hover:opacity-100">
+          {/* Opens below, so it doesn't cover the back button beside it, and
+              lines up with the button's left edge so the panel can't clip it */}
+          <div className="pointer-events-none absolute top-full left-0 z-50 mt-3 -translate-y-1 opacity-0 transition-all duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100">
             <div className="relative flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-semibold whitespace-nowrap text-white shadow-lg dark:bg-white dark:text-neutral-900">
               <Keyboard
                 size={14}
@@ -121,8 +123,33 @@ const DashboardHeader = () => {
               />
               <span>Shift + S</span>
 
-              {/* Tooltip Tail/Arrow pointing left */}
-              <div className="absolute top-1/2 -left-1 h-2.5 w-2.5 -translate-y-1/2 rotate-45 rounded-sm bg-neutral-900 dark:bg-white" />
+              {/* Tooltip Tail/Arrow pointing up, under the button's centre */}
+              <div className="absolute -top-1 left-2.5 h-2.5 w-2.5 rotate-45 rounded-sm bg-neutral-900 dark:bg-white" />
+            </div>
+          </div>
+        </button>
+
+        {/* Desktop: back */}
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="group custom:inline-flex relative hidden rounded-full p-1 text-neutral-600 hover:bg-neutral-200 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+          aria-label="Go back"
+          aria-keyshortcuts="Control+ArrowLeft"
+        >
+          <ChevronLeft className="h-5 w-5" />
+
+          {/* ── TOOLTIP ── */}
+          <div className="pointer-events-none absolute top-full left-1/2 z-50 mt-3 -translate-x-1/2 -translate-y-1 opacity-0 transition-all duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
+            <div className="relative flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-semibold whitespace-nowrap text-white shadow-lg dark:bg-white dark:text-neutral-900">
+              <Keyboard
+                size={14}
+                className="shrink-0 text-neutral-400 dark:text-neutral-500"
+              />
+              <span>Back · Ctrl + ←</span>
+
+              {/* Tooltip Tail/Arrow pointing up */}
+              <div className="absolute -top-1 left-1/2 h-2.5 w-2.5 -translate-x-1/2 rotate-45 rounded-sm bg-neutral-900 dark:bg-white" />
             </div>
           </div>
         </button>
