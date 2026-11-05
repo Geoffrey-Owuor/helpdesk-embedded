@@ -36,40 +36,25 @@ export interface IssueNotificationEmailParams {
 
 // ─── Badge Configs ────────────────────────────────────────────────────────────
 
-const STATUS_STYLES: Record<
-  IssueEmailStatus,
-  { bg: string; color: string; label: string }
-> = {
-  open: {
-    bg: "#fef9ec",
-    color: "#92680a",
-    label: "Open",
-  },
-  "in progress": {
-    bg: "#EEF2FF",
-    color: "#4338CA",
-    label: "In Progress",
-  },
-  resolved: {
-    bg: "#f0fdf4",
-    color: "#166534",
-    label: "Resolved",
-  },
-  closed: {
-    bg: "#eff6ff",
-    color: "#1d4ed8",
-    label: "Closed",
-  },
-};
+// Same look as the app: a neutral chip, a status dot, and strong colour only
+// for High and Critical. The dot is a text character because mail clients
+// don't reliably draw empty sized spans.
+const CHIP_BG = "#f5f5f5";
+const CHIP_TEXT = "#404040";
 
-const PRIORITY_STYLES: Record<
-  IssueEmailPriority,
-  { bg: string; color: string; border: string }
-> = {
-  Low: { bg: "#f8fafc", color: "#475569", border: "#cbd5e1" },
-  Medium: { bg: "#fffbeb", color: "#92400e", border: "#fcd34d" },
-  High: { bg: "#fff7ed", color: "#c2410c", border: "#fb923c" },
-  Critical: { bg: "#fef2f2", color: "#991b1b", border: "#f87171" },
+const STATUS_STYLES: Record<IssueEmailStatus, { dot: string; label: string }> =
+  {
+    open: { dot: "#f59e0b", label: "Open" },
+    "in progress": { dot: "#3b82f6", label: "In Progress" },
+    resolved: { dot: "#10b981", label: "Resolved" },
+    closed: { dot: "#a3a3a3", label: "Closed" },
+  };
+
+const PRIORITY_TEXT: Record<IssueEmailPriority, string> = {
+  Low: CHIP_TEXT,
+  Medium: CHIP_TEXT,
+  High: "#c2410c",
+  Critical: "#b91c1c",
 };
 
 // ─── Sub-renderers ────────────────────────────────────────────────────────────
@@ -77,38 +62,28 @@ const PRIORITY_STYLES: Record<
 export function renderStatusBadge(status: IssueEmailStatus): string {
   const s = STATUS_STYLES[status];
   return `
-        <span style="
-        display: inline-flex;
-        align-items: center;
-        justify-content: center; /* Ensures content is centered horizontally if width is fixed */
-        gap: 6px;
-        background: ${s.bg};
-        color: ${s.color};
-        font-size: 12px;
-        font-weight: 600;
-        letter-spacing: 0.3px;
-        padding: 4px 12px; /* Balanced padding */
-        border-radius: 20px;
-        white-space: nowrap;
-        line-height: 1; /* Prevents text descent from pushing the box height */
-      ">
-        ${s.label}
-      </span>
-    `;
-}
-
-export function renderPriorityBadge(priority: IssueEmailPriority): string {
-  const p = PRIORITY_STYLES[priority];
-  return `
     <span style="
       display: inline-block;
-      background: ${p.bg};
-      color: ${p.color};
-      border: 1px solid ${p.border};
+      background: ${CHIP_BG};
+      color: ${CHIP_TEXT};
       font-size: 12px;
       font-weight: 600;
       padding: 3px 10px;
-      border-radius: 4px;
+      border-radius: 8px;
+      white-space: nowrap;
+    "><span style="color: ${s.dot}; margin-right: 5px;">&#9679;</span>${s.label}</span>`;
+}
+
+export function renderPriorityBadge(priority: IssueEmailPriority): string {
+  return `
+    <span style="
+      display: inline-block;
+      background: ${CHIP_BG};
+      color: ${PRIORITY_TEXT[priority]};
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 8px;
       white-space: nowrap;
     ">${priority}</span>`;
 }
@@ -275,7 +250,9 @@ export function generateIssueNotificationEmail(
     reasonEscalated,
   } = params;
 
-  const issueLink = appUrl(`/dashboard/${uuid}?title=${encodeURIComponent(body.issueTitle)}&description=${encodeURIComponent(body.issueDescription)}`);
+  const issueLink = appUrl(
+    `/dashboard/${uuid}?title=${encodeURIComponent(body.issueTitle)}&description=${encodeURIComponent(body.issueDescription)}`,
+  );
 
   const statusBadge = renderStatusBadge(body.status);
   const priorityBadge = renderPriorityBadge(body.priority);
