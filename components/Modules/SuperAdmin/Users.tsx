@@ -8,17 +8,14 @@ import { dateFormatter } from "@/lib/assets";
 import {
   ShieldCheck,
   Headset,
-  CheckCircle2,
-  XCircle,
   Trash2,
   UserRoundPen,
   UserRoundCheck,
   UserRoundX,
   KeyRound,
-  Lock,
   LockOpen,
-  Ban,
 } from "lucide-react";
+import { accountDotColors, indicatorChip } from "@/lib/indicatorStyles";
 import Pagination from "../IssuesData/Pagination";
 import { useState, useEffect, useMemo } from "react";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
@@ -89,27 +86,36 @@ const ACTIVE_STATES: Record<
   { icon: React.ReactNode; label: string; styles: string }
 > = {
   true: {
-    icon: <CheckCircle2 size={13} />,
+    icon: (
+      <span className={`h-1.5 w-1.5 rounded-full ${accountDotColors.active}`} />
+    ),
     label: "Active",
-    styles:
-      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400",
+    styles: indicatorChip,
   },
   false: {
-    icon: <XCircle size={13} />,
+    icon: (
+      <span
+        className={`h-1.5 w-1.5 rounded-full ${accountDotColors.inactive}`}
+      />
+    ),
     label: "Inactive",
-    styles: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400",
+    styles: indicatorChip,
   },
   locked: {
-    icon: <Lock size={13} />,
+    icon: (
+      <span className={`h-1.5 w-1.5 rounded-full ${accountDotColors.locked}`} />
+    ),
     label: "Locked",
-    styles:
-      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+    styles: indicatorChip,
   },
   deleted: {
-    icon: <Ban size={13} />,
+    icon: (
+      <span
+        className={`h-1.5 w-1.5 rounded-full ${accountDotColors.deleted}`}
+      />
+    ),
     label: "Deleted",
-    styles:
-      "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400",
+    styles: indicatorChip,
   },
 };
 

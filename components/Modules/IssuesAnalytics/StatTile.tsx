@@ -2,14 +2,12 @@ import { LucideIcon } from "lucide-react";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import { PriorityBreakdown } from "@/lib/assets";
 import PriorityCounts from "@/components/Modules/IssuesCards/PriorityCounts";
+import { indicatorCircle } from "@/lib/indicatorStyles";
 
 interface StatTileProps {
   label: string;
   value: string | number;
   icon: LucideIcon;
-  color: string;
-  bgColor: string;
-  borderColor: string;
   isLoading: boolean;
   breakdown?: PriorityBreakdown;
 }
@@ -20,9 +18,6 @@ const StatTile = ({
   label,
   value,
   icon: Icon,
-  color,
-  bgColor,
-  borderColor,
   isLoading,
   breakdown,
 }: StatTileProps) => (
@@ -34,9 +29,7 @@ const StatTile = ({
       <h3 className="text-3xl font-semibold text-neutral-900 dark:text-neutral-100">
         {isLoading ? <SkeletonBox className="h-9 w-9 rounded-full" /> : value}
       </h3>
-      <div
-        className={`flex h-12 w-12 items-center justify-center rounded-full border ${bgColor} ${borderColor} ${color}`}
-      >
+      <div className={indicatorCircle}>
         <Icon className="h-6 w-6" strokeWidth={2} />
       </div>
     </div>
