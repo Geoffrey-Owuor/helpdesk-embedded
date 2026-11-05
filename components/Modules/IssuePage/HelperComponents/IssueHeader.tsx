@@ -115,13 +115,13 @@ export const IssueHeader = ({
         <div
           inert={!isScrolledPast}
           aria-hidden={!isScrolledPast}
-          className={`absolute inset-x-0 isolate -mx-4 flex items-center gap-2 px-4 py-2 transition-[opacity,translate] duration-150 before:absolute before:inset-y-0 before:-inset-x-[100vw] before:-z-10 before:border-b before:border-neutral-200 before:bg-white dark:before:border-neutral-800 dark:before:bg-black ${
+          className={`absolute inset-x-0 isolate -mx-4 flex items-center gap-2 px-4 py-2 transition-[opacity,translate] duration-150 before:absolute before:-inset-x-[100vw] before:inset-y-0 before:-z-10 before:border-b before:border-neutral-200 before:bg-white dark:before:border-neutral-800 dark:before:bg-black ${
             isScrolledPast
               ? "translate-y-0 opacity-100"
               : "pointer-events-none -translate-y-1 opacity-0"
           }`}
         >
-          <span className="shrink-0 font-mono text-sm font-semibold text-blue-600 dark:text-blue-400">
+          <span className="shrink-0 font-mono text-sm font-semibold text-neutral-600 dark:text-neutral-300">
             {issue.issue_reference_id}
           </span>
           <span
@@ -151,7 +151,7 @@ export const IssueHeader = ({
         {/* --- IDENTITY --- */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-neutral-500 dark:text-neutral-400">
-            <span className="font-mono text-[15px] font-semibold text-blue-600 dark:text-blue-400">
+            <span className="font-mono text-[15px] font-semibold text-neutral-600 dark:text-neutral-300">
               {issue.issue_reference_id}
             </span>
             <span className="h-1 w-1 rounded-full bg-neutral-300 dark:bg-neutral-600"></span>

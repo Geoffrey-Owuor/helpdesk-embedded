@@ -23,6 +23,7 @@ import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import IssuePriorityFormatter from "@/components/Modules/IssuesData/IssuePriorityFormatter";
 import { AgentsInfoProps } from "./AgentsInfo";
 import SearchInput from "@/components/Modules/SuperAdmin/SearchInput";
+import { indicatorIconCircle } from "@/lib/indicatorStyles";
 
 const IssueTypesInfo = ({
   loading,
@@ -212,7 +213,7 @@ const IssueTypesInfo = ({
 
                 {/* Agent info */}
                 <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
+                  <div className={indicatorIconCircle}>
                     <UserRound size={14} />
                   </div>
                   <div className="flex flex-col">
