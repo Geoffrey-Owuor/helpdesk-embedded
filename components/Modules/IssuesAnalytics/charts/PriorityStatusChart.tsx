@@ -16,10 +16,10 @@ import ChartTooltip from "./ChartTooltip";
 import { axisProps, chartColors } from "./chartTheme";
 
 const statuses = [
-  { key: "open", label: "Open", color: chartColors.series[0] },
-  { key: "inProgress", label: "In Progress", color: chartColors.series[1] },
+  { key: "open", label: "Open", color: chartColors.series[3] },
+  { key: "inProgress", label: "In Progress", color: chartColors.series[0] },
   { key: "resolved", label: "Resolved", color: chartColors.series[2] },
-  { key: "closed", label: "Closed", color: chartColors.series[3] },
+  { key: "closed", label: "Closed", color: chartColors.neutral },
 ] as const;
 
 const priorities = [
