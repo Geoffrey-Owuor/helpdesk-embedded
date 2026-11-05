@@ -301,12 +301,16 @@ const TableViewData = ({ currentIssues, onAction }: TableViewDataProps) => {
                       its corner is rounded, so the sticky cell itself takes the
                       card's opaque colour (hiding what scrolls under it) and an
                       inner layer paints the row, with its own copy of the row's
-                      shadow - the opaque cell covers the row's. A miss beside
-                      the button stays in the cell instead of opening the issue. */}
+                      shadow - the opaque cell covers the row's. The row's own
+                      shadow spills just outside it and runs on to the far end
+                      of the row, so ::before stretches the card colour over it
+                      too (the gap between rows is wider than either shadow).
+                      A miss beside the button stays in the cell instead of
+                      opening the issue. */}
                   {showActions && (
                     <td
                       onClick={(e) => e.stopPropagation()}
-                      className="sticky right-0 z-10 h-14 w-16 min-w-16 cursor-default bg-gray-50 p-0 dark:bg-neutral-950"
+                      className="sticky right-0 z-10 h-14 w-16 min-w-16 cursor-default bg-gray-50 p-0 before:absolute before:inset-x-0 before:-inset-y-1.5 before:bg-gray-50 dark:bg-neutral-950 dark:before:bg-neutral-950"
                     >
                       <div className="absolute inset-0 flex items-center justify-center rounded-r-xl border-l shadow-sm border-neutral-200 bg-white group-hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
                         <IssueActionsMenu
