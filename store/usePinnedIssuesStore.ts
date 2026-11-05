@@ -21,6 +21,10 @@ interface PinnedIssuesActions {
   // Returns true if pinning this issue evicted the oldest pin to stay within the cap
   pinIssue: (issue: PinnedIssue) => boolean;
   unpinIssue: (issue_uuid: string) => void;
+  // Pins are saved copies: bring any of these issues' pins up to date
+  syncPinnedIssues: (
+    issues: (Pick<PinnedIssue, "issue_uuid"> & Partial<PinnedIssue>)[],
+  ) => void;
 }
 
 export const usePinnedIssuesStore = create<
@@ -50,6 +54,35 @@ export const usePinnedIssuesStore = create<
             (p) => p.issue_uuid !== issue_uuid,
           ),
         })),
+
+      syncPinnedIssues: (issues) => {
+        const { pinnedIssues } = get();
+        let changed = false;
+
+        const next = pinnedIssues.map((pin) => {
+          const fresh = issues.find((i) => i.issue_uuid === pin.issue_uuid);
+          if (!fresh) return pin;
+
+          const updated: PinnedIssue = {
+            ...pin,
+            issue_reference_id:
+              fresh.issue_reference_id ?? pin.issue_reference_id,
+            issue_status: fresh.issue_status ?? pin.issue_status,
+            issue_priority: fresh.issue_priority ?? pin.issue_priority,
+            issue_title: fresh.issue_title ?? pin.issue_title,
+            issue_description: fresh.issue_description ?? pin.issue_description,
+          };
+          const isDifferent = (Object.keys(updated) as (keyof PinnedIssue)[]).some(
+            (key) => updated[key] !== pin[key],
+          );
+          if (!isDifferent) return pin;
+
+          changed = true;
+          return updated;
+        });
+
+        if (changed) set({ pinnedIssues: next });
+      },
     }),
     {
       name: "HelpDesk-pinned-issues-store",
