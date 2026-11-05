@@ -150,16 +150,18 @@ export const RefreshButton = ({
 export const MoreActionsMenu = ({
   items,
   className = "",
+  ariaLabel = "More actions",
 }: {
   items: ActionMenuItem[];
   className?: string;
+  ariaLabel?: string;
 }) => {
   if (items.length === 0) return null;
 
   return (
     <div className={className}>
       <ActionMenu
-        ariaLabel="More actions"
+        ariaLabel={ariaLabel}
         align="right"
         trigger={<MoreHorizontal className="h-4 w-4" />}
         triggerClassName={(isOpen) =>
