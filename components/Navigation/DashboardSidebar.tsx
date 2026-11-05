@@ -1,6 +1,5 @@
 "use client";
 import {
-  ChevronLeft,
   Keyboard,
   CircleQuestionMark,
   HousePlug,
@@ -181,7 +180,7 @@ const DashboardSidebar = () => {
           </div>
         </nav>
 
-        {/* The back button */}
+        {/* The Apps Hub and the user manual (Back lives in the top bar) */}
         <div className="w-full shrink-0 px-2">
           <div className="flex w-full flex-col items-center justify-center gap-1.5">
             {/* The Apps Hub (NEXT_PUBLIC_HUB_URL) - a plain <a>, since it's outside basePath */}
@@ -193,13 +192,6 @@ const DashboardSidebar = () => {
                 label="Apps Hub"
               />
             )}
-            {/* Back */}
-            <SidebarIconButton
-              onClick={() => router.back()}
-              icon={<ChevronLeft className="h-5 w-5" />}
-              label="Back"
-              tooltip="Back · Ctrl + ←"
-            />
             <SidebarIconLink
               href="/manual"
               openInNewTab={true}
@@ -215,7 +207,7 @@ const DashboardSidebar = () => {
 
 // ─── Small helpers ────────────────────────────────────────────────────────────
 
-// Round icon-only buttons used by the rail's bottom group (Hub, Back, user manual)
+// Round icon-only links used by the rail's bottom group (Hub, user manual)
 const ICON_BUTTON_CLASSES = `rounded-full p-2 text-neutral-600 transition-colors hover:bg-neutral-200 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 ${FOCUS_RING_CLASSES}`;
 
 // Shows the tooltip on hover and keyboard focus, at the trigger's right-edge
@@ -332,41 +324,6 @@ const RailItem = ({
           message={tooltip}
           showKeyboardIcon={!!item.shortcut}
         />
-      )}
-    </>
-  );
-};
-
-type SidebarIconButtonProps = {
-  onClick: () => void;
-  icon: React.ReactNode;
-  label: string;
-  tooltip: string;
-};
-
-// Round icon-only button with a rail tooltip showing its shortcut
-const SidebarIconButton = ({
-  onClick,
-  icon,
-  label,
-  tooltip,
-}: SidebarIconButtonProps) => {
-  const { coords, handlers } = useRailTooltip();
-
-  return (
-    <>
-      <button
-        type="button"
-        onClick={onClick}
-        aria-label={label}
-        {...handlers}
-        className={ICON_BUTTON_CLASSES}
-      >
-        {icon}
-      </button>
-
-      {coords && (
-        <RailTooltip coords={coords} message={tooltip} showKeyboardIcon />
       )}
     </>
   );
