@@ -8,6 +8,7 @@ import { dateFormatter } from "@/lib/assets";
 import { AssignedAgentFormatter } from "./AssignedAgentFormatter";
 import { useRouter } from "next/navigation";
 import IssuePriorityFormatter from "./IssuePriorityFormatter";
+import { issueFlagColors } from "@/lib/indicatorStyles";
 import RelativeTimeBadge from "./RelativeTimeBadge";
 import { GitMerge, Paperclip, UndoDot, UsersRound } from "lucide-react";
 import { ResolutionTimePill } from "./ResolutionTimePill";
@@ -136,19 +137,19 @@ const TableViewData = ({ currentIssues }: TableViewDataProps) => {
                         {Number(issueData.reopened_count) > 0 && (
                           <UndoDot
                             aria-label="Reopened issue"
-                            className="h-3.5 w-3.5 text-fuchsia-600 dark:text-fuchsia-400"
+                            className={`h-3.5 w-3.5 ${issueFlagColors.reopened}`}
                           />
                         )}
                         {Number(issueData.escalated_count) > 0 && (
                           <GitMerge
                             aria-label="Escalated issue"
-                            className="h-3.5 w-3.5 text-red-600 dark:text-red-400"
+                            className={`h-3.5 w-3.5 ${issueFlagColors.escalated}`}
                           />
                         )}
                         {Number(issueData.collaborators_count) > 0 && (
                           <UsersRound
                             aria-label="Collaborated issue"
-                            className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400"
+                            className={`h-3.5 w-3.5 ${issueFlagColors.collaborated}`}
                           />
                         )}
                         <PinButton

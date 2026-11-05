@@ -1,18 +1,10 @@
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import { PriorityBreakdown } from "@/lib/assets";
-import {
-  ArrowDown,
-  ArrowUp,
-  LucideIcon,
-  MoveHorizontal,
-  Zap,
-} from "lucide-react";
+import { indicatorMuted, priorityIndicators } from "@/lib/indicatorStyles";
 
 interface PriorityObject {
   label: string;
   count: number;
-  icon: LucideIcon;
-  text: string;
 }
 
 type PriorityCountsProps = {
@@ -28,26 +20,18 @@ const PriorityCounts = ({
     {
       label: "Low",
       count: priorityCounts.low,
-      icon: ArrowDown,
-      text: "text-slate-700 dark:text-slate-400",
     },
     {
       label: "Medium",
       count: priorityCounts.medium,
-      icon: MoveHorizontal,
-      text: "text-sky-700 dark:text-sky-400",
     },
     {
       label: "High",
       count: priorityCounts.high,
-      icon: ArrowUp,
-      text: "text-violet-700 dark:text-violet-400",
     },
     {
       label: "Critical",
       count: priorityCounts.critical,
-      icon: Zap,
-      text: "text-rose-700 dark:text-rose-400",
     },
   ];
 
@@ -64,18 +48,23 @@ const PriorityCounts = ({
         </>
       ) : (
         <>
-          {PriorityCountsArray.map(({ label, count, icon: Icon, text }) => (
-            <div
-              key={label}
-              title={`${label} priority`}
-              className="flex items-center gap-1"
-            >
-              <Icon className={`h-3 w-3 shrink-0 ${text}`} strokeWidth={2} />
-              <span className={`text-xs font-medium tabular-nums ${text}`}>
-                {count > 500 ? "500+" : count}
-              </span>
-            </div>
-          ))}
+          {PriorityCountsArray.map(({ label, count }) => {
+            const { icon: Icon, color } = priorityIndicators[label];
+            return (
+              <div
+                key={label}
+                title={`${label} priority`}
+                className="flex items-center gap-1"
+              >
+                <Icon className={`h-3 w-3 shrink-0 ${color}`} strokeWidth={2} />
+                <span
+                  className={`text-xs font-medium tabular-nums ${indicatorMuted}`}
+                >
+                  {count > 500 ? "500+" : count}
+                </span>
+              </div>
+            );
+          })}
         </>
       )}
     </div>
