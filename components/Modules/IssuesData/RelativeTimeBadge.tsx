@@ -2,6 +2,7 @@
 "use client";
 import { Clock } from "lucide-react";
 import { useMinuteClock } from "@/hooks/useMinuteClock";
+import { indicatorAged, indicatorMuted } from "@/lib/indicatorStyles";
 
 // --- RELATIVE TIME HELPER ---
 // Built once - Intl formatters are relatively expensive to construct
@@ -52,9 +53,11 @@ const getRelativeTimeInfo = (dateString: string | number, now: number) => {
   return { label, isUrgent, exactDate: exactDateFormat.format(pastDate) };
 };
 
+const timeLabel = "inline-flex w-fit items-center gap-1.5 text-xs font-medium";
+
 type RelativeTimeBadgeProps = {
   createdAt: string | number;
-  status?: string | number; // NEW: Accept the issue status
+  status?: string | number;
 };
 
 const RelativeTimeBadge = ({
@@ -66,8 +69,8 @@ const RelativeTimeBadge = ({
 
   if (now === null) {
     return (
-      <div className="inline-flex w-fit items-center gap-1.5 rounded-full bg-linear-to-br from-neutral-100 via-zinc-50 to-gray-200 px-2.5 py-1 text-xs font-semibold tracking-wide text-neutral-900 transition-colors sm:text-[11px] dark:from-neutral-950/50 dark:via-zinc-900/20 dark:to-gray-900/40 dark:text-neutral-200">
-        <Clock size={12} className="text-neutral-900 dark:text-neutral-200" />
+      <div className={`${timeLabel} ${indicatorMuted}`}>
+        <Clock size={12} />
         <span>Loading some time...</span>
       </div>
     );
@@ -75,35 +78,21 @@ const RelativeTimeBadge = ({
 
   const { label, isUrgent, exactDate } = getRelativeTimeInfo(createdAt, now);
 
-  // NEW: Determine if the issue is past the open stage
+  // Is the issue past the open stage?
   const statusToString = status.toString().toLowerCase();
   const isCompleted =
     statusToString !== "open" && statusToString !== "in progress";
 
-  // NEW: Theme mapping based on hierarchy (Completed -> Urgent -> Standard)
-  let colorClasses = "";
-  let iconClasses = "";
-
-  if (isCompleted) {
-    colorClasses =
-      "bg-linear-to-br from-teal-100 via-emerald-50 to-green-200 text-teal-900 dark:from-teal-950/50 dark:via-emerald-900/20 dark:to-green-900/40 dark:text-teal-200";
-    iconClasses = "text-teal-900 dark:text-teal-200";
-  } else if (isUrgent) {
-    colorClasses =
-      "bg-linear-to-br from-amber-100 via-orange-50 to-red-200 text-red-900 dark:from-amber-900/40 dark:via-orange-900/20 dark:to-red-800/40 dark:text-red-300";
-    iconClasses = "text-red-900 dark:text-red-300";
-  } else {
-    colorClasses =
-      "bg-linear-to-br from-violet-100 via-purple-50 to-fuchsia-200 text-violet-900 dark:from-violet-950/50 dark:via-purple-900/20 dark:to-pink-900/40 dark:text-violet-200";
-    iconClasses = "text-violet-900 dark:text-violet-200";
-  }
+  // Only an unresolved issue that has aged stands out
+  const colorClasses =
+    !isCompleted && isUrgent ? indicatorAged : indicatorMuted;
 
   return (
     <div
       title={`Submitted ${exactDate}`}
-      className={`inline-flex w-fit items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold tracking-wide transition-colors ${colorClasses}`}
+      className={`${timeLabel} ${colorClasses}`}
     >
-      <Clock size={12} className={iconClasses} />
+      <Clock size={12} />
       Submitted {label}
     </div>
   );
