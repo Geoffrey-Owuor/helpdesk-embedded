@@ -18,6 +18,11 @@ import {
 export const indicatorChip =
   "bg-neutral-100 text-neutral-700 dark:bg-white/10 dark:text-neutral-300";
 
+// Added to a chip that opens a picker. The trigger button needs the `group`
+// class and aria-expanded.
+export const indicatorChipPicker =
+  "transition-colors group-hover:bg-neutral-200 group-aria-expanded:bg-neutral-200 dark:group-hover:bg-white/15 dark:group-aria-expanded:bg-white/15";
+
 // The round icon holder on stat cards
 export const indicatorCircle =
   "flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 dark:bg-neutral-900 dark:text-neutral-400";

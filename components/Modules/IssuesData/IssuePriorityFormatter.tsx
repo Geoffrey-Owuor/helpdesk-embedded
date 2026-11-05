@@ -1,6 +1,8 @@
+import { ReactNode } from "react";
 import { IssueValueTypes } from "@/lib/assets";
 import {
   indicatorChip,
+  indicatorChipPicker,
   priorityIndicators,
   unknownPriorityIndicator,
 } from "@/lib/indicatorStyles";
@@ -8,11 +10,14 @@ import {
 interface IssuePriorityProps {
   priority: IssueValueTypes;
   showText?: boolean;
+  // Shown inside the chip after the label - the chevron when it opens a picker
+  trailing?: ReactNode;
 }
 
 const IssuePriorityFormatter = ({
   priority,
   showText = true,
+  trailing,
 }: IssuePriorityProps) => {
   const { icon: Icon, color } =
     priorityIndicators[priority] ?? unknownPriorityIndicator;
@@ -33,10 +38,11 @@ const IssuePriorityFormatter = ({
 
   return (
     <div
-      className={`inline-flex w-fit items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-semibold ${indicatorChip}`}
+      className={`inline-flex w-fit items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-semibold ${indicatorChip} ${trailing ? indicatorChipPicker : ""}`}
     >
       <Icon size={12} className={`shrink-0 ${color}`} />
       <span className="truncate">{priority}</span>
+      {trailing}
     </div>
   );
 };

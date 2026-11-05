@@ -1,5 +1,10 @@
 "use client";
-import { ChevronDown, LucideIcon, MoreHorizontal, RotateCcw } from "lucide-react";
+import {
+  ChevronDown,
+  LucideIcon,
+  MoreHorizontal,
+  RotateCcw,
+} from "lucide-react";
 import { IssueDetail } from "@/queries/fetchIssue";
 import IssueStatusFormatter from "../../IssuesData/IssueStatusFormatter";
 import IssuePriorityFormatter from "../../IssuesData/IssuePriorityFormatter";
@@ -47,10 +52,14 @@ const pickerItems = (
     checked: option.value === currentValue,
   }));
 
-const badgeTriggerClass = (isOpen: boolean) =>
-  `inline-flex items-center gap-0.5 rounded-xl p-0.5 pr-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-900 ${
-    isOpen ? "bg-neutral-100 ring-2 ring-blue-500/20 dark:bg-neutral-900" : ""
-  }`;
+// The chip is the whole control: it darkens on hover and while open. The
+// transparent ::after grows the tap target without changing how it looks.
+const badgeTriggerClass = () =>
+  "group relative inline-flex rounded-lg outline-none after:absolute after:-inset-x-1 after:-inset-y-2 focus-visible:ring-2 focus-visible:ring-neutral-400";
+
+const badgeChevron = (
+  <ChevronDown className="-mr-0.5 h-3 w-3 shrink-0 text-neutral-500 transition-transform group-aria-expanded:rotate-180 dark:text-neutral-400" />
+);
 
 // The issue's status badge - a picker for those who can change it
 export const StatusBadge = ({
@@ -64,18 +73,17 @@ export const StatusBadge = ({
   // the right edge, so the menu doesn't spill off the page
   align?: "left" | "right";
 }) => {
-  const badge = <IssueStatusFormatter status={issue.issue_status} />;
-  if (!picker) return badge;
+  if (!picker) return <IssueStatusFormatter status={issue.issue_status} />;
 
   return (
     <ActionMenu
       ariaLabel="Change status"
       heading="Change status"
       trigger={
-        <>
-          {badge}
-          <ChevronDown className="h-3.5 w-3.5" />
-        </>
+        <IssueStatusFormatter
+          status={issue.issue_status}
+          trailing={badgeChevron}
+        />
       }
       triggerClassName={badgeTriggerClass}
       items={pickerItems(picker, issue.issue_status)}
@@ -96,18 +104,18 @@ export const PriorityBadge = ({
   // the right edge, so the menu doesn't spill off the page
   align?: "left" | "right";
 }) => {
-  const badge = <IssuePriorityFormatter priority={issue.issue_priority} />;
-  if (!picker) return badge;
+  if (!picker)
+    return <IssuePriorityFormatter priority={issue.issue_priority} />;
 
   return (
     <ActionMenu
       ariaLabel="Change priority"
       heading="Change priority"
       trigger={
-        <>
-          {badge}
-          <ChevronDown className="h-3.5 w-3.5" />
-        </>
+        <IssuePriorityFormatter
+          priority={issue.issue_priority}
+          trailing={badgeChevron}
+        />
       }
       triggerClassName={badgeTriggerClass}
       items={pickerItems(picker, issue.issue_priority)}
