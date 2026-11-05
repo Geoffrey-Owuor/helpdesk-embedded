@@ -10,6 +10,7 @@ import {
   BookmarkCheck,
   Activity,
 } from "lucide-react";
+import { indicatorCircle } from "@/lib/indicatorStyles";
 import { useUser } from "@/contexts/UserContext";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
@@ -38,7 +39,8 @@ const IssuesCards = () => {
       superAdminFilter,
       committedFilters,
     ],
-    queryFn: () => fetchIssueCards(committedFilters, { agentAdminFilter, superAdminFilter }),
+    queryFn: () =>
+      fetchIssueCards(committedFilters, { agentAdminFilter, superAdminFilter }),
   });
 
   // Call srolling top hook
@@ -52,43 +54,30 @@ const IssuesCards = () => {
     cardCounts.closed.total;
 
   // Configuration for the cards to keep the JSX clean
-  // We map specific colors to each status to make them distinct but cohesive
   const statItems = [
     {
       label: "Open",
       count: cardCounts.open.total,
       breakdown: cardCounts.open,
       icon: Clock,
-      color: "text-amber-600 dark:text-amber-500",
-      bgColor: "bg-amber-100 dark:bg-amber-900/30",
-      borderColor: "border-amber-200 dark:border-amber-800/50",
     },
     {
       label: "In Progress",
       count: cardCounts.inProgress.total,
       breakdown: cardCounts.inProgress,
       icon: Activity,
-      color: "text-indigo-600 dark:text-indigo-500",
-      bgColor: "bg-indigo-100 dark:bg-indigo-900/30",
-      borderColor: "border-indigo-200 dark:border-indigo-800/50",
     },
     {
       label: "Resolved",
       count: cardCounts.resolved.total,
       breakdown: cardCounts.resolved,
       icon: BookmarkCheck,
-      color: "text-emerald-600 dark:text-emerald-500",
-      bgColor: "bg-emerald-100 dark:bg-emerald-900/30",
-      borderColor: "border-emerald-200 dark:border-emerald-800/50",
     },
     {
       label: "Closed",
       count: cardCounts.closed.total,
       breakdown: cardCounts.closed,
       icon: CheckCircle2,
-      color: "text-blue-600 dark:text-blue-500",
-      bgColor: "bg-blue-100 dark:bg-blue-900/30",
-      borderColor: "border-blue-200 dark:border-blue-800/50",
     },
   ];
 
@@ -158,10 +147,7 @@ const IssuesCards = () => {
                 </h3>
               </div>
 
-              {/* Icon Container with dynamic colors */}
-              <div
-                className={`flex h-12 w-12 items-center justify-center rounded-full border ${item.bgColor} ${item.borderColor} ${item.color}`}
-              >
+              <div className={indicatorCircle}>
                 <item.icon className="h-6 w-6" strokeWidth={2} />
               </div>
             </div>
