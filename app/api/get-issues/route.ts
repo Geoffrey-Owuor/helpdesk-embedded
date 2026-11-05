@@ -24,6 +24,12 @@ export const GET = withAuth(async ({ user, request }) => {
   const offset = (page - 1) * pageSize;
 
   try {
+    const { whereSql, params } = buildIssuesFilter(
+      { role, userId, email, department, isSuper, agentAdminFilter, superAdminFilter },
+      filters,
+    );
+
+    // The list's row actions need to know this without a request per row
     const baseQuery = `
       SELECT
         a.issue_uuid, a.issue_submitter_id, a.issue_reference_id,
@@ -36,20 +42,19 @@ export const GET = withAuth(async ({ user, request }) => {
         (SELECT COUNT(*) FROM issue_attachments b WHERE b.issue_id = a.issue_uuid) AS attachments_count,
         (SELECT COUNT(*) FROM issue_reopening c WHERE c.issue_id = a.issue_uuid) AS reopened_count,
         (SELECT COUNT(*) FROM issue_escalation d WHERE d.issue_id = a.issue_uuid) AS escalated_count,
-        (SELECT COUNT(*) FROM issue_collaborators e WHERE e.issue_id = a.issue_uuid) AS collaborators_count
+        (SELECT COUNT(*) FROM issue_collaborators e WHERE e.issue_id = a.issue_uuid) AS collaborators_count,
+        EXISTS (
+          SELECT 1 FROM issue_collaborators f
+          WHERE f.issue_id = a.issue_uuid AND f.collaborator_email = $${params.length + 3}
+        )::int AS viewer_is_collaborator
       FROM issues_table a
     `;
-
-    const { whereSql, params } = buildIssuesFilter(
-      { role, userId, email, department, isSuper, agentAdminFilter, superAdminFilter },
-      filters,
-    );
 
     const rowsQuery = `${baseQuery}${whereSql} ORDER BY a.issue_created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
     const countQuery = `SELECT COUNT(*) AS total FROM issues_table a${whereSql}`;
 
     const [rows, countResult] = await Promise.all([
-      query(rowsQuery, [...params, pageSize, offset]),
+      query(rowsQuery, [...params, pageSize, offset, email]),
       query<{ total: string }>(countQuery, params),
     ]);
 

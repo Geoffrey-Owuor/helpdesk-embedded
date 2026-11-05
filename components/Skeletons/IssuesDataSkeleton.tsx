@@ -5,44 +5,81 @@ const colWidths = {
   ref: "w-24 shrink-0",
   status: "w-24 shrink-0",
   type: "w-26 shrink-0",
+  priority: "w-20 shrink-0",
   submitter: "w-32 shrink-0",
+  time: "w-24 shrink-0",
   date: "w-32 shrink-0",
-  dept: "w-32 shrink-0",
+  subDept: "w-32 shrink-0",
+  targetDept: "w-32 shrink-0",
   agent: "w-32 shrink-0",
   title: "w-50 shrink-0",
   desc: "w-80 shrink-0",
 };
 
-const IssuesDataSkeleton = ({ isTableView }: { isTableView: boolean }) => {
+// Pinned to the scroller's right edge, like the table's actions column
+const stickyActionsClass =
+  "sticky right-0 flex shrink-0 justify-center self-stretch border-l border-neutral-200 w-16 items-center dark:border-neutral-700";
+
+const IssuesDataSkeleton = ({
+  isTableView,
+  // Whether the viewer is likely to have row actions. Regular users rarely do,
+  // and showing the column only for it to vanish would shift the layout.
+  showActions = true,
+}: {
+  isTableView: boolean;
+  showActions?: boolean;
+}) => {
   return (
     <div>
       {isTableView ? (
         /* --- Table View Skeleton --- */
         <div className="w-full overflow-x-auto rounded-xl bg-gray-100/50 p-4 dark:bg-neutral-900/50">
           <div className="min-w-max space-y-2">
-            <div className="flex items-center gap-4 px-4 pb-2">
+            <div className="flex items-center gap-4 pl-4 pb-2">
               {Object.values(colWidths).map((width, i) => (
                 <SkeletonBox key={i} className={`h-3 ${width}`} />
               ))}
+              {showActions && (
+                <div
+                  className={`${stickyActionsClass} bg-neutral-100 dark:bg-neutral-900`}
+                >
+                  <SkeletonBox className="h-3 w-10" />
+                </div>
+              )}
             </div>
 
             {[...Array(5)].map((_, index) => (
               <div
                 key={index}
-                className="flex items-center gap-4 rounded-xl bg-neutral-50 p-4 shadow-sm dark:bg-neutral-800/50"
+                className="flex items-center gap-4 rounded-xl bg-neutral-50 pl-4 shadow-sm dark:bg-neutral-800/50"
               >
-                <SkeletonBox className={`h-5 ${colWidths.ref}`} />
-                <div className={colWidths.status}>
-                  <SkeletonBox className="h-6 w-20 rounded-full" />
+                <div className="flex items-center gap-4 py-4">
+                  <SkeletonBox className={`h-5 ${colWidths.ref}`} />
+                  <div className={colWidths.status}>
+                    <SkeletonBox className="h-6 w-20 rounded-full" />
+                  </div>
+                  <SkeletonBox className={`h-4 ${colWidths.type}`} />
+                  <div className={colWidths.priority}>
+                    <SkeletonBox className="h-6 w-16 rounded-full" />
+                  </div>
+                  <SkeletonBox className={`h-4 ${colWidths.submitter}`} />
+                  <div className={colWidths.time}>
+                    <SkeletonBox className="h-6 w-20 rounded-full" />
+                  </div>
+                  <SkeletonBox className={`h-4 ${colWidths.date}`} />
+                  <SkeletonBox className={`h-4 ${colWidths.subDept}`} />
+                  <SkeletonBox className={`h-4 ${colWidths.targetDept}`} />
+                  <SkeletonBox className={`h-4 ${colWidths.agent}`} />
+                  <SkeletonBox className={`h-5 ${colWidths.title}`} />
+                  <SkeletonBox className={`h-4 ${colWidths.desc}`} />
                 </div>
-                <SkeletonBox className={`h-4 ${colWidths.type}`} />
-                <SkeletonBox className={`h-4 ${colWidths.submitter}`} />
-                <SkeletonBox className={`h-4 ${colWidths.date}`} />
-                <SkeletonBox className={`h-4 ${colWidths.dept}`} />
-                <SkeletonBox className={`h-4 ${colWidths.dept}`} />
-                <SkeletonBox className={`h-4 ${colWidths.agent}`} />
-                <SkeletonBox className={`h-5 ${colWidths.title}`} />
-                <SkeletonBox className={`h-4 ${colWidths.desc}`} />
+                {showActions && (
+                  <div
+                    className={`${stickyActionsClass} rounded-r-xl bg-neutral-50 dark:bg-neutral-800`}
+                  >
+                    <SkeletonBox className="h-8 w-8 rounded-full" />
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -61,7 +98,12 @@ const IssuesDataSkeleton = ({ isTableView }: { isTableView: boolean }) => {
                   <SkeletonBox className="h-4 w-20 rounded" />
                   <SkeletonBox className="h-6 w-6 rounded-full" />
                 </div>
-                <SkeletonBox className="h-6 w-24 rounded-full" />
+                <div className="flex items-center gap-1">
+                  <SkeletonBox className="h-6 w-24 rounded-full" />
+                  {showActions && (
+                    <SkeletonBox className="h-8 w-8 rounded-full" />
+                  )}
+                </div>
               </div>
 
               {/* Body Skeleton */}
