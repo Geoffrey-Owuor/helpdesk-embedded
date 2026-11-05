@@ -21,13 +21,20 @@ import { issueFlagColors } from "@/lib/indicatorStyles";
 import RelativeTimeBadge from "./RelativeTimeBadge";
 import { ResolutionTimePill } from "./ResolutionTimePill";
 import PinButton from "../PinnedIssues/PinButton";
+import {
+  IssueActionHandler,
+  IssueActionsMenu,
+  useIssueMenuItems,
+} from "./IssueListActions";
 
 type CardViewDataProps = {
   currentIssues: Record<string, string | number>[];
+  onAction: IssueActionHandler;
 };
 
-const CardViewData = ({ currentIssues }: CardViewDataProps) => {
+const CardViewData = ({ currentIssues, onAction }: CardViewDataProps) => {
   const router = useRouter();
+  const getMenuItems = useIssueMenuItems(onAction);
 
   if (currentIssues.length === 0) {
     return (
@@ -76,6 +83,10 @@ const CardViewData = ({ currentIssues }: CardViewDataProps) => {
                 }}
               />
               <IssueStatusFormatter status={issueData.issue_status} />
+              <IssueActionsMenu
+                issue={issueData}
+                items={getMenuItems(issueData)}
+              />
             </div>
           </div>
 

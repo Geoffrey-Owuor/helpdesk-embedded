@@ -13,19 +13,32 @@ import RelativeTimeBadge from "./RelativeTimeBadge";
 import { GitMerge, Paperclip, UndoDot, UsersRound } from "lucide-react";
 import { ResolutionTimePill } from "./ResolutionTimePill";
 import PinButton from "../PinnedIssues/PinButton";
+import {
+  IssueActionHandler,
+  IssueActionsMenu,
+  useIssueMenuItems,
+} from "./IssueListActions";
 
 type TableViewDataProps = {
   currentIssues: Record<string, string | number>[];
+  onAction: IssueActionHandler;
 };
 
-const TableViewData = ({ currentIssues }: TableViewDataProps) => {
+const TableViewData = ({ currentIssues, onAction }: TableViewDataProps) => {
   const visibleColumns = useColumnStore((state) => state.visibleColumns);
   const router = useRouter();
+  const getMenuItems = useIssueMenuItems(onAction);
+
+  // No sticky column to give up width to when no row has an action
+  const showActions = currentIssues.some(
+    (issue) => getMenuItems(issue).length > 0,
+  );
 
   return (
-    <div className="w-full rounded-xl border border-neutral-200 bg-gray-50 px-4 py-2 dark:border-neutral-800 dark:bg-neutral-950">
-      {/* Rounded card that doesn't clip: the horizontal scroller sits inside its padding. A rounded scroller forces a clip mask that is recomposited on every page scroll. */}
-      <div className="overflow-x-auto bg-gray-50 dark:bg-neutral-950">
+    <div className="w-full rounded-xl border border-neutral-200 bg-gray-50 py-2 pr-4 pl-3 dark:border-neutral-800 dark:bg-neutral-950">
+      {/* Rounded card that doesn't clip: the horizontal scroller sits inside its padding. A rounded scroller forces a clip mask that is recomposited on every page scroll.
+          The scroller's own left padding keeps the rows' shadow from being cut at its edge. The right side gets none: the sticky actions column has to sit flush with the edge, or scrolled cells would show past it. */}
+      <div className="overflow-x-auto bg-gray-50 pl-1 dark:bg-neutral-950">
         {/* 2. Table: 'border-separate' and 'border-spacing-y-3' create the gap between rows */}
         <table className="min-w-full border-separate border-spacing-y-3 text-left">
           {/* --- HEADER --- */}
@@ -89,6 +102,11 @@ const TableViewData = ({ currentIssues }: TableViewDataProps) => {
               {visibleColumns.desc && (
                 <th className="px-4 pb-2 text-xs font-semibold tracking-wider whitespace-nowrap text-gray-500 uppercase dark:text-gray-400">
                   Description
+                </th>
+              )}
+              {showActions && (
+                <th className="sticky right-0 z-10 border-l border-neutral-200 bg-gray-50 px-3 pb-2 text-center text-xs font-semibold tracking-wider whitespace-nowrap text-gray-500 uppercase dark:border-neutral-800 dark:bg-neutral-950 dark:text-gray-400">
+                  Actions
                 </th>
               )}
             </tr>
@@ -276,6 +294,26 @@ const TableViewData = ({ currentIssues }: TableViewDataProps) => {
                       >
                         {issueData.issue_description}
                       </p>
+                    </td>
+                  )}
+
+                  {/* Actions: the row's colours are translucent in dark mode and
+                      its corner is rounded, so the sticky cell itself takes the
+                      card's opaque colour (hiding what scrolls under it) and an
+                      inner layer paints the row, with its own copy of the row's
+                      shadow - the opaque cell covers the row's. A miss beside
+                      the button stays in the cell instead of opening the issue. */}
+                  {showActions && (
+                    <td
+                      onClick={(e) => e.stopPropagation()}
+                      className="sticky right-0 z-10 h-14 w-16 min-w-16 cursor-default bg-gray-50 p-0 dark:bg-neutral-950"
+                    >
+                      <div className="absolute inset-0 flex items-center justify-center rounded-r-xl border-l shadow-sm border-neutral-200 bg-white group-hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900/50 dark:group-hover:bg-neutral-800/50">
+                        <IssueActionsMenu
+                          issue={issueData}
+                          items={getMenuItems(issueData)}
+                        />
+                      </div>
                     </td>
                   )}
                 </tr>

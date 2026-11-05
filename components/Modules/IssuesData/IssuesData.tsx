@@ -15,9 +15,10 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchIssues } from "@/queries/fetchIssues";
 import { RotateCw } from "lucide-react";
 import PinnedIssuesSection from "../PinnedIssues/PinnedIssuesSection";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSyncPinnedIssues } from "@/hooks/useSyncPinnedIssues";
 import { PinnedIssue } from "@/store/usePinnedIssuesStore";
+import { ActiveIssueAction, IssueListActionModals } from "./IssueListActions";
 
 const IssuesData = () => {
   const { role, department, isSuper } = useUser();
@@ -57,6 +58,11 @@ const IssuesData = () => {
 
   const rows = data?.rows ?? [];
   const total = data?.total ?? 0;
+
+  // The row action being carried out, whose modal sits outside the rows
+  const [activeAction, setActiveAction] = useState<ActiveIssueAction | null>(
+    null,
+  );
 
   // Rows hold every field a pin does, under the list's looser row type
   useSyncPinnedIssues(data?.rows as unknown as PinnedIssue[] | undefined);
@@ -134,14 +140,22 @@ const IssuesData = () => {
       {/* Pinned issues, shown ahead of the general fetched issues */}
       <PinnedIssuesSection />
 
+      <IssueListActionModals
+        active={activeAction}
+        onClose={() => setActiveAction(null)}
+      />
+
       {loading ? (
-        <IssuesDataSkeleton isTableView={isTableView} />
+        <IssuesDataSkeleton
+          isTableView={isTableView}
+          showActions={role !== "user" || isSuper}
+        />
       ) : (
         <div>
           {isTableView ? (
-            <TableViewData currentIssues={rows} />
+            <TableViewData currentIssues={rows} onAction={setActiveAction} />
           ) : (
-            <CardViewData currentIssues={rows} />
+            <CardViewData currentIssues={rows} onAction={setActiveAction} />
           )}
 
           {/* Our pagination ui */}
