@@ -45,8 +45,6 @@ const AgentWorkloadChart = ({
       title="Agent Workload"
       subtitle="Issues per agent, including ones they collaborate on"
       icon={Headset}
-      iconColor="text-emerald-600 dark:text-emerald-400"
-      iconBgColor="bg-emerald-50 dark:bg-emerald-900/20"
       legend={series.map(({ label, color }) => ({ label, color }))}
       table={{
         columns: ["Agent", ...series.map(({ label }) => label), "Total"],

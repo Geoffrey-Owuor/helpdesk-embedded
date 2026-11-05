@@ -52,8 +52,6 @@ const SlaTrendChart = ({
       title="SLA Trend"
       subtitle="Within SLA by month raised"
       icon={CalendarClock}
-      iconColor="text-blue-600 dark:text-blue-400"
-      iconBgColor="bg-blue-50 dark:bg-blue-900/20"
       legend={series.map(({ label, color }) => ({ label, color }))}
       table={{
         columns: ["Month", "Within SLA", "Target", "Met / judged"],

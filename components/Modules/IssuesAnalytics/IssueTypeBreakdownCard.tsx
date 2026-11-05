@@ -12,8 +12,6 @@ const IssueTypeBreakdownCard = ({
   <BreakdownListCard
     title="Issue Types Breakdown"
     icon={Tags}
-    iconColor="text-blue-600 dark:text-blue-400"
-    iconBgColor="bg-blue-50 dark:bg-blue-900/20"
     entries={issueTypeBreakdown.map(({ issueType, count }) => ({
       label: issueType,
       count,
