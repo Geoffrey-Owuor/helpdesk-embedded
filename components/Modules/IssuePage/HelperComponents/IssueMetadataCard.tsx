@@ -2,6 +2,7 @@ import { FileText } from "lucide-react";
 import { IssueDetail } from "@/queries/fetchIssue";
 import { dateFormatter } from "@/lib/assets";
 import { closeReasonLabel } from "@/lib/issues/closeReasons";
+import { indicatorIconCircle } from "@/lib/indicatorStyles";
 
 // The issue's update/resolve/close dates, and why it closed if it wasn't resolved
 export const IssueMetadataCard = ({ issue }: { issue: IssueDetail }) => {
@@ -20,8 +21,8 @@ export const IssueMetadataCard = ({ issue }: { issue: IssueDetail }) => {
       {/* Card header */}
       <div className="flex items-center justify-between p-6">
         <div className="inline-flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/20">
-            <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+          <div className={indicatorIconCircle}>
+            <FileText className="h-4 w-4" />
           </div>
 
           <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">

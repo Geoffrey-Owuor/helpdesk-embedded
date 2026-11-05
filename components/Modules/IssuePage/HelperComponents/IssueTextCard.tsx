@@ -1,5 +1,6 @@
 import { LucideIcon } from "lucide-react";
 import { ReactNode } from "react";
+import { indicatorIconCircle } from "@/lib/indicatorStyles";
 
 // A titled card holding a block of free text (an issue's description or
 // remarks), with an optional action such as an edit button in its header
@@ -19,7 +20,7 @@ export const IssueTextCard = ({
   <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-xs dark:border-neutral-800 dark:bg-neutral-950">
     <div className="mb-4 flex items-center justify-between">
       <h2 className="flex items-center gap-2 text-lg font-semibold text-neutral-900 dark:text-white">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
+        <div className={indicatorIconCircle}>
           <Icon className="h-4 w-4" />
         </div>
         {title}
