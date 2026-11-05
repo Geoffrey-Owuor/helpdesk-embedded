@@ -12,8 +12,6 @@ const DepartmentTimingCard = ({
   <TimingBreakdownCard
     title="Departments TAT"
     icon={Building2}
-    iconColor="text-purple-600 dark:text-purple-400"
-    iconBgColor="bg-purple-50 dark:bg-purple-900/20"
     entries={departmentBreakdown.map(
       ({ department, avgResolutionSeconds, avgStaleSeconds }) => ({
         label: department,

@@ -38,8 +38,6 @@ const BacklogAgeingChart = ({
       title="Backlog Ageing"
       subtitle="Open and in progress issues by age"
       icon={Hourglass}
-      iconColor="text-orange-600 dark:text-orange-400"
-      iconBgColor="bg-orange-50 dark:bg-orange-900/20"
       table={{
         columns: ["Age", "Issues"],
         rows: data.map((row) => [row.label, row.count]),

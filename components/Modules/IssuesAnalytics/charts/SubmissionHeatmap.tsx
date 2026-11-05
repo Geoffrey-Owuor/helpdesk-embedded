@@ -96,8 +96,6 @@ const SubmissionHeatmap = ({
       title="When Issues Come In"
       subtitle="Issues raised by weekday and hour (Nairobi time)"
       icon={CalendarRange}
-      iconColor="text-sky-600 dark:text-sky-400"
-      iconBgColor="bg-sky-50 dark:bg-sky-900/20"
       table={{
         columns: ["Day", ...HOURS.map(formatHour), "Total"],
         rows: WEEKDAYS_LONG.map((day, i) => [day, ...counts[i], dayTotals[i]]),

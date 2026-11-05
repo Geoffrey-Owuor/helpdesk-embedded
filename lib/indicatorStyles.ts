@@ -20,6 +20,10 @@ export const indicatorChip =
 export const indicatorCircle =
   "flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 dark:bg-neutral-900 dark:text-neutral-400";
 
+// The smaller icon holder on card headers. Add spacing such as mt-0.5 beside it.
+export const indicatorIconCircle =
+  "flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 dark:bg-neutral-900 dark:text-neutral-400";
+
 // Secondary text and icons: counts, normal time labels, low-key flags
 export const indicatorMuted = "text-neutral-500 dark:text-neutral-400";
 

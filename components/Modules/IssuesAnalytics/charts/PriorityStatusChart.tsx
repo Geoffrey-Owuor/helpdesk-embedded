@@ -58,8 +58,6 @@ const PriorityStatusChart = ({
       title="Priority Breakdown"
       subtitle="Issues per priority, by status"
       icon={Gauge}
-      iconColor="text-violet-600 dark:text-violet-400"
-      iconBgColor="bg-violet-50 dark:bg-violet-900/20"
       legend={statuses.map(({ label, color }) => ({ label, color }))}
       table={{
         columns: ["Priority", ...statuses.map(({ label }) => label), "Total"],

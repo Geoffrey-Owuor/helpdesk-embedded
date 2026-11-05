@@ -12,8 +12,6 @@ const AgentTimingCard = ({
   <TimingBreakdownCard
     title="Agents TAT"
     icon={Headset}
-    iconColor="text-indigo-600 dark:text-indigo-400"
-    iconBgColor="bg-indigo-50 dark:bg-indigo-900/20"
     entries={agentBreakdown.map(
       ({ agentName, avgResolutionSeconds, avgStaleSeconds }) => ({
         label: agentName,

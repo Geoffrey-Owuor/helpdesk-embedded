@@ -12,8 +12,6 @@ const DepartmentBreakdownCard = ({
   <BreakdownListCard
     title="Issues per Department"
     icon={Building2}
-    iconColor="text-purple-600 dark:text-purple-400"
-    iconBgColor="bg-purple-50 dark:bg-purple-900/20"
     entries={departmentBreakdown.map(({ department, count }) => ({
       label: department,
       count,
