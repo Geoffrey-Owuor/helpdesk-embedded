@@ -5,10 +5,6 @@ import {
   Activity,
   Flag,
   Lightbulb,
-  ArrowDown,
-  MoveHorizontal,
-  ArrowUp,
-  Zap,
   Clock,
   CircleHelp,
   CircleGauge,
@@ -17,6 +13,10 @@ import IssueStatusFormatter from "../Modules/IssuesData/IssueStatusFormatter";
 import IssuePriorityFormatter from "../Modules/IssuesData/IssuePriorityFormatter";
 import RelativeTimeBadge from "../Modules/IssuesData/RelativeTimeBadge";
 import { useEffect, useState } from "react";
+import {
+  priorityIndicators,
+  unknownPriorityIndicator,
+} from "@/lib/indicatorStyles";
 
 // Constants for mapping over our legend data
 
@@ -55,7 +55,7 @@ const ISSUE_STATUSES = [
     status: "unknown",
     title: "Unknown (Fallback)",
     description:
-      "The default fallback color used when an unrecognized status text is provided.",
+      "The fallback, a hollow dot, used when an unrecognized status text is provided.",
   },
 ];
 
@@ -83,36 +83,16 @@ const ISSUE_PRIORITIES = [
   {
     priority: "unassigned",
     description:
-      "The default fallback color used when an unrecognized priority text is provided.",
+      "The fallback icon used when an unrecognized priority text is provided.",
   },
 ];
 
 const DASHBOARD_CARD_ICONS = [
-  {
-    priority: "Critical",
-    icon: Zap,
-    colorClass: "text-rose-700 dark:text-rose-400",
-  },
-  {
-    priority: "High",
-    icon: ArrowUp,
-    colorClass: "text-violet-700 dark:text-violet-400",
-  },
-  {
-    priority: "Medium",
-    icon: MoveHorizontal,
-    colorClass: "text-sky-700 dark:text-sky-400",
-  },
-  {
-    priority: "Low",
-    icon: ArrowDown,
-    colorClass: "text-slate-700 dark:text-slate-400",
-  },
-  {
-    priority: "Unknown",
-    icon: CircleHelp,
-    colorClass: "text-gray-700 dark:text-gray-300",
-  },
+  { priority: "Critical", ...priorityIndicators.Critical },
+  { priority: "High", ...priorityIndicators.High },
+  { priority: "Medium", ...priorityIndicators.Medium },
+  { priority: "Low", ...priorityIndicators.Low },
+  { priority: "Unknown", ...unknownPriorityIndicator, icon: CircleHelp },
 ];
 
 const ColorCodes = () => {
@@ -149,8 +129,9 @@ const ColorCodes = () => {
           Color Codes & Visuals
         </h2>
         <p className="mt-3 max-w-xl text-base text-neutral-500 dark:text-neutral-400">
-          Understand the visual indicators used across HelpDesk to quickly
-          identify the state, urgency, and category of your issues at a glance.
+          Understand the visual indicators used across HelpDesk. Colour is
+          reserved for what needs attention, so anything that stands out is
+          worth a look.
         </p>
       </div>
 
@@ -158,7 +139,7 @@ const ColorCodes = () => {
         {/* 1. Issue Statuses Section */}
         <section>
           <h3 className="mb-6 flex items-center gap-2 text-xl font-semibold text-neutral-900 dark:text-white">
-            <Activity className="h-5 w-5 text-blue-500" />
+            <Activity className="h-5 w-5 text-neutral-500" />
             Issue Statuses
           </h3>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -185,7 +166,7 @@ const ColorCodes = () => {
         {/* 2. Issue Priorities Section */}
         <section>
           <h3 className="mb-6 flex items-center gap-2 text-xl font-semibold text-neutral-900 dark:text-white">
-            <Flag className="h-5 w-5 text-orange-500" />
+            <Flag className="h-5 w-5 text-neutral-500" />
             Issue Priorities
           </h3>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
@@ -235,14 +216,13 @@ const ColorCodes = () => {
         <section>
           <div className="mb-6">
             <h3 className="mb-2 flex items-center gap-2 text-xl font-semibold text-neutral-900 dark:text-white">
-              <CircleGauge className="h-5 w-5 text-blue-500" />
+              <CircleGauge className="h-5 w-5 text-neutral-500" />
               Cards Priority Icons
             </h3>
             <p className="text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
-              For priority icons in dashboard cards, we strip away the
-              backgrounds, borders, and text labels to keep the UI clean. We
-              rely purely on the icon shape and its specific color mapping to
-              indicate priority.
+              Dashboard cards show priority as an icon alone to keep the UI
+              clean. The shape tells you the priority, and only High and
+              Critical use colour.
             </p>
           </div>
 
@@ -254,8 +234,7 @@ const ColorCodes = () => {
                   key={index}
                   className="flex flex-col items-center justify-center gap-3 rounded-xl border border-neutral-200 bg-white py-6 transition-all hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700"
                 >
-                  {/* Bare icon using ONLY the text color classes */}
-                  <Icon className={`h-8 w-8 ${item.colorClass}`} />
+                  <Icon className={`h-8 w-8 ${item.color}`} />
 
                   <span className="text-xs font-semibold tracking-wide text-neutral-500 uppercase dark:text-neutral-400">
                     {item.priority}
@@ -270,14 +249,13 @@ const ColorCodes = () => {
         <section>
           <div className="mb-6">
             <h3 className="mb-2 flex items-center gap-2 text-xl font-semibold text-neutral-900 dark:text-white">
-              <Clock className="h-5 w-5 text-indigo-500" />
+              <Clock className="h-5 w-5 text-neutral-500" />
               Submission Time Badges
             </h3>
             <p className="text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
-              Time badges track how long an issue has been pending (not
-              resolved). They automatically shift their color palette to
-              highlight aging issues that need immediate attention, unless the
-              issue is already resolved.
+              Time labels show how long ago an issue was submitted. They stay
+              grey unless an unresolved issue has aged, which turns the label
+              amber so it stays on your radar.
             </p>
           </div>
 
@@ -303,8 +281,8 @@ const ColorCodes = () => {
                 Recent Unresolved Issues
               </h4>
               <p className="text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
-                Unresolved issues submitted under 7 days ago use a cool violet
-                theme, indicating they are still within the 7 day window.
+                Unresolved issues submitted under 7 days ago stay grey, because
+                they are still within the 7 day window.
               </p>
             </div>
 
@@ -328,9 +306,8 @@ const ColorCodes = () => {
                 Aging Unresolved Issues
               </h4>
               <p className="text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
-                Once an unresolved issue hits 7 days, the badge shifts to a warm
-                red/amber theme to highlight urgency and prevent it from
-                slipping through the cracks.
+                Once an unresolved issue hits 7 days, the label turns amber to
+                flag it for attention.
               </p>
             </div>
 
@@ -355,8 +332,7 @@ const ColorCodes = () => {
                 Processed Issues
               </h4>
               <p className="text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
-                If an issue is resolved or closed, it adopts a calm teal/emerald
-                theme, suppressing the urgency warning regardless of how old the
+                A resolved or closed issue stays grey, however old the
                 submission is.
               </p>
             </div>
