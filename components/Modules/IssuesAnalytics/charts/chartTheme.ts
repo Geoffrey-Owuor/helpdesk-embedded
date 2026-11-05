@@ -11,6 +11,7 @@ export const chartColors = {
   statusGood: "var(--chart-status-good)",
   statusCritical: "var(--chart-status-critical)",
   target: "var(--chart-target)",
+  neutral: "var(--chart-neutral)",
   series: [
     "var(--chart-series-1)",
     "var(--chart-series-2)",
