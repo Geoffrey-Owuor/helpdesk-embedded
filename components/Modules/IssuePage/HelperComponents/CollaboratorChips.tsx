@@ -28,7 +28,7 @@ export const CollaboratorChips = ({
             title={`${collaborator.collaborator_email} - invited by ${collaborator.inviter_name}`}
             className={`inline-flex items-center gap-1.5 rounded-full py-1 pr-3 pl-1 ${indicatorChip}`}
           >
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-neutral-200 text-[10px] font-bold text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-neutral-200 text-[10px] font-bold text-neutral-700 dark:bg-neutral-700 dark:text-neutral-200">
               {collaborator.collaborator_name.charAt(0).toUpperCase()}
             </span>
             <span className="max-w-32 truncate text-xs font-semibold">

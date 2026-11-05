@@ -53,7 +53,8 @@ const getRelativeTimeInfo = (dateString: string | number, now: number) => {
   return { label, isUrgent, exactDate: exactDateFormat.format(pastDate) };
 };
 
-const timeLabel = "inline-flex w-fit items-center gap-1.5 text-xs font-medium";
+const timeLabel =
+  "inline-flex w-fit items-center gap-1.5 text-[13px] font-medium";
 
 type RelativeTimeBadgeProps = {
   createdAt: string | number;
@@ -92,7 +93,7 @@ const RelativeTimeBadge = ({
       title={`Submitted ${exactDate}`}
       className={`${timeLabel} ${colorClasses}`}
     >
-      <Clock size={12} />
+      <Clock size={13} />
       Submitted {label}
     </div>
   );
