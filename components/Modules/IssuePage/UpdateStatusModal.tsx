@@ -12,6 +12,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useOverlayStore } from "@/store/useOverlayStore";
+import { usePinnedIssuesStore } from "@/store/usePinnedIssuesStore";
 import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import { IssueDetail } from "@/queries/fetchIssue";
 import { invalidateIssuesCaches } from "@/utils/invalidateIssuesCaches";
@@ -92,6 +93,11 @@ const UpdateStatusModal = ({
               }
             : old,
       );
+
+      // Now it may no longer be on the filtered list that would update its pin
+      usePinnedIssuesStore
+        .getState()
+        .syncPinnedIssues([{ issue_uuid: uuid, issue_status: selectedStatus }]);
 
       closeModal();
       triggerAlert("success", response.data.message);

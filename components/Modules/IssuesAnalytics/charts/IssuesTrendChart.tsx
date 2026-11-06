@@ -39,8 +39,6 @@ const IssuesTrendChart = ({
     title="Issues Trend"
     subtitle="Created vs resolved per month"
     icon={TrendingUp}
-    iconColor="text-blue-600 dark:text-blue-400"
-    iconBgColor="bg-blue-50 dark:bg-blue-900/20"
     legend={series.map(({ label, color }) => ({ label, color }))}
     table={{
       columns: ["Month", "Created", "Resolved"],

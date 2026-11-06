@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { LucideIcon, Table2, ChartColumn } from "lucide-react";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
+import { indicatorIconCircle } from "@/lib/indicatorStyles";
 
 export interface ChartLegendItem {
   label: string;
@@ -21,8 +22,6 @@ const ChartCard = ({
   title,
   subtitle,
   icon: Icon,
-  iconColor,
-  iconBgColor,
   legend,
   table,
   isLoading,
@@ -34,8 +33,6 @@ const ChartCard = ({
   title: string;
   subtitle: string;
   icon: LucideIcon;
-  iconColor: string;
-  iconBgColor: string;
   legend?: ChartLegendItem[];
   table: ChartTable;
   isLoading: boolean;
@@ -52,9 +49,7 @@ const ChartCard = ({
     >
       <div className="flex items-start justify-between gap-3 px-6 pt-4">
         <div className="flex min-w-0 items-start gap-2">
-          <div
-            className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${iconBgColor} ${iconColor}`}
-          >
+          <div className={`mt-0.5 ${indicatorIconCircle}`}>
             <Icon className="h-4 w-4" />
           </div>
           <div className="min-w-0">

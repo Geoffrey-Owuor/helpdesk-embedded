@@ -4,6 +4,7 @@ import { AnalyticsSla, SlaStateCounts } from "../types";
 import { formatMonth, formatMonthLong } from "../charts/chartTheme";
 import SlaStatus from "./SlaStatus";
 import { compliancePercent, formatPercent } from "./slaFormat";
+import { indicatorIconCircle } from "@/lib/indicatorStyles";
 
 // Months shown as columns, most recent last
 const MAX_MONTHS = 12;
@@ -65,7 +66,7 @@ const SlaAgentTable = ({
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white shadow-xs dark:border-neutral-800 dark:bg-neutral-950">
       <div className="flex items-start gap-2 px-6 pt-4">
-        <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-violet-50 text-violet-600 dark:bg-violet-900/20 dark:text-violet-400">
+        <div className={`mt-0.5 ${indicatorIconCircle}`}>
           <UserRoundCheck className="h-4 w-4" />
         </div>
         <div>

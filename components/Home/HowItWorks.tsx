@@ -93,8 +93,8 @@ const HowItWorks = () => {
             You always know where it stands
           </h3>
           <p className="mt-1.5 max-w-xl text-sm text-neutral-600 dark:text-neutral-400">
-            Every issue carries a color-coded status and an aging badge, so a
-            request that has been sitting too long is impossible to miss.
+            Every issue carries a status and an aging label, so a request that
+            has been sitting too long is easy to spot.
           </p>
         </div>
 
