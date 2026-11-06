@@ -17,16 +17,24 @@ import {
   GitMerge,
 } from "lucide-react";
 import IssuePriorityFormatter from "./IssuePriorityFormatter";
+import { issueFlagColors } from "@/lib/indicatorStyles";
 import RelativeTimeBadge from "./RelativeTimeBadge";
 import { ResolutionTimePill } from "./ResolutionTimePill";
 import PinButton from "../PinnedIssues/PinButton";
+import {
+  IssueActionHandler,
+  IssueActionsMenu,
+  useIssueMenuItems,
+} from "./IssueListActions";
 
 type CardViewDataProps = {
   currentIssues: Record<string, string | number>[];
+  onAction: IssueActionHandler;
 };
 
-const CardViewData = ({ currentIssues }: CardViewDataProps) => {
+const CardViewData = ({ currentIssues, onAction }: CardViewDataProps) => {
   const router = useRouter();
+  const getMenuItems = useIssueMenuItems(onAction);
 
   if (currentIssues.length === 0) {
     return (
@@ -75,6 +83,10 @@ const CardViewData = ({ currentIssues }: CardViewDataProps) => {
                 }}
               />
               <IssueStatusFormatter status={issueData.issue_status} />
+              <IssueActionsMenu
+                issue={issueData}
+                items={getMenuItems(issueData)}
+              />
             </div>
           </div>
 
@@ -161,21 +173,21 @@ const CardViewData = ({ currentIssues }: CardViewDataProps) => {
                     <UndoDot
                       size={14}
                       aria-label="Reopened issue"
-                      className="text-fuchsia-500 transition-colors group-hover:text-fuchsia-600 dark:text-fuchsia-400 dark:group-hover:text-fuchsia-300"
+                      className={issueFlagColors.reopened}
                     />
                   )}
                   {Number(issueData.escalated_count) > 0 && (
                     <GitMerge
                       size={14}
                       aria-label="Escalated issue"
-                      className="text-red-500 transition-colors group-hover:text-red-600 dark:text-red-400 dark:group-hover:text-red-300"
+                      className={issueFlagColors.escalated}
                     />
                   )}
                   {Number(issueData.collaborators_count) > 0 && (
                     <UsersRound
                       size={14}
                       aria-label="Collaborated issue"
-                      className="text-blue-500 transition-colors group-hover:text-blue-600 dark:text-blue-400 dark:group-hover:text-blue-300"
+                      className={issueFlagColors.collaborated}
                     />
                   )}
 

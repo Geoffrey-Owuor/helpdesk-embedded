@@ -3,6 +3,7 @@ import Link from "next/link";
 import HomeNavBar from "../Navigation/HomeNavBar";
 import { ArrowLeft, GitCommitHorizontal, RotateCcw } from "lucide-react";
 import Footer from "./Footer";
+import { indicatorChip } from "@/lib/indicatorStyles";
 import SkeletonBox from "../Skeletons/SkeletonBox";
 import { Suspense } from "react";
 import {
@@ -21,14 +22,6 @@ export interface ChangelogData {
   changelog_title: string;
   changelog_description: string;
 }
-
-const ChangelogTypes: Record<string, string> = {
-  feature:
-    "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-400",
-  fix: "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950/50 dark:text-amber-400",
-  improvement:
-    "border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-800 dark:bg-sky-950/50 dark:text-sky-400",
-};
 
 // ─────────────────────────────────────────────
 // Helpers
@@ -112,17 +105,14 @@ const TOCSkeleton = () => {
   );
 };
 
-export const ChangelogTypePill = ({ type }: { type: string }) => {
-  const typeColor = ChangelogTypes[type];
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full border ${typeColor} px-2.5 py-0.5 text-xs font-medium`}
-    >
-      <GitCommitHorizontal className="h-3.5 w-3.5" />
-      {type}
-    </span>
-  );
-};
+export const ChangelogTypePill = ({ type }: { type: string }) => (
+  <span
+    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${indicatorChip}`}
+  >
+    <GitCommitHorizontal className="h-3.5 w-3.5" />
+    {type}
+  </span>
+);
 
 // ─────────────────────────────────────────────
 // Table of Contents (desktop only)
@@ -152,7 +142,7 @@ const TableOfContents = ({ items }: { items: ChangelogData[] }) => (
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <GitCommitHorizontal className="h-4 w-4 shrink-0 text-blue-400 dark:text-blue-500" />
+            <GitCommitHorizontal className="h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400" />
             <span className="font-mono text-base font-semibold tracking-tight text-neutral-900 dark:text-white">
               Changelog
             </span>

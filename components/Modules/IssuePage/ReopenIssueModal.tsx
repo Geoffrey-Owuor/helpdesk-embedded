@@ -9,6 +9,7 @@ import IssueStatusFormatter from "../IssuesData/IssueStatusFormatter";
 import { BookmarkCheck, MessageSquareText } from "lucide-react";
 import { IssueDetail } from "@/queries/fetchIssue";
 import { invalidateIssuesCaches } from "@/utils/invalidateIssuesCaches";
+import { usePinnedIssuesStore } from "@/store/usePinnedIssuesStore";
 import {
   Modal,
   ModalBody,
@@ -55,6 +56,11 @@ const ReopenIssueModal = ({
               }
             : old,
       );
+
+      // Now it may no longer be on the filtered list that would update its pin
+      usePinnedIssuesStore
+        .getState()
+        .syncPinnedIssues([{ issue_uuid: uuid, issue_status: "open" }]);
 
       closeModal();
       triggerAlert("success", response.data.message);

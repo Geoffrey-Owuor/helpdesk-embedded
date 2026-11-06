@@ -13,17 +13,13 @@ import {
   UserRoundCog,
   BotMessageSquare,
   ArrowUpDown,
-  Zap,
-  LucideIcon,
-  ArrowUp,
-  ArrowDown,
   Ellipsis,
-  MoveHorizontal,
   CheckCircle2,
   UserRound,
   Send,
   CircleQuestionMark,
 } from "lucide-react";
+import { indicatorMuted, priorityIndicators } from "@/lib/indicatorStyles";
 import { useQuery } from "@tanstack/react-query";
 import { validateHotpointEmail } from "@/utils/Validators";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
@@ -59,19 +55,14 @@ import {
   ModalHeader,
 } from "../Modules/Modal/Modal";
 
-// Priority icon types & helper (Kept inline for reliability)
-const priorityIcons: Record<string, LucideIcon> = {
-  Critical: Zap,
-  High: ArrowUp,
-  Medium: MoveHorizontal,
-  Low: ArrowDown,
-};
-
 const DynamicIcon = ({ priority }: { priority: string }) => {
-  const IconComponent = priorityIcons[priority] || Ellipsis;
+  const { icon: IconComponent, color } = priorityIndicators[priority] ?? {
+    icon: Ellipsis,
+    color: indicatorMuted,
+  };
   return (
-    <div className="rounded-full bg-blue-200 p-1 text-blue-600">
-      <IconComponent className="h-3.5 w-3.5 animate-pulse" />
+    <div className="rounded-full bg-neutral-100 p-1 dark:bg-neutral-900">
+      <IconComponent className={`h-3.5 w-3.5 ${color}`} />
     </div>
   );
 };

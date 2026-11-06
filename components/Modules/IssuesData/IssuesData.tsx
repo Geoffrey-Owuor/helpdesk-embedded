@@ -15,6 +15,10 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchIssues } from "@/queries/fetchIssues";
 import { RotateCw } from "lucide-react";
 import PinnedIssuesSection from "../PinnedIssues/PinnedIssuesSection";
+import { useEffect, useState } from "react";
+import { useSyncPinnedIssues } from "@/hooks/useSyncPinnedIssues";
+import { PinnedIssue } from "@/store/usePinnedIssuesStore";
+import { ActiveIssueAction, IssueListActionModals } from "./IssueListActions";
 
 const IssuesData = () => {
   const { role, department, isSuper } = useUser();
@@ -30,6 +34,7 @@ const IssuesData = () => {
   );
   const page = useIssuesFilterStore((state) => state.page);
   const pageSize = useIssuesFilterStore((state) => state.pageSize);
+  const setPage = useIssuesFilterStore((state) => state.setPage);
 
   const {
     data,
@@ -53,6 +58,22 @@ const IssuesData = () => {
 
   const rows = data?.rows ?? [];
   const total = data?.total ?? 0;
+
+  // The row action being carried out, whose modal sits outside the rows
+  const [activeAction, setActiveAction] = useState<ActiveIssueAction | null>(
+    null,
+  );
+
+  // Rows hold every field a pin does, under the list's looser row type
+  useSyncPinnedIssues(data?.rows as unknown as PinnedIssue[] | undefined);
+
+  // An action can move the last row off the last page: go to the new last page
+  // rather than showing an empty one. A total of 0 has no page to go back to,
+  // and is also what a failed fetch returns.
+  useEffect(() => {
+    const lastPage = Math.ceil(total / pageSize);
+    if (total > 0 && page > lastPage) setPage(lastPage);
+  }, [total, page, pageSize, setPage]);
 
   // default subtitle
   const defaultSubtitle = `you have submitted`;
@@ -119,14 +140,22 @@ const IssuesData = () => {
       {/* Pinned issues, shown ahead of the general fetched issues */}
       <PinnedIssuesSection />
 
+      <IssueListActionModals
+        active={activeAction}
+        onClose={() => setActiveAction(null)}
+      />
+
       {loading ? (
-        <IssuesDataSkeleton isTableView={isTableView} />
+        <IssuesDataSkeleton
+          isTableView={isTableView}
+          showActions={role !== "user" || isSuper}
+        />
       ) : (
         <div>
           {isTableView ? (
-            <TableViewData currentIssues={rows} />
+            <TableViewData currentIssues={rows} onAction={setActiveAction} />
           ) : (
-            <CardViewData currentIssues={rows} />
+            <CardViewData currentIssues={rows} onAction={setActiveAction} />
           )}
 
           {/* Our pagination ui */}

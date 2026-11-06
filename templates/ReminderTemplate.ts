@@ -28,7 +28,9 @@ function renderIssueRow(issue: UnresolvedIssue): string {
   );
 
   // Building the issue uuid link
-  const issueLink = appUrl(`/dashboard/${issue.issue_uuid}?title=${encodeURIComponent(issue.issue_title)}&description=${encodeURIComponent(issue.issue_description)}`);
+  const issueLink = appUrl(
+    `/dashboard/${issue.issue_uuid}?title=${encodeURIComponent(issue.issue_title)}&description=${encodeURIComponent(issue.issue_description)}`,
+  );
 
   return `
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="
@@ -113,7 +115,7 @@ function renderIssueRow(issue: UnresolvedIssue): string {
                 </div>
                 <div>
                   <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #9ca3af; display: block; margin-bottom: 2px;">Issue Age</span>
-                  <span style="font-size: 13px; font-weight: 700; color: #dc2626;">${daysSince} Days Unresolved</span>
+                  <span style="font-size: 13px; font-weight: 700; color: #b45309;">${daysSince} Days Unresolved</span>
                 </div>
               </td>
             </tr>

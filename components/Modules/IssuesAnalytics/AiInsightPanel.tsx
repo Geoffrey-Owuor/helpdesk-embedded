@@ -86,13 +86,13 @@ const AiInsightPanel = ({ summary, committedFilters }: AiInsightPanelProps) => {
       )}
 
       {result && (
-        <div className="relative overflow-hidden rounded-xl border border-violet-200 bg-violet-50/50 p-4 dark:border-violet-900/40 dark:bg-violet-900/10">
+        <div className="relative overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900/50">
           <div className="flex items-start justify-between gap-3">
             <div className="flex gap-3">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-violet-100 text-violet-600 dark:bg-violet-800 dark:text-violet-200">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-200 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
                 <Sparkles size={16} />
               </div>
-              <h4 className="text-sm font-semibold text-violet-900 dark:text-violet-100">
+              <h4 className="text-sm font-semibold text-neutral-900 dark:text-white">
                 {result.headline}
               </h4>
             </div>
@@ -103,7 +103,7 @@ const AiInsightPanel = ({ summary, committedFilters }: AiInsightPanelProps) => {
                 onClick={() => analyze()}
                 disabled={isPending}
                 title="Regenerate"
-                className="shrink-0 rounded-lg p-1.5 text-violet-600 hover:bg-violet-100 disabled:opacity-50 dark:text-violet-300 dark:hover:bg-violet-900/30"
+                className="shrink-0 rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-200 disabled:opacity-50 dark:text-neutral-400 dark:hover:bg-neutral-800"
               >
                 <RotateCw
                   className={`h-3.5 w-3.5 ${isPending ? "animate-spin" : ""}`}
@@ -121,20 +121,20 @@ const AiInsightPanel = ({ summary, committedFilters }: AiInsightPanelProps) => {
 
           <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <p className="text-xs font-semibold tracking-wide text-violet-700 uppercase dark:text-violet-300">
+              <p className="text-xs font-semibold tracking-wide text-neutral-500 uppercase dark:text-neutral-400">
                 Insights
               </p>
-              <ul className="mt-1.5 list-inside list-disc space-y-1 text-xs text-violet-800 dark:text-violet-200">
+              <ul className="mt-1.5 list-inside list-disc space-y-1 text-xs text-neutral-700 dark:text-neutral-300">
                 {result.insights.map((insight, index) => (
                   <li key={index}>{insight}</li>
                 ))}
               </ul>
             </div>
             <div>
-              <p className="text-xs font-semibold tracking-wide text-violet-700 uppercase dark:text-violet-300">
+              <p className="text-xs font-semibold tracking-wide text-neutral-500 uppercase dark:text-neutral-400">
                 Recommendations
               </p>
-              <ul className="mt-1.5 list-inside list-disc space-y-1 text-xs text-violet-800 dark:text-violet-200">
+              <ul className="mt-1.5 list-inside list-disc space-y-1 text-xs text-neutral-700 dark:text-neutral-300">
                 {result.recommendations.map((rec, index) => (
                   <li key={index}>{rec}</li>
                 ))}

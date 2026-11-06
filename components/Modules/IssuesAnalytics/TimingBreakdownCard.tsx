@@ -1,6 +1,7 @@
 import { LucideIcon } from "lucide-react";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import { formatSecondsDuration } from "./formatSecondsDuration";
+import { indicatorIconCircle } from "@/lib/indicatorStyles";
 
 export interface TimingBreakdownEntry {
   label: string;
@@ -14,16 +15,12 @@ const STALE_BAR_COLOR = "bg-orange-600";
 const TimingBreakdownCard = ({
   title,
   icon: Icon,
-  iconColor,
-  iconBgColor,
   entries,
   isLoading,
   emptyMessage,
 }: {
   title: string;
   icon: LucideIcon;
-  iconColor: string;
-  iconBgColor: string;
   entries: TimingBreakdownEntry[];
   isLoading: boolean;
   emptyMessage: string;
@@ -40,9 +37,7 @@ const TimingBreakdownCard = ({
     <div className="rounded-2xl border border-neutral-200 bg-white shadow-xs dark:border-neutral-800 dark:bg-neutral-950">
       <div className="flex items-center justify-between gap-2 px-6 py-4">
         <h2 className="flex items-center gap-2 text-lg font-semibold text-neutral-900 dark:text-white">
-          <div
-            className={`flex h-8 w-8 items-center justify-center rounded-full ${iconBgColor} ${iconColor}`}
-          >
+          <div className={indicatorIconCircle}>
             <Icon className="h-4 w-4" />
           </div>
           {title}

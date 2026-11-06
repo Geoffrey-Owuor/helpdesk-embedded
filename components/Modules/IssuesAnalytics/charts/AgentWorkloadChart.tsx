@@ -16,8 +16,8 @@ import ChartTooltip from "./ChartTooltip";
 import { axisProps, chartColors } from "./chartTheme";
 
 const series = [
-  { key: "active", label: "Open & in progress", color: chartColors.series[1] },
-  { key: "done", label: "Resolved & closed", color: chartColors.series[0] },
+  { key: "active", label: "Open & in progress", color: chartColors.series[3] },
+  { key: "done", label: "Resolved & closed", color: chartColors.series[2] },
 ] as const;
 
 const ROW_HEIGHT = 36;
@@ -45,8 +45,6 @@ const AgentWorkloadChart = ({
       title="Agent Workload"
       subtitle="Issues per agent, including ones they collaborate on"
       icon={Headset}
-      iconColor="text-emerald-600 dark:text-emerald-400"
-      iconBgColor="bg-emerald-50 dark:bg-emerald-900/20"
       legend={series.map(({ label, color }) => ({ label, color }))}
       table={{
         columns: ["Agent", ...series.map(({ label }) => label), "Total"],

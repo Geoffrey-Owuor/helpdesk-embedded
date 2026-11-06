@@ -10,7 +10,7 @@ import {
   UserRoundPlus,
   Paperclip,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useAlertStore } from "@/store/useAlertStore";
 import apiClient from "@/lib/AxiosClient";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
@@ -24,6 +24,7 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { fetchIssue, IssueDetail } from "@/queries/fetchIssue";
 import { statusOptions as baseOptions } from "@/lib/assets";
 import { priorityOptions } from "@/lib/assets";
+import { canMoveToStatus } from "@/lib/issues/statusTransitions";
 import EscalateIssueModal from "./EscalateIssueModal";
 import InviteCollaboratorsModal from "./InviteCollaboratorsModal";
 import AddAttachmentModal from "./AddAttachmentModal";
@@ -31,12 +32,17 @@ import { invalidateIssuesCaches } from "@/utils/invalidateIssuesCaches";
 import PinButton from "../PinnedIssues/PinButton";
 import { useIssueCollaborators } from "@/hooks/useIssueCollaborators";
 import { useIssuePermissions } from "@/hooks/useIssuePermissions";
+import { useSyncPinnedIssues } from "@/hooks/useSyncPinnedIssues";
 import { IssueNotFound } from "./HelperComponents/IssueNotFound";
 import { IssueHeader } from "./HelperComponents/IssueHeader";
 import { IssueDetailBody } from "./HelperComponents/IssueDetailBody";
 import { IssueHeaderAction } from "./HelperComponents/IssueHeaderParts";
 
-const statusOptions = baseOptions.filter((option) => option.value !== "open");
+// The current status (shown checked) and the ones the issue can move to
+const statusOptionsFor = (current: string) =>
+  baseOptions.filter(
+    ({ value }) => value === current || canMoveToStatus(current, value),
+  );
 
 export const IssuePage = ({ uuid }: { uuid: string }) => {
   // Initialize the query client
@@ -60,6 +66,12 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
     useIssueCollaborators(uuid, issueData);
 
   const can = useIssuePermissions(issueData, collaborators);
+
+  const loadedIssues = useMemo(
+    () => (issueData ? [issueData] : undefined),
+    [issueData],
+  );
+  useSyncPinnedIssues(loadedIssues);
 
   const triggerAlert = useAlertStore((state) => state.triggerAlert);
 
@@ -283,7 +295,10 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
           }
           statusPicker={
             can.canUpdateStatus
-              ? { options: statusOptions, onSelect: handleStatusSelection }
+              ? {
+                  options: statusOptionsFor(issueData.issue_status),
+                  onSelect: handleStatusSelection,
+                }
               : undefined
           }
           priorityPicker={

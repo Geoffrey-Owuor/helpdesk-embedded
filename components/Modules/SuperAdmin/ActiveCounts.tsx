@@ -3,6 +3,7 @@
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 import { UserCountBreakdown } from "@/lib/assets";
 import { LucideIcon, CircleCheck, CircleX, Lock } from "lucide-react";
+import { indicatorMuted } from "@/lib/indicatorStyles";
 
 interface breakdownObject {
   label: string;
@@ -56,7 +57,9 @@ const ActiveCounts = ({ cardLoading, breakdown }: ActiveCountsProps) => {
               className="flex items-center gap-1"
             >
               <Icon className={`h-3 w-3 shrink-0 ${text}`} strokeWidth={2} />
-              <span className={`text-xs font-medium tabular-nums ${text}`}>
+              <span
+                className={`text-xs font-medium tabular-nums ${indicatorMuted}`}
+              >
                 {count > 500 ? "500+" : count}
               </span>
             </div>

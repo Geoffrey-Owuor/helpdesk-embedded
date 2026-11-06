@@ -53,6 +53,8 @@
   --chart-status-good: #0ca30c;
   --chart-status-critical: #d03b3b;
   --chart-target: #404040;
+  /* Finished states (closed), matching the grey dot on the status badge */
+  --chart-neutral: #8a8a8a;
 }
 
 html[data-theme="dark"] {
@@ -74,6 +76,7 @@ html[data-theme="dark"] {
   --chart-status-good: #0ca30c;
   --chart-status-critical: #d03b3b;
   --chart-target: #d4d4d4;
+  --chart-neutral: #737373;
 }
 
 html[data-theme="dark"] {

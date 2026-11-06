@@ -71,16 +71,16 @@ const AiRefineSuggestion = ({
       )}
 
       {suggestion && (
-        <div className="relative overflow-hidden rounded-xl border border-violet-200 bg-violet-50/50 p-3 dark:border-violet-900/40 dark:bg-violet-900/10">
+        <div className="relative overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-800 dark:bg-neutral-900/50">
           <div className="flex gap-3">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-violet-100 text-violet-600 dark:bg-violet-800 dark:text-violet-200">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-200 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
               <WandSparkles size={16} />
             </div>
             <div className="min-w-0 flex-1">
-              <h4 className="text-sm font-semibold text-violet-900 dark:text-violet-100">
+              <h4 className="text-sm font-semibold text-neutral-900 dark:text-white">
                 AI Suggestion
               </h4>
-              <div className="mt-1.5 flex flex-col gap-1.5 text-xs text-violet-800 dark:text-violet-200">
+              <div className="mt-1.5 flex flex-col gap-1.5 text-xs text-neutral-700 dark:text-neutral-300">
                 <p>
                   <span className="font-semibold">Title: </span>
                   {suggestion.title}
@@ -97,7 +97,7 @@ const AiRefineSuggestion = ({
                     onApply(suggestion.title, suggestion.description);
                     setSuggestion(null);
                   }}
-                  className="inline-flex items-center gap-1 rounded-full bg-violet-600 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-violet-700"
+                  className="inline-flex items-center gap-1 rounded-full bg-neutral-900 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
                 >
                   <Check size={12} />
                   Use this
@@ -105,7 +105,7 @@ const AiRefineSuggestion = ({
                 <button
                   type="button"
                   onClick={() => setSuggestion(null)}
-                  className="inline-flex items-center gap-1 rounded-full border border-violet-300 px-2.5 py-1.5 text-xs font-semibold text-violet-700 hover:bg-violet-100 dark:border-violet-800 dark:text-violet-300 dark:hover:bg-violet-900/20"
+                  className="inline-flex items-center gap-1 rounded-full border border-neutral-300 px-2.5 py-1.5 text-xs font-semibold text-neutral-700 hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
                 >
                   <X size={12} />
                   Dismiss

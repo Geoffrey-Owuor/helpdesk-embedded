@@ -8,6 +8,7 @@ import {
   formatPercent,
   formatSlaMinutes,
 } from "./slaFormat";
+import { indicatorIconCircle } from "@/lib/indicatorStyles";
 
 const headerCell =
   "py-2 pr-4 text-left text-xs font-medium whitespace-nowrap text-neutral-500 dark:text-neutral-400";
@@ -52,7 +53,7 @@ const SlaPriorityTable = ({
     className={`rounded-2xl border border-neutral-200 bg-white shadow-xs dark:border-neutral-800 dark:bg-neutral-950 ${className}`}
   >
     <div className="flex items-start gap-2 px-6 pt-4">
-      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400">
+      <div className={`mt-0.5 ${indicatorIconCircle}`}>
         <ShieldCheck className="h-4 w-4" />
       </div>
       <div>

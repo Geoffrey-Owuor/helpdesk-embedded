@@ -8,18 +8,14 @@ import {
   UserRoundCog,
   BotMessageSquare,
   ArrowUpDown,
-  Zap,
-  LucideIcon,
-  ArrowUp,
-  ArrowDown,
   Ellipsis,
-  MoveHorizontal,
   ChevronDown,
   ContactRound,
   UserRound,
   Send,
   CircleQuestionMark,
 } from "lucide-react";
+import { indicatorMuted, priorityIndicators } from "@/lib/indicatorStyles";
 import { fetchedIssueAgentsMapping } from "@/serverActions/GetIssueTypes";
 import apiClient from "@/lib/AxiosClient";
 import { IssueAgentMapping } from "@/serverActions/GetIssueTypes";
@@ -41,25 +37,14 @@ import Link from "next/link";
 import { invalidateIssuesCaches } from "@/utils/invalidateIssuesCaches";
 import AiRefineSuggestion from "../IssueModals/AiRefineSuggestion";
 import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
-
-// Priority icon types
-const priorityIcons: Record<string, LucideIcon> = {
-  Critical: Zap,
-  High: ArrowUp,
-  Medium: MoveHorizontal,
-  Low: ArrowDown,
-};
-
-// Dynamic Icon Helper
 const DynamicIcon = ({ priority }: { priority: string }) => {
-  // getting the icon we want
-  const IconComponent = priorityIcons[priority]
-    ? priorityIcons[priority]
-    : Ellipsis;
-
+  const { icon: IconComponent, color } = priorityIndicators[priority] ?? {
+    icon: Ellipsis,
+    color: indicatorMuted,
+  };
   return (
-    <div className="rounded-full bg-blue-200 p-1 text-blue-600">
-      <IconComponent className="h-3.5 w-3.5 animate-pulse" />
+    <div className="rounded-full bg-neutral-100 p-1 dark:bg-neutral-900">
+      <IconComponent className={`h-3.5 w-3.5 ${color}`} />
     </div>
   );
 };
