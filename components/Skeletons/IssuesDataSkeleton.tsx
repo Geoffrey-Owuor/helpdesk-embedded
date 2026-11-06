@@ -16,9 +16,10 @@ const colWidths = {
   desc: "w-80 shrink-0",
 };
 
-// Pinned to the scroller's right edge, like the table's actions column
+// Pinned to the scroller's right edge, like the table's actions column. The
+// card colour is opaque, so cells that scroll under it stay hidden.
 const stickyActionsClass =
-  "sticky right-0 flex shrink-0 justify-center self-stretch border-l border-neutral-200 w-16 items-center dark:border-neutral-700";
+  "sticky right-0 z-10 flex w-20 shrink-0 items-center justify-center self-stretch bg-gray-50 dark:bg-neutral-950";
 
 const IssuesDataSkeleton = ({
   isTableView,
@@ -33,55 +34,66 @@ const IssuesDataSkeleton = ({
     <div>
       {isTableView ? (
         /* --- Table View Skeleton --- */
-        <div className="w-full overflow-x-auto rounded-xl bg-gray-100/50 p-4 dark:bg-neutral-900/50">
-          <div className="min-w-max space-y-2">
-            <div className="flex items-center gap-4 pl-4 pb-2">
-              {Object.values(colWidths).map((width, i) => (
-                <SkeletonBox key={i} className={`h-3 ${width}`} />
-              ))}
-              {showActions && (
-                <div
-                  className={`${stickyActionsClass} bg-neutral-100 dark:bg-neutral-900`}
-                >
-                  <SkeletonBox className="h-3 w-10" />
-                </div>
-              )}
-            </div>
-
-            {[...Array(5)].map((_, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-4 rounded-xl bg-neutral-50 pl-4 shadow-sm dark:bg-neutral-800/50"
-              >
-                <div className="flex items-center gap-4 py-4">
-                  <SkeletonBox className={`h-5 ${colWidths.ref}`} />
-                  <div className={colWidths.status}>
-                    <SkeletonBox className="h-6 w-20 rounded-full" />
-                  </div>
-                  <SkeletonBox className={`h-4 ${colWidths.type}`} />
-                  <div className={colWidths.priority}>
-                    <SkeletonBox className="h-6 w-16 rounded-full" />
-                  </div>
-                  <SkeletonBox className={`h-4 ${colWidths.submitter}`} />
-                  <div className={colWidths.time}>
-                    <SkeletonBox className="h-6 w-20 rounded-full" />
-                  </div>
-                  <SkeletonBox className={`h-4 ${colWidths.date}`} />
-                  <SkeletonBox className={`h-4 ${colWidths.subDept}`} />
-                  <SkeletonBox className={`h-4 ${colWidths.targetDept}`} />
-                  <SkeletonBox className={`h-4 ${colWidths.agent}`} />
-                  <SkeletonBox className={`h-5 ${colWidths.title}`} />
-                  <SkeletonBox className={`h-4 ${colWidths.desc}`} />
-                </div>
+        // Same card and scroller as TableViewData: the padding is on the card,
+        // and the scroller has none on the right, so the sticky actions column
+        // sits flush with the edge instead of leaving a gap rows show through.
+        <div className="w-full rounded-xl border border-neutral-200 bg-gray-50 py-2 pr-4 pl-3 dark:border-neutral-800 dark:bg-neutral-950">
+          <div className="overflow-x-auto pl-1">
+            <div className="min-w-max space-y-3 py-3">
+              <div className="flex h-6 items-center gap-4 pb-2 pl-4">
+                {Object.values(colWidths).map((width, i) => (
+                  <SkeletonBox key={i} className={`h-3 ${width}`} />
+                ))}
                 {showActions && (
                   <div
-                    className={`${stickyActionsClass} rounded-r-xl bg-neutral-50 dark:bg-neutral-800`}
+                    className={`${stickyActionsClass} border-l border-neutral-200 pb-2 dark:border-neutral-800`}
                   >
-                    <SkeletonBox className="h-8 w-8 rounded-full" />
+                    <SkeletonBox className="h-3 w-12" />
                   </div>
                 )}
               </div>
-            ))}
+
+              {[...Array(5)].map((_, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-4 rounded-xl bg-white pl-4 shadow-sm dark:bg-neutral-900/50"
+                >
+                  <div className="flex items-center gap-4 py-4">
+                    <SkeletonBox className={`h-5 ${colWidths.ref}`} />
+                    <div className={colWidths.status}>
+                      <SkeletonBox className="h-6 w-20 rounded-full" />
+                    </div>
+                    <SkeletonBox className={`h-4 ${colWidths.type}`} />
+                    <div className={colWidths.priority}>
+                      <SkeletonBox className="h-6 w-16 rounded-full" />
+                    </div>
+                    <SkeletonBox className={`h-4 ${colWidths.submitter}`} />
+                    <div className={colWidths.time}>
+                      <SkeletonBox className="h-6 w-20 rounded-full" />
+                    </div>
+                    <SkeletonBox className={`h-4 ${colWidths.date}`} />
+                    <SkeletonBox className={`h-4 ${colWidths.subDept}`} />
+                    <SkeletonBox className={`h-4 ${colWidths.targetDept}`} />
+                    <SkeletonBox className={`h-4 ${colWidths.agent}`} />
+                    <SkeletonBox className={`h-5 ${colWidths.title}`} />
+                    <SkeletonBox className={`h-4 ${colWidths.desc}`} />
+                  </div>
+                  {showActions && (
+                    // The opaque cell covers the row's rounded end, and its
+                    // ::before reaches past the row to cover the row's shadow
+                    // too; an inner layer paints the row's own end, as in the
+                    // table
+                    <div
+                      className={`${stickyActionsClass} before:absolute before:inset-x-0 before:-inset-y-1.5 before:bg-gray-50 dark:before:bg-neutral-950`}
+                    >
+                      <div className="absolute inset-0 flex items-center justify-center rounded-r-xl border-l border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900/50">
+                        <SkeletonBox className="h-8 w-8 rounded-full" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       ) : (

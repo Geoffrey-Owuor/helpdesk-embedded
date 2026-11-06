@@ -60,7 +60,8 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
           {/* The scroller is deliberately square: a border-radius on a scroll container
               forces a rounded clip mask that is recomposited on every scroll frame,
               which halves the frame rate on 4K / integrated GPUs. The rounded look
-              comes from the corner "ears" instead. overflow-x-hidden clips the
+              comes from the corner "ears" instead; on wide screens its scrollbar
+              track is inset at the top only (css/globals.css). overflow-x-hidden clips the
               sticky bars' oversized bands to its inner edges. */}
           <div
             id="main-content"
