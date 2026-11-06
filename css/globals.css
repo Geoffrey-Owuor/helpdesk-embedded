@@ -457,6 +457,12 @@ html[data-theme="dark"] {
     .small-scrollbar::-webkit-scrollbar-track:horizontal {
       margin-inline: var(--scrollbar-inset);
     }
+    /* The dashboard scroller (DashboardLayoutShell): inset at the top only,
+       clear of the corner ears there; at the bottom the bar deliberately runs
+       under the ears. */
+    #main-content::-webkit-scrollbar-track:vertical {
+      margin-block: 1rem 0;
+    }
 
     .app-scrollbars::-webkit-scrollbar-button,
     .app-scrollbars *::-webkit-scrollbar-button,
