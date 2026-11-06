@@ -66,7 +66,7 @@ const SlaPriorityTable = ({
       </div>
     </div>
 
-    <div className="small-scrollbar overflow-x-auto px-6 pt-3 pb-4">
+    <div className="small-scrollbar overflow-x-auto px-6 pt-3 pb-4 [--scrollbar-inset:1rem]">
       {isLoading || !sla ? (
         <div className="flex flex-col gap-3">
           {[...Array(5)].map((_, i) => (

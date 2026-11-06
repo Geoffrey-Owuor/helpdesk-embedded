@@ -245,7 +245,9 @@ export const ModalBody = ({
 }: ComponentPropsWithoutRef<"div"> & { padded?: boolean }) => (
   <div
     className={cx(
-      "min-h-0 flex-1 overflow-y-auto overscroll-contain",
+      // The inset keeps the thumb off the panel's rounded bottom corners
+      // when there's no footer
+      "min-h-0 flex-1 overflow-y-auto overscroll-contain [--scrollbar-inset:1rem]",
       padded && "px-4 py-4 sm:px-6 sm:py-5",
       className,
     )}

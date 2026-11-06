@@ -122,7 +122,8 @@ const SearchArea = ({ closeBar }: { closeBar: () => void }) => {
       </div>
 
       {/* ── BOTTOM SECTION (Scrollable Results) ── */}
-      <div className="small-scrollbar flex-1 overflow-y-auto p-4">
+      {/* Inset matches the rounded-2xl search panel it ends at */}
+      <div className="small-scrollbar flex-1 overflow-y-auto p-4 [--scrollbar-inset:1rem]">
         {/* State 1: Data is currently loading */}
         {searchQuery.trim() && recordsLoading ? (
           <div className="flex h-32 flex-col items-center justify-center gap-3 text-neutral-400">
