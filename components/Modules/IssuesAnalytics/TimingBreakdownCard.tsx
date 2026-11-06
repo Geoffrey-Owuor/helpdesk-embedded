@@ -70,7 +70,7 @@ const TimingBreakdownCard = ({
           {emptyMessage}
         </p>
       ) : (
-        <div className="small-scrollbar flex max-h-72 flex-col gap-4 overflow-y-auto px-6 pb-6">
+        <div className="small-scrollbar flex max-h-72 flex-col gap-4 overflow-y-auto px-6 pb-6 [--scrollbar-inset:1rem]">
           {entries.map(({ label, avgResolutionSeconds, avgStaleSeconds }) => (
             <div key={label} className="flex flex-col gap-1.5">
               <span
