@@ -342,14 +342,17 @@ html[data-theme="dark"] {
 /* Track inset at both ends of the scroll axis, so the thumb stops short of
    rounded corners: Chromium clips a rounded scroller's bar to its radius, and
    a square scroller on the edge of a rounded card runs into the card's curve.
-   Not inherited, so a rounded modal panel doesn't inset the scrollers inside
-   it. Scrollers rounded with the classes below get it automatically; one that
-   sits on a rounded card's edge sets it to the card's radius, e.g.
-   [--scrollbar-inset:1rem] in a rounded-2xl card. */
-@property --scrollbar-inset {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
+   The scrollbar pseudo-elements read it by inheriting from their scroller, so
+   it must inherit; every element resets it instead, so a rounded card or
+   modal panel doesn't inset the scrollers inside it. (An @property with
+   inherits: false would leave the pseudo-elements at 0.) The reset is in the
+   base layer so utilities override it. Scrollers rounded with the classes
+   below get it automatically; one that sits on a rounded card's edge sets it
+   to the card's radius, e.g. [--scrollbar-inset:1rem] in a rounded-2xl card. */
+@layer base {
+  * {
+    --scrollbar-inset: 0px;
+  }
 }
 
 .small-scrollbar.rounded-lg,
