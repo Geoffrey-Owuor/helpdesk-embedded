@@ -60,11 +60,12 @@ const DashboardLayoutShell = ({ children }: { children: React.ReactNode }) => {
           {/* The scroller is deliberately square: a border-radius on a scroll container
               forces a rounded clip mask that is recomposited on every scroll frame,
               which halves the frame rate on 4K / integrated GPUs. The rounded look
-              comes from the corner "ears" instead. overflow-x-hidden clips the
+              comes from the corner "ears" instead, and the track inset keeps the
+              scrollbar thumb out from under them. overflow-x-hidden clips the
               sticky bars' oversized bands to its inner edges. */}
           <div
             id="main-content"
-            className="layout-scrollbar app-scrollbars custom:border-t-0 custom:border-b absolute inset-0 overflow-x-hidden overflow-y-auto border-x border-t border-[#eceef1] bg-white dark:border-neutral-900 dark:bg-black"
+            className="layout-scrollbar app-scrollbars custom:border-t-0 custom:border-b absolute inset-0 overflow-x-hidden overflow-y-auto border-x border-t border-[#eceef1] bg-white [--scrollbar-inset:1rem] dark:border-neutral-900 dark:bg-black"
           >
             <div className="flex h-full flex-col pb-[env(safe-area-inset-bottom)]">
               {/* Content */}
