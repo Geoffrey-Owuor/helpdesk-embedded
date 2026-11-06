@@ -79,9 +79,13 @@ const IssuesDataSkeleton = ({
                     <SkeletonBox className={`h-4 ${colWidths.desc}`} />
                   </div>
                   {showActions && (
-                    // The opaque cell covers the row's rounded end; an inner
-                    // layer paints the row's own end, as in the table
-                    <div className={stickyActionsClass}>
+                    // The opaque cell covers the row's rounded end, and its
+                    // ::before reaches past the row to cover the row's shadow
+                    // too; an inner layer paints the row's own end, as in the
+                    // table
+                    <div
+                      className={`${stickyActionsClass} before:absolute before:inset-x-0 before:-inset-y-1.5 before:bg-gray-50 dark:before:bg-neutral-950`}
+                    >
                       <div className="absolute inset-0 flex items-center justify-center rounded-r-xl border-l border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900/50">
                         <SkeletonBox className="h-8 w-8 rounded-full" />
                       </div>
