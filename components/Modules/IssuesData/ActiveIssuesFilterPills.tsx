@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import { useIssuesFilterStore } from "@/store/useIssuesFilterStore";
 import { statusOptions, priorityOptions, dateFormatter } from "@/lib/assets";
 import { IssuesFilterParams } from "@/lib/issues/buildIssuesFilter";
+import { useIssueAgentOptions } from "@/hooks/useIssueAgentOptions";
 
 const filterLabels: Record<string, string> = {
   status: "Status",
@@ -19,6 +20,7 @@ const ActiveIssuesFilterPills = () => {
     (state) => state.committedFilters,
   );
   const removeFilter = useIssuesFilterStore((state) => state.removeFilter);
+  const { agentName } = useIssueAgentOptions();
 
   if (!committedFilters) return null;
 
@@ -57,6 +59,9 @@ const ActiveIssuesFilterPills = () => {
           statusOptions.find((opt) => opt.value === value)?.label ||
           String(value)
         );
+      // The filter holds an email
+      case "agent":
+        return agentName(String(value));
       case "issuePriority":
         return (
           priorityOptions.find((opt) => opt.value === value)?.label ||

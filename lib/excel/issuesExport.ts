@@ -248,6 +248,16 @@ export const addFiltersSheet = (
   });
 };
 
+// The Filters sheet's value for an Agent filter, which holds an email:
+// "Name (email)", or the email alone for someone who's no longer a user
+export const agentFilterLabel = async (email: string) => {
+  const [agent] = await query<{ username: string }>(
+    "SELECT username FROM users WHERE LOWER(email) = LOWER($1) LIMIT 1",
+    [email],
+  );
+  return agent ? `${agent.username} (${email})` : email;
+};
+
 // Headers that tell the client a result was cut to the row limit
 export const exportCountHeaders = (rowCount: number, total: number) => ({
   "X-Export-Rows": String(rowCount),

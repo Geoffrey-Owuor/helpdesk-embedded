@@ -10,6 +10,7 @@ import { xlsxResponse } from "@/lib/excel/workbook";
 import {
   addFiltersSheet,
   addIssuesSheet,
+  agentFilterLabel,
   exportCountHeaders,
   fetchIssuesForExport,
   issueLinkBuilder,
@@ -22,7 +23,7 @@ const FILTER_LABELS: [keyof IssuesFilterParams, string][] = [
   ["fromDate", "Created from"],
   ["toDate", "Created to"],
   ["department", "Department"],
-  ["agent", "Agent or collaborator contains"],
+  ["agent", "Agent or collaborator"],
   ["issueType", "Issue type contains"],
   ["issuePriority", "Priority"],
   ["submitter", "Submitter contains"],
@@ -77,16 +78,19 @@ export const GET = withAuth(async ({ request, user }) => {
         ? "Submitter department"
         : "Target department";
 
+    const agentLabel = filters.agent ? await agentFilterLabel(filters.agent) : "";
+
     addFiltersSheet(workbook, {
       exportedBy: `${username} (${email})`,
       exportedAt,
       view,
       total,
       rowCount: rows.length,
-      filters: FILTER_LABELS.filter(([key]) => filters[key]).map(([key, label]) => [
-        key === "department" ? departmentLabel : label,
-        filters[key] as string,
-      ]),
+      filters: FILTER_LABELS.filter(([key]) => filters[key]).map(([key, label]) =>
+        key === "department"
+          ? [departmentLabel, filters[key] as string]
+          : [label, key === "agent" ? agentLabel : (filters[key] as string)],
+      ),
     });
 
     return xlsxResponse(workbook, "issues_data.xlsx", exportCountHeaders(rows.length, total));

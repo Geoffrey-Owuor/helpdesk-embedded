@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { Workbook } from "exceljs";
-import { query } from "@/lib/Db";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { hasFeatureAccess, FEATURES } from "@/lib/FeatureAccess";
 import {
@@ -12,6 +11,7 @@ import { xlsxResponse } from "@/lib/excel/workbook";
 import {
   addFiltersSheet,
   addIssuesSheet,
+  agentFilterLabel,
   exportCountHeaders,
   fetchIssuesForExport,
   issueLinkBuilder,
@@ -54,15 +54,7 @@ export const GET = withAuth(async ({ request, user }) => {
       );
     }
 
-    // The agent filter holds an email; name who it is
-    let agentLabel = filters.agent ?? "";
-    if (filters.agent) {
-      const [agent] = await query<{ username: string }>(
-        "SELECT username FROM users WHERE LOWER(email) = LOWER($1) LIMIT 1",
-        [filters.agent],
-      );
-      if (agent) agentLabel = `${agent.username} (${filters.agent})`;
-    }
+    const agentLabel = filters.agent ? await agentFilterLabel(filters.agent) : "";
 
     const workbook = new Workbook();
     workbook.creator = "HelpDesk";
