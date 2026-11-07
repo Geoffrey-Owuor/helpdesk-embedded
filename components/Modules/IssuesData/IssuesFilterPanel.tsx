@@ -11,6 +11,7 @@ import ActiveIssuesFilterPills from "./ActiveIssuesFilterPills";
 import CustomDropdown from "../CustomDropdown";
 import StickyFilterPanel from "../StickyFilterPanel";
 import MobileFilterBar, { countActiveFilters } from "../MobileFilterBar";
+import { useIssueAgentOptions } from "@/hooks/useIssueAgentOptions";
 
 type FilterFieldKey =
   | "status"
@@ -182,6 +183,9 @@ const IssuesFilterPanel = () => {
 
   const [activeField, setActiveField] = useState<FilterFieldKey>("status");
 
+  // The agents and collaborators on the issues in this view
+  const { options: agentOptions } = useIssueAgentOptions();
+
   // Hide "agent" for agents not viewing their own submissions, and "submitter"
   // for plain users - mirrors the previous SearchFilterLogic.tsx visibility rules.
   const visibleOptions = useMemo(() => {
@@ -269,10 +273,13 @@ const IssuesFilterPanel = () => {
         );
       case "agent":
         return (
-          <TextInput
+          <CustomDropdown
+            label="Agent"
+            hideLabel
+            options={agentOptions}
             value={agent}
             onChange={setAgent}
-            placeholder="Search agent name..."
+            placeholder="Select agent..."
           />
         );
       case "issueType":

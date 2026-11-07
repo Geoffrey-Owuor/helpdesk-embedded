@@ -102,8 +102,7 @@ export const buildIssuesVisibilityClause = (
   return { clause: null, params };
 };
 
-// The user-chosen search filters, ported 1:1 from the previous client-side
-// filtering behavior in components/Modules/IssuesData/IssuesData.tsx.
+// The user-chosen search filters (the issues list's filter panel)
 export const buildIssuesSearchFilterClause = (
   filters: IssuesFilterParams,
   visibility: Pick<IssuesVisibilityParams, "role" | "agentAdminFilter">,
@@ -135,11 +134,13 @@ export const buildIssuesSearchFilterClause = (
     clauses.push(`${col("issue_reference_id")} ILIKE $${idx}`);
   }
 
+  // An agent's email (the Agent dropdown, from /issue-agents): issues they're
+  // assigned or collaborate on
   if (filters.agent) {
     const idx = nextIndex();
-    params.push(`%${filters.agent}%`);
+    params.push(filters.agent);
     clauses.push(
-      `(${col("issue_agent_name")} ILIKE $${idx} OR EXISTS (SELECT 1 FROM issue_collaborators ac WHERE ac.issue_id = ${col("issue_uuid")} AND ac.collaborator_name ILIKE $${idx}))`,
+      `(LOWER(${col("issue_agent_email")}) = LOWER($${idx}) OR EXISTS (SELECT 1 FROM issue_collaborators ac WHERE ac.issue_id = ${col("issue_uuid")} AND LOWER(ac.collaborator_email) = LOWER($${idx})))`,
     );
   }
 
