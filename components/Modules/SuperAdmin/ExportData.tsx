@@ -2,9 +2,8 @@
 
 import { Bug, FileSpreadsheet, RotateCcw, UserRoundPlus } from "lucide-react";
 import { useState } from "react";
-import apiClient from "@/lib/AxiosClient";
 import { useAlertStore } from "@/store/useAlertStore";
-import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
+import { downloadExport, exportFileDate } from "@/utils/downloadExport";
 import AddUser from "./EditModals/AddUser";
 import AddIssue from "./EditModals/AddIssue";
 import { DropdownOption } from "./EditModals/CustomDropDown";
@@ -31,40 +30,19 @@ const ExportData = ({
 
   const isUsers = type === "users";
 
-  const date = new Date().toLocaleDateString("en-GB");
-  const documentName = `${isUsers ? "users" : "issues"}_data_${date}.xlsx`;
-
   const apiString = `/export-${isUsers ? "users" : "issuesmapping"}`;
 
   const handleExport = async () => {
+    const documentName = `${isUsers ? "users_data" : "issues_mapping"}_${exportFileDate()}.xlsx`;
+
     setIsExporting(true);
     try {
-      const response = await apiClient.get(apiString, {
-        responseType: "blob",
-      });
-
-      // Converting the response into a blob
-      const blob = response.data;
-
-      // Creating a temporary url for the blob
-      const url = window.URL.createObjectURL(blob);
-
-      // Creating a temporary link element to trigger the download
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = documentName; //file name for the downloaded file
-      document.body.appendChild(a);
-      a.click(); //click the link programmatically to start the download
-      a.remove(); //remove link from the body;
-      window.URL.revokeObjectURL(url); //cleanup the temporary url
+      await downloadExport(apiString, {}, documentName);
     } catch (error) {
-      const errorMessage = getApiErrorMessage(error);
-      console.error(
-        "Error while trying to export issues data to excel:",
-        errorMessage,
+      triggerAlert(
+        "error",
+        error instanceof Error ? error.message : "Error exporting data to excel",
       );
-
-      triggerAlert("error", "Error exporting data to excel");
     } finally {
       setIsExporting(false);
     }
