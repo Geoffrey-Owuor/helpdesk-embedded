@@ -10,6 +10,7 @@ import SummaryCardsSection from "./SummaryCardsSection";
 import AnalyticsIssuesTable from "./AnalyticsIssuesTable";
 import AnalyticsPagination from "./AnalyticsPagination";
 import AiInsightPanel from "./AiInsightPanel";
+import AnalyticsExport from "./AnalyticsExport";
 
 const AnalyticsDashboard = () => {
   const committedFilters = useAnalyticsFilterStore(
@@ -54,13 +55,17 @@ const AnalyticsDashboard = () => {
             Company-wide issues overview
           </span>
         </div>
-        <button
-          onClick={handleRefresh}
-          title="Refresh"
-          className="rounded-xl bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
-        >
-          <RotateCw className="h-4.5 w-4.5" />
-        </button>
+        <div className="flex items-center gap-1">
+          <AnalyticsExport />
+          <button
+            onClick={handleRefresh}
+            title="Refresh"
+            aria-label="Refresh"
+            className="rounded-xl bg-neutral-100 p-2 transition-colors duration-200 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800"
+          >
+            <RotateCw className="h-4.5 w-4.5" />
+          </button>
+        </div>
       </div>
 
       <FilterPanel />

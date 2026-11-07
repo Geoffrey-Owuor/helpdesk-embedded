@@ -28,16 +28,26 @@ export const excelText = (value: string | null | undefined) =>
     ? `${value.slice(0, EXCEL_CELL_MAX - 1)}…`
     : (value ?? null);
 
-// Makes a data sheet easy to work with: a bold, shaded header row that stays
+// Header row colours: the app's near-black primary (neutral-900) with white text
+const HEADER_FILL = "FF171717";
+const HEADER_TEXT = "FFFFFFFF";
+
+// Makes a data sheet easy to work with: a bold, dark header row that stays
 // in view, Excel's filter buttons on every column, and wrapped text in the
 // long columns (`wrapKeys`). Call after the columns and rows are added.
 export const styleDataSheet = (worksheet: Worksheet, wrapKeys: string[] = []) => {
+  // Before the header styling: a column's alignment covers its header cell too
+  for (const key of wrapKeys) {
+    worksheet.getColumn(key).alignment = { wrapText: true, vertical: "top" };
+  }
+
   const header = worksheet.getRow(1);
-  header.font = { bold: true };
-  header.alignment = { vertical: "middle" };
+  header.height = 22;
+  // Per cell, so the colour stops at the last column instead of filling the row
   header.eachCell((cell) => {
-    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFEDEDED" } };
-    cell.border = { bottom: { style: "thin", color: { argb: "FFBDBDBD" } } };
+    cell.font = { bold: true, color: { argb: HEADER_TEXT } };
+    cell.alignment = { vertical: "middle" };
+    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: HEADER_FILL } };
   });
 
   worksheet.views = [{ state: "frozen", ySplit: 1 }];
@@ -48,10 +58,6 @@ export const styleDataSheet = (worksheet: Worksheet, wrapKeys: string[] = []) =>
       from: { row: 1, column: 1 },
       to: { row: Math.max(1, worksheet.rowCount), column: columnCount },
     };
-  }
-
-  for (const key of wrapKeys) {
-    worksheet.getColumn(key).alignment = { wrapText: true, vertical: "top" };
   }
 };
 
