@@ -3,8 +3,7 @@
 import { ChevronLeft, ChevronDown, Check } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useIssuesFilterStore } from "@/store/useIssuesFilterStore";
-
-const pageSizeOptions = [10, 25, 50, 100];
+import { ISSUE_PAGE_SIZE_OPTIONS as pageSizeOptions } from "@/lib/assets";
 
 // Server-driven pagination for IssuesData - mirrors AnalyticsPagination.tsx,
 // reading page/pageSize from useIssuesFilterStore rather than local state.

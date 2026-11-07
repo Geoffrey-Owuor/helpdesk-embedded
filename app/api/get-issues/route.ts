@@ -1,6 +1,7 @@
 import { query } from "@/lib/Db";
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
+import { DEFAULT_PAGE_SIZE } from "@/lib/assets";
 import {
   buildIssuesFilter,
   parseIssuesFilterParams,
@@ -19,7 +20,7 @@ export const GET = withAuth(async ({ user, request }) => {
   const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
   const pageSize = Math.min(
     100,
-    Math.max(1, parseInt(searchParams.get("pageSize") || "25", 10)),
+    Math.max(1, parseInt(searchParams.get("pageSize") || String(DEFAULT_PAGE_SIZE), 10)),
   );
   const offset = (page - 1) * pageSize;
 
