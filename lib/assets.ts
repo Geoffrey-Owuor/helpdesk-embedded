@@ -45,8 +45,11 @@ export const dateFormatter = (
   });
 };
 
-// Default page size for server-side paginated issue queries
-export const DEFAULT_PAGE_SIZE = 25;
+// Page sizes for the issues list. Multiples of 6, so a full page fills every
+// row of the card grid at 1, 2 or 3 columns (CardViewData) - 25 left two
+// empty slots on the last row.
+export const ISSUE_PAGE_SIZE_OPTIONS = [12, 24, 48, 96];
+export const DEFAULT_PAGE_SIZE = 24;
 
 export type IssueValueTypes = string | number;
 
