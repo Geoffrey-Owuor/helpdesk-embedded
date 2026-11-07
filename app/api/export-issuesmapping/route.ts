@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { query } from "@/lib/Db";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { Workbook } from "exceljs";
+import { styleDataSheet, xlsxResponse } from "@/lib/excel/workbook";
 
 export const GET = withAuth(async ({ user }) => {
   const { isSuper } = user;
@@ -30,48 +31,38 @@ export const GET = withAuth(async ({ user }) => {
     `;
 
     // Running the query
-    const rows = await query(baseQuery);
+    const rows = await query<Record<string, unknown>>(baseQuery);
+
+    if (rows.length === 0) {
+      return NextResponse.json(
+        { message: "There are no agents or issue types to export" },
+        { status: 404 },
+      );
+    }
 
     // Creating a workbook with exceljs and adding a new worksheet;
     const workbook = new Workbook();
     const worksheet = workbook.addWorksheet("Issues_Mapping");
 
     // Defining the columns for our worksheet
-    if (rows.length > 0) {
-      worksheet.columns = Object.keys(rows[0]).map((key) => ({
-        // Split by an underscore, capitalize first letter of each word and join with a space
-        header: key
-          .split("_")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" "),
-        key: key,
-        width: 20,
-        numFmt: key.includes("ated_at") ? "yyyy-mm-dd hh:mm:ss" : undefined,
-      }));
+    worksheet.columns = Object.keys(rows[0]).map((key) => ({
+      // Split by an underscore, capitalize first letter of each word and join with a space
+      header: key
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" "),
+      key: key,
+      width: key.endsWith("_email") ? 32 : 22,
+    }));
 
-      // Make the entire header row bold
-      worksheet.getRow(1).font = { bold: true };
+    worksheet.addRows(rows);
+    styleDataSheet(worksheet);
 
-      // Add the data rows
-      worksheet.addRows(rows);
-    }
-
-    // Generate a buffer
-    const buffer = await workbook.xlsx.writeBuffer();
-
-    // send the file as a response
-    return new NextResponse(buffer, {
-      status: 200,
-      headers: {
-        "Content-Type":
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "Content-Disposition": 'attachment; filename="issues_mapping.xlsx"',
-      },
-    });
+    return xlsxResponse(workbook, "issues_mapping.xlsx");
   } catch (error) {
-    console.error("Failed to export users data to excel:", error);
+    console.error("Failed to export issues mapping data to excel:", error);
     return NextResponse.json(
-      { message: "Failed to export users data to excel" },
+      { message: "Failed to export issues mapping data to excel" },
       { status: 500 },
     );
   }

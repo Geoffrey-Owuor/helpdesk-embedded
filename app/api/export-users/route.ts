@@ -2,6 +2,13 @@ import { NextResponse } from "next/server";
 import { query } from "@/lib/Db";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { Workbook } from "exceljs";
+import {
+  EXCEL_DATE_FORMAT,
+  excelDate,
+  sqlExcelTimestamp,
+  styleDataSheet,
+  xlsxResponse,
+} from "@/lib/excel/workbook";
 
 export const GET = withAuth(async ({ user }) => {
   const { isSuper } = user;
@@ -17,49 +24,46 @@ export const GET = withAuth(async ({ user }) => {
     // Our base query
     const baseQuery = `
     SELECT user_id, username, email, department, role, is_user_active, 
-    TO_CHAR(created_at, 'YYYY-MM-DD HH24:MI:SS') AS created_at
+    ${sqlExcelTimestamp("created_at")} AS created_at
     FROM users ORDER BY created_at DESC
     `;
 
     // Running the query
-    const rows = await query(baseQuery);
+    const rows = await query<Record<string, unknown>>(baseQuery);
+
+    if (rows.length === 0) {
+      return NextResponse.json(
+        { message: "There are no users to export" },
+        { status: 404 },
+      );
+    }
 
     // Creating a workbook with exceljs and adding a new worksheet;
     const workbook = new Workbook();
     const worksheet = workbook.addWorksheet("Users_Data");
 
     // Defining the columns for our worksheet
-    if (rows.length > 0) {
-      worksheet.columns = Object.keys(rows[0]).map((key) => ({
-        // Split by an underscore, capitalize first letter of each word and join with a space
-        header: key
-          .split("_")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" "),
-        key: key,
-        width: 20,
-        numFmt: key.includes("ated_at") ? "yyyy-mm-dd hh:mm:ss" : undefined,
-      }));
+    worksheet.columns = Object.keys(rows[0]).map((key) => ({
+      // Split by an underscore, capitalize first letter of each word and join with a space
+      header: key
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" "),
+      key: key,
+      width: key === "email" ? 32 : 20,
+      style: key.endsWith("_at") ? { numFmt: EXCEL_DATE_FORMAT } : undefined,
+    }));
 
-      // Make the entire header row bold
-      worksheet.getRow(1).font = { bold: true };
+    // Timestamps are wall-clock text, written as real Excel dates
+    worksheet.addRows(
+      rows.map((row) => ({
+        ...row,
+        created_at: excelDate(row.created_at as string | null),
+      })),
+    );
+    styleDataSheet(worksheet);
 
-      // Add the data rows
-      worksheet.addRows(rows);
-    }
-
-    // Generate a buffer
-    const buffer = await workbook.xlsx.writeBuffer();
-
-    // send the file as a response
-    return new NextResponse(buffer, {
-      status: 200,
-      headers: {
-        "Content-Type":
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "Content-Disposition": 'attachment; filename="users_data.xlsx"',
-      },
-    });
+    return xlsxResponse(workbook, "users_data.xlsx");
   } catch (error) {
     console.error("Failed to export users data to excel:", error);
     return NextResponse.json(
