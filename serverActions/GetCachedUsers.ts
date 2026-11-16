@@ -12,7 +12,9 @@ export const getCachedUsers = unstable_cache(
   async (): Promise<UserRecord[] | []> => {
     try {
       const result = await query<UserRecord>(
-        `SELECT email, name, department FROM company_user_records`,
+        // Deactivated records aren't suggested (migrations/011)
+        `SELECT email, name, department FROM company_user_records
+         WHERE is_active = TRUE ORDER BY name ASC`,
       );
       return result;
     } catch (error) {

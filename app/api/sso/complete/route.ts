@@ -12,6 +12,7 @@ import {
   hashRefreshToken,
 } from "@/lib/Auth";
 import { query } from "@/lib/Db";
+import { ensureCompanyUserRecord } from "@/lib/companyRecords";
 
 export async function POST(req: NextRequest) {
   try {
@@ -60,6 +61,9 @@ export async function POST(req: NextRequest) {
       "microsoft_sso",
     ]);
     const returnedUser = newUser[0];
+
+    // Every account has a staff record
+    await ensureCompanyUserRecord({ name, email, department: departmentName });
 
     // 3. Create the standard JWT Payload
     const payload = {
