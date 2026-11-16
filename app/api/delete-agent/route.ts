@@ -7,6 +7,7 @@ import {
   revalidateIssueAgentTags,
   softDeleteUser,
 } from "@/lib/userAccounts";
+import { revalidateCompanyRecords } from "@/lib/companyRecords";
 
 export const DELETE = withAuth(async ({ user, request }) => {
   let client: PoolClient | undefined;
@@ -99,13 +100,15 @@ export const DELETE = withAuth(async ({ user, request }) => {
     );
 
     // Mark the agent as deleted
-    await softDeleteUser(client, agentId, agentInfo[0].email);
+    await softDeleteUser(client, agentId, agentInfo[0].email, user.userId);
 
     // Commit the transaction
     await client.query("COMMIT");
 
     // Revalidate issue cache tags
     revalidateIssueAgentTags();
+    // Their staff record was deactivated with the account
+    revalidateCompanyRecords();
 
     // Return a response
     return NextResponse.json(
