@@ -114,13 +114,17 @@ export async function accountRemovalBlocker(
   return null;
 }
 
-// Soft-deletes a user: frees their email for a new account and ends their
-// sessions. The timestamp keeps the freed email unique when the same address
+// Soft-deletes a user: frees their email for a new account, ends their
+// sessions and deactivates their staff record (company_user_records), so
+// the person is no longer suggested for on-behalf issues and no account is
+// re-created from the record. Callers revalidate the records cache
+// (revalidateCompanyRecords). A super admin can activate the record again. The timestamp keeps the freed email unique when the same address
 // is deleted more than once (users.email is UNIQUE).
 export async function softDeleteUser(
   client: PoolClient,
   userId: string,
   email: string,
+  deletedBy: string,
 ): Promise<void> {
   await client.query(
     `UPDATE users
@@ -134,6 +138,14 @@ export async function softDeleteUser(
      is_user_active = FALSE
      WHERE user_id = $2`,
     [`deleted_${Date.now()}_${email}`, userId],
+  );
+
+  // Record emails are stored lowercase
+  await client.query(
+    `UPDATE company_user_records
+     SET is_active = FALSE, updated_at = NOW(), updated_by = $1
+     WHERE email = LOWER(TRIM($2)) AND is_active = TRUE`,
+    [deletedBy, email],
   );
 
   // Privileges don't outlive the account

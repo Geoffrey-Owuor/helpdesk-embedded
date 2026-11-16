@@ -26,8 +26,8 @@ export const CheckBehalfUser = async ({
     // Check if the user is already registered and return their payload
     const existingUser = await query(
       `
-      SELECT user_id, username, email, department
-      FROM users WHERE email = $1 LIMIT 1
+      SELECT user_id, username, email, department, is_user_active
+      FROM users WHERE LOWER(email) = LOWER(TRIM($1)) LIMIT 1
       `,
       [email],
     );
@@ -36,6 +36,10 @@ export const CheckBehalfUser = async ({
     if (existingUser.length > 0) {
       const userDetails = existingUser[0];
 
+      // No issues on behalf of a deactivated account: the person can't sign
+      // in to follow them, and a super admin switched the account off
+      if (!userDetails.is_user_active) return null;
+
       return {
         userId: userDetails.user_id,
         name: userDetails.username,
@@ -43,9 +47,11 @@ export const CheckBehalfUser = async ({
         department: userDetails.department,
       };
     } else {
-      // Confirm if we have the staff info in our database
+      // Confirm if we have the staff info in our database. Record emails are
+      // stored lowercase, and a deactivated record creates no account.
       const existingStaff = await query(
-        `SELECT name, email, department FROM company_user_records WHERE email = $1 LIMIT 1`,
+        `SELECT name, email, department FROM company_user_records
+         WHERE email = LOWER(TRIM($1)) AND is_active = TRUE LIMIT 1`,
         [email],
       );
 
