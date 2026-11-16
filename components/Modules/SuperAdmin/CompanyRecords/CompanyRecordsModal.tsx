@@ -10,6 +10,7 @@ import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "../../Modal/Modal";
 import RecordsTab from "./RecordsTab";
 import MissingAccountsTab from "./MissingAccountsTab";
+import ImportTab from "./ImportTab";
 import {
   cancelButtonStyles,
   RecordDetails,
@@ -23,7 +24,7 @@ type CompanyRecordsModalProps = {
   closeModal: () => void;
 };
 
-type Tab = "records" | "missing";
+type Tab = "records" | "missing" | "import";
 
 // Staff records (public.company_user_records): the people an issue can be
 // submitted for. Records are added, edited and deactivated here - never
@@ -57,6 +58,11 @@ const CompanyRecordsModal = ({
 
   // Every change reloads the list, and the "submit for a user" autocomplete
   // (UserEmailAutocomplete) that reads the same records
+  const refreshRecords = () => {
+    queryClient.invalidateQueries({ queryKey: recordsQueryKey });
+    queryClient.invalidateQueries({ queryKey: ["CompanyUserRecordsData"] });
+  };
+
   const mutationHandlers = (
     overlay: "Adding" | "Updating",
     onDone?: () => void,
@@ -68,8 +74,7 @@ const CompanyRecordsModal = ({
     },
     onError: (err: unknown) => triggerAlert("error", getApiErrorMessage(err)),
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: recordsQueryKey });
-      queryClient.invalidateQueries({ queryKey: ["CompanyUserRecordsData"] });
+      refreshRecords();
       hideOverlay();
     },
   });
@@ -111,13 +116,14 @@ const CompanyRecordsModal = ({
     });
   };
 
-  const tabs: { value: Tab; label: string; count: number }[] = [
+  const tabs: { value: Tab; label: string; count?: number }[] = [
     { value: "records", label: "Records", count: records.length },
     {
       value: "missing",
       label: "Missing from records",
       count: missingAccounts.length,
     },
+    { value: "import", label: "Import" },
   ];
 
   return (
@@ -162,7 +168,7 @@ const CompanyRecordsModal = ({
             }`}
           >
             {item.label}
-            {!isLoading && (
+            {!isLoading && item.count !== undefined && (
               <span className="rounded-full bg-neutral-100 px-1.5 py-0.5 text-[11px] text-neutral-600 dark:bg-white/10 dark:text-neutral-300">
                 {item.count}
               </span>
@@ -197,6 +203,7 @@ const CompanyRecordsModal = ({
             isSaving={isAddingMissing}
           />
         )}
+        {tab === "import" && <ImportTab onImported={refreshRecords} />}
       </ModalBody>
 
       <ModalFooter>
