@@ -21,6 +21,10 @@ export const GET = withAuth(async ({ user }) => {
          SELECT 1 FROM users AS u WHERE LOWER(u.email) = r.email
        ) AS "hasAccount",
        EXISTS (
+         SELECT 1 FROM users AS u
+         WHERE LOWER(u.email) = r.email AND u.is_user_active = FALSE
+       ) AS "accountDeactivated",
+       EXISTS (
          SELECT 1 FROM public.departments AS d
          WHERE LOWER(d.department_name) = LOWER(r.department)
        ) AS "departmentKnown"

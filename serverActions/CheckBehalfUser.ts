@@ -26,7 +26,7 @@ export const CheckBehalfUser = async ({
     // Check if the user is already registered and return their payload
     const existingUser = await query(
       `
-      SELECT user_id, username, email, department
+      SELECT user_id, username, email, department, is_user_active
       FROM users WHERE LOWER(email) = LOWER(TRIM($1)) LIMIT 1
       `,
       [email],
@@ -35,6 +35,10 @@ export const CheckBehalfUser = async ({
     // Return user details if user exists
     if (existingUser.length > 0) {
       const userDetails = existingUser[0];
+
+      // No issues on behalf of a deactivated account: the person can't sign
+      // in to follow them, and a super admin switched the account off
+      if (!userDetails.is_user_active) return null;
 
       return {
         userId: userDetails.user_id,

@@ -6,6 +6,7 @@ import {
   accountRemovalBlocker,
   revalidateIssueAgentTags,
 } from "@/lib/userAccounts";
+import { revalidateCompanyRecords } from "@/lib/companyRecords";
 
 // Activates or deactivates (disables) an account. Separate from the lock
 // that too many failed sign-ins set - see unlock-user.
@@ -94,6 +95,8 @@ export const PATCH = withAuth(async ({ request, user }) => {
 
     // Agent lists only show active users
     revalidateIssueAgentTags();
+    // A deactivated account is not suggested for on-behalf issues
+    revalidateCompanyRecords();
 
     return NextResponse.json(
       {

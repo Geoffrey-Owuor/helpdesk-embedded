@@ -182,9 +182,16 @@ const RecordsTab = ({
                     )}
                     {record.hasAccount && (
                       <span
+                        title={
+                          record.accountDeactivated
+                            ? "Not suggested and no issue can be raised for them until the account is activated in the Users table"
+                            : undefined
+                        }
                         className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${indicatorChip}`}
                       >
-                        Has account
+                        {record.accountDeactivated
+                          ? "Account deactivated"
+                          : "Has account"}
                       </span>
                     )}
                   </div>

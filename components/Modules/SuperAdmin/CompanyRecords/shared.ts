@@ -9,6 +9,9 @@ export interface StaffRecord {
   isActive: boolean;
   // The person already has a HelpDesk account under this email
   hasAccount: boolean;
+  // That account is deactivated, so they aren't suggested and no issue can
+  // be raised for them, whatever the record's own status
+  accountDeactivated: boolean;
   // False when the department isn't in the staff Departments list
   departmentKnown: boolean;
 }
