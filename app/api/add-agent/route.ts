@@ -3,6 +3,7 @@ import { query } from "@/lib/Db";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { hashPassword } from "@/lib/Auth";
 import { revalidateIssueAgentTags } from "@/lib/userAccounts";
+import { ensureCompanyUserRecord } from "@/lib/companyRecords";
 
 export const POST = withAuth(async ({ request, user }) => {
   // Agents join the admin's own department, whatever the form sends
@@ -81,6 +82,9 @@ export const POST = withAuth(async ({ request, user }) => {
 
     // Execute the query
     await query(insertQuery, insertParams);
+
+    // Every account has a staff record
+    await ensureCompanyUserRecord({ name, email, department });
 
     // Revalidate agents cache tags
     revalidateIssueAgentTags();

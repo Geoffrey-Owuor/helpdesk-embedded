@@ -10,10 +10,12 @@ import {
   Mail,
   RotateCw,
   UsersRound,
+  Contact,
 } from "lucide-react";
 import GroupEmailsModal from "./GroupEmails/GroupEmailsModal";
 import SpecialAccessModal from "./SpecialAccess/SpecialAccessModal";
 import DepartmentsModal from "./Departments/DepartmentsModal";
+import CompanyRecordsModal from "./CompanyRecords/CompanyRecordsModal";
 
 const SuperAdmin = () => {
   const querClient = useQueryClient();
@@ -21,6 +23,7 @@ const SuperAdmin = () => {
   const [showGroupsModal, setShowGroupsModal] = useState(false);
   const [showDepartmentsModal, setShowDepartmentsModal] = useState(false);
   const [showSpecialAccessModal, setShowSpecialAccessModal] = useState(false);
+  const [showRecordsModal, setShowRecordsModal] = useState(false);
 
   const queryKey =
     activeTab === "users" ? ["UserCountsData"] : ["IssueCountsData"];
@@ -42,6 +45,13 @@ const SuperAdmin = () => {
         <DepartmentsModal
           isModalOpen={showDepartmentsModal}
           closeModal={() => setShowDepartmentsModal(false)}
+        />
+      )}
+      {/* Staff Records Modal (company_user_records) */}
+      {showRecordsModal && (
+        <CompanyRecordsModal
+          isModalOpen={showRecordsModal}
+          closeModal={() => setShowRecordsModal(false)}
         />
       )}
       {/* Special Access Modal */}
@@ -78,6 +88,15 @@ const SuperAdmin = () => {
             >
               <Building2 strokeWidth={1.5} className="h-4 w-4" />
               <span>Departments</span>
+            </button>
+
+            {/* Staff Records Button - the people issues are submitted for */}
+            <button
+              onClick={() => setShowRecordsModal(true)}
+              className="inline-flex items-center gap-2 rounded-xl bg-neutral-100 px-3 py-2 text-sm text-neutral-800 hover:bg-neutral-200/60 dark:bg-neutral-800/60 dark:text-neutral-300 dark:hover:bg-neutral-800/80"
+            >
+              <Contact strokeWidth={1.5} className="h-4 w-4" />
+              <span>Staff Records</span>
             </button>
 
             {/* Group Emails Button - the departments issues are raised to */}

@@ -7,6 +7,7 @@ import {
 } from "@/lib/departments";
 import { hashPassword } from "@/lib/Auth";
 import { isUserRole, revalidateIssueAgentTags } from "@/lib/userAccounts";
+import { ensureCompanyUserRecord } from "@/lib/companyRecords";
 
 export const POST = withAuth(async ({ request, user }) => {
   const { isSuper } = user;
@@ -97,6 +98,9 @@ export const POST = withAuth(async ({ request, user }) => {
 
     // Execute the query
     await query(insertQuery, insertParams);
+
+    // Every account has a staff record
+    await ensureCompanyUserRecord({ name, email, department: departmentName });
 
     // A new agent or admin shows up in the agent lists
     revalidateIssueAgentTags();
