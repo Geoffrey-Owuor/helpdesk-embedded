@@ -8,6 +8,7 @@ import {
   INVALID_DEPARTMENT_MESSAGE,
   resolveDepartmentName,
 } from "@/lib/departments";
+import { ensureCompanyUserRecord } from "@/lib/companyRecords";
 import {
   signRefreshToken,
   signAccessToken,
@@ -109,6 +110,9 @@ export async function POST(request: NextRequest) {
 
     // Commit the transaction to the db
     await client.query("COMMIT");
+
+    // Every account has a staff record
+    await ensureCompanyUserRecord({ name, email, department: departmentName });
 
     // Create a session using the tokens
     await createSession(accessToken, refreshToken);

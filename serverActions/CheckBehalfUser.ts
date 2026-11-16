@@ -27,7 +27,7 @@ export const CheckBehalfUser = async ({
     const existingUser = await query(
       `
       SELECT user_id, username, email, department
-      FROM users WHERE email = $1 LIMIT 1
+      FROM users WHERE LOWER(email) = LOWER(TRIM($1)) LIMIT 1
       `,
       [email],
     );
@@ -43,9 +43,11 @@ export const CheckBehalfUser = async ({
         department: userDetails.department,
       };
     } else {
-      // Confirm if we have the staff info in our database
+      // Confirm if we have the staff info in our database. Record emails are
+      // stored lowercase, and a deactivated record creates no account.
       const existingStaff = await query(
-        `SELECT name, email, department FROM company_user_records WHERE email = $1 LIMIT 1`,
+        `SELECT name, email, department FROM company_user_records
+         WHERE email = LOWER(TRIM($1)) AND is_active = TRUE LIMIT 1`,
         [email],
       );
 

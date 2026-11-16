@@ -47,9 +47,15 @@ export async function QuickCreate(formData: FormData): Promise<AlertMessage> {
       };
     }
 
-    // Confirm if we have the staff info in our database
+    // Confirm the submitter before any file is written: an active staff
+    // record, or an account they already have (deactivating a record doesn't
+    // touch the account) - the same rule CheckBehalfUser applies below
     const existingStaff = await query(
-      `SELECT id FROM company_user_records WHERE email = $1`,
+      `SELECT 1 FROM company_user_records
+       WHERE email = LOWER(TRIM($1)) AND is_active = TRUE
+       UNION ALL
+       SELECT 1 FROM users WHERE LOWER(email) = LOWER(TRIM($1))
+       LIMIT 1`,
       [user_email],
     );
 
