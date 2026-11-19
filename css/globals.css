@@ -709,14 +709,54 @@ html[data-theme="dark"] {
   padding-inline-start: 1.5em;
 }
 
+/* Drawn rather than native: a disabled native checkbox is greyed out and
+   reads as "unavailable", not as done / to do */
 .md-content .task-list-item input[type="checkbox"] {
-  margin: 0 0.5em 0.2em 0;
+  appearance: none;
+  display: inline-grid;
+  place-content: center;
+  width: 1.05em;
+  height: 1.05em;
+  margin: 0 0.55em 0.15em 0;
   vertical-align: middle;
-  accent-color: var(--color-neutral-900);
+  border: 1.5px solid var(--color-neutral-400);
+  border-radius: 0.3em;
+  background: transparent;
+  opacity: 1;
+}
+
+.md-content .task-list-item input[type="checkbox"]:checked {
+  border-color: var(--color-neutral-900);
+  background-color: var(--color-neutral-900);
+}
+
+.md-content .task-list-item input[type="checkbox"]:checked::after {
+  content: "";
+  width: 0.3em;
+  height: 0.55em;
+  margin-top: -0.12em;
+  border: solid var(--color-white);
+  border-width: 0 0.13em 0.13em 0;
+  transform: rotate(45deg);
 }
 
 html[data-theme="dark"] .md-content .task-list-item input[type="checkbox"] {
-  accent-color: var(--color-neutral-100);
+  border-color: var(--color-neutral-500);
+}
+
+html[data-theme="dark"]
+  .md-content
+  .task-list-item
+  input[type="checkbox"]:checked {
+  border-color: var(--color-neutral-100);
+  background-color: var(--color-neutral-100);
+}
+
+html[data-theme="dark"]
+  .md-content
+  .task-list-item
+  input[type="checkbox"]:checked::after {
+  border-color: var(--color-neutral-900);
 }
 
 /* Raw HTML collapsibles (<details>) */
