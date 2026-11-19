@@ -117,7 +117,13 @@ export const ArticleTocSidebar = ({
     const list = listRef.current;
     const item = list?.querySelector<HTMLElement>('[aria-current="location"]');
     if (!list || !item) return;
-    const itemTop = item.offsetTop - list.offsetTop;
+    // Measured from the rects: offsetTop would depend on which ancestor is
+    // positioned (the list is, so subtracting its own offset was off by the
+    // "On this page" label)
+    const itemTop =
+      item.getBoundingClientRect().top -
+      list.getBoundingClientRect().top +
+      list.scrollTop;
     if (itemTop < list.scrollTop) {
       list.scrollTop = itemTop - 8;
     } else if (
