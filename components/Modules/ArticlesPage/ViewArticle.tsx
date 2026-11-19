@@ -1,15 +1,11 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import ReactMarkdown, { Components } from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeHighlight from "rehype-highlight";
 import { UserRound, Calendar, Clock, Building2, ArrowLeft } from "lucide-react";
 import { getArticle } from "@/serverActions/GetArticle";
 import ArticleTypeFormatter from "./ArticleTypeFormatter";
 import { dateFormatter } from "@/lib/assets";
-import { generateSlug } from "@/utils/GenerateSlug";
 import ArticleTOC from "./ArticleTOC";
-import MarkdownVideoLink from "./MarkdownVideoLink";
+import MarkdownContent from "./MarkdownContent";
 import { usePathname } from "next/navigation";
 import ViewArticleSkeleton from "@/components/Skeletons/ViewArticleSkeleton";
 import Link from "next/link";
@@ -35,20 +31,6 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
     queryKey: ["ArticleDataInfo", uuid],
     queryFn: async () => getArticle(uuid),
   });
-
-  // Custom renderer — adds IDs to h2 headings for TOC anchor linking
-  const MarkdownComponents: Components = {
-    h2: ({ children, ...props }) => {
-      const text = children?.toString() || "";
-      const id = generateSlug(text);
-      return (
-        <h2 id={id} style={{ scrollMarginTop: "1rem" }} {...props}>
-          {children}
-        </h2>
-      );
-    },
-    a: MarkdownVideoLink,
-  };
 
   if (loading) return <ViewArticleSkeleton isInDashboard={isInDashboard} />;
 
@@ -80,7 +62,7 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
     <div
       className={`mb-8 flex flex-col px-4 py-6 md:py-3.5 ${paddingX} lg:flex-row lg:gap-6`}
     >
-      <article className="w-full min-w-0 max-w-none">
+      <article className="w-full max-w-none min-w-0">
         {/* Header Section */}
         <header className="mb-6">
           {/* Title */}
@@ -142,19 +124,15 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
         <div className="mb-8 h-px bg-linear-to-r from-transparent via-neutral-300 to-transparent sm:mb-12 dark:via-neutral-700" />
 
         {/* Content Section */}
-        <div className="prose prose-lg dark:prose-invert prose-img:max-w-full prose-img:rounded-xl prose-headings:font-semibold prose-a:text-neutral-700 dark:prose-a:text-neutral-300 prose-code:before:content-none prose-code:after:content-none prose-code:rounded-md prose-code:bg-neutral-100 dark:prose-code:bg-neutral-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:font-normal prose-code:text-[0.875em] max-w-none wrap-break-word">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeHighlight]}
-            components={MarkdownComponents}
-          >
-            {article.article_content}
-          </ReactMarkdown>
-        </div>
+        <MarkdownContent id="article-body" content={article.article_content} />
       </article>
 
       {/* Sidebar TOC — only visible on large screens */}
-      <ArticleTOC content={article.article_content} containerId={containerId} />
+      <ArticleTOC
+        content={article.article_content}
+        bodyId="article-body"
+        containerId={containerId}
+      />
     </div>
   );
 };
