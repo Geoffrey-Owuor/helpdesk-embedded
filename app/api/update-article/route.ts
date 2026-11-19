@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { articleReadTime } from "@/lib/articles/markdownText";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { pool } from "@/lib/Db";
 import { PoolClient } from "pg";
@@ -7,10 +8,10 @@ export const PUT = withAuth(async ({ request }) => {
   let client: PoolClient | undefined;
 
   try {
-    const { formData, readTime } = await request.json();
+    const { formData } = await request.json();
 
     // Simple falsy value check
-    if (!readTime || Object.values(formData).some((value) => !value)) {
+    if (!formData || Object.values(formData).some((value) => !value)) {
       return NextResponse.json(
         { message: "Missing some required form data" },
         { status: 400 },
@@ -25,6 +26,9 @@ export const PUT = withAuth(async ({ request }) => {
       articleType,
       articleContent,
     } = formData;
+
+    // Worked out here from the rendered text, not trusted from the client
+    const readTime = articleReadTime(articleContent);
 
     // get a pool client
     client = await pool.connect();
@@ -82,7 +86,7 @@ export const PUT = withAuth(async ({ request }) => {
 
     // Return a response
     return NextResponse.json(
-      { message: "Article updated successfully" },
+      { message: "Article updated successfully", readTime },
       { status: 200 },
     );
   } catch (error) {
