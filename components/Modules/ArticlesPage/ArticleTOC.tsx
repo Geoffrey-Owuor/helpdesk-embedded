@@ -1,10 +1,13 @@
 "use client";
-import { generateSlug } from "@/utils/GenerateSlug";
 import { useEffect, useState } from "react";
 import SkeletonBox from "@/components/Skeletons/SkeletonBox";
 
 type ArticleTOCProps = {
   content: string;
+  // The rendered article body; headings are read from it so the TOC matches
+  // what's on the page (no ## lines from code blocks, no raw Markdown in the
+  // text, the same deduplicated ids)
+  bodyId: string;
   containerId: string;
 };
 
@@ -24,44 +27,27 @@ const ArticleTOCSkeleton = () => (
   </nav>
 );
 
-const ArticleTOC = ({ content, containerId }: ArticleTOCProps) => {
+const ArticleTOC = ({ content, bodyId, containerId }: ArticleTOCProps) => {
   const [headings, setHeadings] = useState<{ text: string; id: string }[]>([]);
   const [headingsLoading, setHeadingsLoading] = useState(true);
   const [activeId, setActiveId] = useState("");
 
-  // Extract h2 headings from markdown content
+  // Collect the h2 headings once the article body has rendered. Child and
+  // sibling DOM is committed before effects run, so it's already there.
   useEffect(() => {
-    const handleHeadingsPopulation = () => {
-      if (!content) {
-        setHeadingsLoading(false);
-        return;
-      }
-
-      setHeadingsLoading(true);
-
-      try {
-        // Match ## headings (h2), not ### (h3)
-        const regex = /^##\s+(.+)$/gm;
-        const matches: { text: string; id: string }[] = [];
-        let match;
-
-        while ((match = regex.exec(content)) !== null) {
-          matches.push({
-            text: match[1],
-            id: generateSlug(match[1]),
-          });
-        }
-
-        setHeadings(matches);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setHeadingsLoading(false);
-      }
+    const collectHeadings = () => {
+      const body = document.getElementById(bodyId);
+      const found = body
+        ? [...body.querySelectorAll<HTMLHeadingElement>("h2[id]:not(.sr-only)")]
+        : [];
+      setHeadings(
+        found.map((h) => ({ id: h.id, text: h.textContent?.trim() ?? "" })),
+      );
+      setHeadingsLoading(false);
     };
 
-    handleHeadingsPopulation();
-  }, [content]);
+    collectHeadings();
+  }, [content, bodyId]);
 
   // Track scroll position to highlight the active heading
   useEffect(() => {
@@ -123,8 +109,8 @@ const ArticleTOC = ({ content, containerId }: ArticleTOCProps) => {
             </p>
           </li>
         ) : (
-          headings.map((heading, index) => (
-            <li key={index}>
+          headings.map((heading) => (
+            <li key={heading.id}>
               <a
                 href={`#${heading.id}`}
                 className={`block rounded-xl px-3 py-2 text-sm text-wrap transition-colors ${
