@@ -157,7 +157,11 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
 
         <ArticleTocInline headings={headings} />
 
-        <MarkdownContent id={BODY_ID} content={article.article_content} />
+        <MarkdownContent
+          id={BODY_ID}
+          content={article.article_content}
+          headingLinks
+        />
 
         <footer className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-neutral-200 pt-6 text-sm text-neutral-500 dark:border-neutral-800 dark:text-neutral-400">
           <span>Last updated {dateFormatter(article.article_updated_at)}</span>

@@ -9,6 +9,7 @@ import {
 } from "@/lib/articles/markdownPlugins";
 import MarkdownVideoLink from "./MarkdownVideoLink";
 import MarkdownCodeBlock from "./MarkdownCodeBlock";
+import MarkdownHeading from "./MarkdownHeading";
 
 // react-markdown passes the hast `node` to every custom component; it must
 // not be spread onto the DOM element (it renders as node="[object Object]").
@@ -38,6 +39,14 @@ const components: Components = {
   ),
 };
 
+// The article page adds self-links to h2/h3; the editor preview doesn't
+// (its headings aren't on a page anyone can link to)
+const pageComponents: Components = {
+  ...components,
+  h2: (props) => <MarkdownHeading level={2} {...withoutNode(props)} />,
+  h3: (props) => <MarkdownHeading level={3} {...withoutNode(props)} />,
+};
+
 const SIZE_CLASSES = {
   lg: "prose-lg",
   sm: "prose-sm",
@@ -47,6 +56,8 @@ type MarkdownContentProps = {
   content: string;
   size?: keyof typeof SIZE_CLASSES;
   id?: string;
+  // Self-links on section headings
+  headingLinks?: boolean;
 };
 
 // Article Markdown, shared by the article page and the editor preview so
@@ -55,6 +66,7 @@ const MarkdownContent = ({
   content,
   size = "lg",
   id,
+  headingLinks = false,
 }: MarkdownContentProps) => (
   <div
     id={id}
@@ -70,7 +82,7 @@ const MarkdownContent = ({
         [rehypeHighlight, { detect: false }],
         rehypeArticleAnchors,
       ]}
-      components={components}
+      components={headingLinks ? pageComponents : components}
     >
       {content}
     </ReactMarkdown>
