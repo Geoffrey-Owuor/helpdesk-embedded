@@ -2,6 +2,13 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, ArrowUp } from "lucide-react";
 
+// A heading's text without its self-link
+const headingText = (heading: HTMLElement) => {
+  const copy = heading.cloneNode(true) as HTMLElement;
+  copy.querySelector(".heading-anchor")?.remove();
+  return copy.textContent?.trim() ?? "";
+};
+
 export type TocHeading = { id: string; text: string };
 
 // Where a heading counts as "reached": just below the top of the scroller
@@ -25,9 +32,7 @@ export const useArticleToc = (
       const found = body
         ? [...body.querySelectorAll<HTMLHeadingElement>("h2[id]:not(.sr-only)")]
         : [];
-      setHeadings(
-        found.map((h) => ({ id: h.id, text: h.textContent?.trim() ?? "" })),
-      );
+      setHeadings(found.map((h) => ({ id: h.id, text: headingText(h) })));
     };
 
     collectHeadings();

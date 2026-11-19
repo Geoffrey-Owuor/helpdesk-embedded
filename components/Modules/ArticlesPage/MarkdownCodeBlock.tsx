@@ -3,6 +3,7 @@ import { ComponentPropsWithoutRef, useEffect, useRef, useState } from "react";
 import type { Element } from "hast";
 import { Check, Copy } from "lucide-react";
 import { hastToText } from "@/lib/articles/markdownPlugins";
+import { copyText } from "@/utils/copyText";
 
 // Display names for the language tag after the opening ```
 const LANGUAGE_NAMES: Record<string, string> = {
@@ -65,25 +66,6 @@ const getLanguage = (node?: Element) => {
     ?.slice("language-".length);
   if (!lang) return null;
   return LANGUAGE_NAMES[lang.toLowerCase()] ?? lang;
-};
-
-// navigator.clipboard needs a secure context; the app can be opened over
-// plain http on the intranet, so fall back to a hidden textarea.
-const copyText = async (text: string) => {
-  if (navigator.clipboard && window.isSecureContext) {
-    await navigator.clipboard.writeText(text);
-    return;
-  }
-  const textarea = document.createElement("textarea");
-  textarea.value = text;
-  textarea.setAttribute("readonly", "");
-  textarea.style.position = "fixed";
-  textarea.style.opacity = "0";
-  document.body.appendChild(textarea);
-  textarea.select();
-  const ok = document.execCommand("copy");
-  textarea.remove();
-  if (!ok) throw new Error("Copy failed");
 };
 
 type MarkdownCodeBlockProps = ComponentPropsWithoutRef<"pre"> & {
