@@ -1,15 +1,16 @@
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { query } from "@/lib/Db";
 import { NextResponse } from "next/server";
+import { articleReadTime } from "@/lib/articles/markdownText";
 
 export const POST = withAuth(async ({ request, user }) => {
   const { username, userId, email, department } = user;
 
   try {
-    const { formData, readTime } = await request.json();
+    const { formData } = await request.json();
 
     // Simple falsy value check
-    if (!readTime || Object.values(formData).some((value) => !value)) {
+    if (!formData || Object.values(formData).some((value) => !value)) {
       return NextResponse.json(
         { message: "Missing some required form data" },
         { status: 400 },
@@ -24,6 +25,9 @@ export const POST = withAuth(async ({ request, user }) => {
       articleType,
       articleContent,
     } = formData;
+
+    // Worked out here from the rendered text, not trusted from the client
+    const readTime = articleReadTime(articleContent);
 
     // Check if the provided article key is still valid
     const validKey = await query(
