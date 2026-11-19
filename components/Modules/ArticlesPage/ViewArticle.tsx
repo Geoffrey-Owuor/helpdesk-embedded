@@ -54,7 +54,6 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
 
   const { headings, activeId } = useArticleToc(
     article?.article_content,
-    BODY_ID,
     layout.containerId,
   );
 
