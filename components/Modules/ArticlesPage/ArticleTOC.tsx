@@ -1,42 +1,28 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, ArrowUp } from "lucide-react";
+import {
+  articleHeadings,
+  type ArticleHeading,
+} from "@/lib/articles/articleHeadings";
 
-// A heading's text without its self-link
-const headingText = (heading: HTMLElement) => {
-  const copy = heading.cloneNode(true) as HTMLElement;
-  copy.querySelector(".heading-anchor")?.remove();
-  return copy.textContent?.trim() ?? "";
-};
-
-export type TocHeading = { id: string; text: string };
+export type TocHeading = ArticleHeading;
 
 // Where a heading counts as "reached": just below the top of the scroller
 const ACTIVE_OFFSET = 120;
 
-// The article's h2 headings, read from the rendered body so the TOC matches
-// what's on the page (no ## lines from code blocks, no raw Markdown in the
-// text, the same deduplicated ids), and the one the reader is in.
+// The article's h2 sections and the one the reader is in. The headings are
+// worked out from the Markdown during render (not read from the page after
+// it), so both TOCs appear with the article instead of shifting it.
 export const useArticleToc = (
   content: string | undefined,
-  bodyId: string,
   containerId: string,
 ) => {
-  const [headings, setHeadings] = useState<TocHeading[]>([]);
+  const headings = useMemo(
+    () => (content ? articleHeadings(content) : []),
+    [content],
+  );
   const [activeId, setActiveId] = useState("");
-
-  // The body is committed before effects run, so it's already in the DOM
-  useEffect(() => {
-    const collectHeadings = () => {
-      const body = document.getElementById(bodyId);
-      const found = body
-        ? [...body.querySelectorAll<HTMLHeadingElement>("h2[id]:not(.sr-only)")]
-        : [];
-      setHeadings(found.map((h) => ({ id: h.id, text: headingText(h) })));
-    };
-
-    collectHeadings();
-  }, [content, bodyId]);
 
   useEffect(() => {
     const container = document.getElementById(containerId);
