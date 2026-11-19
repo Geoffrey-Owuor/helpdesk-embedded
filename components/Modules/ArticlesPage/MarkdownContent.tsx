@@ -58,7 +58,7 @@ const MarkdownContent = ({
 }: MarkdownContentProps) => (
   <div
     id={id}
-    className={`md-content prose ${SIZE_CLASSES[size]} dark:prose-invert prose-headings:scroll-mt-4 prose-headings:font-semibold prose-a:text-neutral-900 prose-a:decoration-neutral-400 prose-a:underline-offset-2 hover:prose-a:decoration-neutral-900 dark:prose-a:text-neutral-100 dark:hover:prose-a:decoration-neutral-100 prose-img:max-w-full prose-img:rounded-xl prose-code:rounded-md prose-code:border prose-code:border-neutral-200 prose-code:bg-neutral-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.85em] prose-code:font-normal prose-code:text-neutral-800 prose-code:before:content-none prose-code:after:content-none dark:prose-code:border-neutral-800 dark:prose-code:bg-neutral-900 dark:prose-code:text-neutral-200 max-w-none wrap-break-word`}
+    className={`md-content prose ${SIZE_CLASSES[size]} dark:prose-invert prose-headings:scroll-mt-[var(--heading-offset,1rem)] prose-headings:font-semibold prose-a:text-neutral-900 prose-a:decoration-neutral-400 prose-a:underline-offset-2 hover:prose-a:decoration-neutral-900 dark:prose-a:text-neutral-100 dark:hover:prose-a:decoration-neutral-100 prose-img:max-w-full prose-img:rounded-xl prose-code:rounded-md prose-code:border prose-code:border-neutral-200 prose-code:bg-neutral-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.85em] prose-code:font-normal prose-code:text-neutral-800 prose-code:before:content-none prose-code:after:content-none dark:prose-code:border-neutral-800 dark:prose-code:bg-neutral-900 dark:prose-code:text-neutral-200 max-w-none wrap-break-word`}
   >
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}

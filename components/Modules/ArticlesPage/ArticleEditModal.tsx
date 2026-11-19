@@ -106,6 +106,11 @@ const ArticleEditModal = ({
         },
       );
 
+      // The article page caches the full article separately
+      queryClient.invalidateQueries({
+        queryKey: ["ArticleDataInfo", formData.articleKey],
+      });
+
       hideOverlay();
       closeModal();
       triggerAlert("success", response.data.message);

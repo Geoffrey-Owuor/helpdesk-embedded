@@ -4,7 +4,11 @@ import { UserRound, Calendar, Clock, Building2, ArrowLeft } from "lucide-react";
 import { getArticle } from "@/serverActions/GetArticle";
 import ArticleTypeFormatter from "./ArticleTypeFormatter";
 import { dateFormatter } from "@/lib/assets";
-import ArticleTOC from "./ArticleTOC";
+import {
+  ArticleTocInline,
+  ArticleTocSidebar,
+  useArticleToc,
+} from "./ArticleTOC";
 import MarkdownContent from "./MarkdownContent";
 import { usePathname } from "next/navigation";
 import ViewArticleSkeleton from "@/components/Skeletons/ViewArticleSkeleton";
@@ -14,23 +18,45 @@ type ViewArticleProps = {
   uuid: string;
 };
 
+const BODY_ID = "article-body";
+
+// Layout values for the two places an article is shown
+const LAYOUTS = {
+  dashboard: {
+    containerId: "main-content",
+    backTo: "/dashboard/articles",
+    backLabel: "Articles",
+    paddingX: "",
+    stickyTop: "top-6",
+    // Space left above a heading when jumping to it
+    headingOffset: "[--heading-offset:1.5rem]",
+  },
+  public: {
+    containerId: "article-content",
+    backTo: "/articles",
+    backLabel: "Knowledge Base",
+    paddingX: "custom:px-8",
+    // Clear the sticky 4rem HomeNavBar
+    stickyTop: "top-22",
+    headingOffset: "[--heading-offset:5.5rem]",
+  },
+} as const;
+
 const ViewArticle = ({ uuid }: ViewArticleProps) => {
   const pathname = usePathname();
   const isInDashboard = pathname.includes("/dashboard/articles");
+  const layout = LAYOUTS[isInDashboard ? "dashboard" : "public"];
 
-  // Values to determine based on whether the user is in the dashboard or not
-  const containerId = isInDashboard ? "main-content" : "article-content";
-  const backToRoute = isInDashboard ? "/dashboard/articles" : "/articles";
-  const paddingX = isInDashboard ? "" : "custom:px-8";
-
-  const {
-    data: article,
-    isPending: loading,
-    refetch: refetchArticle,
-  } = useQuery({
+  const { data: article, isPending: loading } = useQuery({
     queryKey: ["ArticleDataInfo", uuid],
     queryFn: async () => getArticle(uuid),
   });
+
+  const { headings, activeId } = useArticleToc(
+    article?.article_content,
+    BODY_ID,
+    layout.containerId,
+  );
 
   if (loading) return <ViewArticleSkeleton isInDashboard={isInDashboard} />;
 
@@ -47,7 +73,7 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
             removed.
           </p>
           <Link
-            href={backToRoute}
+            href={layout.backTo}
             className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-3 font-medium text-white transition-colors hover:bg-neutral-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -60,78 +86,96 @@ const ViewArticle = ({ uuid }: ViewArticleProps) => {
 
   return (
     <div
-      className={`mb-8 flex flex-col px-4 py-6 md:py-3.5 ${paddingX} lg:flex-row lg:gap-6`}
+      className={`mb-8 flex justify-center gap-10 px-4 py-6 md:py-8 xl:gap-16 ${layout.paddingX} ${layout.headingOffset}`}
     >
-      <article className="w-full max-w-none min-w-0">
-        {/* Header Section */}
-        <header className="mb-6">
-          {/* Title */}
-          <h1 className="mb-3 text-3xl leading-tight font-bold text-neutral-900 sm:text-4xl dark:text-white">
+      {/* ~72 characters a line at the article's text size */}
+      <article className="w-full max-w-3xl min-w-0">
+        <header className="mb-8">
+          <Link
+            href={layout.backTo}
+            className="mb-6 inline-flex items-center gap-1.5 text-sm text-neutral-500 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+          >
+            <ArrowLeft className="h-4 w-4" aria-hidden />
+            {layout.backLabel}
+          </Link>
+
+          <div className="mb-4">
+            <ArticleTypeFormatter type={article.article_type} />
+          </div>
+
+          <h1 className="mb-3 text-3xl leading-tight font-bold tracking-tight text-balance text-neutral-900 sm:text-4xl dark:text-white">
             {article.article_title}
           </h1>
 
-          {/* Subtitle */}
           {article.article_subtitle && (
-            <p className="mb-3 text-lg text-neutral-500 dark:text-neutral-400">
+            <p className="mb-6 text-lg text-pretty text-neutral-500 dark:text-neutral-400">
               {article.article_subtitle}
             </p>
           )}
 
-          {/* Article type pill */}
-          <div className="mb-5 inline-flex items-center gap-4">
-            <ArticleTypeFormatter type={article.article_type} />
-            <button
-              onClick={() => refetchArticle()}
-              className="rounded-full bg-neutral-900 px-3 py-1 text-xs text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
-            >
-              Refresh
-            </button>
-          </div>
-
-          {/* Meta row */}
-          <div className="flex flex-wrap items-center gap-4 text-sm text-neutral-600 sm:gap-6 sm:text-base dark:text-neutral-400">
+          <dl className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-neutral-600 dark:text-neutral-400">
             <div className="flex items-center gap-2">
-              <UserRound className="h-4 w-4 sm:h-5 sm:w-5" />
-              <span className="font-medium">{article.user_name}</span>
+              <dt>
+                <UserRound className="h-4 w-4" aria-hidden />
+                <span className="sr-only">Author</span>
+              </dt>
+              <dd className="font-medium text-neutral-900 dark:text-neutral-100">
+                {article.user_name}
+              </dd>
             </div>
 
             <div className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 sm:h-5 sm:w-5" />
-              <span>{article.user_department}</span>
+              <dt>
+                <Building2 className="h-4 w-4" aria-hidden />
+                <span className="sr-only">Department</span>
+              </dt>
+              <dd>{article.user_department}</dd>
             </div>
 
             <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
-              <span>{dateFormatter(article.article_updated_at)}</span>
+              <dt>
+                <Calendar className="h-4 w-4" aria-hidden />
+                <span className="sr-only">Last updated</span>
+              </dt>
+              <dd>
+                <span aria-hidden>Updated </span>
+                {dateFormatter(article.article_updated_at)}
+              </dd>
             </div>
 
             <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 sm:h-5 sm:w-5" />
-              <span>{article.article_read_time}</span>
+              <dt>
+                <Clock className="h-4 w-4" aria-hidden />
+                <span className="sr-only">Reading time</span>
+              </dt>
+              <dd>{article.article_read_time}</dd>
             </div>
-
-            <Link
-              href={backToRoute}
-              className="flex cursor-pointer items-center gap-2 transition-colors duration-200 hover:text-neutral-700 dark:hover:text-neutral-300"
-            >
-              <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-              <span>Go back</span>
-            </Link>
-          </div>
+          </dl>
         </header>
 
-        {/* Top Divider */}
-        <div className="mb-8 h-px bg-linear-to-r from-transparent via-neutral-300 to-transparent sm:mb-12 dark:via-neutral-700" />
+        <div className="mb-8 h-px bg-neutral-200 dark:bg-neutral-800" />
 
-        {/* Content Section */}
-        <MarkdownContent id="article-body" content={article.article_content} />
+        <ArticleTocInline headings={headings} />
+
+        <MarkdownContent id={BODY_ID} content={article.article_content} />
+
+        <footer className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-neutral-200 pt-6 text-sm text-neutral-500 dark:border-neutral-800 dark:text-neutral-400">
+          <span>Last updated {dateFormatter(article.article_updated_at)}</span>
+          <Link
+            href={layout.backTo}
+            className="inline-flex items-center gap-1.5 transition-colors hover:text-neutral-900 dark:hover:text-white"
+          >
+            <ArrowLeft className="h-4 w-4" aria-hidden />
+            Back to {layout.backLabel}
+          </Link>
+        </footer>
       </article>
 
-      {/* Sidebar TOC — only visible on large screens */}
-      <ArticleTOC
-        content={article.article_content}
-        bodyId="article-body"
-        containerId={containerId}
+      <ArticleTocSidebar
+        headings={headings}
+        activeId={activeId}
+        containerId={layout.containerId}
+        stickyTopClass={layout.stickyTop}
       />
     </div>
   );

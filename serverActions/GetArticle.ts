@@ -1,5 +1,6 @@
 "use server";
 import { query } from "@/lib/Db";
+import { isUuid } from "@/lib/isUuid";
 
 export interface ArticleData {
   article_type: string;
@@ -13,6 +14,9 @@ export interface ArticleData {
 }
 
 export const getArticle = async (uuid: string): Promise<ArticleData | null> => {
+  // A malformed id in the URL is "not found", not a database error
+  if (!isUuid(uuid)) return null;
+
   const baseQuery = `
   SELECT 
   article_type, article_title, article_subtitle, article_content,
@@ -22,7 +26,7 @@ export const getArticle = async (uuid: string): Promise<ArticleData | null> => {
   try {
     const articleData = await query<ArticleData>(baseQuery, [uuid]);
 
-    return articleData[0];
+    return articleData[0] ?? null;
   } catch (error) {
     console.error("Error while trying to fetch the article:", error);
     return null;
