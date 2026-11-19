@@ -1,7 +1,5 @@
 "use client";
 import Link from "next/link";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import {
   Calendar,
   Clock,
@@ -24,8 +22,10 @@ type ArticleCardsProps = {
     text: string,
     query: string,
   ) => string | (string | JSX.Element)[];
-  getPreviewText: (content: string, maxLength?: number) => string;
+  getPreviewText: (content: string) => string;
   userId?: string;
+  // Super admins can edit anyone's article, like update-article allows
+  isSuper?: boolean;
 };
 
 const ArticleCardsView = ({
@@ -34,6 +34,7 @@ const ArticleCardsView = ({
   highlightText,
   getPreviewText,
   userId,
+  isSuper = false,
 }: ArticleCardsProps) => {
   const [modalId, setModalId] = useState("");
 
@@ -58,7 +59,7 @@ const ArticleCardsView = ({
                 {highlightText(article.article_title, searchQuery)}
               </h2>
               {/* The edit button */}
-              {userId === article.user_id && article.can_edit && (
+              {(userId === article.user_id || isSuper) && article.can_edit && (
                 <>
                   <button
                     type="button"
@@ -112,11 +113,9 @@ const ArticleCardsView = ({
             </div>
 
             {/* Content preview */}
-            <div className="mb-6 grow text-sm text-neutral-700 dark:text-neutral-300">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {getPreviewText(article.article_content)}
-              </ReactMarkdown>
-            </div>
+            <p className="mb-6 line-clamp-4 grow text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
+              {getPreviewText(article.article_content)}
+            </p>
 
             {/* Read more button and article type will go here */}
             <div className="flex items-center justify-between">

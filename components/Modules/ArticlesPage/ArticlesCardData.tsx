@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, ChangeEvent } from "react";
+import { articlePreviewText } from "@/lib/articles/markdownText";
 import { ArticlesCardValues } from "@/serverActions/GetUserArticles";
 import {
   FileSearchCorner,
@@ -22,6 +23,7 @@ type ArticlesCardDataProps = {
   loading: boolean;
   refetchData: () => Promise<void>;
   userId?: string;
+  isSuper?: boolean;
 };
 
 const ArticlesCardData = ({
@@ -29,6 +31,7 @@ const ArticlesCardData = ({
   loading,
   refetchData,
   userId,
+  isSuper = false,
 }: ArticlesCardDataProps) => {
   // Pathname
   const pathname = usePathname();
@@ -67,11 +70,20 @@ const ArticlesCardData = ({
     );
   };
 
-  // Truncate content for card preview
-  const getPreviewText = (content: string, maxLength = 180) => {
-    const preview = content.slice(0, maxLength);
-    return preview.length < content.length ? `${preview}...` : preview;
-  };
+  // Card excerpts as plain text (no half-cut Markdown), parsed once per
+  // article rather than on every search keystroke
+  const previews = useMemo(
+    () =>
+      new Map(
+        (articles ?? []).map((article) => [
+          article.article_content,
+          articlePreviewText(article.article_content),
+        ]),
+      ),
+    [articles],
+  );
+  const getPreviewText = (content: string) =>
+    previews.get(content) ?? articlePreviewText(content);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -161,6 +173,7 @@ const ArticlesCardData = ({
         highlightText={highlightText}
         getPreviewText={getPreviewText}
         userId={userId}
+        isSuper={isSuper}
       />
 
       {/* Pagination */}

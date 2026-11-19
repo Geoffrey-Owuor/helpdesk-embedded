@@ -18,7 +18,7 @@ const UserArticlesWrapper = () => {
 
   // State to hold ONLY the active filter rules, not the data itself
   const [committedFilters, setCommittedFilters] = useState<FilterPill[]>([]);
-  const { userId } = useUser();
+  const { userId, isSuper } = useUser();
 
   // Calculate filtered articles on the fly. No useEffect lag!
   const filteredArticles = useMemo(() => {
@@ -58,6 +58,7 @@ const UserArticlesWrapper = () => {
         loading={loading}
         refetchData={refetchHomeArticles}
         userId={userId}
+        isSuper={isSuper}
       />
     </>
   );

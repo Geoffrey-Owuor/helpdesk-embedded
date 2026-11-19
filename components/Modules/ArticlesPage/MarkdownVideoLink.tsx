@@ -44,7 +44,8 @@ const getFacebookEmbedUrl = (href: string): string | null => {
 
   const host = url.hostname.replace(/^www\./, "");
   const isFacebookVideo =
-    host === "fb.watch" || (host === "facebook.com" && url.pathname.includes("/videos/"));
+    host === "fb.watch" ||
+    (host === "facebook.com" && url.pathname.includes("/videos/"));
 
   if (!isFacebookVideo) return null;
   return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(href)}&show_text=false`;
@@ -78,7 +79,9 @@ const MarkdownVideoLink = ({
   if (href) {
     const youtubeEmbedUrl = getYouTubeEmbedUrl(href);
     if (youtubeEmbedUrl) {
-      return <VideoEmbed src={youtubeEmbedUrl} title="Embedded YouTube video" />;
+      return (
+        <VideoEmbed src={youtubeEmbedUrl} title="Embedded YouTube video" />
+      );
     }
 
     const facebookEmbedUrl = getFacebookEmbedUrl(href);
@@ -89,8 +92,17 @@ const MarkdownVideoLink = ({
     }
   }
 
+  // Absolute links open in a new tab so the reader keeps their place; in-app
+  // links are written relative (#section, /helpdesk/...) and stay in the tab.
+  // (No origin check: window isn't there on the server render.)
+  const isExternal = !!href && /^https?:\/\//i.test(href);
+
   return (
-    <a href={href} {...props}>
+    <a
+      href={href}
+      {...props}
+      {...(isExternal && { target: "_blank", rel: "noopener noreferrer" })}
+    >
       {children}
     </a>
   );

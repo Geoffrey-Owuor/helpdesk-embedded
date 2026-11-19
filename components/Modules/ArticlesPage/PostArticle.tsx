@@ -96,8 +96,6 @@ const PostArticle = () => {
 
   const handleSubmit = async () => {
     hideDialog();
-    const readTime = `${Math.ceil(formData.articleContent.split(/\s+/).length / 200)} min read`;
-
     // Our trimmed formData
     const trimmedData: FormData = {
       ...formData,
@@ -105,17 +103,13 @@ const PostArticle = () => {
       articleSubtitle: formData.articleSubtitle.trim(),
       articleContent: formData.articleContent.trim(),
     };
-    postBlogMutation({ formData: trimmedData, readTime });
+    postBlogMutation(trimmedData);
   };
 
   const { mutate: postBlogMutation, isPending: loading } = useMutation({
-    mutationFn: async ({
-      formData,
-      readTime,
-    }: {
-      formData: FormData;
-      readTime: string;
-    }) => apiClient.post("/post-article", { formData, readTime }),
+    // The server works out the read time
+    mutationFn: async (formData: FormData) =>
+      apiClient.post("/post-article", { formData }),
     onMutate: () => showOverlay("Adding"),
     onSuccess: (response) => {
       hideOverlay();
@@ -131,7 +125,7 @@ const PostArticle = () => {
       triggerAlert("error", errorMessage);
     },
     onSettled: () =>
-      queryClient.invalidateQueries({ queryKey: ["UserArticlesInfo"] }),
+      queryClient.invalidateQueries({ queryKey: ["HomeArticlesData"] }),
   });
 
   return (
