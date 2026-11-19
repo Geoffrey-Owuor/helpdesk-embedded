@@ -86,7 +86,10 @@ export const usePinnedIssuesStore = create<
     }),
     {
       name: "HelpDesk-pinned-issues-store",
-      storage: createJSONStorage(() => localStorage),
+      // window.localStorage, not the bare global: on the server `window` is
+      // undefined and createJSONStorage swallows the error, whereas Node 25+
+      // has its own experimental `localStorage` global that warns when read.
+      storage: createJSONStorage(() => window.localStorage),
       partialize: (state) => ({ pinnedIssues: state.pinnedIssues }),
       // Too large for a cookie, so the server can't know the pins: the server
       // and first client render both start empty, and DashboardLayoutShell
