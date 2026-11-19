@@ -1,146 +1,208 @@
 "use client";
-import { generateSlug } from "@/utils/GenerateSlug";
-import { useEffect, useState } from "react";
-import SkeletonBox from "@/components/Skeletons/SkeletonBox";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronDown, ArrowUp } from "lucide-react";
+import {
+  articleHeadings,
+  type ArticleHeading,
+} from "@/lib/articles/articleHeadings";
 
-type ArticleTOCProps = {
-  content: string;
-  containerId: string;
-};
+export type TocHeading = ArticleHeading;
 
-const ArticleTOCSkeleton = () => (
-  <nav className="small-scrollbar sticky top-2 hidden max-h-[calc(100dvh-2rem)] w-70 shrink-0 flex-col overflow-y-auto rounded-xl p-4 lg:flex">
-    <div className="mb-4 border-b-2 border-neutral-200 pb-2 dark:border-neutral-800">
-      <SkeletonBox className="h-3.5 w-24 bg-neutral-200 dark:bg-neutral-800" />
-    </div>
-    <div className="space-y-3">
-      {["full", "3/4", "5/6", "full", "4/5", "2/3"].map((w, i) => (
-        <SkeletonBox
-          key={i}
-          className={`h-4 w-${w} bg-neutral-200 dark:bg-neutral-800`}
-        />
-      ))}
-    </div>
-  </nav>
-);
+// Where a heading counts as "reached": just below the top of the scroller
+const ACTIVE_OFFSET = 120;
 
-const ArticleTOC = ({ content, containerId }: ArticleTOCProps) => {
-  const [headings, setHeadings] = useState<{ text: string; id: string }[]>([]);
-  const [headingsLoading, setHeadingsLoading] = useState(true);
+// The article's h2 sections and the one the reader is in. The headings are
+// worked out from the Markdown during render (not read from the page after
+// it), so both TOCs appear with the article instead of shifting it.
+export const useArticleToc = (
+  content: string | undefined,
+  containerId: string,
+) => {
+  const headings = useMemo(
+    () => (content ? articleHeadings(content) : []),
+    [content],
+  );
   const [activeId, setActiveId] = useState("");
 
-  // Extract h2 headings from markdown content
   useEffect(() => {
-    const handleHeadingsPopulation = () => {
-      if (!content) {
-        setHeadingsLoading(false);
+    const container = document.getElementById(containerId);
+    if (!container || headings.length === 0) return;
+
+    let frame = 0;
+
+    const updateActive = () => {
+      frame = 0;
+      const elements = headings
+        .map((h) => document.getElementById(h.id))
+        .filter((el): el is HTMLElement => !!el);
+      if (elements.length === 0) return;
+
+      // At the very bottom the last sections may be too short to reach the
+      // offset, so the last heading wins
+      const atBottom =
+        container.scrollTop + container.clientHeight >=
+        container.scrollHeight - 4;
+      if (atBottom) {
+        setActiveId(elements[elements.length - 1].id);
         return;
       }
 
-      setHeadingsLoading(true);
-
-      try {
-        // Match ## headings (h2), not ### (h3)
-        const regex = /^##\s+(.+)$/gm;
-        const matches: { text: string; id: string }[] = [];
-        let match;
-
-        while ((match = regex.exec(content)) !== null) {
-          matches.push({
-            text: match[1],
-            id: generateSlug(match[1]),
-          });
-        }
-
-        setHeadings(matches);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setHeadingsLoading(false);
-      }
-    };
-
-    handleHeadingsPopulation();
-  }, [content]);
-
-  // Track scroll position to highlight the active heading
-  useEffect(() => {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    if (headings.length === 0) return;
-
-    let ticking = false;
-
-    const doScrollMath = () => {
-      if (window.innerWidth < 1024) return;
-
-      const headingElements = headings
-        .map((h) => document.getElementById(h.id))
-        .filter(Boolean) as HTMLElement[];
-
-      if (headingElements.length === 0) return;
-
-      const offset = 120;
-      let currentActiveId = "";
-
-      for (let i = headingElements.length - 1; i >= 0; i--) {
-        const rect = headingElements[i].getBoundingClientRect();
-        if (rect.top <= offset) {
-          currentActiveId = headingElements[i].id;
+      const top = container.getBoundingClientRect().top;
+      let current = "";
+      for (const el of elements) {
+        if (el.getBoundingClientRect().top - top <= ACTIVE_OFFSET) {
+          current = el.id;
+        } else {
           break;
         }
       }
-
-      setActiveId(currentActiveId);
-      ticking = false;
+      setActiveId(current);
     };
 
     const handleScroll = () => {
-      if (!ticking) {
-        ticking = true;
-        setTimeout(doScrollMath, 50);
-      }
+      if (!frame) frame = requestAnimationFrame(updateActive);
     };
 
-    doScrollMath();
+    updateActive();
     container.addEventListener("scroll", handleScroll, { passive: true });
-    return () => container.removeEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      container.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
   }, [headings, containerId]);
 
-  if (headingsLoading) return <ArticleTOCSkeleton />;
+  return { headings, activeId };
+};
+
+const scrollToTop = (containerId: string) => {
+  document.getElementById(containerId)?.scrollTo({ top: 0 });
+};
+
+type ArticleTocProps = {
+  headings: TocHeading[];
+  activeId: string;
+  containerId: string;
+  // Sticky offset below a sticky navbar (the public page has one)
+  stickyTopClass: string;
+};
+
+// Desktop: sticky rail beside the article, with the reader's section marked
+export const ArticleTocSidebar = ({
+  headings,
+  activeId,
+  containerId,
+  stickyTopClass,
+}: ArticleTocProps) => {
+  const listRef = useRef<HTMLUListElement>(null);
+
+  // Keep the active entry visible in a TOC taller than the screen, without
+  // scrollIntoView (it would also scroll the page)
+  useEffect(() => {
+    const list = listRef.current;
+    const item = list?.querySelector<HTMLElement>('[aria-current="location"]');
+    if (!list || !item) return;
+    // Measured from the rects: offsetTop would depend on which ancestor is
+    // positioned (the list is, so subtracting its own offset was off by the
+    // "On this page" label)
+    const itemTop =
+      item.getBoundingClientRect().top -
+      list.getBoundingClientRect().top +
+      list.scrollTop;
+    if (itemTop < list.scrollTop) {
+      list.scrollTop = itemTop - 8;
+    } else if (
+      itemTop + item.offsetHeight >
+      list.scrollTop + list.clientHeight
+    ) {
+      list.scrollTop = itemTop + item.offsetHeight - list.clientHeight + 8;
+    }
+  }, [activeId]);
+
+  if (headings.length === 0) return null;
 
   return (
-    <nav className="small-scrollbar sticky top-2 hidden max-h-[calc(100dvh-2rem)] w-70 shrink-0 flex-col overflow-y-auto rounded-xl p-4 lg:flex">
-      <h4 className="mb-4 border-b-2 border-neutral-300 pb-2 text-sm font-bold tracking-wider text-neutral-500 uppercase dark:border-neutral-600 dark:text-neutral-400">
+    <nav
+      aria-label="On this page"
+      className={`sticky ${stickyTopClass} hidden max-h-[calc(100dvh-8rem)] w-60 shrink-0 flex-col self-start lg:flex xl:w-64`}
+    >
+      <p className="mb-3 text-xs font-semibold tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
         On this page
-      </h4>
-      <ul className="space-y-3">
-        {headings.length === 0 ? (
-          <li>
-            <p className="px-3 py-2 text-sm text-neutral-400 italic dark:text-neutral-500">
-              No headings found
-            </p>
-          </li>
-        ) : (
-          headings.map((heading, index) => (
-            <li key={index}>
+      </p>
+      <ul
+        ref={listRef}
+        className="small-scrollbar relative min-h-0 flex-1 overflow-y-auto border-l border-neutral-200 dark:border-neutral-800"
+      >
+        {headings.map((heading) => {
+          const isActive = activeId === heading.id;
+          return (
+            <li key={heading.id}>
               <a
                 href={`#${heading.id}`}
-                className={`block rounded-xl px-3 py-2 text-sm text-wrap transition-colors ${
-                  activeId === heading.id
-                    ? "bg-neutral-100 font-medium text-neutral-900 dark:bg-neutral-800 dark:text-white"
-                    : "text-neutral-500 hover:text-neutral-800 hover:underline dark:text-neutral-400 dark:hover:text-neutral-200"
+                aria-current={isActive ? "location" : undefined}
+                className={`-ml-px block border-l-2 py-1.5 pr-2 pl-4 text-sm leading-snug transition-colors ${
+                  isActive
+                    ? "border-neutral-900 font-medium text-neutral-900 dark:border-white dark:text-white"
+                    : "border-transparent text-neutral-500 hover:border-neutral-400 hover:text-neutral-900 dark:text-neutral-400 dark:hover:border-neutral-500 dark:hover:text-neutral-100"
                 }`}
               >
                 {heading.text}
               </a>
             </li>
-          ))
-        )}
+          );
+        })}
       </ul>
+      <button
+        type="button"
+        onClick={() => scrollToTop(containerId)}
+        className="mt-4 inline-flex w-fit cursor-pointer items-center gap-1.5 text-sm text-neutral-500 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+      >
+        <ArrowUp className="h-4 w-4" aria-hidden />
+        Back to top
+      </button>
     </nav>
   );
 };
 
-export default ArticleTOC;
+// Phones and tablets: a collapsible list under the article header
+export const ArticleTocInline = ({
+  headings,
+}: Pick<ArticleTocProps, "headings">) => {
+  const detailsRef = useRef<HTMLDetailsElement>(null);
+
+  if (headings.length === 0) return null;
+
+  return (
+    <details
+      ref={detailsRef}
+      className="group mb-8 rounded-xl border border-neutral-200 lg:hidden dark:border-neutral-800"
+    >
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-medium text-neutral-900 select-none dark:text-neutral-100 [&::-webkit-details-marker]:hidden">
+        <span>
+          On this page
+          <span className="ml-2 text-neutral-500 dark:text-neutral-400">
+            {headings.length} sections
+          </span>
+        </span>
+        <ChevronDown
+          className="h-4 w-4 text-neutral-500 transition-transform group-open:rotate-180"
+          aria-hidden
+        />
+      </summary>
+      <ol className="small-scrollbar max-h-[50dvh] space-y-0.5 overflow-y-auto border-t border-neutral-200 px-2 py-2 dark:border-neutral-800">
+        {headings.map((heading) => (
+          <li key={heading.id}>
+            <a
+              href={`#${heading.id}`}
+              onClick={() => detailsRef.current?.removeAttribute("open")}
+              className="block rounded-lg px-2 py-2 text-sm text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white"
+            >
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </details>
+  );
+};

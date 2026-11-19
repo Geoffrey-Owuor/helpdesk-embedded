@@ -62,7 +62,6 @@ const ArticleEditModal = ({
 
   const handleSubmit = async () => {
     hideDialog();
-    const readTime = `${Math.ceil(formData.articleContent.split(/\s+/).length / 200)} min read`;
     // Our trimmed formData
     const trimmedData: FormData = {
       ...formData,
@@ -70,21 +69,20 @@ const ArticleEditModal = ({
       articleSubtitle: formData.articleSubtitle.trim(),
       articleContent: formData.articleContent.trim(),
     };
-    updateArticleMutation({ formData: trimmedData, readTime });
+    updateArticleMutation(trimmedData);
   };
 
   const { mutate: updateArticleMutation, isPending: updating } = useMutation({
-    mutationFn: async ({
-      formData,
-      readTime,
-    }: {
-      formData: FormData;
-      readTime: string;
-    }) => apiClient.put("update-article", { formData, readTime }),
+    // The server works out the read time and returns it
+    mutationFn: async (formData: FormData) =>
+      apiClient.put<{ message: string; readTime: string }>("update-article", {
+        formData,
+      }),
     onMutate: () => showOverlay("Updating"),
-    onSuccess: (response, { formData, readTime }) => {
+    onSuccess: (response, formData) => {
+      const { readTime } = response.data;
       queryClient.setQueryData(
-        ["UserArticlesInfo"],
+        ["HomeArticlesData"],
         (oldData: ArticlesCardValues[]) => {
           if (!oldData) return oldData;
           return oldData.map((article) => {
@@ -105,6 +103,11 @@ const ArticleEditModal = ({
           });
         },
       );
+
+      // The article page caches the full article separately
+      queryClient.invalidateQueries({
+        queryKey: ["ArticleDataInfo", formData.articleKey],
+      });
 
       hideOverlay();
       closeModal();
