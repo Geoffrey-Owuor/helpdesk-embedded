@@ -24,6 +24,8 @@ type ArticleCardsProps = {
   ) => string | (string | JSX.Element)[];
   getPreviewText: (content: string) => string;
   userId?: string;
+  // Super admins can edit anyone's article, like update-article allows
+  isSuper?: boolean;
 };
 
 const ArticleCardsView = ({
@@ -32,6 +34,7 @@ const ArticleCardsView = ({
   highlightText,
   getPreviewText,
   userId,
+  isSuper = false,
 }: ArticleCardsProps) => {
   const [modalId, setModalId] = useState("");
 
@@ -56,7 +59,7 @@ const ArticleCardsView = ({
                 {highlightText(article.article_title, searchQuery)}
               </h2>
               {/* The edit button */}
-              {userId === article.user_id && article.can_edit && (
+              {(userId === article.user_id || isSuper) && article.can_edit && (
                 <>
                   <button
                     type="button"

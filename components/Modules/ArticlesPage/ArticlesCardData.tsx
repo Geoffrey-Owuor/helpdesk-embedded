@@ -23,6 +23,7 @@ type ArticlesCardDataProps = {
   loading: boolean;
   refetchData: () => Promise<void>;
   userId?: string;
+  isSuper?: boolean;
 };
 
 const ArticlesCardData = ({
@@ -30,6 +31,7 @@ const ArticlesCardData = ({
   loading,
   refetchData,
   userId,
+  isSuper = false,
 }: ArticlesCardDataProps) => {
   // Pathname
   const pathname = usePathname();
@@ -171,6 +173,7 @@ const ArticlesCardData = ({
         highlightText={highlightText}
         getPreviewText={getPreviewText}
         userId={userId}
+        isSuper={isSuper}
       />
 
       {/* Pagination */}

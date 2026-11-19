@@ -4,7 +4,7 @@ import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
 import { query } from "@/lib/Db";
 import { isUuid } from "@/lib/isUuid";
 
-export const PUT = withAuth(async ({ request }) => {
+export const PUT = withAuth(async ({ request, user }) => {
   try {
     const { formData } = await request.json();
 
@@ -37,7 +37,8 @@ export const PUT = withAuth(async ({ request }) => {
 
     // One statement: the can_edit check and the update can't be split by a
     // concurrent edit, so there's no transaction or row lock to manage.
-    // Saving locks the article until an admin re-enables editing.
+    // Only the author or a super admin may edit. Saving locks the article
+    // until an admin re-enables editing.
     const updated = await query<{ article_id: string }>(
       `UPDATE articles
        SET article_title = $1,
@@ -47,7 +48,9 @@ export const PUT = withAuth(async ({ request }) => {
            article_read_time = $5,
            article_updated_at = CURRENT_TIMESTAMP,
            can_edit = FALSE
-       WHERE article_id = $6 AND can_edit = TRUE
+       WHERE article_id = $6
+         AND can_edit = TRUE
+         AND (user_id = $7 OR $8::boolean)
        RETURNING article_id`,
       [
         articleTitle,
@@ -56,24 +59,33 @@ export const PUT = withAuth(async ({ request }) => {
         articleContent,
         readTime,
         articleKey,
+        user.userId,
+        user.isSuper === true,
       ],
     );
 
     if (updated.length === 0) {
-      // Nothing updated: tell a missing article from a locked one
-      const existing = await query(
-        `SELECT 1 FROM articles WHERE article_id = $1`,
+      // Nothing updated: work out why
+      const [existing] = await query<{ user_id: string; can_edit: boolean }>(
+        `SELECT user_id, can_edit FROM articles WHERE article_id = $1`,
         [articleKey],
       );
-      return existing.length === 0
-        ? NextResponse.json(
-            { message: "Selected article to update could not be found" },
-            { status: 404 },
-          )
-        : NextResponse.json(
-            { message: "Selected article cannot be edited, contact admin" },
-            { status: 409 },
-          );
+      if (!existing) {
+        return NextResponse.json(
+          { message: "Selected article to update could not be found" },
+          { status: 404 },
+        );
+      }
+      if (existing.user_id !== user.userId && !user.isSuper) {
+        return NextResponse.json(
+          { message: "Only the author or a super admin can edit this article" },
+          { status: 403 },
+        );
+      }
+      return NextResponse.json(
+        { message: "Selected article cannot be edited, contact admin" },
+        { status: 409 },
+      );
     }
 
     // Return a response
