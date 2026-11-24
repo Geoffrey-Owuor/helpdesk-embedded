@@ -4,7 +4,7 @@ import { useState, FocusEvent } from "react";
 import { useDepartmentOptions } from "@/hooks/useDepartmentOptions";
 import { CheckCircle2, Mail, UserRound } from "lucide-react";
 import { NameValidationResult, NameValidator } from "@/utils/Validators";
-import { validateHotpointEmail } from "@/utils/Validators";
+import { validateCompanyEmail } from "@/utils/Validators";
 import NameRulesCard from "../../NameRulesCard";
 import CustomDropdown from "./CustomDropDown";
 import FormAsterisk from "../../FormAsterisk";
@@ -22,6 +22,7 @@ import {
   ModalForm,
   ModalHeader,
 } from "../../Modal/Modal";
+import { emailPlaceholder } from "@/lib/config";
 
 export const baseRoles = [
   { option: "User", value: "user" },
@@ -70,7 +71,7 @@ const EditUserModal = ({
   const userCardsKey = ["UserCountsData"];
 
   const [formData, setFormData] = useState<UserInfo>(userInfo);
-  const isEmailValid = validateHotpointEmail(formData.email);
+  const isEmailValid = validateCompanyEmail(formData.email);
 
   // Name validation states
   const [isNameFocused, setIsNameFocused] = useState(false);
@@ -231,7 +232,7 @@ const EditUserModal = ({
                 className={`text-[10px] ${formData.email && !isEmailValid ? "text-red-500" : ""}`}
               >
                 {formData.email && !isEmailValid
-                  ? "invalid hotpoint email"
+                  ? "invalid company email"
                   : "should be accurate"}
               </span>
             </label>
@@ -245,7 +246,7 @@ const EditUserModal = ({
                 onChange={handleChange}
                 onBlur={handleBlur}
                 required
-                placeholder="example@example.com"
+                placeholder={emailPlaceholder("example")}
                 className="w-full rounded-xl border border-neutral-300 bg-white py-2.5 pr-3.5 pl-9 text-sm text-neutral-900 shadow-sm transition-all duration-150 placeholder:text-neutral-400 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
               />
             </div>

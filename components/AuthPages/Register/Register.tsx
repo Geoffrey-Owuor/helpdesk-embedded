@@ -4,8 +4,9 @@ import AuthShell from "../AuthShell";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ApiHandler } from "@/utils/ApiHandler";
-import { validateHotpointEmail } from "@/utils/Validators";
+import { validateCompanyEmail } from "@/utils/Validators";
 import { Mail, Loader2, ArrowRight } from "lucide-react";
+import { emailPlaceholder } from "@/lib/config";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -18,8 +19,8 @@ const Register = () => {
     setError("");
 
     // The email validation check
-    if (!validateHotpointEmail(email)) {
-      setError("Access restricted. Please use a valid @example.com email.");
+    if (!validateCompanyEmail(email)) {
+      setError("Access restricted. Please use your company email address.");
       return; // Stop execution
     }
 
@@ -84,7 +85,7 @@ const Register = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value.trim())}
                 className="w-full rounded-full border border-neutral-400 bg-white py-3 pr-3 pl-14 text-neutral-900 placeholder-neutral-400 focus:border-neutral-600 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900/50 dark:text-white dark:focus:border-neutral-500"
-                placeholder="you@example.com"
+                placeholder={emailPlaceholder("you")}
                 required
               />
             </div>

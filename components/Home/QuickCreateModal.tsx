@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { indicatorMuted, priorityIndicators } from "@/lib/indicatorStyles";
 import { useQuery } from "@tanstack/react-query";
-import { validateHotpointEmail } from "@/utils/Validators";
+import { validateCompanyEmail } from "@/utils/Validators";
 import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import {
   fetchedIssueAgentsMapping,
@@ -103,7 +103,7 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
   // State for adding files
   const [files, setFiles] = useState<File[]>([]);
 
-  const isValidEmail = validateHotpointEmail(formData.user_email);
+  const isValidEmail = validateCompanyEmail(formData.user_email);
 
   // Name validation states
   const [isNameFocused, setIsNameFocused] = useState(false);
@@ -285,7 +285,7 @@ const QuickCreateModal = ({ isOpen, setIsOpen }: QuickCreateModalProps) => {
                     className={`text-[10px] font-normal ${formData.user_email && !isValidEmail ? "text-red-500" : ""} lowercase`}
                   >
                     {formData.user_email && !isValidEmail
-                      ? "Invalid hotpoint email."
+                      ? "Invalid company email."
                       : "Double-check for follow-up alerts."}
                   </span>
                 </label>

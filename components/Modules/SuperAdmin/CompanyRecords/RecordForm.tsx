@@ -13,6 +13,7 @@ import {
   RecordDetails,
   StaffRecord,
 } from "./shared";
+import { emailPlaceholder } from "@/lib/config";
 
 type RecordFormProps = {
   // The record being edited; absent when adding one
@@ -101,7 +102,7 @@ const RecordForm = ({ record, onCancel, onSave, isSaving }: RecordFormProps) => 
               onBlur={() => setEmail((value) => value.trim().toLowerCase())}
               required
               maxLength={255}
-              placeholder="example@example.com"
+              placeholder={emailPlaceholder("example")}
               className={inputStyles}
             />
           </div>

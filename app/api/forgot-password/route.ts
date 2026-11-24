@@ -1,5 +1,5 @@
 import { query } from "@/lib/Db";
-import { validateHotpointEmail } from "@/utils/Validators";
+import { validateCompanyEmail } from "@/utils/Validators";
 import { sendPasswordResetLink } from "@/lib/passwordReset";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -7,10 +7,10 @@ export async function POST(request: NextRequest) {
   try {
     const { email } = await request.json();
 
-    // Check if it is a hotpoint email
-    if (!validateHotpointEmail(email)) {
+    // Check if it is a company email
+    if (!validateCompanyEmail(email)) {
       return NextResponse.json(
-        { message: "Unauthorized domain. Please use a Hotpoint email." },
+        { message: "Unauthorized domain. Please use your company email." },
         { status: 403 },
       );
     }

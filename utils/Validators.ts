@@ -1,8 +1,14 @@
-// Email Validator (To make sure the email is a hotpoint email)
-export const validateHotpointEmail = (email: string) => {
-  // Regex ensures a standard email format and ends with our specified domain
-  const hotpointRegex = /^[a-zA-Z0-9._%+-]+@example\.com$/i;
-  return hotpointRegex.test(email);
+import { companyEmailDomain } from "@/lib/config";
+
+// Escaped for use inside a RegExp ("example.com" -> "example\.com")
+const escapedDomain = companyEmailDomain.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+// Email Validator: a standard email format on the company domain
+// (NEXT_PUBLIC_COMPANY_EMAIL_DOMAIN). Rejects everything when that isn't set,
+// so a missing setting can't open registration to any address.
+export const validateCompanyEmail = (email: string) => {
+  if (!companyEmailDomain) return false;
+  return new RegExp(`^[a-zA-Z0-9._%+-]+@${escapedDomain}$`, "i").test(email);
 };
 
 //NAME VALIDATION

@@ -5,7 +5,7 @@ import { useAlertStore } from "@/store/useAlertStore";
 import { Loader2, ArrowRight, Mail } from "lucide-react";
 import AuthShell from "../AuthShell";
 import { ApiHandler } from "@/utils/ApiHandler";
-import { validateHotpointEmail } from "@/utils/Validators";
+import { validateCompanyEmail } from "@/utils/Validators";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -21,8 +21,8 @@ const ForgotPassword = () => {
     // clear alerts
     clearAlerts();
 
-    if (!validateHotpointEmail(email)) {
-      triggerAlert("error", "Email provided is not a valid Hotpoint email");
+    if (!validateCompanyEmail(email)) {
+      triggerAlert("error", "Email provided is not a valid company email");
       return;
     }
     setIsLoading(true);
