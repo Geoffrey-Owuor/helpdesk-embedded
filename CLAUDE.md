@@ -115,6 +115,10 @@ The app is served under a sub-path (`NEXT_PUBLIC_BASE_PATH`, e.g. `/helpdesk`; `
 - **Cookies** are set with `path: "/"`, so other apps on the same origin (the hub) receive them too. That's fine while the hub's cookie names differ from HelpDesk's (`accessToken`, `refreshToken`, `oauth_*`, `verify_email`, `sso_pending_registration`). If they could collide, scope them to `basePath || "/"` and pass the same `path` to every `cookies.delete()`.
 - `public/` is served as-is under the base path - keep only static assets there, never source files (shared constants live in `lib/assets.ts`).
 
+### Deployment config (`lib/config.ts`)
+
+The repo is public, so nothing deployment-specific is hard-coded: no company email domain, addresses, hostnames, IPs or server paths. `lib/config.ts` reads them from environment variables in one place (base path, public URL, hub URL, `NEXT_PUBLIC_COMPANY_EMAIL_DOMAIN`, `NEXT_PUBLIC_HELPDESK_EMAIL`, `DEV_ALLOWED_ORIGINS`); `next.config.ts` imports it too, so keep it free of app imports. Add new values there. `NEXT_PUBLIC_*` values are inlined at build time, so they must be set before `next build`. `validateCompanyEmail` (`utils/Validators.ts`) rejects every address when the domain isn't set, and runs on the client and in `register`/`forgot-password`. Email inputs use `emailPlaceholder("you")`; user-facing text says "company email", not the company's domain. The deploy workflows take host paths, app names and ports from GitHub Actions repository variables (`APP_NAME`, `APP_ROOT_DIR`, `APP_PORT`, `CACHE_ROOT`, and `TEST_*` for the test pipeline) and only run where `DEPLOY_ENABLED` is `true`; `deploy.ps1` requires `-AppName` and `-AppRootDir`.
+
 ### Working on proposed changes (`.claude/skills/CHANGES.md`)
 
 Proposed bug fixes and UI/UX changes are written up in `.claude/skills/CHANGES.md`. Each time you pick that file up:

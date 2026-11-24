@@ -2,7 +2,7 @@ import { query } from "@/lib/Db";
 import { NextRequest, NextResponse } from "next/server";
 import VerificationCodeTemplate from "@/templates/VerificationCodeTemplate";
 import { sendEmail } from "@/services/EmailService";
-import { validateHotpointEmail } from "@/utils/Validators";
+import { validateCompanyEmail } from "@/utils/Validators";
 import crypto from "crypto";
 import { cookies } from "next/headers";
 import { SignJWT } from "jose";
@@ -11,9 +11,9 @@ export async function POST(request: NextRequest) {
   try {
     const { email } = await request.json();
 
-    if (!validateHotpointEmail(email)) {
+    if (!validateCompanyEmail(email)) {
       return NextResponse.json(
-        { message: "Unauthorized domain. Please use a Hotpoint email." },
+        { message: "Unauthorized domain. Please use your company email." },
         { status: 403 },
       );
     }

@@ -9,7 +9,7 @@ import NameRulesCard from "../../NameRulesCard";
 import FormAsterisk from "../../FormAsterisk";
 import { baseRoles, baseStatuses } from "./EditUserModal";
 import apiClient from "@/lib/AxiosClient";
-import { validateHotpointEmail } from "@/utils/Validators";
+import { validateCompanyEmail } from "@/utils/Validators";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAlertStore } from "@/store/useAlertStore";
 import { useConfirmStore } from "@/store/useConfirmStore";
@@ -23,6 +23,7 @@ import {
   ModalForm,
   ModalHeader,
 } from "../../Modal/Modal";
+import { emailPlaceholder } from "@/lib/config";
 
 type AddUserModalProps = {
   hideModal: () => void;
@@ -55,7 +56,7 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
     status: "",
   });
 
-  const isEmailValid = validateHotpointEmail(formData.email);
+  const isEmailValid = validateCompanyEmail(formData.email);
 
   // Name validation states
   const [isNameFocused, setIsNameFocused] = useState(false);
@@ -229,7 +230,7 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
                 className={`text-[10px] ${formData.email && !isEmailValid ? "text-red-500" : ""}`}
               >
                 {formData.email && !isEmailValid
-                  ? "invalid hotpoint email"
+                  ? "invalid company email"
                   : "should be accurate"}
               </span>
             </label>
@@ -243,7 +244,7 @@ const AddUser = ({ hideModal, isModalOpen }: AddUserModalProps) => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 required
-                placeholder="example@example.com"
+                placeholder={emailPlaceholder("example")}
                 className="w-full rounded-xl border border-neutral-300 bg-white py-2.5 pr-3.5 pl-9 text-sm text-neutral-900 shadow-sm transition-all duration-150 placeholder:text-neutral-400 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-500 dark:focus:ring-neutral-700"
               />
             </div>

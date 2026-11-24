@@ -3,7 +3,7 @@
 import { useState, ChangeEvent } from "react";
 import { useDepartmentOptions } from "@/hooks/useDepartmentOptions";
 import { NameValidationResult, NameValidator } from "@/utils/Validators";
-import { validateHotpointEmail } from "@/utils/Validators";
+import { validateCompanyEmail } from "@/utils/Validators";
 import NameRulesCard from "../NameRulesCard";
 import OptionsDropDown from "./OptionsDropDown";
 import FormAsterisk from "../FormAsterisk";
@@ -34,7 +34,7 @@ const SubmitForAUser = ({ isOpen, onChange }: SubmitForAUserProps) => {
     user_department: "",
   });
 
-  const isValidEmail = validateHotpointEmail(formData.user_email);
+  const isValidEmail = validateCompanyEmail(formData.user_email);
 
   // Name validation states
   const [isNameFocused, setIsNameFocused] = useState(false);
@@ -60,7 +60,7 @@ const SubmitForAUser = ({ isOpen, onChange }: SubmitForAUserProps) => {
     };
     const isComplete =
       Boolean(trimmed.user_name && trimmed.user_department) &&
-      validateHotpointEmail(trimmed.user_email) &&
+      validateCompanyEmail(trimmed.user_email) &&
       validation.isValid;
     const hasInput = Boolean(
       trimmed.user_name || trimmed.user_email || trimmed.user_department,
@@ -130,7 +130,7 @@ const SubmitForAUser = ({ isOpen, onChange }: SubmitForAUserProps) => {
             Email Address <FormAsterisk />{" "}
             {formData.user_email && !isValidEmail && (
               <span className="text-[10px] font-normal text-red-500 lowercase">
-                Invalid hotpoint email.
+                Invalid company email.
               </span>
             )}
           </label>

@@ -91,7 +91,7 @@ export default function UserEmailAutocomplete({
             <div className="flex flex-col items-center justify-center gap-2 px-4 py-3 text-neutral-500 dark:text-neutral-400">
               <UserRoundSearch className="h-7 w-7" />
               <span>No matching user found</span>
-              <span className="text-xs">Type a valid hotpoint email</span>
+              <span className="text-xs">Type a valid company email</span>
             </div>
           )}
           {filteredUsers.length > 0 && (

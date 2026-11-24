@@ -28,9 +28,10 @@ import { getApiErrorMessage } from "@/utils/AxiosErrorHelper";
 import { NameValidator, NameValidationResult } from "@/utils/Validators";
 import NameRulesCard from "@/components/Modules/NameRulesCard";
 import { useOverlayStore } from "@/store/useOverlayStore";
-import { validateHotpointEmail } from "@/utils/Validators";
+import { validateCompanyEmail } from "@/utils/Validators";
 import { useConfirmStore } from "@/store/useConfirmStore";
 import { RefetchFunction } from "./AgentsInfo";
+import { emailPlaceholder } from "@/lib/config";
 
 type AddAgentProps = {
   showAgentModal: boolean;
@@ -61,8 +62,8 @@ const AddAgent = ({
     confirmPassword: "",
   });
 
-  // Check if email is a valid Hotpoint email
-  const isValidEmail = validateHotpointEmail(formData.email);
+  // Check if email is a valid company email
+  const isValidEmail = validateCompanyEmail(formData.email);
 
   // State for showing/hiding password
   const [showPassword, setShowPassword] = useState(false);
@@ -228,7 +229,7 @@ const AddAgent = ({
                 className={`font-normal ${formData.email && !isValidEmail ? "text-red-500" : "text-gray-500"}`}
               >
                 {formData.email && !isValidEmail
-                  ? "invalid hotpoint email"
+                  ? "invalid company email"
                   : "should be accurate"}
               </span>
             </label>
@@ -240,7 +241,7 @@ const AddAgent = ({
                 value={formData.email}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="username@example.com"
+                placeholder={emailPlaceholder("username")}
                 required
                 className="w-full rounded-xl border border-neutral-300 bg-white py-2 pr-3 pl-9 text-sm text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-500"
               />

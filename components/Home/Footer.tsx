@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { HotpointLogo } from "@/components/Modules/HotpointLogo";
-import { currentYear, HELPDESK_EMAIL } from "@/lib/assets";
+import { currentYear } from "@/lib/assets";
+import { helpdeskEmail } from "@/lib/config";
 import { ArrowUp, Mail } from "lucide-react";
 import { DbStatusPill } from "../Modules/DbStatus/DbStatusPill";
 
@@ -64,13 +65,15 @@ const Footer = () => {
 
             <div className="flex flex-wrap items-center gap-3">
               <DbStatusPill />
-              <a
-                href={`mailto:${HELPDESK_EMAIL}`}
-                className="inline-flex items-center gap-2 rounded-full border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-600 transition-colors hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-800 dark:text-neutral-400 dark:hover:border-neutral-700 dark:hover:text-white"
-              >
-                <Mail className="h-3.5 w-3.5" />
-                Email IT
-              </a>
+              {helpdeskEmail && (
+                <a
+                  href={`mailto:${helpdeskEmail}`}
+                  className="inline-flex items-center gap-2 rounded-full border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-600 transition-colors hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-800 dark:text-neutral-400 dark:hover:border-neutral-700 dark:hover:text-white"
+                >
+                  <Mail className="h-3.5 w-3.5" />
+                  Email IT
+                </a>
+              )}
             </div>
           </div>
 

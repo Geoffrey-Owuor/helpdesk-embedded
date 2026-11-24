@@ -145,9 +145,6 @@ export const priorityOptions = [
   { label: "Low", value: "Low" },
 ];
 
-// Public support address shown in the home page footer and CTA
-export const HELPDESK_EMAIL = "helpdesk@example.com";
-
 export const footerQuickLinks = [
   { label: "Changelog", href: "/changelog" },
   { label: "Manual", href: "/manual" },

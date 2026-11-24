@@ -45,7 +45,7 @@ Setup:
 npm install
 ```
 
-2. Create a `.env.local` in the project root and set the required environment variables
+2. Create a `.env.local` in the project root and set the required environment variables (`.env.example`, kept outside the repo, lists them; deployment-specific values such as the base path, public URL and company email domain are read in `lib/config.ts`)
 
 3. Start the development server
 
