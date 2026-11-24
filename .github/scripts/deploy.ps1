@@ -9,11 +9,12 @@
     The GitHub Actions runner workspace root directory.
 
 .PARAMETER AppName
-    The application process name defined in ecosystem.config.js.
+    The application process name defined in ecosystem.config.js. The workflows
+    pass the APP_NAME (or TEST_APP_NAME) repository variable.
 
 .PARAMETER AppRootDir
-    Root directory of the target environment on the Windows host. Defaults to
-    the production root; the test environment passes C:\app-test.
+    Root directory of the target environment on the Windows host. The workflows
+    pass the APP_ROOT_DIR (or TEST_APP_ROOT_DIR) repository variable.
 
 .PARAMETER Standalone
     Deploy a Next.js standalone build (.next\standalone) instead of the full
@@ -29,11 +30,11 @@ param (
     [Parameter(Mandatory=$false)]
     [string]$SourceDir = $env:GITHUB_WORKSPACE,
 
-    [Parameter(Mandatory=$false)]
-    [string]$AppName = "helpdesk-embedded",
+    [Parameter(Mandatory=$true)]
+    [string]$AppName,
 
-    [Parameter(Mandatory=$false)]
-    [string]$AppRootDir = "C:\app",
+    [Parameter(Mandatory=$true)]
+    [string]$AppRootDir,
 
     [Parameter(Mandatory=$false)]
     [switch]$Standalone
