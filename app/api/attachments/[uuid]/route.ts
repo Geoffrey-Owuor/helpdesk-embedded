@@ -18,7 +18,10 @@ export const GET = withAuth(async ({ params, user }) => {
   // Only for those who can see the issue (analytics viewers included) - a 404
   // either way so we don't leak which uuids exist
   if (
-    !(await canViewIssue(params.uuid as string, user, { allowAnalytics: true }))
+    !(await canViewIssue(params.uuid as string, user, {
+      allowAnalytics: true,
+      allowPastAgents: true,
+    }))
   ) {
     return NextResponse.json({ message: "Issue not found" }, { status: 404 });
   }

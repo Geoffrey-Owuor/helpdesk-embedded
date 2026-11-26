@@ -12,6 +12,8 @@ export type PermissionIssue = {
   issue_target_department: string;
   issue_agent_email: string | null;
   issue_submitter_id: string;
+  // Set by /get-issue when the issue was escalated away from the viewer
+  viewer_is_past_agent?: boolean;
 };
 
 // What a user may do on a single issue, combining their role with the issue's
@@ -40,7 +42,7 @@ export const getIssuePermissions = (
   // Everyone above, plus the invited collaborators, can work on the issue
   const canActOnIssue = canManageCollaborators || isCollaborator;
 
-  return {
+  const permissions = {
     canManageCollaborators,
     canInvite: canActOnIssue && !isClosed,
     // Plain users can't change a status, and an issue needs an agent first
@@ -60,4 +62,15 @@ export const getIssuePermissions = (
       (userId === issue?.issue_submitter_id || isDepartmentAdmin || isSuper) &&
       !isClosed,
   };
+
+  // An agent the issue was escalated away from only reads it and comments
+  // (comments aren't gated here), so every action is off - including the
+  // reopen and attachments any other viewer gets
+  if (issue?.viewer_is_past_agent) {
+    return Object.fromEntries(
+      Object.keys(permissions).map((key) => [key, false]),
+    ) as typeof permissions;
+  }
+
+  return permissions;
 };

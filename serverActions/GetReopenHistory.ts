@@ -19,7 +19,10 @@ export async function getReopenHistory(
   // Only for those who can see the issue (analytics viewers included)
   if (
     !session ||
-    !(await canViewIssue(uuid, session, { allowAnalytics: true }))
+    !(await canViewIssue(uuid, session, {
+      allowAnalytics: true,
+      allowPastAgents: true,
+    }))
   ) {
     return [];
   }

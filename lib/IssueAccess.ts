@@ -132,13 +132,39 @@ export const buildIssueAccessClause = (
   return { clause: submitter, params: [userId] };
 };
 
+// Was this issue escalated away from this user? issue_escalation records every
+// agent who has held the issue (its first row is the original agent), so
+// anyone listed there who can't otherwise see the issue handed it off. They
+// keep read-only access - open it and comment - but nothing else, and the
+// issue lists don't show it to them. Reassignment keeps no history, so an
+// agent reassigned off an issue loses it entirely.
+export const isPastEscalatedAgent = async (
+  uuid: string,
+  email: string,
+): Promise<boolean> => {
+  if (!isUuid(uuid)) return false;
+
+  const rows = await query(
+    `SELECT 1 FROM issue_escalation
+     WHERE issue_id = $1 AND issue_escalated_agent_email = $2 LIMIT 1`,
+    [uuid, email],
+  );
+
+  return rows.length > 0;
+};
+
 // Can this user see this issue? Analytics viewers can read any issue through
 // the analytics pages, so read-only routes those pages use pass
-// allowAnalytics; routes that change the issue never do.
+// allowAnalytics; routes that change the issue never do. Routes that read the
+// issue, and post-comment, pass allowPastAgents to let in the agents it was
+// escalated away from (isPastEscalatedAgent).
 export const canViewIssue = async (
   uuid: string,
   user: AuthJWTPayload,
-  { allowAnalytics = false }: { allowAnalytics?: boolean } = {},
+  {
+    allowAnalytics = false,
+    allowPastAgents = false,
+  }: { allowAnalytics?: boolean; allowPastAgents?: boolean } = {},
 ): Promise<boolean> => {
   if (!isUuid(uuid)) return false;
 
@@ -154,5 +180,7 @@ export const canViewIssue = async (
     [uuid, ...params],
   );
 
-  return rows.length > 0;
+  if (rows.length > 0) return true;
+
+  return allowPastAgents && (await isPastEscalatedAgent(uuid, user.email));
 };

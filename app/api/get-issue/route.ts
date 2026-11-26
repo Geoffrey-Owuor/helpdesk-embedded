@@ -1,7 +1,10 @@
 import { query } from "@/lib/Db";
 import { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-middleware/ApiMiddleware";
-import { buildIssueAccessClause } from "@/lib/IssueAccess";
+import {
+  buildIssueAccessClause,
+  isPastEscalatedAgent,
+} from "@/lib/IssueAccess";
 import { ISSUE_DETAIL_SELECT } from "@/lib/issues/issueDetailQuery";
 
 export const GET = withAuth(async ({ user, request }) => {
@@ -28,13 +31,29 @@ export const GET = withAuth(async ({ user, request }) => {
       [uuid, ...accessParams],
     );
 
-    if (result.length === 0) {
+    if (result.length > 0) {
+      return NextResponse.json(
+        { ...result[0], viewer_is_past_agent: false },
+        { status: 200 },
+      );
+    }
+
+    // An agent the issue was escalated away from can still open it, read-only
+    // (getIssuePermissions grants them nothing but comments)
+    const pastAgentResult = (await isPastEscalatedAgent(uuid, user.email))
+      ? await query(`${ISSUE_DETAIL_SELECT} WHERE a.issue_uuid = $1`, [uuid])
+      : [];
+
+    if (pastAgentResult.length === 0) {
       // Collapse "doesn't exist" and "exists but not visible to you" into one
       // response so we don't leak which uuids exist to unauthorized viewers.
       return NextResponse.json({ message: "Issue not found" }, { status: 404 });
     }
 
-    return NextResponse.json(result[0], { status: 200 });
+    return NextResponse.json(
+      { ...pastAgentResult[0], viewer_is_past_agent: true },
+      { status: 200 },
+    );
   } catch (error) {
     console.error("Error retrieving issue data", error);
     return NextResponse.json(

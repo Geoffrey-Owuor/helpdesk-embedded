@@ -19,6 +19,7 @@ export const GET = withAuth<{ filename: string }>(async ({ params, user }) => {
     attachment.length === 0 ||
     !(await canViewIssue(attachment[0].issue_id, user, {
       allowAnalytics: true,
+      allowPastAgents: true,
     }))
   ) {
     return new NextResponse("File Not Found", { status: 404 });

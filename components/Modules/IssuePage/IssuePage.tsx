@@ -9,7 +9,9 @@ import {
   GitBranchPlus,
   UserRoundPlus,
   Paperclip,
+  GitMerge,
 } from "lucide-react";
+import { indicatorChip } from "@/lib/indicatorStyles";
 import { useMemo, useState } from "react";
 import { useAlertStore } from "@/store/useAlertStore";
 import apiClient from "@/lib/AxiosClient";
@@ -277,6 +279,17 @@ export const IssuePage = ({ uuid }: { uuid: string }) => {
       <div className="mx-auto py-6 md:py-4">
         <IssueHeader
           issue={issueData}
+          breadcrumb={
+            // Why an agent the issue was escalated away from sees no actions
+            issueData.viewer_is_past_agent && (
+              <p
+                className={`inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${indicatorChip}`}
+              >
+                <GitMerge className="h-3.5 w-3.5 shrink-0" />
+                Escalated from you - you can view and comment
+              </p>
+            )
+          }
           onRefresh={() => refetchData()}
           isRefreshing={isFetching}
           pinButton={

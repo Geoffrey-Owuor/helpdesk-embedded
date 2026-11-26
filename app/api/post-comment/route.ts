@@ -11,7 +11,7 @@ export const POST = withAuth(async ({ request, user }) => {
 
     // Only those who can see the issue may comment on it - a 404 either way so we
     // don't leak which uuids exist
-    if (!(await canViewIssue(uuid, user))) {
+    if (!(await canViewIssue(uuid, user, { allowPastAgents: true }))) {
       return NextResponse.json({ message: "Issue not found" }, { status: 404 });
     }
 
