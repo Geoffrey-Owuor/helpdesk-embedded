@@ -29,7 +29,9 @@ export const GET = withAuth(async ({ user, request }) => {
 
     // Whether "Go to issue" will open for this viewer - the same check the
     // issue page's own endpoint applies
-    const viewerCanOpen = await canViewIssue(uuid, user);
+    const viewerCanOpen = await canViewIssue(uuid, user, {
+      allowPastAgents: true,
+    });
 
     return NextResponse.json(
       { ...result[0], viewer_can_open: viewerCanOpen },

@@ -1,6 +1,9 @@
 import { query } from "@/lib/Db";
 import { AuthJWTPayload } from "@/lib/Auth";
-import { buildIssueAccessClause } from "@/lib/IssueAccess";
+import {
+  buildIssueAccessClause,
+  isPastEscalatedAgent,
+} from "@/lib/IssueAccess";
 import { isUuid } from "@/lib/isUuid";
 
 // The title and description an issue page uses for its <title>/description
@@ -14,9 +17,11 @@ export const getIssueMeta = async (
 ): Promise<{ issue_title: string; issue_description: string } | null> => {
   if (!isUuid(uuid)) return null;
 
-  const { clause, params } = analytics
-    ? { clause: null, params: [] }
-    : buildIssueAccessClause(user, "a", 2);
+  // Agents the issue was escalated away from can still open it read-only
+  const { clause, params } =
+    analytics || (await isPastEscalatedAgent(uuid, user.email))
+      ? { clause: null, params: [] }
+      : buildIssueAccessClause(user, "a", 2);
 
   const rows = await query<{ issue_title: string; issue_description: string }>(
     `SELECT a.issue_title, a.issue_description FROM issues_table a

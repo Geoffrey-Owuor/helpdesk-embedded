@@ -68,12 +68,13 @@ export const AnalyticsIssuePage = ({ uuid }: { uuid: string }) => {
         }
       />
 
-      {/* Comments are read-only for analytics viewers */}
+      {/* Analytics viewers can comment only on issues they could open from the
+          dashboard - post-comment applies the same check */}
       <IssueDetailBody
         issue={issueData}
         collaborators={collaborators}
         collaboratorsLoading={collaboratorsLoading}
-        canComment={false}
+        canComment={issueData.viewer_can_open}
       />
     </div>
   );

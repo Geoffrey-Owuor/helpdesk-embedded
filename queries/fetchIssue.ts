@@ -29,6 +29,9 @@ export interface IssueDetail {
   reopened_count: number;
   escalated_count: number;
   collaborators_count: number;
+  // /get-issue only: the issue was escalated away from the viewer, who can
+  // read it and comment but do nothing else
+  viewer_is_past_agent?: boolean;
 }
 
 export const fetchIssue = async (uuid: string): Promise<IssueDetail> => {
