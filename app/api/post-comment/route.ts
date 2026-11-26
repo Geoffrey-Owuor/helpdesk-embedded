@@ -38,13 +38,15 @@ export const POST = withAuth(async ({ request, user }) => {
     await query(baseQuery, queryParams);
 
     // A comment from support (not the submitter) is the issue's first response
-    // if nothing came before it - the SLA response target measures this
+    // if nothing came before it - the SLA response target measures this. A
+    // follow-up on a resolved or closed issue never counts.
     await query(
       `
       UPDATE issues_table i
       SET issue_first_response_at = CURRENT_TIMESTAMP
       WHERE i.issue_uuid = $1
         AND i.issue_first_response_at IS NULL
+        AND i.issue_status NOT IN ('resolved', 'closed')
         AND i.issue_submitter_id <> $2
         AND (
           i.issue_agent_id = $2
